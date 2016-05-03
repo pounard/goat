@@ -1,5 +1,5 @@
 {
-    "name" : "pounard/momm",
+    "name" : "makinacorpus/momm",
     "type": "library",
     "description": "Experimental MySQL connector for Pomm using PDO",
     "keywords": ["orm", "postgresql", "database", "symfony", "pomm", "mysql", "momm", "pdo"],
