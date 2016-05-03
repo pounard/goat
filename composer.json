@@ -4,7 +4,7 @@
     "description": "Experimental MySQL connector for Pomm using PDO",
     "keywords": ["orm", "postgresql", "database", "symfony", "pomm", "mysql", "momm", "pdo"],
     "homepage": "http://www.pomm-project.org",
-    "license": "MIT",
+    "license": "GPL-2",
     "authors": [
         {
             "name" : "Pierre RINEAU",
