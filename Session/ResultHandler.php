@@ -73,6 +73,10 @@ class ResultHandler extends PommResultHandler
             $meta = $this->statement->getColumnMeta($i);
             $key = $meta['name'];
 
+            if (is_numeric($key)) {
+                $key = $i;
+            }
+
             $this->columnNameMap[$key] = $i;
             $this->columnTypeMap[$key] = $this->parseType($meta['native_type']);
         }
@@ -175,7 +179,7 @@ class ResultHandler extends PommResultHandler
 
         $pos = array_search($index, $this->columnNameMap);
         if (false !== $pos) {
-            return $this->columnNameMap[$pos];
+            return $pos;
         }
 
         throw new \OutOfBoundsException(sprintf("column %d is out of bounds", $index));

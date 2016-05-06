@@ -4,12 +4,19 @@ namespace Momm\Foundation;
 
 use PommProject\Foundation\Inspector\InspectorPooler;
 use PommProject\Foundation\QueryManager\QueryManagerPooler;
-use PommProject\Foundation\PreparedQuery\PreparedQueryPooler;
+use Momm\Foundation\PreparedQuery\PreparedQueryPooler;
 use Momm\Foundation\Session\SessionBuilder as VanillaSessionBuilder;
 
 use PommProject\Foundation\Converter\ConverterPooler;
 use PommProject\Foundation\Converter\ConverterHolder;
+use PommProject\Foundation\Listener\ListenerPooler;
+use PommProject\Foundation\Observer\ObserverPooler;
 use PommProject\Foundation\Session\Session;
+
+use PommProject\Foundation\Converter\PgArray as PommPgArray;
+use PommProject\Foundation\Converter\PgNumber as PommPgNumber;
+use PommProject\Foundation\Converter\PgString as PommPgString;
+use PommProject\Foundation\Converter\PgTimestamp as PommPgTimestamp;
 
 class SessionBuilder extends VanillaSessionBuilder
 {
@@ -22,7 +29,9 @@ class SessionBuilder extends VanillaSessionBuilder
             ->registerClientPooler(new PreparedQueryPooler)
             ->registerClientPooler(new QueryManagerPooler)
             ->registerClientPooler(new ConverterPooler(clone $this->converter_holder))
+            ->registerClientPooler(new ObserverPooler())
             ->registerClientPooler(new InspectorPooler)
+            ->registerClientPooler(new ListenerPooler())
             ;
 
         return $this;
@@ -33,22 +42,21 @@ class SessionBuilder extends VanillaSessionBuilder
      */
     protected function initializeConverterHolder(ConverterHolder $converter_holder)
     {
-        /*
         $converter_holder
-            ->registerConverter('Array', new Converter\PgArray(), ['array'], false)
-            ->registerConverter(
-                'Boolean',
-                new Converter\PgBoolean(),
-                [
-                    'bool',
-                    'pg_catalog.bool',
-                    'boolean',
-                ],
-                false
-            )
+            ->registerConverter('Array', new PommPgArray(), ['array'], false)
+//            ->registerConverter(
+//                 'Boolean',
+//                 new Converter\PgBoolean(),
+//                 [
+//                     'bool',
+//                     'pg_catalog.bool',
+//                     'boolean',
+//                 ],
+//                 false
+//            )
             ->registerConverter(
                 'Number',
-                new Converter\PgNumber(),
+                new PommPgNumber(),
                 [
                     'int2', 'pg_catalog.int2',
                     'int4', 'pg_catalog.int4', 'int', 'integer',
@@ -62,75 +70,75 @@ class SessionBuilder extends VanillaSessionBuilder
             )
             ->registerConverter(
                 'String',
-                new Converter\PgString(),
+                new PommPgString(),
                 [
                     'varchar', 'pg_catalog.varchar',
-                    'char', 'pg_catalog.char',
+//                    'char', 'pg_catalog.char',
                     'text', 'pg_catalog.text',
                     'uuid', 'pg_catalog.uuid',
-                    'tsvector', 'pg_catalog.tsvector',
-                    'xml', 'pg_catalog.xml',
-                    'bpchar', 'pg_catalog.bpchar',
-                    'name', 'pg_catalog.name',
-                    'character varying',
-                    'regclass', 'pg_catalog.regclass',
-                    'inet', 'pg_catalog.inet',
-                    'cidr', 'pg_catalog.cidr',
-                    'macaddr', 'pg_catalog.macaddr',
+//                    'tsvector', 'pg_catalog.tsvector',
+//                    'xml', 'pg_catalog.xml',
+//                     'bpchar', 'pg_catalog.bpchar',
+//                     'name', 'pg_catalog.name',
+//                     'character varying',
+//                     'regclass', 'pg_catalog.regclass',
+//                     'inet', 'pg_catalog.inet',
+//                     'cidr', 'pg_catalog.cidr',
+//                     'macaddr', 'pg_catalog.macaddr',
                 ],
                 false
             )
             ->registerConverter(
                 'Timestamp',
-                new Converter\PgTimestamp(),
+                new PommPgTimestamp(),
                 [
-                    'timestamp', 'pg_catalog.timestamp',
+                    'datetime', 'pg_catalog.timestamp',
                     'date', 'pg_catalog.date',
                     'time', 'pg_catalog.time',
-                    'timestamptz', 'pg_catalog.timestamptz',
+//                    'timestamptz', 'pg_catalog.timestamptz',
                 ],
                 false
             )
-            ->registerConverter('Interval', new Converter\PgInterval(), ['interval', 'pg_catalog.interval'], false)
-            ->registerConverter('Binary', new Converter\PgBytea(), ['bytea', 'pg_catalog.bytea'], false)
-            ->registerConverter('Point', new Converter\Geometry\PgPoint(), ['point', 'pg_catalog.point'], false)
-            ->registerConverter('Circle', new Converter\Geometry\PgCircle(), ['circle', 'pg_catalog.circle'], false)
-            ->registerConverter(
-                'JSON',
-                new Converter\PgJson(),
-                [
-                    'json',
-                    'jsonb',
-                    'pg_catalog.json',
-                    'pg_catalog.jsonb'
-                ],
-                false
-            )
-            ->registerConverter(
-                'NumberRange',
-                new Converter\PgNumRange(),
-                [
-                    'int4range', 'pg_catalog.int4range',
-                    'int8range', 'pg_catalog.int8range',
-                    'numrange', 'pg_catalog.numrange',
-                ],
-                false
-            )
-            ->registerConverter(
-                'TsRange',
-                new Converter\PgTsRange(),
-                [
-                    'tsrange',
-                    'pg_catalog.tsrange',
-                    'daterange',
-                    'pg_catalog.daterange',
-                    'tstzrange',
-                    'pg_catalog.tstzrange',
-                ],
-                false
-            )
-            ;
-*/
+//             ->registerConverter('Interval', new Converter\PgInterval(), ['interval', 'pg_catalog.interval'], false)
+//             ->registerConverter('Binary', new Converter\PgBytea(), ['bytea', 'pg_catalog.bytea'], false)
+//             ->registerConverter('Point', new Converter\Geometry\PgPoint(), ['point', 'pg_catalog.point'], false)
+//             ->registerConverter('Circle', new Converter\Geometry\PgCircle(), ['circle', 'pg_catalog.circle'], false)
+//             ->registerConverter(
+//                 'JSON',
+//                 new Converter\PgJson(),
+//                 [
+//                     'json',
+//                     'jsonb',
+//                     'pg_catalog.json',
+//                     'pg_catalog.jsonb'
+//                 ],
+//                 false
+//             )
+//             ->registerConverter(
+//                 'NumberRange',
+//                 new Converter\PgNumRange(),
+//                 [
+//                     'int4range', 'pg_catalog.int4range',
+//                     'int8range', 'pg_catalog.int8range',
+//                     'numrange', 'pg_catalog.numrange',
+//                 ],
+//                 false
+//             )
+//             ->registerConverter(
+//                 'TsRange',
+//                 new Converter\PgTsRange(),
+//                 [
+//                     'tsrange',
+//                     'pg_catalog.tsrange',
+//                     'daterange',
+//                     'pg_catalog.daterange',
+//                     'tstzrange',
+//                     'pg_catalog.tstzrange',
+//                 ],
+//                 false
+//             )
+        ;
+
         return $this;
     }
 }

@@ -3,7 +3,6 @@
 namespace Momm\Foundation\Session;
 
 use PommProject\Foundation\Exception\ConnectionException;
-use PommProject\Foundation\Exception\SqlException;
 use PommProject\Foundation\Session\Connection as PommConnection;
 
 class Connection extends PommConnection
@@ -103,6 +102,8 @@ class Connection extends PommConnection
                 $options
             );
 
+            $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+
         } catch (\PDOException $e) {
             throw new ConnectionException(
                 sprintf(
@@ -177,7 +178,7 @@ class Connection extends PommConnection
      */
     public function escapeIdentifier($string)
     {
-        return $this->getPdo()->quote($string, \PDO::PARAM_STR);
+        return '`' . str_replace('`', '\\`', $string) . '`';
     }
 
     /**
@@ -206,13 +207,27 @@ class Connection extends PommConnection
         return $bytea;
     }
 
+    protected function convertStuffFromPgSyntaxToPdoSyntax($sql)
+    {
+        // compatiblity with pg_* functions
+        // @todo restore parameter order
+        $sql = preg_replace('/\$(\d*|\*)/', '?', $sql);
+
+        // @todo lots to do here, like param and type conversion etc...
+
+        // this will replace ::TYPE strings
+        // @todo it's too wide and will also potentially truncate valid strings
+        $sql = preg_replace('/\:\:([a-zA-Z0-9]+)/', '', $sql);
+
+        return $sql;
+    }
+
     /**
      * {@inheritdoc}
      */
     public function sendQueryWithParameters($query, array $parameters = [])
     {
-        // compatiblity with pg_* functions
-        $query = preg_replace('/\$\d*/', '?', $query);
+        $query = $this->convertStuffFromPgSyntaxToPdoSyntax($query);
 
         $statement = $this->getPdo()->prepare($query);
         $statement->execute($parameters);
@@ -221,24 +236,24 @@ class Connection extends PommConnection
     }
 
     /**
-     * sendPrepareQuery
-     *
-     * Send a prepare query statement to the server.
-     *
-     * @access public
-     * @param  string     $identifier
-     * @param  string     $sql
-     * @return Connection $this
+     * {@inheritdoc}
      */
     public function sendPrepareQuery($identifier, $sql)
     {
-        $this
-            ->testQuery(
-                pg_send_prepare($this->getHandler(), $identifier, $sql),
-                sprintf("Could not send prepare statement «%s».", $sql)
-            )
-            ->getQueryResult(sprintf("PREPARE ===\n%s\n ===", $sql))
-            ;
+        $sql = $this->convertStuffFromPgSyntaxToPdoSyntax($sql);
+        $pdo = $this->getPdo();
+
+        // PDO will emulate prepared queries, so we will directly hit MySQL
+        // with its own syntax, not sure this will really avoid potential SQL
+        // injection, but at the very least it will allow to avoid injection via
+        // parameters
+        $pdo
+            ->query(sprintf(
+                "prepare %s from %s",
+                $this->escapeIdentifier($identifier),
+                $pdo->quote($sql)
+            ))
+        ;
 
         return $this;
     }
@@ -252,25 +267,24 @@ class Connection extends PommConnection
     }
 
     /**
-     * sendExecuteQuery
-     *
-     * Execute a prepared statement.
-     * The optional SQL parameter is for debugging purposes only.
-     *
-     * @access public
-     * @param  string        $identifier
-     * @param  array         $parameters
-     * @param  string        $sql
-     * @return ResultHandler
+     * {@inheritdoc}
      */
     public function sendExecuteQuery($identifier, array $parameters = [], $sql = '')
     {
-        $ret = pg_send_execute($this->getHandler(), $identifier, $parameters);
+        $pdo = $this->getPdo();
 
-        return $this
-            ->testQuery($ret, sprintf("Prepared query '%s'.", $identifier))
-            ->getQueryResult(sprintf("EXECUTE ===\n%s\n ===\nparameters = {%s}", $sql, join(', ', $parameters)))
-            ;
+        $name = 'a';
+        $map = [];
+        foreach ($parameters as $value) {
+            $escapedName = $this->escapeIdentifier($name);
+            $pdo->query(sprintf("set @%s = %s", $escapedName, $pdo->quote($value)));
+            $map[] = '@' . $escapedName;
+            ++$name;
+        }
+
+        $statement = $this->pdo->query(sprintf("execute %s using %s", $this->escapeIdentifier($identifier), join(', ', $map)));
+
+        return new ResultHandler($statement);
     }
 
     /**
