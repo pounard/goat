@@ -4,6 +4,7 @@ namespace Momm\Foundation\Session;
 
 use PommProject\Foundation\Client\ClientHolder;
 use PommProject\Foundation\Session\Connection as PommConnection;
+use PommProject\Foundation\Session\Session as PommSession;
 use PommProject\Foundation\Session\SessionBuilder as PommSessionBuilder;
 
 class SessionBuilder extends PommSessionBuilder
@@ -21,7 +22,7 @@ class SessionBuilder extends PommSessionBuilder
      */
     protected function createSession(PommConnection $connection, ClientHolder $client_holder, $stamp)
     {
-        $session_class = $this->configuration->getParameter('class:session', '\PommProject\Foundation\Session\Session');
+        $session_class = $this->configuration->getParameter('class:session', PommSession::class);
 
         $session = new $session_class($connection, $client_holder, $stamp);
 
