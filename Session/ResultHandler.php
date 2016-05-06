@@ -58,6 +58,9 @@ class ResultHandler extends PommResultHandler
             case 'TIMESTAMP':
                 return 'timestamp';
 
+            case 'TIME':
+                return 'time';
+
             default:
                 trigger_error(sprintf("'%s': unknown type", $nativeType));
                 return 'unknown';
@@ -112,18 +115,11 @@ class ResultHandler extends PommResultHandler
     }
 
     /**
-     * fetchRow
-     *
-     * Fetch a row as associative array. Index starts from 0.
-     *
-     * @access public
-     * @param  int   $index
-     * @throws \OutOfBoundsException if $index out of bounds.
-     * @return array
+     * {@inheritdoc}
      */
     public function fetchRow($index)
     {
-        $values = @pg_fetch_assoc($this->handler, $index);
+        $values = $this->getStatement()->fetch(\PDO::FETCH_ASSOC, \PDO::FETCH_ORI_ABS, $index);
 
         if ($values === false) {
             throw new \OutOfBoundsException(sprintf("Cannot jump to non existing row %d.", $index));
@@ -202,7 +198,7 @@ class ResultHandler extends PommResultHandler
      */
     public function fetchColumn($name)
     {
-        return $this->statement->fetchColumn($this->getFieldNumber($name));
+        return $this->getStatement()->fetchColumn($this->getFieldNumber($name));
     }
 
     /**

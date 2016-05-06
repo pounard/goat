@@ -2,6 +2,8 @@
 
 namespace Momm\Foundation\PreparedQuery;
 
+use Momm\Foundation\Session\PreparedReadyConnection;
+
 use PommProject\Foundation\PreparedQuery\PreparedQuery as PommPreparedQuery;
 
 /**
@@ -24,6 +26,11 @@ class PreparedQuery extends PommPreparedQuery
      */
     public function shutdown()
     {
+        // sorry
+        if (!$this->getSession()->getConnection() instanceof PreparedReadyConnection) {
+            return;
+        }
+
         if ($this->is_prepared === true) {
             $this
                 ->getSession()

@@ -2,8 +2,11 @@
 
 namespace Momm\Foundation\Session;
 
+use Momm\Foundation\Converter\MyConverterInterface;
+
 use PommProject\Foundation\Exception\ConnectionException;
 use PommProject\Foundation\Session\Connection as PommConnection;
+use PommProject\Foundation\Session\Session;
 
 class Connection extends PommConnection
 {
@@ -12,6 +15,9 @@ class Connection extends PommConnection
      */
     private $pdo;
     private $is_closed = false;
+    private $prepared = [];
+
+    private $session;
 
     /**
      * __construct
@@ -28,6 +34,11 @@ class Connection extends PommConnection
         // We need to override this method to avoid calls to pg_* methods.
         $this->configurator = new ConnectionConfigurator($dsn);
         $this->configurator->addConfiguration($configuration);
+    }
+
+    public function setSession(Session $session)
+    {
+        $this->session = $session;
     }
 
     /**
@@ -162,7 +173,7 @@ class Connection extends PommConnection
      */
     public function executeAnonymousQuery($sql)
     {
-        return new ResultHandler($this->getPdo()->query($sql));
+        return $this->sendQueryWithParameters($sql, []);
     }
 
     /**
@@ -207,19 +218,48 @@ class Connection extends PommConnection
         return $bytea;
     }
 
+    /**
+     * @see \PommProject\Foundation\QueryManager\QueryParameterParserTrait::getParametersType()
+     */
+    protected function getParametersType($string)
+    {
+        $matches = [];
+        preg_match_all('/\$(\*|\d+)(?:::([\w\."]+(?:\[\])?))?/', $string, $matches);
+
+        $ret = [];
+        foreach ($matches[0] as $i => $identifier) {
+            $ret[$identifier] = str_replace('"', '', $matches[2][$i]);
+        }
+        return $ret;
+    }
+
     protected function convertStuffFromPgSyntaxToPdoSyntax($sql)
     {
-        // compatiblity with pg_* functions
-        // @todo restore parameter order
-        $sql = preg_replace('/\$(\d*|\*)/', '?', $sql);
+        $typeMap = $this->getParametersType($sql);
 
-        // @todo lots to do here, like param and type conversion etc...
+        $replacements = [];
 
-        // this will replace ::TYPE strings
-        // @todo it's too wide and will also potentially truncate valid strings
-        $sql = preg_replace('/\:\:([a-zA-Z0-9]+)/', '', $sql);
+        foreach ($typeMap as $original => $type) {
+            // compatiblity with pg_* functions
+            // @todo restore parameter order
+            $replacement = '?';
+            if ($type !== '') {
+                $converterClient = $this->session->getClientUsingPooler('converter', $type);
+                /** @var $converterClient \PommProject\Foundation\Converter\ConverterClient */
+                if ($converterClient) {
+                    $converter = $converterClient->getConverter();
+                    if ($converter instanceof MyConverterInterface && $converter->needsCast()) {
+                        // type conversion so that PDOStatement::getColumnMeta()
+                        // will return the right type to us
+                        $replacement = sprintf("cast(? as %s)", $converter->castAs($type));
+                    }
+                }
+            }
 
-        return $sql;
+            $replacements[$original] = $replacement;
+        }
+
+        return strtr($sql, $replacements);
     }
 
     /**
@@ -229,7 +269,14 @@ class Connection extends PommConnection
     {
         $query = $this->convertStuffFromPgSyntaxToPdoSyntax($query);
 
-        $statement = $this->getPdo()->prepare($query);
+        $statement = $this
+            ->getPdo()
+            ->prepare(
+                $query,
+                [\PDO::ATTR_CURSOR => \PDO::CURSOR_SCROLL]
+            )
+        ;
+
         $statement->execute($parameters);
 
         return new ResultHandler($statement);
@@ -240,20 +287,7 @@ class Connection extends PommConnection
      */
     public function sendPrepareQuery($identifier, $sql)
     {
-        $sql = $this->convertStuffFromPgSyntaxToPdoSyntax($sql);
-        $pdo = $this->getPdo();
-
-        // PDO will emulate prepared queries, so we will directly hit MySQL
-        // with its own syntax, not sure this will really avoid potential SQL
-        // injection, but at the very least it will allow to avoid injection via
-        // parameters
-        $pdo
-            ->query(sprintf(
-                "prepare %s from %s",
-                $this->escapeIdentifier($identifier),
-                $pdo->quote($sql)
-            ))
-        ;
+        $this->prepared[$identifier] = $sql;
 
         return $this;
     }
@@ -271,20 +305,11 @@ class Connection extends PommConnection
      */
     public function sendExecuteQuery($identifier, array $parameters = [], $sql = '')
     {
-        $pdo = $this->getPdo();
-
-        $name = 'a';
-        $map = [];
-        foreach ($parameters as $value) {
-            $escapedName = $this->escapeIdentifier($name);
-            $pdo->query(sprintf("set @%s = %s", $escapedName, $pdo->quote($value)));
-            $map[] = '@' . $escapedName;
-            ++$name;
+        if (!isset($this->prepared[$identifier])) {
+            throw new \LogicException(sprintf("'%s': query was not prepared", $identifier));
         }
 
-        $statement = $this->pdo->query(sprintf("execute %s using %s", $this->escapeIdentifier($identifier), join(', ', $map)));
-
-        return new ResultHandler($statement);
+        return $this->sendQueryWithParameters($this->prepared[$identifier], $parameters);
     }
 
     /**

@@ -142,7 +142,7 @@ class ConnectionConfigurator extends PommConnectionConfigurator
 
         $parts = [];
 
-        foreach ($map as $key => $name) {
+        foreach ($map as $name => $key) {
             if ($value = $this->configuration->getParameter($name)) {
                 $parts[] = $key . '=' . $value;
             }
