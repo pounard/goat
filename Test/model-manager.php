@@ -36,9 +36,17 @@ $model = $session->getModel(TaskModel::class);
 $task = $model->findByPK(['id' => 1]);
 assert(null === $task);
 
+$date = new \DateTime('now +6 day');
 $task = $model->createAndSave([
     'is_public' => 1,
-    'ts_deadline' => new \DateTime('now +6 day'),
+    'ts_deadline' => $date,
     'user_name' => 'Poncho Vire',
     'description' => 'Roger!',
 ]);
+
+assert($task instanceof Task);
+assert($task->is_public === 1);
+assert($task->user_name === 'Poncho Vire');
+assert($task->description === 'Roger!');
+assert($task->ts_deadline instanceof \DateTime && $task->ts_deadline == $date);
+assert($task->ts_created instanceof \DateTime && $task->ts_created == $date);
