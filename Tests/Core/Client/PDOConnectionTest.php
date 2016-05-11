@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\RedisBundle\Tests;
+namespace Momm\Tests\Core\Client;
 
 use Momm\Core\Client\PDO\PDOConnection;
 use Momm\Core\Converter\Converter;
