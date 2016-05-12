@@ -3,10 +3,7 @@
 namespace Momm\Tests\Core\Client;
 
 use Momm\Core\Client\PDO\PDOConnection;
-use Momm\Core\Converter\Converter;
-use Momm\Core\Converter\Impl\IntegerConverter;
-use Momm\Core\Converter\Impl\StringConverter;
-use Momm\Core\Converter\Impl\TimestampConverter;
+use Momm\Core\Session;
 
 class PDOResultIteratorTest extends \PHPUnit_Framework_TestCase
 {
@@ -22,14 +19,7 @@ class PDOResultIteratorTest extends \PHPUnit_Framework_TestCase
     public function testConnection()
     {
         $connection = new PDOConnection(getenv('MYSQL_DSN'), getenv('MYSQL_USERNAME'), getenv('MYSQL_PASSWORD'));
-
-        // Register a few converters
-        $converter = new Converter();
-        $converter->setDebug(true);
-        $converter->register(['int', 'int2', 'int4', 'int8', 'numeric'], new IntegerConverter());
-        $converter->register(['date', 'datetime', 'time', 'timestamp'], new TimestampConverter());
-        $converter->register(['varchar', 'text'], (new StringConverter())->setConnection($connection));
-        $connection->setConverter($converter);
+        new Session($connection); // This will register default converters
 
         $connection->query("
             create temporary table type_test (
@@ -44,8 +34,10 @@ class PDOResultIteratorTest extends \PHPUnit_Framework_TestCase
 
         // ensure table data has the right types
         $connection->query("
-            insert into type_test (foo, bar, baz, some_ts, some_time, some_date) values (42, 'cassoulet', $*::datetime, $*::timestamp, $*::time, $*::date);
+            insert into type_test (foo, bar, baz, some_ts, some_time, some_date) values ($*::int4, $*::varchar, $*::datetime, $*::timestamp, $*::time, $*::date);
         ", [
+            42,
+            'cassoulet',
             \DateTime::createFromFormat('Y-m-d H:i:s', '1983-03-22 08:25:00'),
             \DateTime::createFromFormat('Y-m-d H:i:s', '1993-03-22 09:25:00'),
             \DateTime::createFromFormat('Y-m-d H:i:s', '2003-03-22 10:25:00'),
@@ -81,25 +73,5 @@ class PDOResultIteratorTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('timestamp', $results->getFieldType('baz'));
         $this->assertSame('some_time', $results->getFieldName(3));
         $this->assertSame('time', $results->getFieldType('some_time'));
-
-        // and a simple query
-        return;
-
-        $results = $session
-            ->getQueryManager()
-            ->query(
-                "select $*::varchar as foo, $*::int4 as bar, $*::timestamp as baz, $*::timestamp as fux",
-                ["cassoulet", "12", \DateTime::createFromFormat('Y-m-d H:i:s', '1983-03-22 08:25:00'), \DateTime::createFromFormat('Y-m-d H:i:s', '1983-03-22 08:25:00')]
-            )
-        ;
-
-        assert(count($results) === 1);
-
-        foreach ($results as $result) {
-            assert(is_string($result['foo']));
-            assert(is_int($result['bar']));
-            assert($result['baz'] instanceof \DateTime && '1983-03-22 08:25:00' === $result['baz']->format('Y-m-d H:i:s'));
-            assert($result['baz'] instanceof \DateTime && '08:25:00' === $result['baz']->format('H:i:s'));
-        }
     }
 }

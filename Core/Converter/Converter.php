@@ -3,7 +3,7 @@
 namespace Momm\Core\Converter;
 
 use Momm\Core\DebuggableTrait;
-use Momm\Core\Converter\Impl\NullConverter;
+use Momm\Core\Converter\Impl\StringConverter;
 
 class Converter implements ConverterInterface
 {
@@ -17,14 +17,28 @@ class Converter implements ConverterInterface
     /**
      * @var ConverterInterface
      */
-    private $nullConverter;
+    private $fallback;
 
     /**
      * Default constructor
      */
     public function __construct()
     {
-        $this->nullConverter = new NullConverter();
+        $this->setFallback(new StringConverter());
+    }
+
+    /**
+     * Set fallback converter
+     *
+     * @param string $fallback
+     *
+     * @return $this
+     */
+    public function setFallback(ConverterInterface $converter)
+    {
+        $this->fallback = $converter;
+
+        return $this;
     }
 
     /**
@@ -32,6 +46,8 @@ class Converter implements ConverterInterface
      *
      * @param string|string[] $type
      * @param ConverterInterface $instance
+     *
+     * @return $this
      */
     public function register($types, ConverterInterface $instance)
     {
@@ -52,6 +68,8 @@ class Converter implements ConverterInterface
 
             $this->converters[$type] = $instance;
         }
+
+        return $this;
     }
 
     /**
@@ -64,11 +82,11 @@ class Converter implements ConverterInterface
     final protected function get($type)
     {
         if (!isset($this->converters[$type])) {
-            if ($this->debug) {
+            if ($this->debug || !$this->fallback) {
                 throw new \InvalidArgumentException(sprintf("no converted registered for type '%s'", $type));
             }
 
-            return $this->nullConverter;
+            return $this->fallback;
         }
 
         return $this->converters[$type];

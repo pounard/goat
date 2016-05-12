@@ -23,6 +23,9 @@ class StringConverter implements ConverterInterface, ConnectionAwareInterface
      */
     public function extract($type, $value)
     {
+        if (!$this->connection) {
+            throw new \LogicException(sprintf("I won't let you escape any string without any viable API to escape it, this is a serious security issue."));
+        }
         return (string)$this->connection->escapeLiteral($value);
     }
 
