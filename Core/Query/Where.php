@@ -2,6 +2,9 @@
 
 namespace Momm\Core\Query;
 
+/**
+ * Where represents the selection of the SQL query
+ */
 class Where
 {
     use WhereTrait;
@@ -271,7 +274,7 @@ class Where
 
                     case self::BETWEEN:
                     case self::NOT_BETWEEN:
-                        $output[] = sprintf('%s %s %s and %s', $column, $operator, $value[0], $value[1]);
+                        $output[] = sprintf('%s %s $* and $*', $column, $operator);
                         $this->mergeArguments($value);
                         break;
 

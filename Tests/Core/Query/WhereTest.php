@@ -6,6 +6,8 @@ use Momm\Core\Query\Where;
 
 class WhereTest extends \PHPUnit_Framework_TestCase
 {
+    use SqlTestTrait;
+
     public function testWhere()
     {
         $where = (new Where())
@@ -46,53 +48,47 @@ class WhereTest extends \PHPUnit_Framework_TestCase
                 ->condition('d', -69, Where::LESS_OR_EQUAL)
             ->close()
             ->isNull('roger')
-            ->condition('tabouert', 'cassoulet')
+            ->condition('tabouret', 'cassoulet')
             ->open(Where::OR_STATEMENT)
                 ->condition('test', 1)
                 ->condition('other', ['this', 'is', 'an array'])
             ->close()
         ;
 
-        $expected = <<<EOT
-            foo <> $*
-            and foo = $*
-            and baz in ($*, $*, $*)
-            and range_a between $* and $*
-            and range_b not between $* and $*
-            and baz not in ($*, $*, $*)
-            and (
-                theWorld is not $*
-                or count(theWorld) = $*::int4
-                or (
-                    1 = $*
-                    and 2 * 2 = $*
-                )
-            )
-            and (
-                beta between $* and $*
-                and gamma not between $* and $* 
-            )
-            and (
-                a > $*
-                b >= $*
-                c < $*
-                d <= $*
-            )
-            and roger is null
-            and tabouert = $*
-            and (
-                test = $*
-                or other in ($*, $*, $*)
-            )"
+        $reference = <<<EOT
+foo <> $*
+and foo = $*
+and baz in ($*, $*, $*)
+and range_a between $* and $*
+and range_b not between $* and $*
+and baz not in ($*, $*, $*)
+and (
+    theWorld is not $*
+    or count(theWorld) = $*::int4
+    or (
+        1 = $*
+        and 2 * 2 = $*
+    )
+)
+and (
+    beta between $* and $*
+    and gamma not between $* and $* 
+)
+and (
+    a > $*
+    and b >= $*
+    and c < $*
+    and d <= $*
+)
+and roger is null
+and tabouret = $*
+and (
+    test = $*
+    or other in ($*, $*, $*)
+)
 EOT;
 
-        // Remove all whitespaces, and lowercase everything to ensure our
-        // generation cruft don't change trigger false negatives
-        $sql = (string)$where;
-        $values = $where->getArguments();
-        $expected = trim(strtolower(preg_replace('@\s+@', ' ', $sql)));
-        $actual = trim(strtolower(preg_replace('@\s+@', ' ', $sql)));
-        $this->assertSame($expected, $actual);
+        $this->assertSameSql($reference, (string)$where);
 
         // And now the exact same where, using convenience methods
         $where = (new Where())
@@ -123,7 +119,7 @@ EOT;
                 ->isLessOrEqual('d', -69)
             ->end()
             ->isNull('roger')
-            ->isEqual('tabouert', 'cassoulet')
+            ->isEqual('tabouret', 'cassoulet')
             ->orStatement()
                 ->isEqual('test', 1)
                 ->isIn('other', ['this', 'is', 'an array'])
@@ -131,9 +127,6 @@ EOT;
         ;
 
         // Expected is the exact same
-        $sql = (string)$where;
-        $values = $where->getArguments();
-        $actual = trim(strtolower(preg_replace('@\s+@', ' ', $sql)));
-        $this->assertSame($expected, $actual);
+        $this->assertSameSql($reference, (string)$where);
     }
 }
