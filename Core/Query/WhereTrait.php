@@ -166,4 +166,28 @@ trait WhereTrait
     {
         return $this->condition($column, null, Where::NOT_IS_NULL);
     }
+
+    /**
+     * Open an and clause
+     */
+    public function andStatement()
+    {
+        return $this->open(Where::AND_STATEMENT);
+    }
+
+    /**
+     * Open an or clause
+     */
+    public function orStatement()
+    {
+        return $this->open(Where::OR_STATEMENT);
+    }
+
+    /**
+     * Alias of ::close()
+     */
+    public function end()
+    {
+        return $this->close();
+    }
 }

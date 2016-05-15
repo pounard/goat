@@ -15,6 +15,9 @@ class WhereTest extends \PHPUnit_Framework_TestCase
             ->condition('foo', 'foo')
             // Will turn into a 'in' operator
             ->condition('baz', [1, 2, 3])
+            // Between and not between operators
+            ->condition('range_a', [12, 24], Where::BETWEEN)
+            ->condition('range_b', [48, 96], Where::NOT_BETWEEN)
             // Expliciti 'not in' operator
             ->condition('baz', [4, 5, 6], Where::NOT_IN)
             // We will build something here
@@ -54,6 +57,8 @@ class WhereTest extends \PHPUnit_Framework_TestCase
             foo <> $*
             and foo = $*
             and baz in ($*, $*, $*)
+            and range_a between $* and $*
+            and range_b not between $* and $*
             and baz not in ($*, $*, $*)
             and (
                 theWorld is not $*
@@ -94,33 +99,35 @@ EOT;
             ->isNotEqual('foo', 'bar')
             ->isEqual('foo', 'foo')
             ->isEqual('baz', [1, 2, 3])
+            ->isBetween('range_a', 12, 24)
+            ->isNotBetween('range_b', 48, 96)
             ->isNotIn('baz', [4, 5, 6])
-            ->open(Where::OR_STATEMENT)
+            ->orStatement()
                 // Custom operator cannot have a convenience method
                 ->condition('theWorld', 'enough', 'is not')
                 // Statement is statement, no surprises
                 ->statement('count(theWorld) = $*::int4', [1])
-                ->open()
+                ->andStatement()
                     ->isEqual('1', 0)
                     ->isEqual('2 * 2', 5)
-                ->close()
-            ->close()
-            ->open()
+                ->end()
+            ->end()
+            ->andStatement()
                 ->isBetween('beta', 37, 42)
                 ->isNotBetween('gamma', 123, 234)
-            ->close()
-            ->open()
+            ->end()
+            ->andStatement()
                 ->isGreater('a', -66)
                 ->isGreaterOrEqual('b', -67)
                 ->isLess('c', -68)
                 ->isLessOrEqual('d', -69)
-            ->close()
+            ->end()
             ->isNull('roger')
             ->isEqual('tabouert', 'cassoulet')
-            ->open(Where::OR_STATEMENT)
+            ->orStatement()
                 ->isEqual('test', 1)
                 ->isIn('other', ['this', 'is', 'an array'])
-            ->close()
+            ->end()
         ;
 
         // Expected is the exact same

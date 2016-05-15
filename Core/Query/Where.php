@@ -148,6 +148,10 @@ class Where
             if (is_array($value)) {
                 $operator = self::NOT_IN;
             }
+        } else if (self::BETWEEN === $operator || self::NOT_BETWEEN === $operator) {
+            if (!is_array($value) || 2 !== count($value)) {
+                throw new \InvalidArgumentException("between and not between operators needs exactly 2 values");
+            }
         }
 
         $this->conditions[] = [$column, $value, $operator];
@@ -262,6 +266,12 @@ class Where
                     case self::IN:
                     case self::NOT_IN:
                         $output[] = sprintf('%s %s (%s)', $column, $operator, $this->createPlaceholders($value));
+                        $this->mergeArguments($value);
+                        break;
+
+                    case self::BETWEEN:
+                    case self::NOT_BETWEEN:
+                        $output[] = sprintf('%s %s %s and %s', $column, $operator, $value[0], $value[1]);
                         $this->mergeArguments($value);
                         break;
 
