@@ -123,7 +123,7 @@ class EntityStructure
                 throw new \InvalidArgumentException(sprintf("unknown field '%s' for entity '%s'", $name));
             }
 
-            $ret[$name] = $entity->{$name};
+            $ret[$name] = $entity->get($name);
         }
 
         return $ret;
@@ -296,6 +296,10 @@ class EntityStructure
      */
     public function getRelation()
     {
+        if (!$this->relation) {
+            throw new \LogicException("structure has no relation set");
+        }
+
         return $this->relation;
     }
 
