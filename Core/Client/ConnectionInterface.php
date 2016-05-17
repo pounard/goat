@@ -41,6 +41,8 @@ interface ConnectionInterface extends ConverterAwareInterface
      *   Query parameters
      * @param boolean $enableConverters
      *   If set to false, converters would be disabled
+     *
+     * @return ResultIteratorInterface
      */
     public function query($sql, array $parameters = [], $enableConverters = true);
 
@@ -64,6 +66,8 @@ interface ConnectionInterface extends ConverterAwareInterface
      *   Query unique identifier
      * @param mixed[] $parameters
      *   Query parameters
+     *
+     * @return ResultIteratorInterface
      */
     public function executePreparedQuery($identifier, array $parameters = []);
 
