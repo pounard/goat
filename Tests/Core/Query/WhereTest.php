@@ -136,7 +136,7 @@ EOT;
 
         // Where is empty
         $this->assertTrue($where->isEmpty());
-        $this->assertSameSql("1 = 1", (string)$where);
+        $this->assertSameSql("1", (string)$where);
 
         // Where is not empty anymore
         $where->isNotNull('a');
@@ -146,7 +146,7 @@ EOT;
         // Statement is empty
         $statement = $where->andStatement();
         $this->assertTrue($statement->isEmpty());
-        $this->assertSameSql("1 = 1", (string)$statement);
+        $this->assertSameSql("1", (string)$statement);
 
         // Statement is ignored, because empty
         $this->assertSameSql("a is not null", (string)$where);

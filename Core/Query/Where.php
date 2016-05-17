@@ -252,12 +252,13 @@ class Where
         if (null !== $this->sql) {
             return $this->sql;
         }
-        if ($this->isEmpty()) {
-            // Definitely legit
-            return '1 = 1';
-        }
 
         $this->arguments = [];
+
+        if ($this->isEmpty()) {
+            // Definitely legit
+            return '1';
+        }
 
         foreach ($this->conditions as $condition) {
             if ($condition instanceof Where) {
