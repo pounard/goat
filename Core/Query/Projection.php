@@ -4,10 +4,13 @@ namespace Momm\Core\Query;
 
 /**
  * A projection, as the name states, represent the projection of the SQL query
+ *
+ * @todo I think it would need a dependency over the connection to be able to
+ *   escape identifiers correctly, we'll see that later
  */
 class Projection
 {
-    protected $tableAlias = null;
+    protected $relationAlias = null;
     protected $fields = [];
     protected $types = [];
 
@@ -16,9 +19,23 @@ class Projection
      *
      * @param string $tableAlias
      */
-    public function __construct($tableAlias = null)
+    public function __construct($relationAlias = null)
     {
-        $this->tableAlias = $tableAlias;
+        $this->relationAlias = $relationAlias;
+    }
+
+    /**
+     * Set relation alias
+     *
+     * @param string $relationAlias
+     *
+     * @return $this
+     */
+    public function setRelationAlias($relationAlias)
+    {
+        $this->relationAlias = $relationAlias;
+
+        return $this;
     }
 
     /**
@@ -142,12 +159,12 @@ class Projection
      *
      * @return string
      */
-    public function format($tableAlias = null)
+    public function format()
     {
         $output = [];
 
         foreach ($this->fields as $alias => $statement) {
-            $statement = $this->replaceToken($statement, $this->tableAlias);
+            $statement = $this->replaceToken($statement, $this->relationAlias);
             $output[] = $statement . ' as ' . $alias;
         }
 
@@ -169,18 +186,19 @@ class Projection
      *
      * @param string $string
      *   Arbitrary field statement
-     * @param string $prefix
+     * @param string $relationAlias
      *   Table alias if any
      *
      * @return string
      */
-    protected function replaceToken($string, $tableAlias)
+    protected function replaceToken($string, $relationAlias)
     {
         return preg_replace_callback(
             '/%:(\w.*):%/U',
-            function (array $matches) use ($tableAlias) {
-                if ($tableAlias) {
-                    return sprintf('%s%s', $tableAlias, addcslashes($matches[1], '"\\'));
+            function (array $matches) use ($relationAlias) {
+                // @todo remove those addcslashes, it must happen via ConnectionInterface::escapeIdentifier()
+                if ($relationAlias) {
+                    return sprintf('%s.%s', $relationAlias, addcslashes($matches[1], '"\\'));
                 } else {
                     return sprintf('%s', addcslashes($matches[1], '"\\'));
                 }

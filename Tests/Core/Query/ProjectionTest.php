@@ -8,7 +8,7 @@ class ProjectionTest extends \PHPUnit_Framework_TestCase
 {
     use SqlTestTrait;
 
-    public function testProjection()
+    public function testProjectionBasics()
     {
         $projection = (new Projection())
             ->setField('foo')
@@ -24,8 +24,52 @@ cassoulet as baz,
 tabouret as roger
 EOT;
 
-        // Remove all whitespaces, and lowercase everything to ensure our
-        // generation cruft don't change trigger false negatives
+        $this->assertSameSql($reference, (string)$projection);
+    }
+
+    public function testProjectionStatementAndTokenReplace()
+    {
+        $projection = (new Projection())
+            ->setRelationAlias('some_table')
+            ->setField('age', 'age(%:birthdate:%)')
+            ->setField('birthdate')
+            ->setField('total', 'count(%:id:%)')
+        ;
+
+        $reference = <<<EOT
+age(some_table.birthdate) as age,
+some_table.birthdate as birthdate,
+count(some_table.id) as total
+EOT;
+
+        $this->assertSameSql($reference, (string)$projection);
+    }
+
+    public function testProjectionRelationAliasing()
+    {
+        $projection = (new Projection('my_relation'))
+            ->setField('foo')
+            ->setField('bar', null, 'int4')
+        ;
+
+        $reference = <<<EOT
+my_relation.foo as foo,
+my_relation.bar as bar
+EOT;
+
+        $this->assertSameSql($reference, $projection->format());
+
+        $projection = (new Projection())
+            ->setRelationAlias('and_another_one')
+            ->setField('john')
+            ->setField('doe')
+        ;
+
+        $reference = <<<EOT
+and_another_one.john as john,
+and_another_one.doe as doe
+EOT;
+
         $this->assertSameSql($reference, (string)$projection);
     }
 }
