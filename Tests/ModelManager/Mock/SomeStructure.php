@@ -10,6 +10,7 @@ class SomeStructure extends EntityStructure
     {
         $this
             ->setEntityClass(SomeEntity::class)
+            ->setRelation('some_entity')
             ->setPrimaryKey(['id'])
             ->addField('foo', 'int4')
             ->addField('bar', 'varchar')
