@@ -2,10 +2,16 @@
 
 namespace Momm\ModelManager;
 
-use PommProject\ModelManager\Model\Projection;
+use Momm\Core\Query\Where;
+use Momm\Core\Client\ConnectionInterface;
 
 class ReadonlyModel
 {
+    /**
+     * @var ConnectionInterface
+     */
+    protected $connection;
+
     /**
      * @var EntityStructure
      */
@@ -16,8 +22,9 @@ class ReadonlyModel
      *
      * @param EntityStructure $structure
      */
-    public function __construct(EntityStructure $structure)
+    public function __construct(ConnectionInterface $connection, EntityStructure $structure)
     {
+        $this->connection = $connection;
         $this->structure = $structure;
     }
 
@@ -32,143 +39,182 @@ class ReadonlyModel
     }
 
     /**
-     * findAll
+     * Creates projection based on structure fields
      *
-     * Return all elements from a relation. If a suffix is given, it is append
-     * to the query. This is mainly useful for "order by" statements.
-     * NOTE: suffix is inserted as is with NO ESCAPING. DO NOT use it to place
-     * "where" condition nor any untrusted params.
-     *
-     * @access public
-     * @param  string             $suffix
-     * @return CollectionIterator
+     * @return Projection
      */
-    public function findAll($suffix = null)
+    final public function createProjection()
     {
+        return new Projection($this->structure);
+    }
+
+    /**
+     * Execute query and return entities
+     *
+     * @param string $sql
+     * @param array $values
+     * @param Projection $projection
+     *
+     * @return EntityInterface[]
+     */
+    protected function query($sql, array $values = [], Projection $projection = null)
+    {
+        if ($projection === null) {
+            $projection = $this->createProjection();
+        }
+
+        $result = $this->connection->query($sql, $values);
+
+        return new EntityIterator($result, $this->structure);
+    }
+
+    /**
+     * Find entities using SQL suffix
+     *
+     * Return all elements from a relation. 
+     *
+     * @param Where $where
+     *   Either an array of values (as conditions) or a Where instance
+     * @param string $suffix
+     *   If given, it is append to the query. This is mainly useful for
+     *   "order by" statements.
+     *   NOTE: suffix is inserted as is with NO ESCAPING. DO NOT use it to place
+     *   "where" condition nor any untrusted params.
+     *
+     * @return EntityInterface[]
+     */
+    public function findAll(Where $where = null, $suffix = '')
+    {
+        if ($where) {
+              $sql = strtr(
+                  "select :projection from :relation where :condition :suffix",
+                  [
+                      ':projection' => $this->createProjection(),
+                      ':relation'   => $this->getStructure()->getRelation(),
+                      ':condition'  => $where,
+                      ':suffix'     => $suffix,
+                  ]
+              );
+              $args = $where->getArguments();
+        } else {
+            $sql = strtr(
+                "select :projection from :relation :suffix",
+                [
+                    ':projection' => $this->createProjection(),
+                    ':relation'   => $this->getStructure()->getRelation(),
+                    ':suffix'     => $suffix,
+                ]
+            );
+            $args = [];
+        }
+
+        return $this->query($sql, $args);
+    }
+
+    /**
+     * Load single instance using primary key
+     *
+     * @param mixed|mixed[] $primaryKey
+     *   If primary key is a single column, you may pass a single value here
+     *   but for all other cases you must pass an array of values, keyed using
+     *   the primary key column names
+     *
+     * @return EntityInterface
+     */
+    public function findByPK($primaryKey)
+    {
+        $definition = $this->structure->getPrimaryKey();
+
+        $where = new Where();
+
+        // @todo validate primary key
+        if (!is_array($primaryKey)) {
+            if (1 < count($definition)) {
+                throw new \InvalidArgumentException(sprintf("primary key %d multiple columns, only 1 given", count($definition)));
+            }
+
+            $where = new Where();
+            $where->addWhere(reset($definition), $primaryKey, '=');
+        } else {
+            // @todo I don't like this
+            $this->checkPrimaryKey($primaryKey);
+
+            foreach ($primaryKey as $column => $value) {
+                $where->addWhere($column, $value, '=');
+            }
+        }
+
         $sql = strtr(
-            "select :fields from :table :suffix",
+            "select :projection from :relation where :condition :suffix limit 1 offset 0",
             [
-                ':fields' => $this->createProjection()->formatFieldsWithFieldAlias(),
-                ':table'  => $this->getStructure()->getRelation(),
-                ':suffix' => $suffix,
+                ':projection' => $this->createProjection(),
+                ':relation'   => $this->getStructure()->getRelation(),
+                ':condition'  => $where,
             ]
         );
 
-        return $this->query($sql);
+        $iterator = $this->query($sql, $where->getValues());
+
+        return empty($iterator) ? null : current($iterator);
     }
 
     /**
-     * findWhere
+     * Return the number of records matching a condition
      *
-     * Perform a simple select on a given condition
-     * NOTE: suffix is inserted as is with NO ESCAPING. DO NOT use it to place
-     * "where" condition nor any untrusted params.
+     * @param Where $where
+     * @param array $values
      *
-     * @access public
-     * @param  mixed              $where
-     * @param  array              $values
-     * @param  string             $suffix order by, limit, etc.
-     * @return CollectionIterator
-     */
-    public function findWhere($where, array $values = [], $suffix = '')
-    {
-        if (!$where instanceof Where) {
-            $where = new Where($where, $values);
-        }
-
-        return $this->query($this->getFindWhereSql($where, $this->createProjection(), $suffix), $where->getValues());
-    }
-
-    /**
-     * findByPK
-     *
-     * Return an entity upon its primary key. If no entities are found, null is
-     * returned.
-     *
-     * @access public
-     * @param  array          $primary_key
-     * @return FlexibleEntityInterface
-     */
-    public function findByPK(array $primary_key)
-    {
-        $where = $this
-            ->checkPrimaryKey($primary_key)
-            ->getWhereFrom($primary_key)
-            ;
-
-        $iterator = $this->findWhere($where);
-
-        return $iterator->isEmpty() ? null : $iterator->current();
-    }
-
-    /**
-     * countWhere
-     *
-     * Return the number of records matching a condition.
-     *
-     * @access public
-     * @param  string|Where $where
-     * @param  array        $values
      * @return int
      */
-    public function countWhere($where, array $values = [])
+    public function countWhere(Where $where)
     {
-        $sql = sprintf(
-            "select count(*) as result from %s where :condition",
-            $this->getStructure()->getRelation()
+        $sql = strtr(
+            "select count(*) as result from :relation where :condition",
+            [
+                ':relation'   => $this->getStructure()->getRelation(),
+                ':condition'  => $where,
+            ]
         );
 
-        return $this->fetchSingleValue($sql, $where, $values);
+        return (int)$this->fetchSingleValue($sql, $where);
     }
 
     /**
-     * existWhere
+     * Check if rows matching the given condition do exist or not
      *
-     * Check if rows matching the given condition do exist or not.
+     * @param mixed $where
+     * @param array $values
      *
-     * @access public
-     * @param  mixed $where
-     * @param  array $values
      * @return bool
      */
-    public function existWhere($where, array $values = [])
+    public function existWhere(Where $where)
     {
-        $sql = sprintf(
-            "select exists (select true from %s where :condition) as result",
-            $this->getStructure()->getRelation()
+        $sql = strtr(
+            "select exists (select 1 from :relation where :condition) as result",
+            [
+                ':relation'   => $this->getStructure()->getRelation(),
+                ':condition'  => $where,
+            ]
         );
 
-        return $this->fetchSingleValue($sql, $where, $values);
+        return (bool)$this->fetchSingleValue($sql, $where);
     }
 
     /**
-     * fetchSingleValue
+     * Fetch a single value from the first row
      *
-     * Fetch a single value named « result » from a query.
-     * The query must be formatted with ":condition" as WHERE condition
-     * placeholder. If the $where argument is a string, it is turned into a
-     * Where instance.
+     * @param string  $sql
+     * @param Where $where
      *
-     * @access protected
-     * @param  string       $sql
-     * @param  mixed        $where
-     * @param  array        $values
      * @return mixed
      */
-    protected function fetchSingleValue($sql, $where, array $values)
+    protected function fetchSingleValue($sql, Where $where)
     {
-        if (!$where instanceof Where) {
-            $where = new Where($where, $values);
+        $result = $this->connection->query($sql, $where->getArguments());
+
+        foreach ($result as $row) {
+            return reset($row);
         }
-
-        $sql = str_replace(":condition", (string) $where, $sql);
-
-        return $this
-            ->getSession()
-            ->getClientUsingPooler('query_manager', '\PommProject\Foundation\PreparedQuery\PreparedQueryManager')
-            ->query($sql, $where->getValues())
-            ->current()['result']
-            ;
     }
 
     /**
@@ -182,7 +228,7 @@ class ReadonlyModel
      * @param  int      $page
      * @param  string   $suffix
      * @return Pager
-     */
+     *
     public function paginateFindWhere(Where $where, $item_per_page, $page = 1, $suffix = '')
     {
         $projection = $this->createProjection();
@@ -196,6 +242,7 @@ class ReadonlyModel
             $projection
         );
     }
+     */
 
     /**
      * paginateQuery
@@ -213,7 +260,7 @@ class ReadonlyModel
      * @param   Projection   $projection
      * @throws  \InvalidArgumentException if pager args are invalid.
      * @return  Pager
-     */
+     *
     protected function paginateQuery($sql, array $values, $count, $item_per_page, $page = 1, Projection $projection = null)
     {
         if ($page < 1) {
@@ -242,6 +289,7 @@ class ReadonlyModel
             $page
         );
     }
+     */
 
     /**
      * getFindWhereSql
@@ -254,7 +302,7 @@ class ReadonlyModel
      * @param  Projection   $projection
      * @param  string       $suffix
      * @return string
-     */
+     *
     protected function getFindWhereSql(Where $where, Projection $projection, $suffix = '')
     {
         return strtr(
@@ -267,14 +315,12 @@ class ReadonlyModel
             ]
         );
     }
+     */
 
     /**
-     * hasPrimaryKey
-     *
      * Check if model has a primary key
      *
-     * @access protected
-     * @return bool
+     * @return boolean
      */
     protected function hasPrimaryKey()
     {
@@ -284,30 +330,23 @@ class ReadonlyModel
     }
 
     /**
-     * checkPrimaryKey
+     * Check if the given values fully describe a primary key
      *
-     * Check if the given values fully describe a primary key. Throw a
-     * ModelException if not.
+     * @param array $values
      *
-     * @access private
-     * @param  array $values
-     * @throws ModelException
      * @return $this
+     *
+     * @throws \InvalidArgumentException
      */
     protected function checkPrimaryKey(array $values)
     {
         if (!$this->hasPrimaryKey()) {
-            throw new ModelException(
-                sprintf(
-                    "Attached structure '%s' has no primary key.",
-                    get_class($this->getStructure())
-                )
-            );
+            throw new \InvalidArgumentException("Attached structure has no primary key.");
         }
 
         foreach ($this->getStructure()->getPrimaryKey() as $key) {
             if (!isset($values[$key])) {
-                throw new ModelException(
+                throw new \InvalidArgumentException(
                     sprintf(
                         "Key '%s' is missing to fully describes the primary key {%s}.",
                         $key,
@@ -316,176 +355,6 @@ class ReadonlyModel
                 );
             }
         }
-
-        return $this;
-    }
-
-    /**
-     * getWhereFrom
-     *
-     * Build a condition on given values.
-     *
-     * @access protected
-     * @param  array $values
-     * @return Where
-     */
-    protected function getWhereFrom(array $values)
-    {
-        $where = new Where();
-
-        foreach ($values as $field => $value) {
-            $where->andWhere(
-                sprintf(
-                    "%s = $*::%s",
-                    $this->escapeIdentifier($field),
-                    $this->getStructure()->getTypeFor($field)
-                ),
-                [$value]
-            );
-        }
-
-        return $where;
-    }
-
-    /**
-     * query
-     *
-     * Execute the given query and return a Collection iterator on results. If
-     * no projections are passed, it will use the default projection using
-     * createProjection() method.
-     *
-     * @access protected
-     * @param  string             $sql
-     * @param  array              $values
-     * @param  Projection         $projection
-     * @return CollectionIterator
-     */
-    protected function query($sql, array $values = [], Projection $projection = null)
-    {
-        if ($projection === null) {
-            $projection = $this->createProjection();
-        }
-
-        $result = $this
-            ->getSession()
-            ->getClientUsingPooler('prepared_query', $sql)
-            ->execute($values)
-            ;
-
-        $collection = new CollectionIterator(
-            $result,
-            $this->getSession(),
-            $projection
-        );
-
-        return $collection;
-    }
-
-    /**
-     * createDefaultProjection
-     *
-     * This method creates a projection based on the structure definition of
-     * the underlying relation. It may be used to shunt parent createProjection
-     * call in inherited classes.
-     * This method can be used where a projection that sticks to table
-     * definition is needed like recursive CTEs. For normal projections, use
-     * createProjection instead.
-     *
-     * @access public
-     * @return Projection
-     */
-    final public function createDefaultProjection()
-    {
-        return new Projection($this->flexible_entity_class, $this->structure->getDefinition());
-    }
-
-    /**
-     * createProjection
-     *
-     * This is a helper to create a new projection according to the current
-     * structure.Overriding this method will change projection for all models.
-     *
-     * @access  public
-     * @return  Projection
-     */
-    public function createProjection()
-    {
-        return $this->createDefaultProjection();
-    }
-
-    /**
-     * checkFlexibleEntity
-     *
-     * Check if the given entity is an instance of this model's flexible class.
-     * If not an exception is thrown.
-     *
-     * @access protected
-     * @param  FlexibleEntityInterface $entity
-     * @throws \InvalidArgumentException
-     * @return Model          $this
-     */
-    protected function checkFlexibleEntity(FlexibleEntityInterface $entity)
-    {
-        if (!($entity instanceof $this->flexible_entity_class)) {
-            throw new \InvalidArgumentException(sprintf(
-                "Entity class '%s' is not a '%s'.",
-                get_class($entity),
-                $this->flexible_entity_class
-            ));
-        }
-
-        return $this;
-    }
-
-    /**
-     * escapeLiteral
-     *
-     * Handy method to escape strings.
-     *
-     * @access protected
-     * @param  string $string
-     * @return string
-     */
-    protected function escapeLiteral($string)
-    {
-        return $this
-            ->getSession()
-            ->getConnection()
-            ->escapeLiteral($string);
-    }
-
-    /**
-     * escapeLiteral
-     *
-     * Handy method to escape strings.
-     *
-     * @access protected
-     * @param  string $string
-     * @return string
-     */
-    protected function escapeIdentifier($string)
-    {
-        return $this
-            ->getSession()
-            ->getConnection()
-            ->escapeIdentifier($string);
-    }
-
-    /**
-     * executeAnonymousQuery
-     *
-     * Handy method for DDL statements.
-     *
-     * @access protected
-     * @param  string $sql
-     * @return Model  $this
-     */
-    protected function executeAnonymousQuery($sql)
-    {
-        $this
-            ->getSession()
-            ->getConnection()
-            ->executeAnonymousQuery($sql);
 
         return $this;
     }
