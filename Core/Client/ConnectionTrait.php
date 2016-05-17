@@ -55,9 +55,10 @@ trait ConnectionTrait
     {
         $map = $this->getParametersType($sql);
 
-        if (count($map) !== count($parameters)) {
-            throw new \InvalidArgumentException("parameter count does not match query");
-        }
+        // We can not and will not check for count($map) being the same as
+        // count($parameters) since you might more than one occurence of
+        // $* or $*:: with the same type or no type, $map will merge those
+        // and the later algorithm replace them only once!
 
         $replacements = [];
 
