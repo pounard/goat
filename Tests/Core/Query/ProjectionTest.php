@@ -19,8 +19,8 @@ class ProjectionTest extends \PHPUnit_Framework_TestCase
 
         $reference = <<<EOT
 foo as foo,
-bar::int4 as bar,
-cassoulet::varchar as baz,
+bar as bar,
+cassoulet as baz,
 tabouret as roger
 EOT;
 

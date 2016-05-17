@@ -148,12 +148,7 @@ class Projection
 
         foreach ($this->fields as $alias => $statement) {
             $statement = $this->replaceToken($statement, $this->tableAlias);
-
-            if ($this->types[$alias]) {
-                $output[] = $statement . '::' . $this->types[$alias] . ' as ' . $alias;
-            } else {
-                $output[] = $statement . ' as ' . $alias;
-            }
+            $output[] = $statement . ' as ' . $alias;
         }
 
         return implode(', ', $output);
