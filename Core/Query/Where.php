@@ -74,6 +74,16 @@ class Where
     }
 
     /**
+     * Is this statement empty
+     *
+     * @return boolean
+     */
+    public function isEmpty()
+    {
+        return empty($this->conditions);
+    }
+
+    /**
      * For internal use only
      *
      * @param Where $parent
@@ -222,7 +232,7 @@ class Where
      */
     public function getArguments()
     {
-        if (null === $this->arguments) {
+        if (null === $this->sql) {
             $this->format();
         }
 
@@ -242,14 +252,20 @@ class Where
         if (null !== $this->sql) {
             return $this->sql;
         }
+        if ($this->isEmpty()) {
+            // Definitely legit
+            return '1 = 1';
+        }
 
         $this->arguments = [];
 
         foreach ($this->conditions as $condition) {
             if ($condition instanceof Where) {
 
-                $output[] = '(' . $condition->doFormat() . ')';
-                $this->mergeArguments($condition->getArguments());
+                if (!$condition->isEmpty()) {
+                    $output[] = '(' . $condition->doFormat() . ')';
+                    $this->mergeArguments($condition->getArguments());
+                }
 
             } else {
                 list($column, $value, $operator) = $condition;
@@ -301,10 +317,6 @@ class Where
      */
     public function format()
     {
-        if ($this->parent) {
-            throw new \LogicException("you cannot call format() on a sub-statement");
-        }
-
         return $this->doFormat();
     }
 

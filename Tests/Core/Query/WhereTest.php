@@ -129,4 +129,26 @@ EOT;
         // Expected is the exact same
         $this->assertSameSql($reference, (string)$where);
     }
+
+    public function testWhereWhenEmpty()
+    {
+        $where = (new Where());
+
+        // Where is empty
+        $this->assertTrue($where->isEmpty());
+        $this->assertSameSql("1 = 1", (string)$where);
+
+        // Where is not empty anymore
+        $where->isNotNull('a');
+        $this->assertFalse($where->isEmpty());
+        $this->assertSameSql("a is not null", (string)$where);
+
+        // Statement is empty
+        $statement = $where->andStatement();
+        $this->assertTrue($statement->isEmpty());
+        $this->assertSameSql("1 = 1", (string)$statement);
+
+        // Statement is ignored, because empty
+        $this->assertSameSql("a is not null", (string)$where);
+    }
 }
