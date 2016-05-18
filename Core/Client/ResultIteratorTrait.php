@@ -36,6 +36,27 @@ trait ResultIteratorTrait
     }
 
     /**
+     * Fetch given field in the first or current row
+     *
+     * @param string $name
+     *   If none given, just take the first one
+     *
+     * @return mixed[]
+     */
+    public function fetchField($name = null)
+    {
+        foreach ($this as $row) {
+            if ($name) {
+                if (!array_key_exists($name, $row)) {
+                    throw new \InvalidArgumentException("invalid column '%s'", $name);
+                }
+                return $row[$name];
+            }
+            return reset($row);
+        }
+    }
+
+    /**
      * Count rows
      *
      * @return int

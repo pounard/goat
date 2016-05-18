@@ -58,6 +58,16 @@ interface ResultIteratorInterface extends \IteratorAggregate, \Countable, Conver
     public function getFieldName($index);
 
     /**
+     * Fetch given field in the first or current row
+     *
+     * @param string $name
+     *   If none given, just take the first one
+     *
+     * @return mixed[]
+     */
+    public function fetchField($name = null);
+
+    /**
      * Fetch column
      *
      * @param string $name
