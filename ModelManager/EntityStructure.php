@@ -304,6 +304,16 @@ class EntityStructure
     }
 
     /**
+     * Does this project have a primary key
+     *
+     * @return boolean
+     */
+    public function hasPrimaryKey()
+    {
+        return !empty($this->primaryKey);
+    }
+
+    /**
      * Return the primary key definition.
      *
      * @return string[]

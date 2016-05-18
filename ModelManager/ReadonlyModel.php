@@ -2,8 +2,9 @@
 
 namespace Momm\ModelManager;
 
-use Momm\Core\Query\Where;
 use Momm\Core\Client\ConnectionInterface;
+use Momm\Core\Query\Where;
+use Momm\Core\Query\Pager;
 
 class ReadonlyModel
 {
@@ -55,14 +56,10 @@ class ReadonlyModel
      * @param array $values
      * @param Projection $projection
      *
-     * @return EntityInterface[]
+     * @return EntityIterator|EntityInterface[]
      */
     protected function query($sql, array $values = [], Projection $projection = null)
     {
-        if ($projection === null) {
-            $projection = $this->createProjection();
-        }
-
         $result = $this->connection->query($sql, $values);
 
         return new EntityIterator($result, $this->structure);
@@ -85,30 +82,21 @@ class ReadonlyModel
      */
     public function findAll(Where $where = null, $suffix = '')
     {
-        if ($where) {
-              $sql = strtr(
-                  "select :projection from :relation where :condition :suffix",
-                  [
-                      ':projection' => $this->createProjection(),
-                      ':relation'   => $this->getStructure()->getRelation(),
-                      ':condition'  => $where,
-                      ':suffix'     => $suffix,
-                  ]
-              );
-              $args = $where->getArguments();
-        } else {
-            $sql = strtr(
-                "select :projection from :relation :suffix",
-                [
-                    ':projection' => $this->createProjection(),
-                    ':relation'   => $this->getStructure()->getRelation(),
-                    ':suffix'     => $suffix,
-                ]
-            );
-            $args = [];
+        if (!$where) {
+            $where = new Where();
         }
 
-        return $this->query($sql, $args);
+        $sql = strtr(
+            "select :projection from :relation where :condition :suffix",
+            [
+                ':projection' => $this->createProjection(),
+                ':relation'   => $this->getStructure()->getRelation(),
+                ':condition'  => $where,
+                ':suffix'     => $suffix,
+            ]
+        );
+
+        return $this->query($sql, $where->getArguments());
     }
 
     /**
@@ -124,28 +112,25 @@ class ReadonlyModel
     public function findByPK($primaryKey)
     {
         $definition = $this->structure->getPrimaryKey();
-
         $where = new Where();
 
-        // @todo validate primary key
         if (!is_array($primaryKey)) {
             if (1 < count($definition)) {
                 throw new \InvalidArgumentException(sprintf("primary key %d multiple columns, only 1 given", count($definition)));
             }
 
             $where = new Where();
-            $where->addWhere(reset($definition), $primaryKey, '=');
+            $where->isEqual(reset($definition), $primaryKey);
         } else {
-            // @todo I don't like this
             $this->checkPrimaryKey($primaryKey);
 
             foreach ($primaryKey as $column => $value) {
-                $where->addWhere($column, $value, '=');
+                $where->isEqual($column, $value);
             }
         }
 
         $sql = strtr(
-            "select :projection from :relation where :condition :suffix limit 1 offset 0",
+            "select :projection from :relation where :condition limit 1 offset 0",
             [
                 ':projection' => $this->createProjection(),
                 ':relation'   => $this->getStructure()->getRelation(),
@@ -153,30 +138,37 @@ class ReadonlyModel
             ]
         );
 
-        $iterator = $this->query($sql, $where->getValues());
+        $result = $this->query($sql, $where->getArguments());
 
-        return empty($iterator) ? null : current($iterator);
+        foreach ($result as $entity) {
+            return $entity;
+        }
     }
 
     /**
      * Return the number of records matching a condition
      *
      * @param Where $where
-     * @param array $values
+     * @param string $suffix
      *
      * @return int
      */
-    public function countWhere(Where $where)
+    public function countWhere(Where $where = null, $suffix = '')
     {
+        if (!$where) {
+            $where = new Where();
+        }
+
         $sql = strtr(
-            "select count(*) as result from :relation where :condition",
+            "select count(*) as result from :relation where :condition :suffix",
             [
                 ':relation'   => $this->getStructure()->getRelation(),
                 ':condition'  => $where,
+                ':suffix'     => $suffix,
             ]
         );
 
-        return (int)$this->fetchSingleValue($sql, $where);
+        return (int)$this->query($sql, $where->getArguments())->fetchField();
     }
 
     /**
@@ -187,8 +179,12 @@ class ReadonlyModel
      *
      * @return bool
      */
-    public function existWhere(Where $where)
+    public function existWhere(Where $where = null, $suffix = '')
     {
+        if (!$where) {
+            $where = new Where();
+        }
+
         $sql = strtr(
             "select exists (select 1 from :relation where :condition) as result",
             [
@@ -197,136 +193,25 @@ class ReadonlyModel
             ]
         );
 
-        return (bool)$this->fetchSingleValue($sql, $where);
+        return (bool)$this->query($sql, $where->getArguments())->fetchField();
     }
 
     /**
-     * Fetch a single value from the first row
+     * Alias of ::findAll() but it will get you a nice pager
      *
-     * @param string  $sql
      * @param Where $where
-     *
-     * @return mixed
+     * @param string $suffix
+     * @param string $limit
+     * @param string $page
      */
-    protected function fetchSingleValue($sql, Where $where)
+    public function findAllWithPager(Where $where = null, $suffix = '', $limit = 100, $page = 1)
     {
-        $result = $this->connection->query($sql, $where->getArguments());
-
-        foreach ($result as $row) {
-            return reset($row);
-        }
-    }
-
-    /**
-     * paginateFindWhere
-     *
-     * Paginate a query.
-     *
-     * @access public
-     * @param  Where    $where
-     * @param  int      $item_per_page
-     * @param  int      $page
-     * @param  string   $suffix
-     * @return Pager
-     *
-    public function paginateFindWhere(Where $where, $item_per_page, $page = 1, $suffix = '')
-    {
-        $projection = $this->createProjection();
-
-        return $this->paginateQuery(
-            $this->getFindWhereSql($where, $projection, $suffix),
-            $where->getValues(),
-            $this->countWhere($where),
-            $item_per_page,
-            $page,
-            $projection
-        );
-    }
-     */
-
-    /**
-     * paginateQuery
-     *
-     * Paginate a SQL query.
-     * It is important to note it adds limit and offset at the end of the given
-     * query.
-     *
-     * @access  protected
-     * @param   string       $sql
-     * @param   array        $values parameters
-     * @param   int          $count
-     * @param   int          $item_per_page
-     * @param   int          $page
-     * @param   Projection   $projection
-     * @throws  \InvalidArgumentException if pager args are invalid.
-     * @return  Pager
-     *
-    protected function paginateQuery($sql, array $values, $count, $item_per_page, $page = 1, Projection $projection = null)
-    {
-        if ($page < 1) {
-            throw new \InvalidArgumentException(
-                sprintf("Page cannot be < 1. (%d given)", $page)
-            );
-        }
-
-        if ($item_per_page <= 0) {
-            throw new \InvalidArgumentException(
-                sprintf("'item_per_page' must be strictly positive (%d given).", $item_per_page)
-            );
-        }
-
-        $offset = $item_per_page * ($page - 1);
-        $limit  = $item_per_page;
-
         return new Pager(
-            $this->query(
-                sprintf("%s offset %d limit %d", $sql, $offset, $limit),
-                $values,
-                $projection
-            ),
-            $count,
-            $item_per_page,
+            $this->findAll($where, $suffix . sprintf(' limit %d offset %d', $limit, $limit * ($page - 1))),
+            $this->countWhere($where, $suffix),
+            $limit,
             $page
         );
-    }
-     */
-
-    /**
-     * getFindWhereSql
-     *
-     * This is the standard SQL query to fetch instances from the current
-     * relation.
-     *
-     * @access protected
-     * @param  Where        $where
-     * @param  Projection   $projection
-     * @param  string       $suffix
-     * @return string
-     *
-    protected function getFindWhereSql(Where $where, Projection $projection, $suffix = '')
-    {
-        return strtr(
-            'select :projection from :relation where :condition :suffix',
-            [
-                ':projection' => $projection->formatFieldsWithFieldAlias(),
-                ':relation'   => $this->getStructure()->getRelation(),
-                ':condition'  => (string) $where,
-                ':suffix'     => $suffix,
-            ]
-        );
-    }
-     */
-
-    /**
-     * Check if model has a primary key
-     *
-     * @return boolean
-     */
-    protected function hasPrimaryKey()
-    {
-        $primaryKeys = $this->getStructure()->getPrimaryKey();
-
-        return !empty($primaryKeys);
     }
 
     /**
@@ -334,23 +219,26 @@ class ReadonlyModel
      *
      * @param array $values
      *
-     * @return $this
-     *
      * @throws \InvalidArgumentException
      */
     protected function checkPrimaryKey(array $values)
     {
-        if (!$this->hasPrimaryKey()) {
-            throw new \InvalidArgumentException("Attached structure has no primary key.");
+        $primaryKey = $this->structure->getPrimaryKey();
+
+        if (!$primaryKey) {
+            throw new \InvalidArgumentException("structure has no primary key");
+        }
+        if (count($primaryKey) !== count($values)) {
+            throw new \InvalidArgumentException("primary key count mismatch");
         }
 
-        foreach ($this->getStructure()->getPrimaryKey() as $key) {
+        foreach ($this->structure->getPrimaryKey() as $key) {
             if (!isset($values[$key])) {
                 throw new \InvalidArgumentException(
                     sprintf(
-                        "Key '%s' is missing to fully describes the primary key {%s}.",
+                        "key '%s' is missing to fully describes the primary key (%s).",
                         $key,
-                        join(', ', $this->getStructure()->getPrimaryKey())
+                        implode(', ', $primaryKey)
                     )
                 );
             }

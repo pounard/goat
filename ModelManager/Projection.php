@@ -20,6 +20,13 @@ class Projection extends CoreProjection
         parent::__construct($tableAlias);
 
         if ($structure) {
+
+            if ($structure->hasPrimaryKey()) {
+                foreach ($structure->getPrimaryKey() as $column) {
+                    $this->setField($column);
+                }
+            }
+
             foreach ($structure->getDefinition() as $column => $type) {
                 $this->setField($column, null, $type);
             }
