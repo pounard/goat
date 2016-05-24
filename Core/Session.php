@@ -9,7 +9,17 @@ use Momm\Core\Converter\Impl\DecimalConverter;
 use Momm\Core\Converter\Impl\IntegerConverter;
 use Momm\Core\Converter\Impl\StringConverter;
 use Momm\Core\Converter\Impl\TimestampConverter;
+use Momm\Core\Client\PDO\PDOConnection;
 
+/**
+ * Session object is not mandatory, but stands as a commodity for whoever has
+ * no advanced service registration using a higher framework; it aims to provide
+ * auto-configuration and a centralized way to fetch components.
+ *
+ * @todo
+ *   - connection auto-configuration depending on provided dsn
+ *   - ?
+ */
 class Session
 {
     /**
@@ -25,11 +35,25 @@ class Session
     /**
      * Default constructor
      *
-     * @param ConnectionInterface $connection
+     * @param string|ConnectionInterface $connection
      */
-    public function __construct(ConnectionInterface $connection)
+    public function __construct($connection)
     {
-        $this->connection = $connection;
+        if ($connection instanceof ConnectionInterface) {
+            $this->connection = $connection;
+        } else {
+            // @todo
+            //   - as of now, we have only one implementation; PDO mysql but
+            //     later we should auto discover amongst implementations
+            //     dependending on the provided dsn
+            if (is_string($connection)) {
+                $this->connection = new PDOConnection($connection);
+            } else if (is_array($connection)) {
+                $this->connection = new PDOConnection($connection['dsn'], $connection['username'], $connection['password']);
+            } else {
+                throw new \InvalidArgumentException("invalid connection or dsn provided");
+            }
+        }
 
         $this->prepare();
     }
