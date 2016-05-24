@@ -14,16 +14,16 @@ class TimestampConverter implements ConverterInterface
     protected function formatDate($value)
     {
         if (!$value instanceof \DateTimeInterface) {
-            throw new \InvalidArgumentException(sprintf("given value is not instanceof \DateTimeInterface"));
+            throw new \InvalidArgumentException(sprintf("given value '%s' is not instanceof \DateTimeInterface", $value));
         }
 
         return $value->format(self::TS_FORMAT_DATE);
     }
 
-    protected function formatDateTime($value)
+    protected function formatTimestamp($value)
     {
         if (!$value instanceof \DateTimeInterface) {
-            throw new \InvalidArgumentException(sprintf("given value is not instanceof \DateTimeInterface"));
+            throw new \InvalidArgumentException(sprintf("given value '%s' is not instanceof \DateTimeInterface", $value));
         }
 
         return $value->format(self::TS_FORMAT);
@@ -39,7 +39,7 @@ class TimestampConverter implements ConverterInterface
             return $value->format(self::TS_FORMAT_TIME_INT);
         }
 
-        throw new \InvalidArgumentException(sprintf("given value is not instanceof \DateTimeInterface not \DateInterval"));
+        throw new \InvalidArgumentException(sprintf("given value '%s' is not instanceof \DateTimeInterface not \DateInterval", $value));
     }
 
     /**
@@ -67,9 +67,8 @@ class TimestampConverter implements ConverterInterface
             case 'date':
                 return $this->formatDate($value);
 
-            case 'datetime':
             case 'timestamp':
-                return $this->formatDateTime($value);
+                return $this->formatTimestamp($value);
 
             case 'time';
                 return $this->formatTime($value);

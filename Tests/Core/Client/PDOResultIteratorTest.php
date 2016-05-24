@@ -25,7 +25,7 @@ class PDOResultIteratorTest extends \PHPUnit_Framework_TestCase
             create temporary table type_test (
                 foo integer unsigned,
                 bar varchar(255),
-                baz datetime,
+                baz timestamp,
                 some_ts timestamp,
                 some_time time default null,
                 some_date date default null
@@ -34,7 +34,7 @@ class PDOResultIteratorTest extends \PHPUnit_Framework_TestCase
 
         // ensure table data has the right types
         $connection->query("
-            insert into type_test (foo, bar, baz, some_ts, some_time, some_date) values ($*::int4, $*::varchar, $*::datetime, $*::timestamp, $*::time, $*::date);
+            insert into type_test (foo, bar, baz, some_ts, some_time, some_date) values ($*::int4, $*::varchar, $*::timestamp, $*::timestamp, $*::time, $*::date);
         ", [
             42,
             'cassoulet',

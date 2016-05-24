@@ -43,9 +43,9 @@ class Session
             ->register(['varchar'], $default)
             // In MySQL there is no bytea, blob is more similar to text.
             ->register(['bytea'], $default)
-            ->register(['int', 'int2', 'int4', 'int8', 'numeric'], new IntegerConverter())
+            ->register(['int', 'int2', 'int4', 'int8', 'numeric', 'serial'], new IntegerConverter())
             ->register(['float4', 'float8'], new DecimalConverter())
-            ->register(['time', 'date', 'datetime', 'timestamp'], new TimestampConverter())
+            ->register(['date', 'time', 'timestamp'], new TimestampConverter())
             ->setFallback($default)
         ;
     }

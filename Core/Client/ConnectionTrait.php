@@ -9,34 +9,6 @@ trait ConnectionTrait
     use ConverterAwareTrait;
 
     /**
-     * Matches PostgreSQL compatible "$*::TYPE" identifiers in the query and
-     * return the list
-     *
-     * @param string $sql
-     *   Bare SQL
-     *
-     * @return string[]
-     *   Keys are the found identifier within the query, values are matched
-     *   data types
-     */
-    protected function getParametersType($sql)
-    {
-        $matches = [];
-        preg_match_all('/\$(\*|\d+)(?:::([\w\."]+(?:\[\])?)|)?/', $sql, $matches);
-
-        $ret = [];
-        foreach ($matches[0] as $i => $identifier) {
-            if ($matches[2]) {
-                $ret[$identifier] = str_replace('"', '', $matches[2][$i]);
-            } else {
-                $ret[$identifier] = null;
-            }
-        }
-
-        return $ret;
-    }
-
-    /**
      * Converts all PostgreSQL compatible "$*::TYPE" identifiers in the query
      *
      * This is necessary because we need PDOStatement to known about column
@@ -53,37 +25,40 @@ trait ConnectionTrait
      */
     protected function rewriteQueryAndParameters($sql, array $parameters)
     {
-        $map = $this->getParametersType($sql);
-
-        // We can not and will not check for count($map) being the same as
-        // count($parameters) since you might more than one occurence of
-        // $* or $*:: with the same type or no type, $map will merge those
-        // and the later algorithm replace them only once!
-
-        $replacements = [];
-
-        // This is necessary to be able to proceed in order
-        $parameters = array_values($parameters);
-
-        $index = 0;
-        foreach ($map as $original => $type) {
-
-            // PDO original placeholder
-            $replacement = '?';
-
-            if ($type) {
-                $parameters[$index] = $this->converter->extract($type, $parameters[$index]);
-
-                if ($this->converter->needsCast($type)) {
-                    $replacement = sprintf("cast(? as %s)", $this->converter->cast($type));
-                }
-            }
-
-            $replacements[$original] = $replacement;
-            $index++;
+        if (!$parameters) {
+            return [$sql, []];
         }
 
-        return [strtr($sql, $replacements), $parameters];
+        $index      = 0;
+        $parameters = array_values($parameters);
+
+        $sql = preg_replace_callback('/\$(\*|\d+)(?:::([\w\."]+(?:\[\])?)|)?/', function ($matches) use (&$parameters, &$index) {
+            $token = '?';
+
+            if (!array_key_exists($index, $parameters)) {
+                throw new \InvalidArgumentException(sprintf("Invalid parameter number bound"));
+            }
+
+            if ($matches[2]) { // Do we have a type?
+                $type = $matches[2];
+
+                $replacement = $parameters[$index];
+                $replacement = $this->converter->extract($type, $replacement);
+
+                if ($this->converter->needsCast($type)) {
+                    $token = sprintf("cast(? as %s)", $this->converter->cast($type));
+                }
+
+                $parameters[$index] = $replacement;
+            }
+
+            ++$index;
+
+            return $token;
+
+        }, $sql);
+
+        return [$sql, $parameters];
     }
 
     protected function hydrate($value, $type)
