@@ -39,7 +39,7 @@ trait ConnectionTrait
                 throw new \InvalidArgumentException(sprintf("Invalid parameter number bound"));
             }
 
-            if ($matches[2]) { // Do we have a type?
+            if (isset($matches[2])) { // Do we have a type?
                 $type = $matches[2];
 
                 $replacement = $parameters[$index];
