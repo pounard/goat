@@ -7,6 +7,8 @@ namespace Momm\ModelManager;
  */
 class EntityStructure
 {
+    const TYPE_NONE = 'varchar';
+
     protected $primaryKey = [];
     protected $fields = [];
     protected $relation;
@@ -161,7 +163,6 @@ class EntityStructure
             throw new \LogicException(sprintf("missing entity class"));
         }
 
-
         return $this->entityClass;
     }
 
@@ -218,7 +219,17 @@ class EntityStructure
      */
     public function setPrimaryKey(array $primaryKey)
     {
-        $this->primaryKey = $primaryKey;
+        $this->primaryKey = [];
+
+        foreach ($primaryKey as $name) {
+            if (!isset($this->fields[$name])) {
+                $this->addField($name, $type = self::TYPE_NONE);
+            } else {
+                $type = $this->getTypeFor($name);
+            }
+
+            $this->primaryKey[$name] = $type;
+        }
 
         return $this;
     }
@@ -234,6 +245,10 @@ class EntityStructure
     public function addField($name, $type)
     {
         $this->fields[$name] = $type;
+
+        if (isset($this->primaryKey[$name])) {
+            $this->primaryKey[$name] = $type;
+        }
 
         return $this;
     }
@@ -257,7 +272,7 @@ class EntityStructure
      */
     public function hasField($name)
     {
-        // I guess that fields must have a field, so a null in there is not
+        // I guess that fields must have a type, so a null in there is not
         // possible, hence isset() instead of array_key_exists()
         return isset($this->fields[$name]);
     }
@@ -314,12 +329,23 @@ class EntityStructure
     }
 
     /**
+     * Get primary key with column types
+     *
+     * @return string[]
+     *   Keys are column names, values are types
+     */
+    public function getPrimaryKeyTypes()
+    {
+        return $this->primaryKey;
+    }
+
+    /**
      * Return the primary key definition.
      *
      * @return string[]
      */
     public function getPrimaryKey()
     {
-        return $this->primaryKey;
+        return array_keys($this->primaryKey);
     }
 }

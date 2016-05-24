@@ -1,66 +1,156 @@
 <?php
 
-namespace Momm\ModelManager\Model;
-
-use PommProject\ModelManager\Model\Model as PommModel;
-
-use PommProject\Foundation\Where;
-use PommProject\ModelManager\Model\FlexibleEntity\FlexibleEntityInterface;
-use PommProject\ModelManager\Model\ModelTrait\WriteQueries;
+namespace Momm\ModelManager;
 
 /**
  * Momm base model, in opposition to Pomm default Model implementation, this
  * one will implement write queries, whether or not you like it, trait conflict
  * resolution was giving very wrong code indirections.
  */
-class Model extends PommModel
+class Model extends ReadonlyModel
 {
-    use WriteQueries;
-
     /**
-     * {@inheritdoc}
+     * Create a new entity
+     *
+     * It won't be persisted (yet)
+     *
+     * @param array $values
+     *   Arbitrary values
+     *
+     * @return EntityInterface
      */
-    public function existWhere($where, array $values = [])
+    public function createEntity(array $values = [])
     {
-        $sql = sprintf(
-            "select exists (select 1 from %s where :condition limit 1 offset 0) as result",
-            $this->getStructure()->getRelation()
-        );
-
-        return $this->fetchSingleValue($sql, $where, $values);
+        return $this->structure->create($values);
     }
 
     /**
-     * insertOne
-     *
-     * Insert a new entity in the database. The entity is passed by reference.
-     * It is updated with values returned by the database (ie, default values).
-     *
-     * @access public
-     * @param  FlexibleEntityInterface  $entity
-     * @return Model                    $this
+     * @todo I should document this...
      */
-    public function insertOne(FlexibleEntityInterface &$entity)
+    protected function getCommaSeparatedIdentifierList($identifiers)
     {
-        $values = $entity->fields(
-            array_intersect(
-                array_keys($this->getStructure()->getDefinition()),
-                array_keys($entity->extract())
-            )
-        );
+        return implode(', ', array_map([$this->connection, 'escapeIdentifier'], $identifiers));
+    }
+
+    /**
+     * @todo I should document this...
+     */
+    protected function getCommaSeparatedArgumentList($fields)
+    {
+        $ret = [];
+
+        foreach ($fields as $name) {
+            $type = $this->structure->getTypeFor($name);
+
+            if ($type) {
+                $ret[] = '$*::' . $type;
+            } else {
+                $ret[] = '$*';
+            }
+        }
+
+        return implode(', ', $ret);
+    }
+
+    /**
+     * Insert entity into database
+     *
+     * @param EntityInterface $entity
+     */
+    public function insertOne(EntityInterface $entity)
+    {
+        $values = $this->structure->extract($entity);
+
+        // Exclude null parts of the primary key
+        
 
         $sql = strtr(
             "insert into :relation (:fields) values (:values)",
             [
                 ':relation'   => $this->getStructure()->getRelation(),
-                ':fields'     => $this->getEscapedFieldList(array_keys($values)),
-                ':values'     => join(',', $this->getParametersList($values))
+                ':fields'     => $this->getCommaSeparatedIdentifierList(array_keys($values)),
+                ':values'     => $this->getCommaSeparatedArgumentList(array_keys($values)),
             ]
         );
 
         $this->query($sql, array_values($values));
 
-        return $this;
+        // For the sake of consistency, we need to update the current entity
+        // instance for the users, but there is one problem, we cannot fetch
+        // it other than using the last insert id function, so, we are going to
+        // that, but using a multiple primary key won't work...
+
+        // Warning: this is a bit hackish, but is definitely legit: when
+        // inserting and entity, it has to have a primary key, when using MySQL
+        // you could either:
+        //   - use a serial (auto_increment) in order to fetch last insert id
+        //   - use a non-serial, case in which the entity must carry the value
+        //   - use a combination of both, case in which only one field can be
+        //     a serial
+        // in all cases, we can reconstruct the primary key from what we have,
+        // load back the row, and complete the entity from what we selected.
+        $primaryKey = $this->structure->getPrimaryKey();
+        $guessedKey = [];
+
+        // First, find if there is a serial inserted, note that the entity
+        // structure must know it either we are fucked.
+        $serial = null;
+        foreach ($primaryKey as $name) {
+            if ('serial' === $this->structure->getTypeFor($name)) {
+                $serial = $name;
+                break;
+            }
+        }
+        if ($serial) {
+            // Gotcha serial! Fetch the last inserted identifier
+            $guessedKey[$serial] = $this->connection->query("select last_insert_id()")->fetchField();
+        }
+
+        // Having a serial or not, we must find the other values
+        foreach ($primaryKey as $name) {
+            // Using has() here allow to skip automatically inserted values
+            // which in real life using MySQL can only be one serial per table
+            if ($entity->has($name)) {
+                $guessedKey[$name] = $entity->get($name);
+            }
+        }
+
+        if (!$guessedKey) {
+            // For some reason, it might not be OK, but I supposed that this
+            // could happen in only 2 cases:
+            //  - structure is wrongly defined: 99% of chances our generated
+            //    query failed too, so I won't treat this case
+            //  - there is no primary key: sorry, but I'll just not update the
+            //    entity since MySQL can do RETURNING statements
+            return;
+        }
+
+        $inserted = $this->findByPK($guessedKey);
+        if ($inserted) {
+            foreach (array_keys($this->structure->getDefinition()) as $name) {
+                if ($inserted->has($name)) {
+                    // Because the structure has defined all fields on the
+                    // entity when creating it, it should not fail
+                    $entity->set($name, $inserted->get($name));
+                }
+            }
+        }
+    }
+
+    /**
+     * Insert a new entity in the database. The entity is passed by reference.
+     * It is updated with values returned by the database (ie, default values).
+     *
+     * @todo dependending on implemented fields, values () might be different
+     *   so I do need to fix that
+     *
+     * @param EntityInterface[] $entities
+     */
+    public function insertAll($entities)
+    {
+        foreach ($entities as $entity) {
+            $this->insertOne($entity);
+        }
     }
 
     /**

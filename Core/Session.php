@@ -34,6 +34,19 @@ class Session
         $this->prepare();
     }
 
+    /**
+     * Get connection
+     *
+     * @return ConnectionInterface
+     */
+    public function getConnection()
+    {
+        return $this->connection;
+    }
+
+    /**
+     * Build default converters instances
+     */
     protected function buildConverter()
     {
         $default = new StringConverter();

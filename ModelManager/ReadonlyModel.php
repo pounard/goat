@@ -112,6 +112,11 @@ class ReadonlyModel
     public function findByPK($primaryKey)
     {
         $definition = $this->structure->getPrimaryKey();
+
+        if (!$definition) {
+            throw new \LogicException("primary key is not defined, findByPK is disabled");
+        }
+
         $where = new Where();
 
         if (!is_array($primaryKey)) {
