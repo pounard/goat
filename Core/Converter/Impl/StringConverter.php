@@ -3,12 +3,12 @@
 namespace Momm\Core\Converter\Impl;
 
 use Momm\Core\Converter\ConverterInterface;
-use Momm\Core\Client\ConnectionAwareInterface;
-use Momm\Core\Client\ConnectionAwareTrait;
+use Momm\Core\Client\EscaperAwareInterface;
+use Momm\Core\Client\EscaperAwareTrait;
 
-class StringConverter implements ConverterInterface, ConnectionAwareInterface
+class StringConverter implements ConverterInterface, EscaperAwareInterface
 {
-    use ConnectionAwareTrait;
+    use EscaperAwareTrait;
 
     /**
      * {@inheritdoc}
@@ -23,10 +23,13 @@ class StringConverter implements ConverterInterface, ConnectionAwareInterface
      */
     public function extract($type, $value)
     {
-        if (!$this->connection) {
+        if (!$this->escaper) {
             throw new \LogicException(sprintf("I won't let you escape any string without any viable API to escape it, this is a serious security issue."));
         }
-        return (string)$this->connection->escapeLiteral($value);
+        //return (string)$this->escaper->escapeLiteral($value);
+        // We are actually using PDO in prepare emulation mode, we don't need
+        // to actually any strings.
+        return (string)$value;
     }
 
     /**

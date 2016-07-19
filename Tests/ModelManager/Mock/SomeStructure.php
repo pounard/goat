@@ -12,6 +12,7 @@ class SomeStructure extends EntityStructure
             ->setEntityClass(SomeEntity::class)
             ->setRelation('some_entity')
             ->setPrimaryKey(['id'])
+            ->addField('id', 'serial')
             ->addField('foo', 'int4')
             ->addField('bar', 'varchar')
             ->addField('baz', 'timestamp')

@@ -100,16 +100,13 @@ class ReadonlyModel
     }
 
     /**
-     * Load single instance using primary key
+     * From the given primary key value, get the according Where instance
      *
      * @param mixed|mixed[] $primaryKey
-     *   If primary key is a single column, you may pass a single value here
-     *   but for all other cases you must pass an array of values, keyed using
-     *   the primary key column names
      *
-     * @return EntityInterface
+     * @return Where
      */
-    public function findByPK($primaryKey)
+    protected function getPrimaryKeyWhere($primaryKey)
     {
         $definition = $this->structure->getPrimaryKey();
 
@@ -133,6 +130,23 @@ class ReadonlyModel
                 $where->isEqual($column, $value);
             }
         }
+
+        return $where;
+    }
+
+    /**
+     * Load single instance using primary key
+     *
+     * @param mixed|mixed[] $primaryKey
+     *   If primary key is a single column, you may pass a single value here
+     *   but for all other cases you must pass an array of values, keyed using
+     *   the primary key column names
+     *
+     * @return EntityInterface
+     */
+    public function findByPK($primaryKey)
+    {
+        $where = $this->getPrimaryKeyWhere($primaryKey);
 
         $sql = strtr(
             "select :projection from :relation where :condition limit 1 offset 0",

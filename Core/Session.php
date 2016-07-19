@@ -74,7 +74,7 @@ class Session
     protected function buildConverter()
     {
         $default = new StringConverter();
-        $default->setConnection($this->connection);
+        $default->setEscaper($this->connection);
 
         return (new Converter())
             ->register(['varchar'], $default)
@@ -82,7 +82,7 @@ class Session
             ->register(['bytea'], $default)
             ->register(['int', 'int2', 'int4', 'int8', 'numeric', 'serial'], new IntegerConverter())
             ->register(['float4', 'float8'], new DecimalConverter())
-            ->register(['date', 'time', 'timestamp'], new TimestampConverter())
+            ->register(['date', 'time', 'datetime', 'timestamp'], new TimestampConverter())
             ->setFallback($default)
         ;
     }

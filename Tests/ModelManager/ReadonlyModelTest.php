@@ -32,7 +32,7 @@ class ReadonlyModelTest extends \PHPUnit_Framework_TestCase
                 id serial primary key,
                 foo integer not null,
                 bar varchar(255),
-                baz timestamp not null
+                baz datetime not null
             )
         ");
 

@@ -62,7 +62,7 @@ class Model extends ReadonlyModel
         $values = $this->structure->extract($entity);
 
         // Exclude null parts of the primary key
-        
+        // @todo
 
         $sql = strtr(
             "insert into :relation (:fields) values (:values)",
@@ -156,39 +156,33 @@ class Model extends ReadonlyModel
     /**
      * {@inheritdoc}
      */
-    public function updateByPk(array $primary_key, array $updates)
+    public function updateByPk($primaryKey, array $updates)
     {
-        $where = $this
-            ->checkPrimaryKey($primary_key)
-            ->getWhereFrom($primary_key)
-        ;
-        $parameters = $this->getParametersList($updates);
-        $update_strings = [];
+        $where = $this->getPrimaryKeyWhere($primaryKey);
 
-        foreach (array_keys($updates) as $field_name) {
-            $update_strings[] = sprintf(
-                "%s = %s",
-                $this->escapeIdentifier($field_name),
-                $parameters[$field_name]
-            );
+        $set = [];
+        foreach (array_keys($updates) as $name) {
+            if ($type = $this->structure->getTypeFor($name)) {
+                $set[] = sprintf("%s = $*::%s", $this->connection->escapeIdentifier($name), $type);
+            } else {
+                $set[] = sprintf("%s = $*", $this->connection->escapeIdentifier($name));
+            }
         }
 
         $sql = strtr(
             "update :relation set :update where :condition",
             [
-                ':relation'   => $this->getStructure()->getRelation(),
-                ':update'     => join(', ', $update_strings),
-                ':condition'  => (string) $where,
+                ':relation'   => $this->structure->getRelation(),
+                ':update'     => join(', ', $set),
+                ':condition'  => (string)$where,
             ]
         );
 
-        $this->query($sql, array_merge(array_values($updates), $where->getValues()));
+        $this->query($sql, array_merge(array_values($updates), $where->getArguments()));
 
-        // Sorry, but MySQL can't do RETURNING, so at least, let's just be signature compatible
-        $entity = $this->findByPK($primary_key);
-        if ($entity) {
-            $entity->status(FlexibleEntityInterface::STATUS_EXIST);
-        }
+        // Sorry, but MySQL can't do RETURNING, so at least, let's just be
+        // signature compatible
+        return $this->findByPK($primaryKey);
     }
 
     /**

@@ -29,7 +29,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase
                 id serial primary key,
                 foo integer not null,
                 bar varchar(255),
-                baz timestamp not null
+                baz datetime not null
             )
         ");
 
@@ -52,5 +52,50 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 
         $entities = $model->findAll();
         $this->assertCount(5, $entities);
+    }
+
+    public function testUpdate()
+    {
+        $connection = new PDOConnection(getenv('MYSQL_DSN'), getenv('MYSQL_USERNAME'), getenv('MYSQL_PASSWORD'));
+        new Session($connection); // This will register default converters
+
+        $connection->query("
+            drop table if exists some_entity
+        ");
+        $connection->query("
+            create table some_entity (
+                id serial primary key,
+                foo integer not null,
+                bar varchar(255),
+                baz datetime not null
+            )
+        ");
+
+        $model = new Model($connection, new SomeStructure());
+
+        $date = new \DateTime();
+        $entity = $model->createEntity([
+            'foo' => 1,
+            'bar' => 'one',
+            'baz' => $date,
+        ]);
+        $model->insertOne($entity);
+        // And now check our object
+        $this->assertTrue($entity->has('id'));
+        $this->assertNotNull($entity->get('id'));
+        $this->assertSame($entity->get('foo'), 1);
+        $this->assertSame($entity->get('bar'), 'one');
+        $this->assertEquals($entity->get('baz'), $date);
+
+        $entity2 = $model->updateByPk($entity->get('id'), [
+            'foo' => 2,
+            'bar' => 'two',
+        ]);
+        // And check our object is modified
+        $this->assertSame($entity2->get('foo'), 2);
+        $this->assertSame($entity2->get('bar'), 'two');
+        $this->assertEquals($entity2->get('baz'), $date);
+
+        // @todo missing delete test
     }
 }

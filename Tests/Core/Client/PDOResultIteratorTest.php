@@ -25,8 +25,8 @@ class PDOResultIteratorTest extends \PHPUnit_Framework_TestCase
             create temporary table type_test (
                 foo integer unsigned,
                 bar varchar(255),
-                baz timestamp,
-                some_ts timestamp,
+                baz datetime,
+                some_ts datetime,
                 some_time time default null,
                 some_date date default null
             )

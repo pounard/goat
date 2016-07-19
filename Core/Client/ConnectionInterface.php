@@ -4,7 +4,7 @@ namespace Momm\Core\Client;
 
 use Momm\Core\Converter\ConverterAwareInterface;
 
-interface ConnectionInterface extends ConverterAwareInterface
+interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface
 {
     /**
      * Escape identifier (ie. table name, variable name, ...)
