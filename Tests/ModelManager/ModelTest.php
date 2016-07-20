@@ -52,6 +52,74 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 
         $entities = $model->findAll();
         $this->assertCount(5, $entities);
+
+        $this->assertTrue($model->existWhere((new Where())->condition('foo', -12)));
+        $this->assertTrue($model->existWhere((new Where())->condition('bar', 'salut les amis')));
+        $this->assertTrue($model->existWhere((new Where())->condition('foo', 96)->condition('bar', 'this one will probably test like')));
+        $this->assertFalse($model->existWhere((new Where())->condition('foo', 0)));
+        $this->assertFalse($model->existWhere((new Where())->condition('foo', 24)->condition('bar', 'salut les amis')));
+    }
+
+    public function testInsertAll()
+    {
+        $connection = new PDOConnection(getenv('MYSQL_DSN'), getenv('MYSQL_USERNAME'), getenv('MYSQL_PASSWORD'));
+        new Session($connection); // This will register default converters
+
+        $connection->query("
+            create temporary table some_entity_all (
+                id serial primary key,
+                foo integer not null,
+                bar varchar(255),
+                baz datetime not null
+            )
+        ");
+
+        $model = new Model($connection, (new SomeStructure())->setRelation('some_entity_all'));
+
+        $reference = [
+            ['foo' => -12,  'bar' => 'what',                              'baz' => new \DateTime('2012-05-22 08:30:00')],
+            ['foo' => 24,   'bar' => 'cassoulet',                         'baz' => new \DateTime('2012-05-22 08:30:00')],
+            ['foo' => -48,  'bar' => 'salut les amis',                    'baz' => new \DateTime('2012-05-22 08:30:00')],
+            ['foo' => 96,   'bar' => 'this one will probably test like',  'baz' => new \DateTime('2012-05-22 08:30:00')],
+            ['foo' => -192, /* Yes, baz is null */                        'baz' => new \DateTime('2012-05-22 08:30:00')],
+        ];
+
+        $all = [];
+        foreach ($reference as $row) {
+            $all[] = $model->createEntity($row);
+        }
+
+        $model->insertAll($all);
+
+        $entities = $model->findAll();
+        $this->assertCount(5, $entities);
+    }
+
+    public function testDelete()
+    {
+        $connection = new PDOConnection(getenv('MYSQL_DSN'), getenv('MYSQL_USERNAME'), getenv('MYSQL_PASSWORD'));
+        new Session($connection); // This will register default converters
+
+        $connection->query("
+            create temporary table some_entity_delete (
+                id serial primary key,
+                foo integer not null,
+                bar varchar(255),
+                baz datetime not null
+            )
+        ");
+
+        $model = new Model($connection, (new SomeStructure())->setRelation('some_entity_delete'));
+
+        $reference = [
+            ['foo' => -12,  'bar' => 'what',                              'baz' => new \DateTime('2012-05-22 08:30:00')],
+            ['foo' => 24,   'bar' => 'cassoulet',                         'baz' => new \DateTime('2012-05-22 08:30:00')],
+            ['foo' => -48,  'bar' => 'salut les amis',                    'baz' => new \DateTime('2012-05-22 08:30:00')],
+            ['foo' => 96,   'bar' => 'this one will probably test like',  'baz' => new \DateTime('2012-05-22 08:30:00')],
+            ['foo' => -192, /* Yes, baz is null */                        'baz' => new \DateTime('2012-05-22 08:30:00')],
+        ];
+
+        $model->deleteWhere($where);
     }
 
     public function testUpdate()
@@ -95,7 +163,5 @@ class ModelTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($entity2->get('foo'), 2);
         $this->assertSame($entity2->get('bar'), 'two');
         $this->assertEquals($entity2->get('baz'), $date);
-
-        // @todo missing delete test
     }
 }

@@ -2,6 +2,8 @@
 
 namespace Momm\ModelManager;
 
+use Momm\Core\Query\Where;
+
 /**
  * Momm base model, in opposition to Pomm default Model implementation, this
  * one will implement write queries, whether or not you like it, trait conflict
@@ -154,6 +156,44 @@ class Model extends ReadonlyModel
     }
 
     /**
+     * Update a single entity
+     *
+     * @param EntityInterface $entity
+     */
+    public function update(EntityInterface $entity)
+    {
+
+    }
+
+    /**
+     * Update a set of entities
+     *
+     * @param EntityInterface[] $entities
+     */
+    public function updateAll($entities)
+    {
+
+    }
+
+    /**
+     * Update entities where
+     *
+     * @param Where $where
+     * @param mixed[] $updates
+     *   Arbitrary values
+     *
+     * @return int
+     *   Number of items being updated, if you want to load them after update
+     *   use the ::findAll() method using the same Where condition, this method
+     *   will not do it automatically since you may update thousands of entries
+     *   at once
+     */
+    public function updateWhere(Where $where, array $updates)
+    {
+
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function updateByPk($primaryKey, array $updates)
@@ -186,57 +226,37 @@ class Model extends ReadonlyModel
     }
 
     /**
-     * {@inheritdoc}
+     * Delete a single entity
+     *
+     * @param EntityInterface $entity
      */
-    public function deleteWhere($where, array $values = [])
+    public function delete(EntityInterface $entity)
     {
-        $connection = $this->getSession()->getConnection();
+        throw new \Exception("Not implemented yet");
+    }
 
-        if (!$where instanceof Where) {
-            $where = new Where($where, $values);
-        }
+    /**
+     * Delete a single entity using its primary key
+     *
+     * @param mixed|mixed[] $primaryKey
+     */
+    public function deleteByPk($primaryKey)
+    {
+        $where = $this->getPrimaryKeyWhere($primaryKey);
 
-        // OH MY GOD - https://stackoverflow.com/a/1751282
-        //   fountène, vite!
-        $temporaryTableName = uniqid('id');
-        $connection->executeAnonymousQuery("begin transaction");
+        return $this->deleteWhere($where);
+    }
 
-        $sql = strtr(
-            "create temporary table :temporary as select :projection from :relation where :condition",
-            [
-                ':temporary'  => $temporaryTableName,
-                ':projection' => $this->createProjection()->formatFieldsWithFieldAlias(),
-                ':relation'   => $this->getStructure()->getRelation(),
-                ':condition'  => (string) $where,
-            ]
-        );
-        $this->query($sql, $where->getValues());
-
-        $sql = strtr(
-            "delete from :relation where :condition",
-            [
-                ':relation'   => $this->getStructure()->getRelation(),
-                ':condition'  => (string) $where,
-            ]
-        );
-        $this->query($sql, $where->getValues());
-
-        $collection = $this->query("select * from :temporary");
-        $connection->executeAnonymousQuery(sprintf("drop table %s", $temporaryTableName));
-        try {
-            $connection->executeAnonymousQuery("commit");
-        } catch (\Exception $e) {
-            $connection->executeAnonymousQuery("rollback");
-            throw $e;
-        }
-
-        foreach ($collection as $entity) {
-            $entity->status(FlexibleEntityInterface::STATUS_NONE);
-        }
-        $collection->rewind();
-
-        $connection->executeAnonymousQuery("commit");
-
-        return $collection;
+    /**
+     * Delete entities where
+     *
+     * @param Where $where
+     *
+     * @return int
+     *   Number of items being deleted
+     */
+    public function deleteWhere(Where $where)
+    {
+        throw new \Exception("Not implemented yet");
     }
 }
