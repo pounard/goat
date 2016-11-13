@@ -204,22 +204,4 @@ class PDOResultIterator implements ResultIteratorInterface
 
         $this->statement->fetchColumn($name);
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function fetchRowAt($index)
-    {
-        $values = $this->statement->fetch(\PDO::FETCH_ASSOC, \PDO::FETCH_ORI_ABS, $index);
-
-        if ($values === false) {
-            throw new \OutOfBoundsException(sprintf("Cannot jump to non existing row %d.", $index));
-        }
-
-        if ($this->useConverter) {
-            return $this->hydrate($values);
-        } else {
-            return $values;
-        }
-    }
 }

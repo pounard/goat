@@ -5,7 +5,7 @@ namespace Momm\Core\Client;
 use Momm\Core\DebuggableTrait;
 use Momm\Core\Converter\ConverterAwareTrait;
 
-trait ResultIteratorTrait
+trait ResultIteratorTrait /* implements ResultIteratorInterface */
 {
     use DebuggableTrait;
     use ConverterAwareTrait;

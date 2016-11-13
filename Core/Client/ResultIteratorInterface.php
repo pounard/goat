@@ -75,13 +75,4 @@ interface ResultIteratorInterface extends \IteratorAggregate, \Countable, Conver
      * @return mixed[]
      */
     public function fetchColumn($name);
-
-    /**
-     * Fetch row at, do not iterate
-     *
-     * @param int $index
-     *
-     * @return mixed[]
-     */
-    public function fetchRowAt($index);
 }

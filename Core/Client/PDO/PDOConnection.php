@@ -137,7 +137,7 @@ class PDOConnection implements ConnectionInterface
             ->getPdo()
             ->prepare(
                 $sql,
-                [\PDO::ATTR_CURSOR => \PDO::CURSOR_SCROLL]
+                [\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY]
             )
         ;
 
