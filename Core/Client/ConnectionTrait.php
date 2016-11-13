@@ -1,8 +1,8 @@
 <?php
 
-namespace Momm\Core\Client;
+namespace Goat\Core\Client;
 
-use Momm\Core\Converter\ConverterAwareTrait;
+use Goat\Core\Converter\ConverterAwareTrait;
 
 trait ConnectionTrait
 {

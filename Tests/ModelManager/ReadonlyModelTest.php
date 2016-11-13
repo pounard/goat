@@ -1,15 +1,15 @@
 <?php
 
-namespace Momm\Tests\ModelManager;
+namespace Goat\Tests\ModelManager;
 
-use Momm\Core\Client\PDO\PDOConnection;
-use Momm\Core\Session;
-use Momm\Core\Query\Where;
-use Momm\ModelManager\DefaultEntity;
-use Momm\ModelManager\EntityInterface;
-use Momm\ModelManager\EntityStructure;
-use Momm\ModelManager\ReadonlyModel;
-use Momm\Tests\ModelManager\Mock\SomeStructure;
+use Goat\Core\Client\PDO\PDOConnection;
+use Goat\Core\Session;
+use Goat\Core\Query\Where;
+use Goat\ModelManager\DefaultEntity;
+use Goat\ModelManager\EntityInterface;
+use Goat\ModelManager\EntityStructure;
+use Goat\ModelManager\ReadonlyModel;
+use Goat\Tests\ModelManager\Mock\SomeStructure;
 
 class ReadonlyModelTest extends \PHPUnit_Framework_TestCase
 {

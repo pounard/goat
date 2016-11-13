@@ -1,6 +1,6 @@
 <?php
 
-namespace Momm\Core\Client;
+namespace Goat\Core\Client;
 
 /**
  * By dividing the escaper interface from the connection, we ensure that all

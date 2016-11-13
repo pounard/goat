@@ -1,12 +1,12 @@
 <?php
 
-namespace Momm\Tests\ModelManager;
+namespace Goat\Tests\ModelManager;
 
-use Momm\Core\Client\PDO\PDOConnection;
-use Momm\Core\Session;
-use Momm\Core\Query\Where;
-use Momm\ModelManager\Model;
-use Momm\Tests\ModelManager\Mock\SomeStructure;
+use Goat\Core\Client\PDO\PDOConnection;
+use Goat\Core\Session;
+use Goat\Core\Query\Where;
+use Goat\ModelManager\Model;
+use Goat\Tests\ModelManager\Mock\SomeStructure;
 
 class ModelTest extends \PHPUnit_Framework_TestCase
 {

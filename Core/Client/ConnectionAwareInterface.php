@@ -1,6 +1,6 @@
 <?php
 
-namespace Momm\Core\Client;
+namespace Goat\Core\Client;
 
 interface ConnectionAwareInterface
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace Momm\Tests\ModelManager;
+namespace Goat\Tests\ModelManager;
 
-use Momm\ModelManager\EntityStructure;
-use Momm\Tests\ModelManager\Mock\SomeEntity;
-use Momm\Tests\ModelManager\Mock\SomeStructure;
+use Goat\ModelManager\EntityStructure;
+use Goat\Tests\ModelManager\Mock\SomeEntity;
+use Goat\Tests\ModelManager\Mock\SomeStructure;
 
 class EntityStructureTest extends \PHPUnit_Framework_TestCase
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Momm\Core\Query;
+namespace Goat\Core\Query;
 
 /**
  * Convenience functions have been separated for easier Where class readability

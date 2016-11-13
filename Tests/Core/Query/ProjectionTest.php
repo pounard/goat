@@ -1,8 +1,8 @@
 <?php
 
-namespace Momm\Tests\Core\Query;
+namespace Goat\Tests\Core\Query;
 
-use Momm\Core\Query\Projection;
+use Goat\Core\Query\Projection;
 
 class ProjectionTest extends \PHPUnit_Framework_TestCase
 {

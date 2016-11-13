@@ -1,6 +1,6 @@
 <?php
 
-namespace Momm\Core\Query;
+namespace Goat\Core\Query;
 
 /**
  * A projection, as the name states, represent the projection of the SQL query

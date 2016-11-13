@@ -1,8 +1,8 @@
 <?php
 
-namespace Momm\ModelManager;
+namespace Goat\ModelManager;
 
-use Momm\Core\Query\Projection as CoreProjection;
+use Goat\Core\Query\Projection as CoreProjection;
 
 /**
  * Model manager project is based upon an entity structure

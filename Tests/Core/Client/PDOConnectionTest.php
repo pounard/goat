@@ -1,9 +1,9 @@
 <?php
 
-namespace Momm\Tests\Core\Client;
+namespace Goat\Tests\Core\Client;
 
-use Momm\Core\Client\PDO\PDOConnection;
-use Momm\Core\Converter\Converter;
+use Goat\Core\Client\PDO\PDOConnection;
+use Goat\Core\Converter\Converter;
 
 class PDOConnectionTest extends \PHPUnit_Framework_TestCase
 {

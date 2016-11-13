@@ -1,15 +1,15 @@
 <?php
 
-namespace Momm\Core;
+namespace Goat\Core;
 
-use Momm\Core\Client\ConnectionInterface;
-use Momm\Core\Converter\Converter;
-use Momm\Core\Converter\ConverterInterface;
-use Momm\Core\Converter\Impl\DecimalConverter;
-use Momm\Core\Converter\Impl\IntegerConverter;
-use Momm\Core\Converter\Impl\StringConverter;
-use Momm\Core\Converter\Impl\TimestampConverter;
-use Momm\Core\Client\PDO\PDOConnection;
+use Goat\Core\Client\ConnectionInterface;
+use Goat\Core\Converter\Converter;
+use Goat\Core\Converter\ConverterInterface;
+use Goat\Core\Converter\Impl\DecimalConverter;
+use Goat\Core\Converter\Impl\IntegerConverter;
+use Goat\Core\Converter\Impl\StringConverter;
+use Goat\Core\Converter\Impl\TimestampConverter;
+use Goat\Core\Client\PDO\PDOConnection;
 
 /**
  * Session object is not mandatory, but stands as a commodity for whoever has

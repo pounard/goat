@@ -1,8 +1,8 @@
 <?php
 
-namespace Momm\Tests\Core\Query;
+namespace Goat\Tests\Core\Query;
 
-use Momm\Core\Query\Where;
+use Goat\Core\Query\Where;
 
 class WhereTest extends \PHPUnit_Framework_TestCase
 {
@@ -72,7 +72,7 @@ and (
 )
 and (
     beta between $* and $*
-    and gamma not between $* and $* 
+    and gamma not between $* and $*
 )
 and (
     a > $*

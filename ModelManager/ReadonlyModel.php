@@ -1,10 +1,10 @@
 <?php
 
-namespace Momm\ModelManager;
+namespace Goat\ModelManager;
 
-use Momm\Core\Client\ConnectionInterface;
-use Momm\Core\Query\Where;
-use Momm\Core\Query\Pager;
+use Goat\Core\Client\ConnectionInterface;
+use Goat\Core\Query\Where;
+use Goat\Core\Query\Pager;
 
 class ReadonlyModel
 {
@@ -68,7 +68,7 @@ class ReadonlyModel
     /**
      * Find entities using SQL suffix
      *
-     * Return all elements from a relation. 
+     * Return all elements from a relation.
      *
      * @param Where $where
      *   Either an array of values (as conditions) or a Where instance

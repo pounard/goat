@@ -1,6 +1,6 @@
 <?php
 
-namespace Momm\ModelManager;
+namespace Goat\ModelManager;
 
 /**
  * Represent a composite structure like table or row.

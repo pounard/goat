@@ -1,8 +1,8 @@
 <?php
 
-namespace Momm\Tests\Core\Client;
+namespace Goat\Tests\Core\Client;
 
-use Momm\Core\Client\Dsn;
+use Goat\Core\Client\Dsn;
 
 class DsnTest extends \PHPUnit_Framework_TestCase
 {

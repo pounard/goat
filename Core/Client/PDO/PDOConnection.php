@@ -1,10 +1,10 @@
 <?php
 
-namespace Momm\Core\Client\PDO;
+namespace Goat\Core\Client\PDO;
 
-use Momm\Core\Client\ConnectionInterface;
-use Momm\Core\Client\ConnectionTrait;
-use Momm\Core\Client\Dsn;
+use Goat\Core\Client\ConnectionInterface;
+use Goat\Core\Client\ConnectionTrait;
+use Goat\Core\Client\Dsn;
 
 class PDOConnection implements ConnectionInterface
 {

@@ -1,9 +1,9 @@
 <?php
 
-namespace Momm\Core\Client\PDO;
+namespace Goat\Core\Client\PDO;
 
-use Momm\Core\Client\ResultIteratorInterface;
-use Momm\Core\Client\ResultIteratorTrait;
+use Goat\Core\Client\ResultIteratorInterface;
+use Goat\Core\Client\ResultIteratorTrait;
 
 class PDOResultIterator implements ResultIteratorInterface
 {

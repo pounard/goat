@@ -1,8 +1,8 @@
 <?php
 
-namespace Momm\Core\Converter\Impl;
+namespace Goat\Core\Converter\Impl;
 
-use Momm\Core\Converter\ConverterInterface;
+use Goat\Core\Converter\ConverterInterface;
 
 class DecimalConverter implements ConverterInterface
 {

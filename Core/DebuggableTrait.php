@@ -1,6 +1,6 @@
 <?php
 
-namespace Momm\Core;
+namespace Goat\Core;
 
 trait DebuggableTrait
 {

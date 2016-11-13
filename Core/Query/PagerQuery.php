@@ -1,8 +1,8 @@
 <?php
 
-namespace Momm\Core\Query;
+namespace Goat\Core\Query;
 
-use Momm\Core\Client\ConnectionInterface;
+use Goat\Core\Client\ConnectionInterface;
 
 /**
  * Represents a paginated query

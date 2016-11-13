@@ -1,6 +1,6 @@
 <?php
 
-namespace Momm\Core\Query;
+namespace Goat\Core\Query;
 
 /**
  * Where represents the selection of the SQL query

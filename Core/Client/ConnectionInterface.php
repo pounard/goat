@@ -1,8 +1,8 @@
 <?php
 
-namespace Momm\Core\Client;
+namespace Goat\Core\Client;
 
-use Momm\Core\Converter\ConverterAwareInterface;
+use Goat\Core\Converter\ConverterAwareInterface;
 
 interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Momm\Tests\ModelManager;
+namespace Goat\Tests\ModelManager;
 
-use Momm\ModelManager\DefaultEntity;
+use Goat\ModelManager\DefaultEntity;
 
 class DefaultEntityTest extends \PHPUnit_Framework_TestCase
 {

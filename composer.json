@@ -1,9 +1,9 @@
 {
-    "name" : "makinacorpus/momm",
+    "name" : "makinacorpus/php-goat",
     "type": "library",
-    "description": "Experimental MySQL connector for Pomm using PDO",
-    "keywords": ["orm", "postgresql", "database", "symfony", "pomm", "mysql", "momm", "pdo"],
-    "homepage": "http://www.pomm-project.org",
+    "description": "Experimental database connector",
+    "keywords": ["orm", "postgresql", "mysql", "database", "symfony", "pdo"],
+    "homepage": "http://github.com/makinacorpus/php-goat",
     "license": "GPL-2",
     "authors": [
         {
@@ -13,7 +13,7 @@
     ],
     "autoload" : {
         "psr-4" : {
-            "Momm\\" : "."
+            "Goat\\" : "."
         }
     },
     "require" : {

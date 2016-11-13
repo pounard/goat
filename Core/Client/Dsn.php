@@ -1,6 +1,6 @@
 <?php
 
-namespace Momm\Core\Client;
+namespace Goat\Core\Client;
 
 /**
  * Allow the following two reprensentations:

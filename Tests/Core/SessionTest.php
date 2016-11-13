@@ -1,9 +1,9 @@
 <?php
 
-namespace Momm\Tests\Core;
+namespace Goat\Tests\Core;
 
-use Momm\Core\Client\PDO\PDOConnection;
-use Momm\Core\Session;
+use Goat\Core\Client\PDO\PDOConnection;
+use Goat\Core\Session;
 
 class SessionTest extends \PHPUnit_Framework_TestCase
 {

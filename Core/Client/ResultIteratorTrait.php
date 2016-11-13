@@ -1,9 +1,9 @@
 <?php
 
-namespace Momm\Core\Client;
+namespace Goat\Core\Client;
 
-use Momm\Core\DebuggableTrait;
-use Momm\Core\Converter\ConverterAwareTrait;
+use Goat\Core\DebuggableTrait;
+use Goat\Core\Converter\ConverterAwareTrait;
 
 trait ResultIteratorTrait /* implements ResultIteratorInterface */
 {

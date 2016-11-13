@@ -1,6 +1,6 @@
 <?php
 
-namespace Momm\Tests\Core\Query;
+namespace Goat\Tests\Core\Query;
 
 trait SqlTestTrait
 {

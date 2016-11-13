@@ -1,9 +1,9 @@
 <?php
 
-namespace Momm\ModelManager;
+namespace Goat\ModelManager;
 
-use Momm\Core\Client\ResultIteratorInterface;
-use Momm\Core\Converter\ConverterInterface;
+use Goat\Core\Client\ResultIteratorInterface;
+use Goat\Core\Converter\ConverterInterface;
 
 /**
  * Basic entity generator implementation, no cache.

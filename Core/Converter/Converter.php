@@ -1,9 +1,9 @@
 <?php
 
-namespace Momm\Core\Converter;
+namespace Goat\Core\Converter;
 
-use Momm\Core\DebuggableTrait;
-use Momm\Core\Converter\Impl\StringConverter;
+use Goat\Core\DebuggableTrait;
+use Goat\Core\Converter\Impl\StringConverter;
 
 class Converter implements ConverterInterface
 {

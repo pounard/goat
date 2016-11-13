@@ -1,11 +1,11 @@
 <?php
 
-namespace Momm\ModelManager;
+namespace Goat\ModelManager;
 
-use Momm\Core\Query\Where;
+use Goat\Core\Query\Where;
 
 /**
- * Momm base model, in opposition to Pomm default Model implementation, this
+ * Goat base model, in opposition to Pomm default Model implementation, this
  * one will implement write queries, whether or not you like it, trait conflict
  * resolution was giving very wrong code indirections.
  */

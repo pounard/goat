@@ -1,6 +1,6 @@
 <?php
 
-namespace Momm\ModelManager;
+namespace Goat\ModelManager;
 
 trait EntityTrait
 {

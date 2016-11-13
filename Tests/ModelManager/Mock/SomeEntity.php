@@ -1,8 +1,8 @@
 <?php
 
-namespace Momm\Tests\ModelManager\Mock;
+namespace Goat\Tests\ModelManager\Mock;
 
-use Momm\ModelManager\DefaultEntity;
+use Goat\ModelManager\DefaultEntity;
 
 class SomeEntity extends DefaultEntity
 {

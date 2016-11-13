@@ -1,10 +1,10 @@
 <?php
 
-namespace Momm\Core\Converter\Impl;
+namespace Goat\Core\Converter\Impl;
 
-use Momm\Core\Converter\ConverterInterface;
-use Momm\Core\Client\EscaperAwareInterface;
-use Momm\Core\Client\EscaperAwareTrait;
+use Goat\Core\Converter\ConverterInterface;
+use Goat\Core\Client\EscaperAwareInterface;
+use Goat\Core\Client\EscaperAwareTrait;
 
 class StringConverter implements ConverterInterface, EscaperAwareInterface
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Momm\Core\Query;
+namespace Goat\Core\Query;
 
-use Momm\Core\Client\ResultIteratorInterface;
+use Goat\Core\Client\ResultIteratorInterface;
 
 /**
  * Wraps a result iterator in order to paginate results

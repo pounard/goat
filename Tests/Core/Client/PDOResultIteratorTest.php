@@ -1,9 +1,9 @@
 <?php
 
-namespace Momm\Tests\Core\Client;
+namespace Goat\Tests\Core\Client;
 
-use Momm\Core\Client\PDO\PDOConnection;
-use Momm\Core\Session;
+use Goat\Core\Client\PDO\PDOConnection;
+use Goat\Core\Session;
 
 class PDOResultIteratorTest extends \PHPUnit_Framework_TestCase
 {

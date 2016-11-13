@@ -1,8 +1,8 @@
 <?php
 
-namespace Momm\Tests\ModelManager\Mock;
+namespace Goat\Tests\ModelManager\Mock;
 
-use Momm\ModelManager\EntityStructure;
+use Goat\ModelManager\EntityStructure;
 
 class SomeStructure extends EntityStructure
 {

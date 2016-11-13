@@ -1,6 +1,6 @@
 <?php
 
-namespace Momm\Core\Converter;
+namespace Goat\Core\Converter;
 
 interface ConverterAwareInterface
 {
