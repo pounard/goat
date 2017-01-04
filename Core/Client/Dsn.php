@@ -17,8 +17,6 @@ namespace Goat\Core\Client;
  *     examples:
  *       - pgsql:///path/to/pg.sock:my_database
  *       - unix://mysql:///path/to/my.sock:my_database
- *
- * FIXME REWRITE THIS COMPLETLY
  */
 class Dsn
 {
