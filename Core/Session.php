@@ -9,7 +9,7 @@ use Goat\Core\Converter\Impl\DecimalConverter;
 use Goat\Core\Converter\Impl\IntegerConverter;
 use Goat\Core\Converter\Impl\StringConverter;
 use Goat\Core\Converter\Impl\TimestampConverter;
-use Goat\Core\Client\PDO\PDOConnection;
+use Goat\Driver\PDO\PDOConnection;
 
 /**
  * Session object is not mandatory, but stands as a commodity for whoever has
