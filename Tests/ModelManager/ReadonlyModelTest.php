@@ -2,9 +2,9 @@
 
 namespace Goat\Tests\ModelManager;
 
-use Goat\Core\Client\PDO\PDOConnection;
 use Goat\Core\Session;
 use Goat\Core\Query\Where;
+use Goat\Driver\PDO\PDOConnection;
 use Goat\ModelManager\DefaultEntity;
 use Goat\ModelManager\EntityInterface;
 use Goat\ModelManager\EntityStructure;

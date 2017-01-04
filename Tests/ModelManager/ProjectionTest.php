@@ -2,7 +2,8 @@
 
 namespace Goat\Tests\Core\Query;
 
-use Goat\Core\Query\Projection;
+use Goat\ModelManager\Projection;
+use Goat\ModelManager\EntityStructure;
 
 class ProjectionTest extends \PHPUnit_Framework_TestCase
 {
@@ -10,7 +11,7 @@ class ProjectionTest extends \PHPUnit_Framework_TestCase
 
     public function testProjectionBasics()
     {
-        $projection = (new Projection())
+        $projection = (new Projection(new EntityStructure()))
             ->setField('foo')
             ->setField('bar', null, 'int4')
             ->setField('baz', 'cassoulet', 'varchar')
@@ -29,7 +30,7 @@ EOT;
 
     public function testProjectionStatementAndTokenReplace()
     {
-        $projection = (new Projection())
+        $projection = (new Projection(new EntityStructure()))
             ->setRelationAlias('some_table')
             ->setField('age', 'age(%:birthdate:%)')
             ->setField('birthdate')
@@ -47,7 +48,7 @@ EOT;
 
     public function testProjectionRelationAliasing()
     {
-        $projection = (new Projection('my_relation'))
+        $projection = (new Projection(new EntityStructure(), 'my_relation'))
             ->setField('foo')
             ->setField('bar', null, 'int4')
         ;
@@ -59,7 +60,7 @@ EOT;
 
         $this->assertSameSql($reference, $projection->format());
 
-        $projection = (new Projection())
+        $projection = (new Projection(new EntityStructure()))
             ->setRelationAlias('and_another_one')
             ->setField('john')
             ->setField('doe')

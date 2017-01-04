@@ -2,9 +2,9 @@
 
 namespace Goat\Tests\ModelManager;
 
-use Goat\Core\Client\PDO\PDOConnection;
 use Goat\Core\Session;
 use Goat\Core\Query\Where;
+use Goat\Driver\PDO\PDOConnection;
 use Goat\ModelManager\Model;
 use Goat\Tests\ModelManager\Mock\SomeStructure;
 
