@@ -8,6 +8,35 @@ namespace Goat\Core\Query;
 trait WhereTrait
 {
     /**
+     * Add a condition
+     *
+     * @param string $column
+     * @param mixed $value
+     * @param string $operator
+     *
+     * @return $this
+     */
+    abstract public function condition($column, $value, $operator = Where::EQUAL);
+
+    /**
+     * Start a new parenthesis statement
+     *
+     * @param string $operator
+     *   Where::OP_AND or Where::OP_OR, determine which will be the operator
+     *   inside this where statement
+     *
+     * @return $this
+     */
+    abstract public function open($operator = Where::AND_STATEMENT);
+
+    /**
+     * End a previously started statement
+     *
+     * @return $this
+     */
+    abstract public function close();
+
+    /**
      * '=' condition
      *
      * If value is an array, this will be converted to a 'in' condition

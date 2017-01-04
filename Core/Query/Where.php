@@ -192,6 +192,19 @@ class Where
     }
 
     /**
+     * Get a raw SQL string
+     *
+     * @param string $raw
+     * @param mixed[] $arguments
+     *
+     * @return RawStatement
+     */
+    public function raw($statement, $arguments = [])
+    {
+        return new RawStatement($statement, $arguments);
+    }
+
+    /**
      * Start a new parenthesis statement
      *
      * @param string $operator
@@ -264,46 +277,52 @@ class Where
             if ($condition instanceof Where) {
 
                 if (!$condition->isEmpty()) {
-                    $output[] = '(' . $condition->doFormat() . ')';
+                    $output[] = "(\n" . $condition->doFormat() . "\n)";
                     $this->mergeArguments($condition->getArguments());
                 }
 
             } else {
                 list($column, $value, $operator) = $condition;
 
-                switch ($operator) {
 
-                    case self::ARBITRARY:
-                        $output[] = $column;
-                        $this->mergeArguments($value);
-                        break;
+                if ($value instanceof RawStatement) {
+                    $this->mergeArguments($value->getArguments());
+                    $output[] = sprintf('%s %s %s', $column, $operator, $value);
+                } else {
+                    switch ($operator) {
 
-                    case self::IS_NULL:
-                    case self::NOT_IS_NULL:
-                        $output[] = sprintf('%s %s', $column, $operator);
-                        break;
+                        case self::ARBITRARY:
+                            $output[] = $column;
+                            $this->mergeArguments($value);
+                            break;
 
-                    case self::IN:
-                    case self::NOT_IN:
-                        $output[] = sprintf('%s %s (%s)', $column, $operator, $this->createPlaceholders($value));
-                        $this->mergeArguments($value);
-                        break;
+                        case self::IS_NULL:
+                        case self::NOT_IS_NULL:
+                            $output[] = sprintf('%s %s', $column, $operator);
+                            break;
 
-                    case self::BETWEEN:
-                    case self::NOT_BETWEEN:
-                        $output[] = sprintf('%s %s $* and $*', $column, $operator);
-                        $this->mergeArguments($value);
-                        break;
+                        case self::IN:
+                        case self::NOT_IN:
+                            $output[] = sprintf('%s %s (%s)', $column, $operator, $this->createPlaceholders($value));
+                            $this->mergeArguments($value);
+                            break;
 
-                    default:
-                        $output[] = sprintf('%s %s $*', $column, $operator);
-                        $this->mergeArguments($value);
-                        break;
+                        case self::BETWEEN:
+                        case self::NOT_BETWEEN:
+                            $output[] = sprintf('%s %s $* and $*', $column, $operator);
+                            $this->mergeArguments($value);
+                            break;
+
+                        default:
+                            $output[] = sprintf('%s %s $*', $column, $operator);
+                            $this->mergeArguments($value);
+                            break;
+                    }
                 }
             }
         }
 
-        return $this->sql = implode(' ' . $this->operator . ' ', $output);
+        return $this->sql = implode("\n" . $this->operator . ' ', $output);
     }
 
     /**
