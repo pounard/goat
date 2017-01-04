@@ -1,6 +1,6 @@
 <?php
 
-namespace Goat\Core\Client\PDO;
+namespace Goat\Driver\PDO;
 
 use Goat\Core\Client\ResultIteratorInterface;
 use Goat\Core\Client\ResultIteratorTrait;

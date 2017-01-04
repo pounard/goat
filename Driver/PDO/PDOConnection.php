@@ -1,6 +1,6 @@
 <?php
 
-namespace Goat\Core\Client\PDO;
+namespace Goat\Driver\PDO;
 
 use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Client\ConnectionTrait;

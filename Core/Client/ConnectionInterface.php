@@ -45,7 +45,9 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface
     public function executePreparedQuery($identifier, array $parameters = []);
 
     /**
-     * {@inheritdoc}
+     * Set connection encoding
+     *
+     * @param string $encoding
      */
     public function setClientEncoding($encoding);
 }

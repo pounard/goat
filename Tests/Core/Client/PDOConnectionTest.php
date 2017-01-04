@@ -2,8 +2,8 @@
 
 namespace Goat\Tests\Core\Client;
 
-use Goat\Core\Client\PDO\PDOConnection;
 use Goat\Core\Converter\Converter;
+use Goat\Driver\PDO\PDOConnection;
 
 class PDOConnectionTest extends \PHPUnit_Framework_TestCase
 {
