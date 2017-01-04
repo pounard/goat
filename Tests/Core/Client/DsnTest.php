@@ -8,32 +8,112 @@ class DsnTest extends \PHPUnit_Framework_TestCase
 {
     public function testParse()
     {
-        // Valid cases
-        $dsn = new Dsn('tcp://localhost:1234/my_base');
-        $this->assertFalse($dsn->isUnixSocket());
-        $this->assertSame('tcp://localhost:1234/my_base', $dsn->formatFull());
-        $this->assertSame('tcp://localhost:1234', $dsn->formatWithoutDatabase());
-        $this->assertSame('mysql:host=localhost;port=1234;dbname=my_base;charset=utf8', $dsn->formatPdo());
+        foreach ([
+            // Stupid database names are valid
+            'pgsql:///var/run/pg.sock:coucou@robert_69',
+            'unix://pgsql:///var/run/pg.sock:coucou@robert_69',
+        ] as $string)
+        {
+            $dsn = new Dsn($string);
+            $this->assertSame('pgsql', $dsn->getDriver());
+            $this->assertSame('unix', $dsn->getScheme());
+            $this->assertSame('coucou@robert_69', $dsn->getDatabase());
+            $this->assertSame('/var/run/pg.sock', $dsn->getHost());
+            $this->assertNull($dsn->getPort());
+            $this->assertTrue($dsn->isUnixSocket());
 
-        $dsn = new Dsn('tcp://localhost:1234/my_base');
-        $dsn = new Dsn('tcp://1.2.3.4:1234/my_base');
-        $dsn = new Dsn('mysql://1.2.3.4:1234/my_base');
+            $this->assertSame('unix://pgsql:///var/run/pg.sock:coucou@robert_69', $dsn->formatFull());
+            $this->assertSame('unix://pgsql:///var/run/pg.sock', $dsn->formatWithoutDatabase());
+            $this->assertSame('pgsql:unix_socket=/var/run/pg.sock;dbname=coucou@robert_69;charset=utf8', $dsn->formatPdo());
+        }
 
-        $dsn = new Dsn('mysql://1.2.3.4/my_base');
-        $this->assertFalse($dsn->isUnixSocket());
-        $this->assertSame('tcp://1.2.3.4:3306/my_base', $dsn->formatFull());
-        $this->assertSame('tcp://1.2.3.4:3306', $dsn->formatWithoutDatabase());
-        $this->assertSame('mysql:host=1.2.3.4;port=3306;dbname=my_base;charset=utf8', $dsn->formatPdo());
+        foreach ([
+            // Stupid database names are valid
+            'pgsql://1.2.3.4:1234/`{[@}e#',
+            'tcp://pgsql://1.2.3.4:1234/`{[@}e#',
+        ] as $string)
+        {
+            $dsn = new Dsn($string);
+            $this->assertSame(1234, $dsn->getPort());
+            $this->assertSame('1.2.3.4', $dsn->getHost());
+            $this->assertSame('`{[@}e#', $dsn->getDatabase());
+            $this->assertSame('pgsql', $dsn->getDriver());
+            $this->assertSame('tcp', $dsn->getScheme());
+            $this->assertFalse($dsn->isUnixSocket());
 
-        $dsn = new Dsn('unix:///var/run/mysql.sock:my_db');
-        $this->assertTrue($dsn->isUnixSocket());
-        $this->assertSame('unix:///var/run/mysql.sock:my_db', $dsn->formatFull());
-        $this->assertSame('unix:///var/run/mysql.sock', $dsn->formatWithoutDatabase());
-        $this->assertSame('mysql:unix_socket=/var/run/mysql.sock;dbname=my_db;charset=utf8', $dsn->formatPdo());
+            $this->assertSame('pgsql://1.2.3.4:1234/`{[@}e#', $dsn->formatFull());
+            $this->assertSame('pgsql://1.2.3.4:1234', $dsn->formatWithoutDatabase());
+            $this->assertSame('pgsql:host=1.2.3.4;port=1234;dbname=`{[@}e#;charset=utf8', $dsn->formatPdo());
+        }
 
-        // Failing cases
-        $failing = [
-            // Missing database for the next 4
+        foreach ([
+            'mysql://robert:666/my_base',
+            'tcp://mysql://robert:666/my_base',
+        ] as $string)
+        {
+            $dsn = new Dsn($string);
+            $this->assertSame(666, $dsn->getPort());
+            $this->assertSame('robert', $dsn->getHost());
+            $this->assertSame('my_base', $dsn->getDatabase());
+            $this->assertSame('mysql', $dsn->getDriver());
+            $this->assertSame('tcp', $dsn->getScheme());
+            $this->assertFalse($dsn->isUnixSocket());
+
+            $this->assertSame('mysql://robert:666/my_base', $dsn->formatFull());
+            $this->assertSame('mysql://robert:666', $dsn->formatWithoutDatabase());
+            $this->assertSame('mysql:host=robert;port=666;dbname=my_base;charset=utf8', $dsn->formatPdo());
+        }
+
+        foreach ([
+            'mysql:///oupsy_no_host',
+            'tcp://mysql:///oupsy_no_host',
+        ] as $string)
+        {
+            $dsn = new Dsn($string);
+            $this->assertSame(Dsn::DEFAULT_PORT_MYSQL, $dsn->getPort());
+            $this->assertSame(Dsn::DEFAULT_HOST, $dsn->getHost());
+            $this->assertSame('mysql', $dsn->getDriver());
+            $this->assertSame('tcp', $dsn->getScheme());
+            $this->assertSame('oupsy_no_host', $dsn->getDatabase());
+            $this->assertFalse($dsn->isUnixSocket());
+
+            $this->assertSame('mysql://' . Dsn::DEFAULT_HOST . ':' . Dsn::DEFAULT_PORT_MYSQL . '/oupsy_no_host', $dsn->formatFull());
+            $this->assertSame('mysql://' . Dsn::DEFAULT_HOST . ':' . Dsn::DEFAULT_PORT_MYSQL, $dsn->formatWithoutDatabase());
+            $this->assertSame('mysql:host=' . Dsn::DEFAULT_HOST . ';port=' . Dsn::DEFAULT_PORT_MYSQL . ';dbname=oupsy_no_host;charset=utf8', $dsn->formatPdo());
+        }
+
+        foreach ([
+            'pgsql:///oupsy_no_host',
+            'tcp://pgsql:///oupsy_no_host',
+        ] as $string)
+        {
+            $dsn = new Dsn($string);
+            $this->assertSame(Dsn::DEFAULT_PORT_PGSQL, $dsn->getPort());
+            $this->assertSame(Dsn::DEFAULT_HOST, $dsn->getHost());
+            $this->assertSame('pgsql', $dsn->getDriver());
+        }
+
+        $invalid = [
+            // Unsupported database type
+            'oracle://robert:666/my_base',
+            'tcp://oracle://robert:666/my_base',
+            // 'unix' given, DSN matches 'tcp'
+            'unix://mysql://localhost:1234/my_base',
+            'unix://mysql://1.2.3.4:1234/my_base',
+            'unix://pgsql://1.2.3.4:1234/my_base',
+            // 'tcp' given, DSN matches 'unix'
+            'tcp://pgsql:///var/run/pg.sock:some_database',
+            'tcp://pgsql:///var/run/pg.sock:some_other',
+            // Port without host
+            'mysql://:1234/my_base',
+            'mysql://:1234/my_base',
+            'pgsql://:1234/my_base',
+            // Missing database
+            'unix://mysql://localhost:1234',
+            'unix://mysql://1.2.3.4:1234',
+            'pgsql:///var/run/pg.sock',
+            'tcp://pgsql:///var/run/pg.sock',
+            // Random ones
             'tcp://localhost',
             'tcp://1.2.3.4:1234',
             'mysql://1.2.3.4:1234',
@@ -43,12 +123,12 @@ class DsnTest extends \PHPUnit_Framework_TestCase
             'locahost:1234/12',
             '/var/run/mysql.sock',
         ];
-        foreach ($failing as $string) {
+        foreach ($invalid as $string) {
             try {
                 new Dsn($string);
-                $this->fail(sprintf("%s: dsn is supposed to be invalid", $string));
+                $this->fail(sprintf("%s is not supposed to be valid", $string));
             } catch (\InvalidArgumentException $e) {
-                $this->assertTrue(true);
+                $this->assertTrue(true); // Just increment the assertion counter.
             }
         }
     }

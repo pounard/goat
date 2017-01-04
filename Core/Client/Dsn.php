@@ -5,22 +5,38 @@ namespace Goat\Core\Client;
 /**
  * Allow the following two reprensentations:
  *
- *   - scheme://example.com:3306/database
- *     where scheme can be either 'tcp' or 'mysql', hostname and port are optional
+ *   - [tcp://]DBTYPE://[HOSTNAME[:PORT]]/DATABASE
  *
- *   - unix:///path/to/socket:database
- *     where everything is mandatory
+ *     examples:
+ *       - pgsql://1.2.3.4:6578/my_database
+ *       - pgsql:///my_database
+ *       - tcp://mysql://somehost.example.net/my_database
+ *
+ *   - [unix://]DBTYPE://PATH:DATABASE
+ *
+ *     examples:
+ *       - pgsql:///path/to/pg.sock:my_database
+ *       - unix://mysql:///path/to/my.sock:my_database
+ *
+ * FIXME REWRITE THIS COMPLETLY
  */
 class Dsn
 {
-    const DEFAULT_SCHEME = 'tcp';
+    const SCHEME_TCP = 'tcp';
+    const SCHEME_UNIX = 'unix';
+
+    const REGEX_TCP = '@^(tcp\://|)([\w]+)\://(([^/\:]+)(\:(\d+)|)|)/([^\.]+)$@';
+    const REGEX_UNIX = '@^(unix\://|)([\w]+)\://(/[^\:]+)\:(.+)$@';
+
     const DEFAULT_HOST = '127.0.0.1';
-    const DEFAULT_PORT = 3306;
+    const DEFAULT_PORT_MYSQL = 3306;
+    const DEFAULT_PORT_PGSQL = 5432;
     const DEFAULT_CHARSET = 'utf8';
 
-    private $scheme = self::DEFAULT_SCHEME;
-    private $host = self::DEFAULT_HOST;
-    private $port = self::DEFAULT_PORT;
+    private $driver;
+    private $scheme;
+    private $host;
+    private $port;
     private $charset = self::DEFAULT_CHARSET;
     private $database;
     private $username;
@@ -41,57 +57,50 @@ class Dsn
     {
         $matches = [];
 
-        if (!preg_match('!^
-            ([\w]+)\://                 # Scheme
-            ([^\:/]+)(\:(\w+)|)         # Hostname:port
-            /(\w+)                      # Database
-            $!x', $string, $matches)
-        ) {
-            if (!preg_match('!^
-                (unix)://               # Scheme
-                ([^\:]+)                # /path/to/socket
-                \:(\w+)                 # Database
-                $!x', $string, $matches)
-            ) {
-                throw new \InvalidArgumentException(sprintf("%s: invalid dsn", $string));
-            }
-        }
+        if (preg_match(self::REGEX_TCP, $string, $matches)) {
 
-        if ('tcp' !== $matches[1] && 'mysql' !== $matches[1] && 'unix' !== $matches[1]) {
-            throw new \InvalidArgumentException(sprintf("%s: only supports 'tcp', 'mysql' or 'unix' scheme, '%s' given", $string, $matches[1]));
-        }
+            $this->scheme   = self::SCHEME_TCP;
+            $this->driver   = $matches[2];
+            $this->host     = $matches[4];
+            $this->port     = (int)$matches[6];
+            $this->database = $matches[7];
 
-        if ('unix' === $matches[1]) {
-            $this->scheme = 'unix';
-            $this->host = $matches[2];
-            $this->database = $matches[3];
-            $this->port = null;
-        } else {
-
-            if ('mysql' === $matches[1]) {
-                $this->scheme = 'tcp';
-            } else {
-                $this->scheme = $matches[1];
-            }
-
-            if (!empty($matches[2])) {
-                $this->host = $matches[2];
-            }
-
-            if (!empty($matches[4])) {
-                if ($matches[4] != (int)$matches[4]) {
-                    throw new \InvalidArgumentException(sprintf("%s: port must be integer, '%s' given", $string, $matches[4]));
+            if (empty($this->port)) {
+                switch ($this->driver) {
+                    case 'mysql':
+                        $this->port = self::DEFAULT_PORT_MYSQL;
+                        break;
+                      case 'pgsql':
+                        $this->port = self::DEFAULT_PORT_PGSQL;
+                        break;
                 }
-                $this->port = (int)$matches[4];
+            } else {
+                if (!is_int($this->port)) {
+                    throw new \InvalidArgumentException(sprintf("%s: port must be integer, '%s' given", $string, $this->port));
+                }
             }
 
-            if (!empty($matches[5])) {
-                $this->database = $matches[5];
+            if (empty($this->host)) {
+                $this->host = self::DEFAULT_HOST;
             }
+
+        } else if (preg_match(self::REGEX_UNIX, $string, $matches)) {
+
+            $this->scheme   = self::SCHEME_UNIX;
+            $this->driver   = $matches[2];
+            $this->host     = $matches[3];
+            $this->database = $matches[4];
+
+        } else {
+            throw new \InvalidArgumentException(sprintf("%s: invalid dsn", $string));
+        }
+
+        if ('pgsql' !== $this->driver && 'mysql' !== $this->driver) {
+            throw new \InvalidArgumentException(sprintf("%s: only supports 'pgsql', 'mysql' drivers, '%s' given", $string, $this->driver));
         }
 
         if (empty($this->database)) {
-            throw new \InvalidArgumentException(sprintf("%s: database name is mandatory", $string, $matches[1]));
+            throw new \InvalidArgumentException(sprintf("%s: database name is mandatory", $string));
         }
 
         $this->username = $username;
@@ -111,6 +120,11 @@ class Dsn
         return $this->password;
     }
 
+    public function getDriver()
+    {
+        return $this->driver;
+    }
+
     public function getScheme()
     {
         return $this->scheme;
@@ -118,28 +132,16 @@ class Dsn
 
     public function getHost()
     {
-        if ($this->isUnixSocket()) {
-            throw new \LogicException("You cannot get the host when the scheme is unix://");
-        }
-
         return $this->host;
     }
 
     public function getPort()
     {
-        if ($this->isUnixSocket()) {
-            throw new \LogicException("You cannot get the port when the scheme is unix://");
-        }
-
         return $this->port;
     }
 
     public function getSocketPath()
     {
-        if (!$this->isUnixSocket()) {
-            throw new \LogicException("You cannot get the socket path when the scheme is not unix://");
-        }
-
         return $this->host;
     }
 
@@ -166,9 +168,9 @@ class Dsn
     public function formatFull()
     {
         if ($this->isUnixSocket()) {
-            return 'unix://' . $this->host . ':' . $this->database;
+            return $this->formatWithoutDatabase() . ':' . $this->database;
         } else {
-            return $this->scheme . '://' . $this->host . ':' . $this->port . '/' . $this->database;
+            return $this->formatWithoutDatabase() . '/' . $this->database;
         }
     }
 
@@ -187,9 +189,9 @@ class Dsn
         ];
 
         if ($this->isUnixSocket()) {
-            $dsn = 'mysql:unix_socket=' . $this->host;
+            $dsn = $this->driver . ':unix_socket=' . $this->host;
         } else {
-            $dsn = 'mysql:host=' . $this->host;
+            $dsn = $this->driver . ':host=' . $this->host;
         }
 
         foreach ($map as $key => $value) {
@@ -209,9 +211,10 @@ class Dsn
     public function formatWithoutDatabase()
     {
         if ($this->isUnixSocket()) {
-            return 'unix://' . $this->host;
+            return 'unix://' . $this->driver . '://' . $this->host;
         } else {
-            return $this->scheme . '://' . $this->host . ':' . $this->port;
+            // Omit 'tcp://' this is the most usual case
+            return $this->driver . '://' . $this->host . ':' . $this->port;
         }
     }
 }
