@@ -111,17 +111,9 @@ EOT;
             ->orderBy('task_note.type')
             ->orderBy('count(task_note.nid)', SelectQuery::ORDER_DESC)
             ->range(7, 42)
-        ;
-
-        $where = $query
-            ->where()
             ->condition('task.user_id', 12)
-            ->condition('task.deadline', $where->raw('now()'), '<')
-        ;
-
-        $having = $query
-            ->having()
-            ->statement('count(task_note.nid) < $*', 3)
+            ->statement('task.deadline < now()')
+            ->havingStatement('count(task_note.nid) < $*', 3)
         ;
 
         $this->assertSameSql($reference, $formatter->format($query));

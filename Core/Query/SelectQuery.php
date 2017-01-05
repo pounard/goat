@@ -232,6 +232,72 @@ class SelectQuery
     }
 
     /**
+     * Add a condition in the where clause
+     *
+     * @param string $column
+     * @param mixed $value
+     * @param string $operator
+     *
+     * @return $this
+     */
+    public function condition($column, $value, $operator = Where::EQUAL)
+    {
+        $this->where->condition($column, $value, $operator);
+
+        return $this;
+    }
+
+    /**
+     * Add an abitrary statement to the where clause
+     *
+     * @param string $statement
+     *   SQL string, which may contain parameters
+     * @param mixed[] $arguments
+     *   Parameters for the arbitrary SQL
+     *
+     * @return $this
+     */
+    public function statement($statement, $arguments = [])
+    {
+        $this->where->statement($statement, $arguments);
+
+        return $this;
+    }
+
+    /**
+     * Add a condition in the having clause
+     *
+     * @param string $column
+     * @param mixed $value
+     * @param string $operator
+     *
+     * @return $this
+     */
+    public function havingCondition($column, $value, $operator = Where::EQUAL)
+    {
+        $this->having->condition($column, $value, $operator);
+
+        return $this;
+    }
+
+    /**
+     * Add an abitrary statement to the having clause
+     *
+     * @param string $statement
+     *   SQL string, which may contain parameters
+     * @param mixed[] $arguments
+     *   Parameters for the arbitrary SQL
+     *
+     * @return $this
+     */
+    public function havingStatement($statement, $arguments = [])
+    {
+        $this->having->statement($statement, $arguments);
+
+        return $this;
+    }
+
+    /**
      * Add join statement
      *
      * @param string $relation
