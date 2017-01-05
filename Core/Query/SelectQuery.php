@@ -5,7 +5,10 @@ namespace Goat\Core\Query;
 use Goat\Core\Client\ConnectionInterface;
 
 /**
- * Represents a paginated query
+ * Represents a select query
+ *
+ * @todo this needs to be plugged to an escaper, for literal escaping such as
+ *   column names and relation names
  */
 class SelectQuery
 {
@@ -22,10 +25,8 @@ class SelectQuery
     const NULL_LAST = 1;
     const NULL_FIRST = 2;
 
-    use SelectTrait;
-
-    private $fields = [];
     private $aliasIndex = 0;
+    private $fields = [];
     private $relation;
     private $relationAlias;
     private $relations = [];
@@ -35,7 +36,8 @@ class SelectQuery
     private $having;
     private $groups = [];
     private $orders = [];
-    private $range;
+    private $limit = 0;
+    private $offset = 0;
 
     /**
      * Build a new query
@@ -44,8 +46,6 @@ class SelectQuery
      *   SQL from statement relation name
      * @param string $alias
      *   Alias for from clause relation
-     * @param ConnectionInterface $connection
-     *   Connection, so that it can really do query
      */
     public function __construct($relation, $alias = null)
     {
@@ -103,6 +103,57 @@ class SelectQuery
     }
 
     /**
+     * Get select columns array
+     *
+     * @return array
+     */
+    public function getAllColumns()
+    {
+        return $this->fields;
+    }
+
+    /**
+     * Get group by clauses array
+     *
+     * @return array
+     */
+    public function getAllGroupBy()
+    {
+        return $this->groups;
+    }
+
+    /**
+     * Get order by clauses array
+     *
+     * @return array
+     */
+    public function getAllOrderBy()
+    {
+        return $this->orders;
+    }
+
+    /**
+     * Get join clauses array
+     *
+     * @return array
+     */
+    public function getAllJoin()
+    {
+        return $this->joins;
+    }
+
+    /**
+     * Get query range
+     *
+     * @return int[]
+     *   First value is limit second is offset
+     */
+    public function getRange()
+    {
+        return [$this->limit, $this->offset];
+    }
+
+    /**
      * Does alias exists
      *
      * @param string $alias
@@ -115,14 +166,80 @@ class SelectQuery
     }
 
     /**
+     * Set or replace a field with a content.
+     *
+     * @param string $statement
+     *   SQL select field
+     * @param string
+     *   If alias to be different from the field
+     *
+     * @return $this
+     */
+    public function field($statement, $alias = null)
+    {
+        $noAlias = false;
+
+        if (!$alias) {
+            if (!is_string($statement)) {
+                throw new \InvalidArgumentException("when providing no alias for select field, statement must be a string");
+            }
+
+            // Match for RELATION.COLUMN for aliasing properly
+            if (false !==  strpos($statement, '.')) {
+                list(, $column) = explode('.', $statement);
+
+                if ('*' === $column) {
+                    $alias = $statement;
+                    $noAlias = true;
+                } else {
+                    $alias = $column;
+                }
+
+            } else {
+                $alias = $statement;
+            }
+        }
+
+        $this->fields[$alias] = [$statement, ($noAlias ? null : $alias)];
+
+        return $this;
+    }
+
+    /**
+     * Remove field from projection
+     *
+     * @param string $name
+     *
+     * @return $this
+     */
+    public function removeField($alias)
+    {
+        unset($this->fields[$alias]);
+
+        return $this;
+    }
+
+    /**
+     * Does this project have the given field
+     *
+     * @param string $name
+     *
+     * @return boolean
+     */
+    public function hasField($alias)
+    {
+        return isset($this->fields[$alias]);
+    }
+
+    /**
      * Add join statement
      *
      * @param string $relation
-     * @param string|Where $condition
+     * @param string|Where|RawStatement $condition
      * @param string $alias
      * @param int $mode
      *
-     * @return Where
+     * @return $this
      */
     public function join($relation, $condition = null, $alias = null, $mode = self::JOIN_INNER)
     {
@@ -136,7 +253,7 @@ class SelectQuery
 
         if (null === $condition) {
             $condition = new Where();
-        } else if (is_string($condition)) {
+        } else if (is_string($condition) || $condition instanceof RawStatement) {
             $condition = (new Where())->statement($condition);
         } else {
             if (!$condition instanceof Where) {
@@ -145,6 +262,30 @@ class SelectQuery
         }
 
         $this->joins[$alias] = [$relation, $condition, $mode];
+
+        return $this;
+    }
+
+    /**
+     * Add join statement and return the associated Where
+     *
+     * @param string $relation
+     * @param string $alias
+     * @param int $mode
+     *
+     * @return Where
+     */
+    public function joinWhere($relation, $alias = null, $mode = self::JOIN_INNER)
+    {
+        if (null === $alias) {
+            $alias = $this->getAliasFor($relation);
+        } else {
+            if ($this->aliasExists($alias)) {
+                throw new \InvalidArgumentException(sprintf("%s alias is already registered for relation %s", $alias, $this->relations[$alias]));
+            }
+        }
+
+        $this->joins[$alias] = [$relation, $condition = new Where(), $mode];
 
         return $condition;
     }
@@ -156,11 +297,13 @@ class SelectQuery
      * @param string|Where $condition
      * @param string $alias
      *
-     * @return Where
+     * @return $this
      */
     public function innerJoin($relation, $condition = null, $alias = null)
     {
-        return $this->join($relation, $condition, $alias, self::JOIN_INNER);
+        $this->join($relation, $condition, $alias, self::JOIN_INNER);
+
+        return $this;
     }
 
     /**
@@ -170,11 +313,39 @@ class SelectQuery
      * @param string|Where $condition
      * @param string $alias
      *
-     * @return Where
+     * @return $this
      */
     public function leftJoin($relation, $condition = null, $alias = null)
     {
-        return $this->join($relation, $condition, $alias, self::JOIN_LEFT_OUTER);
+        $this->join($relation, $condition, $alias, self::JOIN_LEFT_OUTER);
+
+        return $this;
+    }
+
+    /**
+     * Add inner statement and return the associated Where
+     *
+     * @param string $relation
+     * @param string $alias
+     *
+     * @return $this
+     */
+    public function innerJoinWhere($relation, $alias = null)
+    {
+        return $this->joinWhere($relation, $alias, self::JOIN_INNER);
+    }
+
+    /**
+     * Add left outer join statement and return the associated Where
+     *
+     * @param string $relation
+     * @param string $alias
+     *
+     * @return $this
+     */
+    public function leftJoinWhere($relation, $alias = null)
+    {
+        return $this->joinWhere($relation, $alias, self::JOIN_LEFT_OUTER);
     }
 
     /**
@@ -245,182 +416,17 @@ class SelectQuery
      */
     public function range($limit, $offset = 0)
     {
-        $this->range = [$limit, $offset];
+        if (!is_int($limit) || $limit < 0) {
+            throw new \InvalidArgumentException("limit must be a positive integer");
+        }
+        if (!is_int($offset) || $offset < 0) {
+            throw new \InvalidArgumentException("offset must be a positive integer");
+        }
+
+        $this->limit = $limit;
+        $this->offset = $offset;
 
         return $this;
-    }
-
-    /**
-     * Format a single group by
-     *
-     * @param string $column
-     * @param int $order
-     * @param int $null
-     */
-    protected function formatOrderBy($column, $order, $null)
-    {
-        if (self::ORDER_ASC === $order) {
-            $orderStr = 'asc';
-        } else {
-            $orderStr = 'desc';
-        }
-
-        switch ($null) {
-
-            case self::NULL_FIRST:
-                $nullStr = ' nulls first';
-                break;
-
-            case self::NULL_LAST:
-                $nullStr = ' nulls last';
-                break;
-
-            case self::NULL_IGNORE:
-            default:
-                $nullStr = '';
-                break;
-        }
-
-        return sprintf('%s %s%s', $column, $orderStr, $nullStr);
-    }
-
-    /**
-     * Format all single order by clause
-     *
-     * @return string
-     */
-    private function formatOrderByAll()
-    {
-        if (!$this->orders) {
-            return '';
-        }
-
-        $output = [];
-
-        foreach ($this->orders as $data) {
-            list($column, $order, $null) = $data;
-            $output[] = $this->formatOrderBy($column, $order, $null);
-        }
-
-        return "order by " . implode(", ", $output);
-    }
-
-    /**
-     * Format a single group by clause
-     *
-     * @return string
-     */
-    protected function formatGroupBy($column)
-    {
-        return $column;
-    }
-
-    /**
-     * Format all single group by clause
-     */
-    private function formatGroupByAll()
-    {
-        if (!$this->groups) {
-            return '';
-        }
-
-        $output = [];
-
-        foreach ($this->groups as $column) {
-            $output[] = $this->formatGroupBy($column);
-        }
-
-        return "group by " . implode(", ", $output);
-    }
-
-    /**
-     * Format a single join statement
-     *
-     * @param int $mode
-     * @param string $relation
-     * @param string $alias
-     * @param Where $condition
-     *
-     * @return string
-     */
-    protected function formatJoin($mode, $relation, $alias, Where $condition)
-    {
-        switch ($mode) {
-
-            case self::JOIN_NATURAL:
-                $prefix = 'natural join';
-                break;
-
-            case self::JOIN_LEFT:
-            case self::JOIN_LEFT_OUTER:
-                $prefix = 'left outer join';
-                break;
-
-            case self::JOIN_INNER:
-            default:
-                $prefix = 'inner join';
-                break;
-        }
-
-        if ($condition->isEmpty()) {
-            return sprintf("%s %s %s", $prefix, $relation, $alias);
-        } else {
-            return sprintf("%s %s %s on (%s)", $prefix, $relation, $alias, $condition);
-        }
-    }
-
-    /**
-     * Format all join statements
-     *
-     * @return string
-     */
-    private function formatJoinAll()
-    {
-        if (!$this->joins) {
-            return '';
-        }
-
-        $output = [];
-
-        foreach ($this->joins as $alias => $join) {
-            list($relation, $condition, $mode) = $join;
-            $output[] = $this->formatJoin($mode, $relation, $alias, $condition);
-        }
-
-        return implode("\n", $output);
-    }
-
-    /**
-     * Format range statement
-     *
-     * @param int $limit
-     *   O means no limit
-     * @param int $offset
-     *   0 means default offset
-     */
-    protected function formatRange($limit = 0, $offset = 0)
-    {
-        if ($limit) {
-            return sprintf('limit %d offset %d', $limit, $offset);
-        } else if ($offset) {
-            return sprintf('offset %d', $offset);
-        } else {
-            return '';
-        }
-    }
-
-    /**
-     * Format current range statement
-     *
-     * @return string
-     */
-    private function formatRangeAll()
-    {
-        if (!$this->range) {
-            return '';
-        }
-
-        return $this->formatRange($this->range[0], $this->range[1]);
     }
 
     /**
@@ -434,40 +440,5 @@ class SelectQuery
             $this->where->getArguments(),
             $this->having->getArguments()
         );
-    }
-
-    /**
-     * From query as SQL
-     *
-     * @return string
-     */
-    public function format()
-    {
-        $output = [];
-        $output[] = sprintf(
-            "select %s\nfrom %s %s\n%s",
-            $this->formatProjectionAll(),
-            $this->relation,
-            $this->relationAlias,
-            $this->formatJoinAll()
-        );
-
-        if (!$this->where->isEmpty()) {
-            $output[] = sprintf('where %s', $this->where);
-        }
-        if ($this->groups) {
-            $output[] = $this->formatGroupByAll();
-        }
-        if ($this->orders) {
-            $output[] = $this->formatOrderByAll();
-        }
-        if ($this->range) {
-            $output[] = $this->formatRangeAll();
-        }
-        if (!$this->having->isEmpty()) {
-            $output[] = sprintf('having %s', $this->having);
-        }
-
-        return implode("\n", $output);
     }
 }

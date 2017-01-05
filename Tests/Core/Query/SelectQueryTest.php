@@ -4,6 +4,7 @@ namespace Goat\Tests\Core\Query;
 
 use Goat\Core\Query\SelectQuery;
 use Goat\Core\Query\RawStatement;
+use Goat\Core\Query\SqlFormatter;
 
 class SelectQueryTest extends \PHPUnit_Framework_TestCase
 {
@@ -11,6 +12,8 @@ class SelectQueryTest extends \PHPUnit_Framework_TestCase
 
     public function testSimpleQuery()
     {
+        $formatter = new SqlFormatter(new NullEscaper());
+
         $referenceArguments = [12, 3];
         $reference = <<<EOT
 select t.*, n.type as type, count(n.id) as comment_count
@@ -49,7 +52,7 @@ EOT;
         $having = $query->having();
         $having->statement('count(n.nid) < $*', 3);
 
-        $this->assertSameSql($reference, $query->format());
+        $this->assertSameSql($reference, $formatter->format($query));
         $this->assertSame($referenceArguments, $query->getArguments());
 
         // Builder way
@@ -64,7 +67,7 @@ EOT;
             ->range(7, 42)
         ;
         $query
-            ->leftJoin('task_note', null, 'n')
+            ->leftJoinWhere('task_note', 'n')
             ->condition('n.task_id', new RawStatement('t.id'))
         ;
         $where = $query->where()
@@ -75,7 +78,7 @@ EOT;
             ->statement('count(n.nid) < $*', 3)
         ;
 
-        $this->assertSameSql($reference, $query->format());
+        $this->assertSameSql($reference, $formatter->format($query));
         $this->assertSame($referenceArguments, $query->getArguments());
 
         // Same without alias
@@ -98,24 +101,30 @@ having
 EOT;
 
         // Most basic way
-        $query = new SelectQuery('task');
-        $query->field('task.*');
-        $query->field('task_note.type');
-        $query->field('count(task_note.id)', 'comment_count');
-        $query->leftJoin('task_note', 'task_note.task_id = task.id', 'task_note');
-        $query->groupBy('task.id');
-        $query->groupBy('task_note.type');
-        $query->orderBy('task_note.type');
-        $query->orderBy('count(task_note.nid)', SelectQuery::ORDER_DESC);
-        $query->range(7, 42);
-        $where = $query->where();
-        $where->condition('task.user_id', 12);
-        $where->condition('task.deadline', $where->raw('now()'), '<');
-        $having = $query->having();
-        $having->statement('count(task_note.nid) < $*', 3);
+        $query = (new SelectQuery('task'))
+            ->field('task.*')
+            ->field('task_note.type')
+            ->field('count(task_note.id)', 'comment_count')
+            ->leftJoin('task_note', 'task_note.task_id = task.id', 'task_note')
+            ->groupBy('task.id')
+            ->groupBy('task_note.type')
+            ->orderBy('task_note.type')
+            ->orderBy('count(task_note.nid)', SelectQuery::ORDER_DESC)
+            ->range(7, 42)
+        ;
 
-        $this->assertSameSql($reference, $query->format());
+        $where = $query
+            ->where()
+            ->condition('task.user_id', 12)
+            ->condition('task.deadline', $where->raw('now()'), '<')
+        ;
 
+        $having = $query
+            ->having()
+            ->statement('count(task_note.nid) < $*', 3)
+        ;
+
+        $this->assertSameSql($reference, $formatter->format($query));
         $this->assertSame($referenceArguments, $query->getArguments());
     }
 }

@@ -5,6 +5,7 @@ namespace Goat\Driver\PDO;
 use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Client\ConnectionTrait;
 use Goat\Core\Client\Dsn;
+use Goat\Core\Query\SelectQuery;
 
 class PDOConnection implements ConnectionInterface
 {
@@ -107,6 +108,7 @@ class PDOConnection implements ConnectionInterface
      */
     public function escapeIdentifier($string)
     {
+        // FIXME this is MySQL only
         return '`' . str_replace('`', '\\`', $string) . '`';
     }
 
@@ -160,6 +162,7 @@ class PDOConnection implements ConnectionInterface
 
         // MySQL is so stupid when it comes to prepared statements that I would
         // prefer to just store the SQL and run it later...
+        // FIXME this is PgSQL can do better
         $this->prepared[$identifier] = $sql;
 
         return $identifier;
@@ -168,13 +171,23 @@ class PDOConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function executePreparedQuery($identifier, array $parameters = [])
+    public function executePreparedQuery($identifier, array $parameters = [], $enableConverters = true)
     {
         if (!isset($this->prepared[$identifier])) {
             throw new \LogicException(sprintf("'%s': query was not prepared", $identifier));
         }
 
-        return $this->query($this->prepared[$identifier], $parameters);
+        return $this->query($this->prepared[$identifier], $parameters, $enableConverters);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function select($relation, $alias = null)
+    {
+        $select = new SelectQuery($relation, $alias);
+
+        return $select;
     }
 
     /**
@@ -182,6 +195,7 @@ class PDOConnection implements ConnectionInterface
      */
     public function setClientEncoding($encoding)
     {
+        // FIXME this is MySQL only
         $this->getPdo()->query("SET character_set_client = ?", [$encoding]);
     }
 }

@@ -18,7 +18,7 @@ namespace Goat\Core\Client;
  *       - pgsql:///path/to/pg.sock:my_database
  *       - unix://mysql:///path/to/my.sock:my_database
  */
-class Dsn
+final class Dsn
 {
     const SCHEME_TCP = 'tcp';
     const SCHEME_UNIX = 'unix';

@@ -28,7 +28,7 @@ class StringConverter implements ConverterInterface, EscaperAwareInterface
         }
         //return (string)$this->escaper->escapeLiteral($value);
         // We are actually using PDO in prepare emulation mode, we don't need
-        // to actually any strings.
+        // to actually escape any strings.
         return (string)$value;
     }
 
