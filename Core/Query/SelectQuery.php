@@ -184,6 +184,10 @@ class SelectQuery extends FromClause
      */
     public function groupBy($column)
     {
+        if (!is_string($column)) {
+            throw new QueryError("grouping by something else than a column name is not supported");
+        }
+
         $this->groups[] = $column;
 
         return $this;
@@ -225,5 +229,39 @@ class SelectQuery extends FromClause
             $this->where->getArguments(),
             $this->having->getArguments()
         );
+    }
+
+    /**
+     * Get the count SelectQuery
+     *
+     * @param string $countAlias
+     *   Alias of the count column
+     *
+     * @return SelectQuery
+     *   Returned query will be a clone, the count row will be aliased with the
+     *   given alias
+     */
+    public function getCountQuery($countAlias = 'count')
+    {
+        return (clone $this)
+            ->removeAllColumns()
+            ->range(0, 0)
+            ->field("count(*)", $countAlias)
+        ;
+    }
+
+    /**
+     * Deep clone support.
+     */
+    public function __clone()
+    {
+        foreach ($this->orders as $index => $order) {
+            if (is_object($order[0])) {
+                $this->joins[$index][0] = clone $order[0];
+            }
+        }
+
+        $this->where = clone $this->where;
+        $this->having = clone $this->having;
     }
 }

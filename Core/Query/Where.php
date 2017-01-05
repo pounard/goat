@@ -353,4 +353,28 @@ class Where
     {
         return $this->format();
     }
+
+    /**
+     * Deep clone support.
+     */
+    public function __clone()
+    {
+        foreach ($this->arguments as $index => $value) {
+            if (is_object($value)) {
+                $this->arguments[$index] = clone $value;
+            }
+        }
+
+        foreach ($this->conditions as $index => $condition) {
+            if (is_object($condition)) {
+                $this->conditions[$index] = clone $condition;
+            } else if (is_array($condition)) {
+                foreach ($condition as $key => $item) {
+                    if (is_object($item)) {
+                        $this->conditions[$index][$key] = clone $item;
+                    }
+                }
+            }
+        }
+    }
 }

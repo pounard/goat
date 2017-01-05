@@ -8,6 +8,10 @@ use Goat\Core\Error\QueryError;
  * Represents the SELECT part of a SELECT query.
  *
  * It can be used for RETURNING statements.
+ *
+ * @todo
+ *   - support a SelectQuery as FROM relation
+ *   - implement __clone() once this done
  */
 class SelectClause
 {
@@ -59,6 +63,28 @@ class SelectClause
     }
 
     /**
+     * Get select columns array
+     *
+     * @return array
+     */
+    public function getAllColumns()
+    {
+        return $this->fields;
+    }
+
+    /**
+     * Remove everything from the current SELECT clause
+     *
+     * @return $this
+     */
+    public function removeAllColumns()
+    {
+        $this->fields = [];
+
+        return $this;
+    }
+
+    /**
      * Get alias for relation, if none registered add a new one
      *
      * @param string $relation
@@ -78,16 +104,6 @@ class SelectClause
         $this->relations[$alias] = $relation;
 
         return $alias;
-    }
-
-    /**
-     * Get select columns array
-     *
-     * @return array
-     */
-    public function getAllColumns()
-    {
-        return $this->fields;
     }
 
     /**

@@ -55,4 +55,20 @@ class RawStatement
     {
         return $this->statement;
     }
+
+    /**
+     * Deep clone support.
+     */
+    public function __clone()
+    {
+        foreach ($this->arguments as $index => $value) {
+            if (is_object($value)) {
+                $this->arguments[$index] = clone $value;
+            }
+        }
+
+        if (is_object($this->statement)) {
+            $this->statement = clone $this->statement;
+        }
+    }
 }

@@ -141,4 +141,14 @@ class FromClause extends SelectClause
     {
         return $this->joinWhere($relation, $alias, Query::JOIN_LEFT_OUTER);
     }
+
+    /**
+     * Deep clone support.
+     */
+    public function __clone()
+    {
+        foreach ($this->joins as $index => $join) {
+            $this->joins[$index][1] = clone $join[1];
+        }
+    }
 }

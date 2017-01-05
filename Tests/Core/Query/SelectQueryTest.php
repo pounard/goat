@@ -33,6 +33,22 @@ limit 7 offset 42
 having
     count(n.nid) < $*
 EOT;
+        $countReference = <<<EOT
+select count(*) as count
+from task t
+left outer join task_note n
+    on (n.task_id = t.id)
+where
+    t.user_id = $*
+    and t.deadline < now()
+group
+    by t.id, n.type
+order by
+    n.type asc,
+    count(n.nid) desc
+having
+    count(n.nid) < $*
+EOT;
 
         // Compact way
         $query = new SelectQuery('task', 't');
@@ -55,6 +71,14 @@ EOT;
 
         $this->assertSameSql($reference, $formatter->format($query));
         $this->assertSame($referenceArguments, $query->getArguments());
+
+        $countQuery = $query->getCountQuery();
+        $this->assertSameSql($countReference, $formatter->format($countQuery));
+        $this->assertSame($referenceArguments, $countQuery->getArguments());
+
+        $clonedQuery = clone $query;
+        $this->assertSameSql($reference, $formatter->format($clonedQuery));
+        $this->assertSame($referenceArguments, $clonedQuery->getArguments());
 
         // Builder way
         $query = (new SelectQuery('task', 't'))
@@ -82,6 +106,14 @@ EOT;
         $this->assertSameSql($reference, $formatter->format($query));
         $this->assertSame($referenceArguments, $query->getArguments());
 
+        $countQuery = $query->getCountQuery();
+        $this->assertSameSql($countReference, $formatter->format($countQuery));
+        $this->assertSame($referenceArguments, $countQuery->getArguments());
+
+        $clonedQuery = clone $query;
+        $this->assertSameSql($reference, $formatter->format($clonedQuery));
+        $this->assertSame($referenceArguments, $clonedQuery->getArguments());
+
         // Same without alias
         $reference = <<<EOT
 select task.*, task_note.type as type, count(task_note.id) as comment_count
@@ -97,6 +129,22 @@ order by
     task_note.type asc,
     count(task_note.nid) desc
 limit 7 offset 42
+having
+    count(task_note.nid) < $*
+EOT;
+        $countReference = <<<EOT
+select count(*) as count
+from task task
+left outer join task_note task_note
+    on (task_note.task_id = task.id)
+where
+    task.user_id = $*
+    and task.deadline < now()
+group
+    by task.id, task_note.type
+order by
+    task_note.type asc,
+    count(task_note.nid) desc
 having
     count(task_note.nid) < $*
 EOT;
@@ -119,5 +167,13 @@ EOT;
 
         $this->assertSameSql($reference, $formatter->format($query));
         $this->assertSame($referenceArguments, $query->getArguments());
+
+        $countQuery = $query->getCountQuery();
+        $this->assertSameSql($countReference, $formatter->format($countQuery));
+        $this->assertSame($referenceArguments, $countQuery->getArguments());
+
+        $clonedQuery = clone $query;
+        $this->assertSameSql($reference, $formatter->format($clonedQuery));
+        $this->assertSame($referenceArguments, $clonedQuery->getArguments());
     }
 }
