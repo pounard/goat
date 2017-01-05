@@ -37,9 +37,9 @@ interface SqlFormatterInterface
      *
      * @param string $column
      * @param int $order
-     *   SelectQuery::ORDER_* constant
+     *   Query::ORDER_* constant
      * @param int $null
-     *   SelectQuery::NULL_* constant
+     *   Query::NULL_* constant
      */
     public function formatOrderBy($column, $order, $null);
 
@@ -49,8 +49,8 @@ interface SqlFormatterInterface
      * @param $orders
      *   Each order is an array that must contain:
      *     - 0: string column name or alias
-     *     - 1: SelectQuery::ORDER_* constant
-     *     - 2: SelectQuery::NULL_* constant
+     *     - 1: Query::ORDER_* constant
+     *     - 2: Query::NULL_* constant
      *
      * @return string
      */
@@ -77,7 +77,7 @@ interface SqlFormatterInterface
      * Format a single join statement
      *
      * @param int $mode
-     *   SelectQuery::JOIN_* constant
+     *   Query::JOIN_* constant
      * @param string $relation
      *   Relation to join on name
      * @param string $alias
@@ -99,7 +99,7 @@ interface SqlFormatterInterface
      *     - key must be the relation alias
      *     - 0: string relation name
      *     - 1: Where or null condition
-     *     - 2: SelectQuery::JOIN_* constant
+     *     - 2: Query::JOIN_* constant
      *
      * @return string
      */

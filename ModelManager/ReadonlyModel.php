@@ -3,8 +3,8 @@
 namespace Goat\ModelManager;
 
 use Goat\Core\Client\ConnectionInterface;
+use Goat\Core\Client\PagerResultIterator;
 use Goat\Core\Query\Where;
-use Goat\Core\Query\Pager;
 
 class ReadonlyModel
 {
@@ -225,7 +225,7 @@ class ReadonlyModel
      */
     public function findAllWithPager(Where $where = null, $suffix = '', $limit = 100, $page = 1)
     {
-        return new Pager(
+        return new PagerResultIterator(
             $this->findAll($where, $suffix . sprintf(' limit %d offset %d', $limit, $limit * ($page - 1))),
             $this->countWhere($where, $suffix),
             $limit,

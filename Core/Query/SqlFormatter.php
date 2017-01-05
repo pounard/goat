@@ -60,7 +60,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      */
     public function formatOrderBy($column, $order, $null)
     {
-        if (SelectQuery::ORDER_ASC === $order) {
+        if (Query::ORDER_ASC === $order) {
             $orderStr = 'asc';
         } else {
             $orderStr = 'desc';
@@ -68,15 +68,15 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
 
         switch ($null) {
 
-            case SelectQuery::NULL_FIRST:
+            case Query::NULL_FIRST:
                 $nullStr = ' nulls first';
                 break;
 
-            case SelectQuery::NULL_LAST:
+            case Query::NULL_LAST:
                 $nullStr = ' nulls last';
                 break;
 
-            case SelectQuery::NULL_IGNORE:
+            case Query::NULL_IGNORE:
             default:
                 $nullStr = '';
                 break;
@@ -137,16 +137,16 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
     {
         switch ($mode) {
 
-            case SelectQuery::JOIN_NATURAL:
+            case Query::JOIN_NATURAL:
                 $prefix = 'natural join';
                 break;
 
-            case SelectQuery::JOIN_LEFT:
-            case SelectQuery::JOIN_LEFT_OUTER:
+            case Query::JOIN_LEFT:
+            case Query::JOIN_LEFT_OUTER:
                 $prefix = 'left outer join';
                 break;
 
-            case SelectQuery::JOIN_INNER:
+            case Query::JOIN_INNER:
             default:
                 $prefix = 'inner join';
                 break;

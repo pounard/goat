@@ -2,8 +2,9 @@
 
 namespace Goat\Tests\Core\Query;
 
-use Goat\Core\Query\SelectQuery;
+use Goat\Core\Query\Query;
 use Goat\Core\Query\RawStatement;
+use Goat\Core\Query\SelectQuery;
 use Goat\Core\Query\SqlFormatter;
 
 class SelectQueryTest extends \PHPUnit_Framework_TestCase
@@ -44,7 +45,7 @@ EOT;
         $query->groupBy('t.id');
         $query->groupBy('n.type');
         $query->orderBy('n.type');
-        $query->orderBy('count(n.nid)', SelectQuery::ORDER_DESC);
+        $query->orderBy('count(n.nid)', Query::ORDER_DESC);
         $query->range(7, 42);
         $where = $query->where();
         $where->condition('t.user_id', 12);
@@ -63,7 +64,7 @@ EOT;
             ->groupBy('t.id')
             ->groupBy('n.type')
             ->orderBy('n.type')
-            ->orderBy('count(n.nid)', SelectQuery::ORDER_DESC)
+            ->orderBy('count(n.nid)', Query::ORDER_DESC)
             ->range(7, 42)
         ;
         $query
@@ -109,7 +110,7 @@ EOT;
             ->groupBy('task.id')
             ->groupBy('task_note.type')
             ->orderBy('task_note.type')
-            ->orderBy('count(task_note.nid)', SelectQuery::ORDER_DESC)
+            ->orderBy('count(task_note.nid)', Query::ORDER_DESC)
             ->range(7, 42)
             ->condition('task.user_id', 12)
             ->statement('task.deadline < now()')

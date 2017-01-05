@@ -3,6 +3,7 @@
 namespace Goat\Core\Query;
 
 use Goat\Core\Error\QueryError;
+use Goat\Core\Query\Partial\FromClause;
 
 /**
  * Represents a select query
@@ -10,28 +11,8 @@ use Goat\Core\Error\QueryError;
  * @todo this needs to be plugged to an escaper, for literal escaping such as
  *   column names and relation names
  */
-class SelectQuery
+class SelectQuery extends FromClause
 {
-    const ALIAS_PREFIX = 'goat';
-
-    const JOIN_NATURAL = 1;
-    const JOIN_LEFT = 2;
-    const JOIN_LEFT_OUTER = 3;
-    const JOIN_INNER = 4;
-
-    const ORDER_ASC = 1;
-    const ORDER_DESC = 2;
-    const NULL_IGNORE = 0;
-    const NULL_LAST = 1;
-    const NULL_FIRST = 2;
-
-    private $aliasIndex = 0;
-    private $fields = [];
-    private $relation;
-    private $relationAlias;
-    private $relations = [];
-    private $joins = [];
-    private $sql;
     private $where;
     private $having;
     private $groups = [];
@@ -49,67 +30,10 @@ class SelectQuery
      */
     public function __construct($relation, $alias = null)
     {
-        if (null === $alias) {
-            $alias = $relation;
-        }
+        parent::__construct($relation, $alias);
 
-        $this->relation = $relation;
-        $this->relations[$alias] = $relation;
-        $this->relationAlias = $alias;
         $this->where = new Where();
         $this->having = new Where();
-    }
-
-    /**
-     * Get SQL from relation
-     *
-     * @return string
-     */
-    public function getRelation()
-    {
-        return $this->relation;
-    }
-
-    /**
-     * Proxy of ::getAliasFor(::getRelation())
-     *
-     * @return string
-     */
-    public function getRelationAlias()
-    {
-        return $this->relationAlias;
-    }
-
-    /**
-     * Get alias for relation, if none registered add a new one
-     *
-     * @param string $relation
-     *
-     * @return string
-     */
-    public function getAliasFor($relation)
-    {
-        $index = array_search($relation, $this->relations);
-
-        if (false !== $index) {
-            $alias = self::ALIAS_PREFIX . ++$this->aliasIndex;
-        } else {
-            $alias = $relation;
-        }
-
-        $this->relations[$alias] = $relation;
-
-        return $alias;
-    }
-
-    /**
-     * Get select columns array
-     *
-     * @return array
-     */
-    public function getAllColumns()
-    {
-        return $this->fields;
     }
 
     /**
@@ -133,16 +57,6 @@ class SelectQuery
     }
 
     /**
-     * Get join clauses array
-     *
-     * @return array
-     */
-    public function getAllJoin()
-    {
-        return $this->joins;
-    }
-
-    /**
      * Get query range
      *
      * @return int[]
@@ -151,84 +65,6 @@ class SelectQuery
     public function getRange()
     {
         return [$this->limit, $this->offset];
-    }
-
-    /**
-     * Does alias exists
-     *
-     * @param string $alias
-     *
-     * @return boolean
-     */
-    public function aliasExists($alias)
-    {
-        return isset($this->relations[$alias]);
-    }
-
-    /**
-     * Set or replace a field with a content.
-     *
-     * @param string $statement
-     *   SQL select field
-     * @param string
-     *   If alias to be different from the field
-     *
-     * @return $this
-     */
-    public function field($statement, $alias = null)
-    {
-        $noAlias = false;
-
-        if (!$alias) {
-            if (!is_string($statement)) {
-                throw new QueryError("when providing no alias for select field, statement must be a string");
-            }
-
-            // Match for RELATION.COLUMN for aliasing properly
-            if (false !==  strpos($statement, '.')) {
-                list(, $column) = explode('.', $statement);
-
-                if ('*' === $column) {
-                    $alias = $statement;
-                    $noAlias = true;
-                } else {
-                    $alias = $column;
-                }
-
-            } else {
-                $alias = $statement;
-            }
-        }
-
-        $this->fields[$alias] = [$statement, ($noAlias ? null : $alias)];
-
-        return $this;
-    }
-
-    /**
-     * Remove field from projection
-     *
-     * @param string $name
-     *
-     * @return $this
-     */
-    public function removeField($alias)
-    {
-        unset($this->fields[$alias]);
-
-        return $this;
-    }
-
-    /**
-     * Does this project have the given field
-     *
-     * @param string $name
-     *
-     * @return boolean
-     */
-    public function hasField($alias)
-    {
-        return isset($this->fields[$alias]);
     }
 
     /**
@@ -298,123 +134,6 @@ class SelectQuery
     }
 
     /**
-     * Add join statement
-     *
-     * @param string $relation
-     * @param string|Where|RawStatement $condition
-     * @param string $alias
-     * @param int $mode
-     *
-     * @return $this
-     */
-    public function join($relation, $condition = null, $alias = null, $mode = self::JOIN_INNER)
-    {
-        if (null === $alias) {
-            $alias = $this->getAliasFor($relation);
-        } else {
-            if ($this->aliasExists($alias)) {
-                throw new QueryError(sprintf("%s alias is already registered for relation %s", $alias, $this->relations[$alias]));
-            }
-        }
-
-        if (null === $condition) {
-            $condition = new Where();
-        } else if (is_string($condition) || $condition instanceof RawStatement) {
-            $condition = (new Where())->statement($condition);
-        } else {
-            if (!$condition instanceof Where) {
-                throw new QueryError(sprintf("condition must be either a string or an instance of %s", Where::class));
-            }
-        }
-
-        $this->joins[$alias] = [$relation, $condition, $mode];
-
-        return $this;
-    }
-
-    /**
-     * Add join statement and return the associated Where
-     *
-     * @param string $relation
-     * @param string $alias
-     * @param int $mode
-     *
-     * @return Where
-     */
-    public function joinWhere($relation, $alias = null, $mode = self::JOIN_INNER)
-    {
-        if (null === $alias) {
-            $alias = $this->getAliasFor($relation);
-        } else {
-            if ($this->aliasExists($alias)) {
-                throw new QueryError(sprintf("%s alias is already registered for relation %s", $alias, $this->relations[$alias]));
-            }
-        }
-
-        $this->joins[$alias] = [$relation, $condition = new Where(), $mode];
-
-        return $condition;
-    }
-
-    /**
-     * Add inner statement
-     *
-     * @param string $relation
-     * @param string|Where $condition
-     * @param string $alias
-     *
-     * @return $this
-     */
-    public function innerJoin($relation, $condition = null, $alias = null)
-    {
-        $this->join($relation, $condition, $alias, self::JOIN_INNER);
-
-        return $this;
-    }
-
-    /**
-     * Add left outer join statement
-     *
-     * @param string $relation
-     * @param string|Where $condition
-     * @param string $alias
-     *
-     * @return $this
-     */
-    public function leftJoin($relation, $condition = null, $alias = null)
-    {
-        $this->join($relation, $condition, $alias, self::JOIN_LEFT_OUTER);
-
-        return $this;
-    }
-
-    /**
-     * Add inner statement and return the associated Where
-     *
-     * @param string $relation
-     * @param string $alias
-     *
-     * @return $this
-     */
-    public function innerJoinWhere($relation, $alias = null)
-    {
-        return $this->joinWhere($relation, $alias, self::JOIN_INNER);
-    }
-
-    /**
-     * Add left outer join statement and return the associated Where
-     *
-     * @param string $relation
-     * @param string $alias
-     *
-     * @return $this
-     */
-    public function leftJoinWhere($relation, $alias = null)
-    {
-        return $this->joinWhere($relation, $alias, self::JOIN_LEFT_OUTER);
-    }
-
-    /**
      * Get where statement
      *
      * @return Where
@@ -441,13 +160,13 @@ class SelectQuery
      *   Column identifier must contain the table alias, if might be a raw SQL
      *   string if you wish, for example, to write a case when statement
      * @param int $order
-     *   One of the SelectQuery::ORDER_* constants
+     *   One of the Query::ORDER_* constants
      * @param int $null
      *   Null behavior, nulls first, nulls last, or leave the backend default
      *
      * @return $this
      */
-    public function orderBy($column, $order = self::ORDER_ASC, $null = self::NULL_IGNORE)
+    public function orderBy($column, $order = Query::ORDER_ASC, $null = Query::NULL_IGNORE)
     {
         $this->orders[] = [$column, $order, $null];
 

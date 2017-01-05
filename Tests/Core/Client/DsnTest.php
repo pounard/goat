@@ -3,6 +3,7 @@
 namespace Goat\Tests\Core\Client;
 
 use Goat\Core\Client\Dsn;
+use Goat\Core\Error\ConfigurationError;
 
 class DsnTest extends \PHPUnit_Framework_TestCase
 {
@@ -127,7 +128,7 @@ class DsnTest extends \PHPUnit_Framework_TestCase
             try {
                 new Dsn($string);
                 $this->fail(sprintf("%s is not supposed to be valid", $string));
-            } catch (\InvalidArgumentException $e) {
+            } catch (ConfigurationError $e) {
                 $this->assertTrue(true); // Just increment the assertion counter.
             }
         }

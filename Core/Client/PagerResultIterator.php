@@ -2,10 +2,12 @@
 
 namespace Goat\Core\Client;
 
+use Goat\Core\Converter\ConverterInterface;
+
 /**
  * Wraps a result iterator in order to paginate results
  */
-final class PagerResultIterator implements ResultIteratorInterface, \IteratorAggregate, \Countable
+final class PagerResultIterator implements ResultIteratorInterface
 {
     private $result;
     private $count;
@@ -29,6 +31,14 @@ final class PagerResultIterator implements ResultIteratorInterface, \IteratorAgg
         $this->count  = $count;
         $this->limit  = $limit;
         $this->page   = $page;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setConverter(ConverterInterface $converter)
+    {
+        return $this->result->setConverter($converter);
     }
 
     /**
