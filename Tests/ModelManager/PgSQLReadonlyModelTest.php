@@ -34,7 +34,7 @@ class PgSQLReadonlyModelTest extends \PHPUnit_Framework_TestCase
 
         $model = new ReadonlyModel($connection, new SomeStructure());
 
-        $this->assertSame(0, $model->countWhere((new Where())->statement('1')));
+        $this->assertSame(0, $model->countWhere((new Where())->statement('1 = 1')));
 
         // Ok now insert stuff using raw SQL, this only tests the readonly
         // implementation not the full-on

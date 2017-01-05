@@ -201,7 +201,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      *
      * @return string
      */
-    private function formatInsert(InsertQuery $query)
+    private function formatValuesInsert(InsertValuesQuery $query)
     {
         $output = [];
 
@@ -281,8 +281,8 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
     {
         if ($query instanceof SelectQuery) {
             return $this->formatSelect($query);
-        } else if ($query instanceof InsertQuery) {
-            return $this->formatInsert($query);
+        } else if ($query instanceof InsertValuesQuery) {
+            return $this->formatValuesInsert($query);
         }
 
         throw new NotImplementedError();

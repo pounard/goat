@@ -86,15 +86,26 @@ class ReadonlyModel
             $where = new Where();
         }
 
-        $sql = strtr(
-            "select :projection from :relation where :condition :suffix",
-            [
-                ':projection' => $this->createProjection(),
-                ':relation'   => $this->getStructure()->getRelation(),
-                ':condition'  => $where,
-                ':suffix'     => $suffix,
-            ]
-        );
+        if ($where->isEmpty()) {
+            $sql = strtr(
+                "select :projection from :relation :suffix",
+                [
+                    ':projection' => $this->createProjection(),
+                    ':relation'   => $this->getStructure()->getRelation(),
+                    ':suffix'     => $suffix,
+                ]
+            );
+        } else {
+            $sql = strtr(
+                "select :projection from :relation where :condition :suffix",
+                [
+                    ':projection' => $this->createProjection(),
+                    ':relation'   => $this->getStructure()->getRelation(),
+                    ':condition'  => $where,
+                    ':suffix'     => $suffix,
+                ]
+            );
+        }
 
         return $this->query($sql, $where->getArguments());
     }
@@ -178,14 +189,24 @@ class ReadonlyModel
             $where = new Where();
         }
 
-        $sql = strtr(
-            "select count(*) as result from :relation where :condition :suffix",
-            [
-                ':relation'   => $this->getStructure()->getRelation(),
-                ':condition'  => $where,
-                ':suffix'     => $suffix,
-            ]
-        );
+        if ($where->isEmpty()) {
+            $sql = strtr(
+                "select count(*) as result from :relation :suffix",
+                [
+                    ':relation'   => $this->getStructure()->getRelation(),
+                    ':suffix'     => $suffix,
+                ]
+            );
+        } else {
+            $sql = strtr(
+                "select count(*) as result from :relation where :condition :suffix",
+                [
+                    ':relation'   => $this->getStructure()->getRelation(),
+                    ':condition'  => $where,
+                    ':suffix'     => $suffix,
+                ]
+            );
+        }
 
         return (int)$this->query($sql, $where->getArguments())->fetchField();
     }
@@ -204,13 +225,22 @@ class ReadonlyModel
             $where = new Where();
         }
 
-        $sql = strtr(
-            "select exists (select 1 from :relation where :condition) as result",
-            [
-                ':relation'   => $this->getStructure()->getRelation(),
-                ':condition'  => $where,
-            ]
-        );
+        if ($where->isEmpty()) {
+            $sql = strtr(
+                "select exists (select 1 from :relation) as result",
+                [
+                    ':relation'   => $this->getStructure()->getRelation(),
+                ]
+            );
+        } else {
+            $sql = strtr(
+                "select exists (select 1 from :relation where :condition) as result",
+                [
+                    ':relation'   => $this->getStructure()->getRelation(),
+                    ':condition'  => $where,
+                ]
+            );
+        }
 
         return (bool)$this->query($sql, $where->getArguments())->fetchField();
     }
