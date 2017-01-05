@@ -25,7 +25,7 @@ trait ConnectionAwareTestTrait
      */
     protected function getDriver()
     {
-        return 'pgsql';
+        return 'PGSQL';
     }
 
     /**

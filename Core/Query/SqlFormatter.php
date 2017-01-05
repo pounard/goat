@@ -5,6 +5,8 @@ namespace Goat\Core\Query;
 use Goat\Core\Client\EscaperAwareInterface;
 use Goat\Core\Client\EscaperAwareTrait;
 use Goat\Core\Client\EscaperInterface;
+use Goat\Core\Error\NotImplementedError;
+use Goat\Core\Error\QueryError;
 
 /**
  * Standard SQL query formatter
@@ -193,9 +195,58 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Format given insert query
+     *
+     * @param InsertQuery $query
+     *
+     * @return string
      */
-    public function format(SelectQuery $query)
+    private function formatInsert(InsertQuery $query)
+    {
+        $output = [];
+
+        $escaper = $this->escaper;
+        $columns = $query->getAllColumns();
+        $valueCount = $query->getValueCount();
+
+        if (!$valueCount) {
+            throw new QueryError("cannot insert no values");
+        }
+
+        $output[] = sprintf(
+            "insert into %s",
+            $this->escaper->escapeIdentifier($query->getRelation())
+        );
+
+        if ($columns) {
+            $output[] = sprintf(
+                "(%s) values",
+                implode(', ', array_map(function ($column) use ($escaper) {
+                    return $escaper->escapeIdentifier($column);
+                }, $columns))
+            );
+        }
+
+        $values = [];
+        for ($i = 0; $i < $valueCount; ++$i) {
+            $values[] = sprintf(
+                "(%s)",
+                implode(', ', array_fill(0, count($columns), '?'))
+            );
+        }
+        $output[] = implode(', ', $values);
+
+        return implode("\n", $output);
+    }
+
+    /**
+     * Format given select query
+     *
+     * @param SelectQuery $query
+     *
+     * @return string
+     */
+    private function formatSelect(SelectQuery $query)
     {
         $output = [];
         $output[] = sprintf(
@@ -221,5 +272,19 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
         }
 
         return implode("\n", $output);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function format(Query $query)
+    {
+        if ($query instanceof SelectQuery) {
+            return $this->formatSelect($query);
+        } else if ($query instanceof InsertQuery) {
+            return $this->formatInsert($query);
+        }
+
+        throw new NotImplementedError();
     }
 }

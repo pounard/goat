@@ -3,8 +3,12 @@
 namespace Goat\Core\Client;
 
 use Goat\Core\Converter\ConverterAwareInterface;
+use Goat\Core\Query\InsertQueryQuery;
+use Goat\Core\Query\InsertValuesQuery;
+use Goat\Core\Query\Query;
 use Goat\Core\Query\RawStatement;
 use Goat\Core\Query\SelectQuery;
+use Goat\Core\Query\SqlFormatterInterface;
 
 interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface
 {
@@ -61,11 +65,38 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface
     public function select($relation, $alias = null);
 
     /**
+     * Create an insert query builder
+     *
+     * @param string $relation
+     *   SQL from statement relation name
+     *
+     * @return InsertValuesQuery
+     */
+    public function insertValues($relation);
+
+    /**
+     * Create an insert with query builder
+     *
+     * @param string $relation
+     *   SQL from statement relation name
+     *
+     * @return InsertQueryQuery
+     */
+    public function insertQuery($relation);
+
+    /**
      * Set connection encoding
      *
      * @param string $encoding
      */
     public function setClientEncoding($encoding);
+
+    /**
+     * Get SQL formatter
+     *
+     * @return SqlFormatterInterface
+     */
+    public function getSqlFormatter();
 
     /**
      * Allows the driver to proceed to different type cast

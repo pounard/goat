@@ -6,13 +6,12 @@ use Goat\Core\Error\QueryError;
 use Goat\Core\Query\Partial\FromClause;
 
 /**
- * Represents a select query
- *
- * @todo this needs to be plugged to an escaper, for literal escaping such as
- *   column names and relation names
+ * Represents a SELECT query
  */
-class SelectQuery extends FromClause
+class SelectQuery extends FromClause implements Query
 {
+    use QueryTrait;
+
     private $where;
     private $having;
     private $groups = [];
@@ -219,9 +218,7 @@ class SelectQuery extends FromClause
     }
 
     /**
-     * Get query arguments
-     *
-     * @return string[]
+     * {@inheritdoc}
      */
     public function getArguments()
     {

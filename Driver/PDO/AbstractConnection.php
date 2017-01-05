@@ -8,7 +8,11 @@ use Goat\Core\Client\Dsn;
 use Goat\Core\Client\ResultIteratorInterface;
 use Goat\Core\Error\ConfigurationError;
 use Goat\Core\Error\QueryError;
+use Goat\Core\Query\InsertValuesQuery;
+use Goat\Core\Query\InsertQueryQuery;
 use Goat\Core\Query\SelectQuery;
+use Goat\Core\Query\SqlFormatter;
+use Goat\Core\Query\SqlFormatterInterface;
 
 abstract class AbstractConnection implements ConnectionInterface
 {
@@ -35,6 +39,11 @@ abstract class AbstractConnection implements ConnectionInterface
     private $prepared = [];
 
     /**
+     * @var SqlFormatterInterface
+     */
+    private $formatter;
+
+    /**
      * Constructor
      *
      * @param string|Dsn $dsn
@@ -49,6 +58,7 @@ abstract class AbstractConnection implements ConnectionInterface
         }
 
         $this->configuration = $configuration;
+        $this->formatter = new SqlFormatter($this);
     }
 
     /**
@@ -184,8 +194,39 @@ abstract class AbstractConnection implements ConnectionInterface
     public function select($relation, $alias = null)
     {
         $select = new SelectQuery($relation, $alias);
+        $select->setConnection($this);
 
         return $select;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function insertQuery($relation)
+    {
+        $insert = new InsertQueryQuery($relation);
+        $insert->setConnection($this);
+
+        return $insert;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function insertValues($relation)
+    {
+        $insert = new InsertValuesQuery($relation);
+        $insert->setConnection($this);
+
+        return $insert;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSqlFormatter()
+    {
+        return $this->formatter;
     }
 
     /**

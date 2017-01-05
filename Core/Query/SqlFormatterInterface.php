@@ -118,9 +118,9 @@ interface SqlFormatterInterface
     /**
      * Format the query
      *
-     * @param SelectQuery $query
+     * @param Query $query
      *
      * @return string
      */
-    public function format(SelectQuery $query);
+    public function format(Query $query);
 }
