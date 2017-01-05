@@ -2,11 +2,10 @@
 
 namespace Goat\Core\Query;
 
+use Goat\Core\Client\QueryInterface;
+
 /**
- * Represents a select query
- *
- * @todo this needs to be plugged to an escaper, for literal escaping such as
- *   column names and relation names
+ * SQL formatter
  */
 interface SqlFormatterInterface
 {

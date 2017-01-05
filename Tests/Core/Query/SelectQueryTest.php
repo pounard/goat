@@ -52,11 +52,11 @@ EOT;
 
         // Compact way
         $query = new SelectQuery('task', 't');
-        $query->field('t.*');
-        $query->field('n.type');
-        $query->field('count(n.id)', 'comment_count');
-        // Add and remove a field for fun
-        // $query->field('some_field', 'some_alias')->removeField('some_field', 'some_alias');
+        $query->column('t.*');
+        $query->column('n.type');
+        $query->column('count(n.id)', 'comment_count');
+        // Add and remove a column for fun
+        $query->column('some_field', 'some_alias')->removeColumn('some_alias');
         $query->leftJoin('task_note', 'n.task_id = t.id', 'n');
         $query->groupBy('t.id');
         $query->groupBy('n.type');
@@ -82,9 +82,9 @@ EOT;
 
         // Builder way
         $query = (new SelectQuery('task', 't'))
-            ->field('t.*')
-            ->field('n.type')
-            ->field('count(n.id)', 'comment_count')
+            ->column('t.*')
+            ->column('n.type')
+            ->column('count(n.id)', 'comment_count')
             ->groupBy('t.id')
             ->groupBy('n.type')
             ->orderBy('n.type')
@@ -151,9 +151,9 @@ EOT;
 
         // Most basic way
         $query = (new SelectQuery('task'))
-            ->field('task.*')
-            ->field('task_note.type')
-            ->field('count(task_note.id)', 'comment_count')
+            ->column('task.*')
+            ->column('task_note.type')
+            ->column('count(task_note.id)', 'comment_count')
             ->leftJoin('task_note', 'task_note.task_id = task.id', 'task_note')
             ->groupBy('task.id')
             ->groupBy('task_note.type')

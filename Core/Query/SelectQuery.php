@@ -243,7 +243,7 @@ class SelectQuery extends FromClause implements Query
         return (clone $this)
             ->removeAllColumns()
             ->range(0, 0)
-            ->field("count(*)", $countAlias)
+            ->column("count(*)", $countAlias)
         ;
     }
 

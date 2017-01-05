@@ -18,7 +18,7 @@ class SelectClause
     const ALIAS_PREFIX = 'goat';
 
     private $aliasIndex = 0;
-    private $fields = [];
+    private $columns = [];
     private $relation;
     private $relationAlias;
     private $relations = [];
@@ -69,7 +69,7 @@ class SelectClause
      */
     public function getAllColumns()
     {
-        return $this->fields;
+        return $this->columns;
     }
 
     /**
@@ -79,7 +79,7 @@ class SelectClause
      */
     public function removeAllColumns()
     {
-        $this->fields = [];
+        $this->columns = [];
 
         return $this;
     }
@@ -119,22 +119,22 @@ class SelectClause
     }
 
     /**
-     * Set or replace a field with a content.
+     * Set or replace a column with a content.
      *
      * @param string $statement
-     *   SQL select field
+     *   SQL select column
      * @param string
-     *   If alias to be different from the field
+     *   If alias to be different from the column
      *
      * @return $this
      */
-    public function field($statement, $alias = null)
+    public function column($statement, $alias = null)
     {
         $noAlias = false;
 
         if (!$alias) {
             if (!is_string($statement)) {
-                throw new QueryError("when providing no alias for select field, statement must be a string");
+                throw new QueryError("when providing no alias for select column, statement must be a string");
             }
 
             // Match for RELATION.COLUMN for aliasing properly
@@ -153,34 +153,34 @@ class SelectClause
             }
         }
 
-        $this->fields[$alias] = [$statement, ($noAlias ? null : $alias)];
+        $this->columns[$alias] = [$statement, ($noAlias ? null : $alias)];
 
         return $this;
     }
 
     /**
-     * Remove field from projection
+     * Remove column from projection
      *
      * @param string $name
      *
      * @return $this
      */
-    public function removeField($alias)
+    public function removeColumn($alias)
     {
-        unset($this->fields[$alias]);
+        unset($this->columns[$alias]);
 
         return $this;
     }
 
     /**
-     * Does this project have the given field
+     * Does this project have the given column
      *
      * @param string $name
      *
      * @return boolean
      */
-    public function hasField($alias)
+    public function hasColumn($alias)
     {
-        return isset($this->fields[$alias]);
+        return isset($this->columns[$alias]);
     }
 }

@@ -27,7 +27,7 @@ trait ResultIteratorTrait /* implements ResultIteratorInterface */
             $ret[$name] = $this
                 ->converter
                 ->hydrate(
-                    $this->getFieldType($name),
+                    $this->getColumnType($name),
                     $value
                 )
             ;

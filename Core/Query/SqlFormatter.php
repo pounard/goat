@@ -38,7 +38,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
     }
 
     /**
-     * Format fields for 'select'
+     * Format columns for 'select'
      *
      * @return string
      */

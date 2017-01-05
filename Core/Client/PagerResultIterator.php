@@ -160,9 +160,9 @@ final class PagerResultIterator implements ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function countFields()
+    public function countColumns()
     {
-        return $this->result->countFields();
+        return $this->result->countColumns();
     }
 
     /**
@@ -176,33 +176,33 @@ final class PagerResultIterator implements ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function fieldExists($name)
+    public function columnExists($name)
     {
-        return $this->result->fieldExists($name);
+        return $this->result->columnExists($name);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getFieldNames()
+    public function getColumnNames()
     {
-        return $this->result->getFieldNames();
+        return $this->result->getColumnNames();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getFieldType($name)
+    public function getColumnType($name)
     {
-        return $this->result->getFieldType($name);
+        return $this->result->getColumnType($name);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getFieldName($index)
+    public function getColumnName($index)
     {
-        return $this->result->getFieldName($index);
+        return $this->result->getColumnName($index);
     }
 
     /**
@@ -216,7 +216,7 @@ final class PagerResultIterator implements ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function fetchColumn($name)
+    public function fetchColumn($name = null)
     {
         return $this->result->fetchColumn($name);
     }

@@ -107,7 +107,7 @@ class Projection
      *
      * @return $this
      */
-    public function removeField($alias)
+    public function removeColumn($alias)
     {
         unset($this->fields[$alias], $this->types[$alias]);
 
@@ -121,7 +121,7 @@ class Projection
      *
      * @return boolean
      */
-    public function hasField($alias)
+    public function hasColumn($alias)
     {
         return isset($this->fields[$alias]);
     }

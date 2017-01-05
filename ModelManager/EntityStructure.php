@@ -27,7 +27,7 @@ class EntityStructure
     {
         if (!$allowInvalid) {
             foreach (array_keys($fields) as $name) {
-                if (!$this->hasField($name)) {
+                if (!$this->hasColumn($name)) {
                     throw new \InvalidArgumentException(sprintf("field '%s' is not defined", $name));
                 }
             }
@@ -121,7 +121,7 @@ class EntityStructure
 
         foreach ($fields as $name) {
 
-            if (!$this->hasField($name)) {
+            if (!$this->hasColumn($name)) {
                 throw new \InvalidArgumentException(sprintf("unknown field '%s' for entity '%s'", $name));
             }
 
@@ -270,7 +270,7 @@ class EntityStructure
      *
      * @return boolean
      */
-    public function hasField($name)
+    public function hasColumn($name)
     {
         // I guess that fields must have a type, so a null in there is not
         // possible, hence isset() instead of array_key_exists()
@@ -286,7 +286,7 @@ class EntityStructure
      */
     public function getTypeFor($name)
     {
-        if (!$this->hasField($name)) {
+        if (!$this->hasColumn($name)) {
             throw new \InvalidArgumentException(sprintf("field '%s' is not defined in structure '%s'", $name, get_class($this)));
         }
 

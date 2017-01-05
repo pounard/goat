@@ -124,7 +124,7 @@ class DefaultResultIterator implements ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function countFields()
+    public function countColumns()
     {
         return $this->columnCount;
     }
@@ -138,13 +138,9 @@ class DefaultResultIterator implements ResultIteratorInterface
     }
 
     /**
-     * Does this field exists
-     *
-     * @param string $name
-     *
-     * @return boolean
+     * {@inheritdoc}
      */
-    public function fieldExists($name)
+    public function columnExists($name)
     {
         return isset($this->columnNameMap[$name]);
     }
@@ -152,7 +148,7 @@ class DefaultResultIterator implements ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function getFieldNames()
+    public function getColumnNames()
     {
         return array_flip($this->columnNameMap);
     }
@@ -160,7 +156,7 @@ class DefaultResultIterator implements ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function getFieldType($name)
+    public function getColumnType($name)
     {
         if (isset($this->columnTypeMap[$name])) {
             return $this->columnTypeMap[$name];
@@ -172,7 +168,7 @@ class DefaultResultIterator implements ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function getFieldName($index)
+    public function getColumnName($index)
     {
         if (!is_int($index)) {
             throw new InvalidDataAccessError(sprintf("'%s' is not an integer.\n", $index));
@@ -189,7 +185,7 @@ class DefaultResultIterator implements ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    protected function getFieldNumber($name)
+    protected function getColumnNumber($name)
     {
         if (isset($this->columnNameMap[$name])) {
             return $this->columnNameMap[$name];
@@ -201,10 +197,12 @@ class DefaultResultIterator implements ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function fetchColumn($name)
+    public function fetchColumn($name = null)
     {
-        if (!is_int($name)) {
-            $name = $this->getFieldNumber($name);
+        if (null !== $name) {
+            $name = 0;
+        } else if (!is_int($name)) {
+            $name = $this->getColumnNumber($name);
         }
 
         $this->statement->fetchColumn($name);

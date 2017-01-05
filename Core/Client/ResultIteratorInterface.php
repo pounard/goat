@@ -10,11 +10,11 @@ use Goat\Core\Converter\ConverterAwareInterface;
 interface ResultIteratorInterface extends \IteratorAggregate, \Countable, ConverterAwareInterface
 {
     /**
-     * Get the field count
+     * Get the column count
      *
      * @return int
      */
-    public function countFields();
+    public function countColumns();
 
     /**
      * Get the total row count
@@ -24,41 +24,41 @@ interface ResultIteratorInterface extends \IteratorAggregate, \Countable, Conver
     public function countRows();
 
     /**
-     * Does this field exists
+     * Does this column exists
      *
      * @param string $name
      *
      * @return boolean
      */
-    public function fieldExists($name);
+    public function columnExists($name);
 
     /**
-     * Get all field names, in select order
+     * Get all column names, in select order
      *
      * @return string[]
      */
-    public function getFieldNames();
+    public function getColumnNames();
 
     /**
-     * Get field type
+     * Get column type
      *
      * @param string $name
      *
      * @return string
      */
-    public function getFieldType($name);
+    public function getColumnType($name);
 
     /**
-     * Get field name
+     * Get column name
      *
      * @param int $index
      *
      * @return string
      */
-    public function getFieldName($index);
+    public function getColumnName($index);
 
     /**
-     * Fetch given field in the first or current row
+     * Fetch given column in the first or current row
      *
      * @param string $name
      *   If none given, just take the first one
@@ -70,9 +70,10 @@ interface ResultIteratorInterface extends \IteratorAggregate, \Countable, Conver
     /**
      * Fetch column
      *
-     * @param string $name
+     * @param string $name = null
+     *   If none given, just take the first one
      *
      * @return mixed[]
      */
-    public function fetchColumn($name);
+    public function fetchColumn($name = null);
 }

@@ -60,14 +60,14 @@ class PgSQLResultIteratorTest extends \PHPUnit_Framework_TestCase
         $identifier = $connection->prepareQuery('select foo, bar, baz, some_time from type_test');
 
         $results = $connection->executePreparedQuery($identifier);
-        $this->assertSame(4, $results->countFields());
-        $this->assertSame('foo', $results->getFieldName(0));
-        $this->assertSame('int4', $results->getFieldType('foo'));
-        $this->assertSame('bar', $results->getFieldName(1));
-        $this->assertSame('varchar', $results->getFieldType('bar'));
-        $this->assertSame('baz', $results->getFieldName(2));
-        $this->assertSame('timestamp', $results->getFieldType('baz'));
-        $this->assertSame('some_time', $results->getFieldName(3));
-        $this->assertSame('time', $results->getFieldType('some_time'));
+        $this->assertSame(4, $results->countColumns());
+        $this->assertSame('foo', $results->getColumnName(0));
+        $this->assertSame('int4', $results->getColumnType('foo'));
+        $this->assertSame('bar', $results->getColumnName(1));
+        $this->assertSame('varchar', $results->getColumnType('bar'));
+        $this->assertSame('baz', $results->getColumnName(2));
+        $this->assertSame('timestamp', $results->getColumnType('baz'));
+        $this->assertSame('some_time', $results->getColumnName(3));
+        $this->assertSame('time', $results->getColumnType('some_time'));
     }
 }
