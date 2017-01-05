@@ -1,13 +1,11 @@
 <?php
 
-namespace Goat\Core\Query;
-
-use Goat\Core\Client\ResultIteratorInterface;
+namespace Goat\Core\Client;
 
 /**
  * Wraps a result iterator in order to paginate results
  */
-class Pager implements \IteratorAggregate, \Countable
+final class PagerResultIterator implements ResultIteratorInterface, \IteratorAggregate, \Countable
 {
     private $result;
     private $count;
@@ -147,5 +145,69 @@ class Pager implements \IteratorAggregate, \Countable
     public function getLimit()
     {
         return $this->limit;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function countFields()
+    {
+        return $this->result->countFields();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function countRows()
+    {
+        return $this->result->countRows();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function fieldExists($name)
+    {
+        return $this->result->fieldExists($name);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getFieldNames()
+    {
+        return $this->result->getFieldNames();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getFieldType($name)
+    {
+        return $this->result->getFieldType($name);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getFieldName($index)
+    {
+        return $this->result->getFieldName($index);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function fetchField($name = null)
+    {
+        return $this->result->fetchField($name);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function fetchColumn($name)
+    {
+        return $this->result->fetchColumn($name);
     }
 }

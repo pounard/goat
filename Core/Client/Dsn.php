@@ -2,6 +2,8 @@
 
 namespace Goat\Core\Client;
 
+use Goat\Core\Error\ConfigurationError;
+
 /**
  * Allow the following two reprensentations:
  *
@@ -74,7 +76,7 @@ final class Dsn
                 }
             } else {
                 if (!is_int($this->port)) {
-                    throw new \InvalidArgumentException(sprintf("%s: port must be integer, '%s' given", $string, $this->port));
+                    throw new ConfigurationError(sprintf("%s: port must be integer, '%s' given", $string, $this->port));
                 }
             }
 
@@ -90,15 +92,15 @@ final class Dsn
             $this->database = $matches[4];
 
         } else {
-            throw new \InvalidArgumentException(sprintf("%s: invalid dsn", $string));
+            throw new ConfigurationError(sprintf("%s: invalid dsn", $string));
         }
 
         if ('pgsql' !== $this->driver && 'mysql' !== $this->driver) {
-            throw new \InvalidArgumentException(sprintf("%s: only supports 'pgsql', 'mysql' drivers, '%s' given", $string, $this->driver));
+            throw new ConfigurationError(sprintf("%s: only supports 'pgsql', 'mysql' drivers, '%s' given", $string, $this->driver));
         }
 
         if (empty($this->database)) {
-            throw new \InvalidArgumentException(sprintf("%s: database name is mandatory", $string));
+            throw new ConfigurationError(sprintf("%s: database name is mandatory", $string));
         }
 
         $this->username = $username;

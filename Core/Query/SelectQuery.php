@@ -2,7 +2,7 @@
 
 namespace Goat\Core\Query;
 
-use Goat\Core\Client\ConnectionInterface;
+use Goat\Core\Error\QueryError;
 
 /**
  * Represents a select query
@@ -181,7 +181,7 @@ class SelectQuery
 
         if (!$alias) {
             if (!is_string($statement)) {
-                throw new \InvalidArgumentException("when providing no alias for select field, statement must be a string");
+                throw new QueryError("when providing no alias for select field, statement must be a string");
             }
 
             // Match for RELATION.COLUMN for aliasing properly
@@ -313,7 +313,7 @@ class SelectQuery
             $alias = $this->getAliasFor($relation);
         } else {
             if ($this->aliasExists($alias)) {
-                throw new \InvalidArgumentException(sprintf("%s alias is already registered for relation %s", $alias, $this->relations[$alias]));
+                throw new QueryError(sprintf("%s alias is already registered for relation %s", $alias, $this->relations[$alias]));
             }
         }
 
@@ -323,7 +323,7 @@ class SelectQuery
             $condition = (new Where())->statement($condition);
         } else {
             if (!$condition instanceof Where) {
-                throw new \InvalidArgumentException(sprintf("condition must be either a string or an instance of %s", Where::class));
+                throw new QueryError(sprintf("condition must be either a string or an instance of %s", Where::class));
             }
         }
 
@@ -347,7 +347,7 @@ class SelectQuery
             $alias = $this->getAliasFor($relation);
         } else {
             if ($this->aliasExists($alias)) {
-                throw new \InvalidArgumentException(sprintf("%s alias is already registered for relation %s", $alias, $this->relations[$alias]));
+                throw new QueryError(sprintf("%s alias is already registered for relation %s", $alias, $this->relations[$alias]));
             }
         }
 
@@ -483,10 +483,10 @@ class SelectQuery
     public function range($limit, $offset = 0)
     {
         if (!is_int($limit) || $limit < 0) {
-            throw new \InvalidArgumentException("limit must be a positive integer");
+            throw new QueryError("limit must be a positive integer");
         }
         if (!is_int($offset) || $offset < 0) {
-            throw new \InvalidArgumentException("offset must be a positive integer");
+            throw new QueryError("offset must be a positive integer");
         }
 
         $this->limit = $limit;

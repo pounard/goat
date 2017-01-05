@@ -2,8 +2,9 @@
 
 namespace Goat\Core\Client;
 
-use Goat\Core\DebuggableTrait;
 use Goat\Core\Converter\ConverterAwareTrait;
+use Goat\Core\DebuggableTrait;
+use Goat\Core\Error\InvalidDataAccessError;
 
 trait ResultIteratorTrait /* implements ResultIteratorInterface */
 {
@@ -48,7 +49,7 @@ trait ResultIteratorTrait /* implements ResultIteratorInterface */
         foreach ($this as $row) {
             if ($name) {
                 if (!array_key_exists($name, $row)) {
-                    throw new \InvalidArgumentException("invalid column '%s'", $name);
+                    throw new InvalidDataAccessError("invalid column '%s'", $name);
                 }
                 return $row[$name];
             }

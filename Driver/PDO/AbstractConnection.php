@@ -5,8 +5,10 @@ namespace Goat\Driver\PDO;
 use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Client\ConnectionTrait;
 use Goat\Core\Client\Dsn;
-use Goat\Core\Query\SelectQuery;
 use Goat\Core\Client\ResultIteratorInterface;
+use Goat\Core\Error\ConfigurationError;
+use Goat\Core\Error\QueryError;
+use Goat\Core\Query\SelectQuery;
 
 abstract class AbstractConnection implements ConnectionInterface
 {
@@ -70,7 +72,7 @@ abstract class AbstractConnection implements ConnectionInterface
 
         } catch (\PDOException $e) {
             // @todo do better
-            throw new \RuntimeException(sprintf("Error connecting to the database with parameters '%s'.", $this->dsn->formatFull()), null, $e);
+            throw new ConfigurationError(sprintf("Error connecting to the database with parameters '%s'.", $this->dsn->formatFull()), null, $e);
         }
 
         if ($this->configuration) {
@@ -170,7 +172,7 @@ abstract class AbstractConnection implements ConnectionInterface
     public function executePreparedQuery($identifier, array $parameters = [], $enableConverters = true)
     {
         if (!isset($this->prepared[$identifier])) {
-            throw new \LogicException(sprintf("'%s': query was not prepared", $identifier));
+            throw new QueryError(sprintf("'%s': query was not prepared", $identifier));
         }
 
         return $this->query($this->prepared[$identifier], $parameters, $enableConverters);

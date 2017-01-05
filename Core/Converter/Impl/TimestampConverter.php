@@ -3,6 +3,7 @@
 namespace Goat\Core\Converter\Impl;
 
 use Goat\Core\Converter\ConverterInterface;
+use Goat\Core\Error\TypeConversionError;
 
 class TimestampConverter implements ConverterInterface
 {
@@ -14,7 +15,7 @@ class TimestampConverter implements ConverterInterface
     protected function formatDate($value)
     {
         if (!$value instanceof \DateTimeInterface) {
-            throw new \InvalidArgumentException(sprintf("given value '%s' is not instanceof \DateTimeInterface", $value));
+            throw new TypeConversionError(sprintf("given value '%s' is not instanceof \DateTimeInterface", $value));
         }
 
         return $value->format(self::TS_FORMAT_DATE);
@@ -23,7 +24,7 @@ class TimestampConverter implements ConverterInterface
     protected function formatTimestamp($value)
     {
         if (!$value instanceof \DateTimeInterface) {
-            throw new \InvalidArgumentException(sprintf("given value '%s' is not instanceof \DateTimeInterface", $value));
+            throw new TypeConversionError(sprintf("given value '%s' is not instanceof \DateTimeInterface", $value));
         }
 
         return $value->format(self::TS_FORMAT);
@@ -39,7 +40,7 @@ class TimestampConverter implements ConverterInterface
             return $value->format(self::TS_FORMAT_TIME_INT);
         }
 
-        throw new \InvalidArgumentException(sprintf("given value '%s' is not instanceof \DateTimeInterface not \DateInterval", $value));
+        throw new TypeConversionError(sprintf("given value '%s' is not instanceof \DateTimeInterface not \DateInterval", $value));
     }
 
     /**
@@ -74,7 +75,7 @@ class TimestampConverter implements ConverterInterface
                 return $this->formatTime($value);
         }
 
-        throw new \InvalidArgumentException(sprintf("cannot process type '%s'", $type));
+        throw new TypeConversionError(sprintf("cannot process type '%s'", $type));
     }
 
     /**

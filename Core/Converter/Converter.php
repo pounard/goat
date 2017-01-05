@@ -2,8 +2,9 @@
 
 namespace Goat\Core\Converter;
 
-use Goat\Core\DebuggableTrait;
 use Goat\Core\Converter\Impl\StringConverter;
+use Goat\Core\DebuggableTrait;
+use Goat\Core\Error\ConfigurationError;
 
 class Converter implements ConverterInterface
 {
@@ -60,7 +61,7 @@ class Converter implements ConverterInterface
             if (isset($this->converters[$type])) {
                 $message = sprintf("type '%s' is already defined, using '%s' converter class", $type, get_class($this->types[$type]));
                 if ($this->debug) {
-                    throw new \InvalidArgumentException($message);
+                    throw new ConfigurationError($message);
                 } else {
                     trigger_error($message, E_USER_WARNING);
                 }
@@ -83,7 +84,7 @@ class Converter implements ConverterInterface
     {
         if (!isset($this->converters[$type])) {
             if ($this->debug || !$this->fallback) {
-                throw new \InvalidArgumentException(sprintf("no converted registered for type '%s'", $type));
+                throw new ConfigurationError(sprintf("no converter registered for type '%s'", $type));
             }
 
             return $this->fallback;

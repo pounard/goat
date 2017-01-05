@@ -2,6 +2,8 @@
 
 namespace Goat\Core\Query;
 
+use Goat\Core\Error\QueryError;
+
 /**
  * Where represents the selection of the SQL query
  */
@@ -163,7 +165,7 @@ class Where
             }
         } else if (self::BETWEEN === $operator || self::NOT_BETWEEN === $operator) {
             if (!is_array($value) || 2 !== count($value)) {
-                throw new \InvalidArgumentException("between and not between operators needs exactly 2 values");
+                throw new QueryError("between and not between operators needs exactly 2 values");
             }
         }
 
@@ -228,7 +230,7 @@ class Where
     public function close()
     {
         if (!$this->parent) {
-            throw new \LogicException("cannot end a statement without a parent");
+            throw new QueryError("cannot end a statement without a parent");
         }
 
         return $this->parent;

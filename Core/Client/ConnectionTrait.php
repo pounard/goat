@@ -3,6 +3,7 @@
 namespace Goat\Core\Client;
 
 use Goat\Core\Converter\ConverterAwareTrait;
+use Goat\Core\Error\QueryError;
 
 trait ConnectionTrait /* implements ConnectionInterface */
 {
@@ -59,7 +60,7 @@ trait ConnectionTrait /* implements ConnectionInterface */
             $token = '?';
 
             if (!array_key_exists($index, $parameters)) {
-                throw new \InvalidArgumentException(sprintf("Invalid parameter number bound"));
+                throw new QueryError(sprintf("Invalid parameter number bound"));
             }
 
             if (isset($matches[2])) { // Do we have a type?

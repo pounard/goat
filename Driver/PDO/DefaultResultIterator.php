@@ -4,6 +4,7 @@ namespace Goat\Driver\PDO;
 
 use Goat\Core\Client\ResultIteratorInterface;
 use Goat\Core\Client\ResultIteratorTrait;
+use Goat\Core\Error\InvalidDataAccessError;
 
 class DefaultResultIterator implements ResultIteratorInterface
 {
@@ -165,7 +166,7 @@ class DefaultResultIterator implements ResultIteratorInterface
             return $this->columnTypeMap[$name];
         }
 
-        throw new \OutOfBoundsException(sprintf("column '%s' does not exist", $name));
+        throw new InvalidDataAccessError(sprintf("column '%s' does not exist", $name));
     }
 
     /**
@@ -174,7 +175,7 @@ class DefaultResultIterator implements ResultIteratorInterface
     public function getFieldName($index)
     {
         if (!is_int($index)) {
-            throw new \InvalidArgumentException(sprintf("'%s' is not an integer.\n", $index));
+            throw new InvalidDataAccessError(sprintf("'%s' is not an integer.\n", $index));
         }
 
         $pos = array_search($index, $this->columnNameMap);
@@ -182,7 +183,7 @@ class DefaultResultIterator implements ResultIteratorInterface
             return $pos;
         }
 
-        throw new \OutOfBoundsException(sprintf("column %d is out of bounds", $index));
+        throw new InvalidDataAccessError(sprintf("column %d is out of bounds", $index));
     }
 
     /**
@@ -194,7 +195,7 @@ class DefaultResultIterator implements ResultIteratorInterface
             return $this->columnNameMap[$name];
         }
 
-        throw new \OutOfBoundsException(sprintf("column '%s' does not exist", $name));
+        throw new InvalidDataAccessError(sprintf("column '%s' does not exist", $name));
     }
 
     /**
