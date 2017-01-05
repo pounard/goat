@@ -28,7 +28,7 @@ class PgSQLReadonlyModelTest extends \PHPUnit_Framework_TestCase
                 id serial primary key,
                 foo integer not null,
                 bar varchar(255),
-                baz datetime not null
+                baz timestamp not null
             )
         ");
 
