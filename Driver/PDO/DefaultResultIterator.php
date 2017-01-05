@@ -5,7 +5,7 @@ namespace Goat\Driver\PDO;
 use Goat\Core\Client\ResultIteratorInterface;
 use Goat\Core\Client\ResultIteratorTrait;
 
-class PDOResultIterator implements ResultIteratorInterface
+class DefaultResultIterator implements ResultIteratorInterface
 {
     use ResultIteratorTrait;
 
@@ -40,40 +40,44 @@ class PDOResultIterator implements ResultIteratorInterface
      */
     protected function parseType($nativeType)
     {
-        switch ($nativeType) {
+        switch (strtolower($nativeType)) {
 
-            case 'VAR_STRING':
+            case 'string':
+            case 'var_string':
+            case 'varchar':
                 return 'varchar';
 
-            case 'STRING':
-                return 'varchar';
-
-            case 'BLOB':
+            case 'blob':
+            case 'bytea':
                 return 'bytea';
 
-            case 'LONGLONG':
+            case 'int8':
+            case 'longlong':
                 return 'int8';
 
-            case 'LONG':
+            case 'int4':
+            case 'long':
                 return 'int4';
 
-            case 'SHORT':
-                return 'int2';
+            case 'short':
+                return 'int4';
 
-            case 'DATETIME':
+            case 'datetime':
+            case 'timestamp':
                 return 'timestamp';
 
-            case 'DATE':
+            case 'time':
+                return 'time';
+
+            case 'date':
                 return 'date';
 
-            case 'DOUBLE':
+            case 'float4':
+                return 'float4';
+
+            case 'double':
+            case 'float8':
                 return 'float8';
-
-            case 'TIMESTAMP':
-                return 'timestamp';
-
-            case 'TIME':
-                return 'time';
 
             default:
                 trigger_error(sprintf("'%s': unknown type", $nativeType));

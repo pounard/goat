@@ -2,30 +2,26 @@
 
 namespace Goat\Tests\ModelManager;
 
-use Goat\Core\Session;
 use Goat\Core\Query\Where;
-use Goat\Driver\PDO\PDOConnection;
 use Goat\ModelManager\DefaultEntity;
 use Goat\ModelManager\EntityInterface;
 use Goat\ModelManager\EntityStructure;
 use Goat\ModelManager\ReadonlyModel;
+use Goat\Tests\ConnectionAwareTestTrait;
 use Goat\Tests\ModelManager\Mock\SomeStructure;
 
-class ReadonlyModelTest extends \PHPUnit_Framework_TestCase
+class MySQLReadonlyModelTest extends \PHPUnit_Framework_TestCase
 {
-    protected function setUp()
-    {
-        parent::setUp();
+    use ConnectionAwareTestTrait;
 
-        if (!getenv('MYSQL_DSN')) {
-            $this->markTestSkipped("Please set-up the MYSQL_DSN environment variable");
-        }
+    protected function getDriver()
+    {
+        return 'MYSQL';
     }
 
     public function testReadOperations()
     {
-        $connection = new PDOConnection(getenv('MYSQL_DSN'), getenv('MYSQL_USERNAME'), getenv('MYSQL_PASSWORD'));
-        new Session($connection); // This will register default converters
+        $connection = $this->getConnection();
 
         $connection->query("
             create temporary table some_entity (
@@ -69,8 +65,7 @@ class ReadonlyModelTest extends \PHPUnit_Framework_TestCase
 
     public function testPager()
     {
-        $connection = new PDOConnection(getenv('MYSQL_DSN'), getenv('MYSQL_USERNAME'), getenv('MYSQL_PASSWORD'));
-        new Session($connection); // This will register default converters
+        $connection = $this->getConnection();
 
         $connection->query("
             create temporary table pagertest (
@@ -126,8 +121,7 @@ class ReadonlyModelTest extends \PHPUnit_Framework_TestCase
 
     public function testPrimaryKey()
     {
-        $connection = new PDOConnection(getenv('MYSQL_DSN'), getenv('MYSQL_USERNAME'), getenv('MYSQL_PASSWORD'));
-        new Session($connection); // This will register default converters
+        $connection = $this->getConnection();
 
         $connection->query("
             create temporary table pkeytest (

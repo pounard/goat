@@ -24,7 +24,7 @@ class DsnTest extends \PHPUnit_Framework_TestCase
 
             $this->assertSame('unix://pgsql:///var/run/pg.sock:coucou@robert_69', $dsn->formatFull());
             $this->assertSame('unix://pgsql:///var/run/pg.sock', $dsn->formatWithoutDatabase());
-            $this->assertSame('pgsql:unix_socket=/var/run/pg.sock;dbname=coucou@robert_69;charset=utf8', $dsn->formatPdo());
+            $this->assertSame('pgsql:unix_socket=/var/run/pg.sock;dbname=coucou@robert_69;client_encoding=utf8', $dsn->formatPdo());
         }
 
         foreach ([
@@ -43,7 +43,7 @@ class DsnTest extends \PHPUnit_Framework_TestCase
 
             $this->assertSame('pgsql://1.2.3.4:1234/`{[@}e#', $dsn->formatFull());
             $this->assertSame('pgsql://1.2.3.4:1234', $dsn->formatWithoutDatabase());
-            $this->assertSame('pgsql:host=1.2.3.4;port=1234;dbname=`{[@}e#;charset=utf8', $dsn->formatPdo());
+            $this->assertSame('pgsql:host=1.2.3.4;port=1234;dbname=`{[@}e#;client_encoding=utf8', $dsn->formatPdo());
         }
 
         foreach ([

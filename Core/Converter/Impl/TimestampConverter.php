@@ -99,7 +99,7 @@ class TimestampConverter implements ConverterInterface
               return 'time';
 
           default:
-              return 'datetime';
+              return 'timestamp';
         }
     }
 }

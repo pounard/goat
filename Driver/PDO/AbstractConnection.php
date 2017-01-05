@@ -6,8 +6,9 @@ use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Client\ConnectionTrait;
 use Goat\Core\Client\Dsn;
 use Goat\Core\Query\SelectQuery;
+use Goat\Core\Client\ResultIteratorInterface;
 
-class PDOConnection implements ConnectionInterface
+abstract class AbstractConnection implements ConnectionInterface
 {
     use ConnectionTrait;
 
@@ -34,12 +35,17 @@ class PDOConnection implements ConnectionInterface
     /**
      * Constructor
      *
-     * @param string $dsn
+     * @param string|Dsn $dsn
      * @param string[] $configuration
      */
     public function __construct($dsn, $username = null, $password = null, array $configuration = [])
     {
-        $this->dsn = new Dsn($dsn, $username, $password);
+        if ($dsn instanceof Dsn) {
+            $this->dsn = $dsn;
+        } else {
+            $this->dsn = new Dsn($dsn, $username, $password);
+        }
+
         $this->configuration = $configuration;
     }
 
@@ -67,7 +73,9 @@ class PDOConnection implements ConnectionInterface
             throw new \RuntimeException(sprintf("Error connecting to the database with parameters '%s'.", $this->dsn->formatFull()), null, $e);
         }
 
-        $this->sendConfiguration();
+        if ($this->configuration) {
+            $this->sendConfiguration($this->configuration);
+        }
     }
 
     protected function getPdo()
@@ -81,36 +89,11 @@ class PDOConnection implements ConnectionInterface
 
     /**
      * Send PDO configuration
+     *
+     * @param string[] $configuration
+     *   Keys are variable names, values are scalar values
      */
-    protected function sendConfiguration()
-    {
-        $sql = [];
-
-        foreach ($this->configuration as $setting => $value) {
-            $sql[] = sprintf(
-                "set %s = %s",
-                $this->escapeIdentifier($setting, \PDO::PARAM_STR),
-                $this->escapeLiteral($value, \PDO::PARAM_STR)
-            );
-        }
-
-        if ($sql) {
-            foreach ($sql as $queryString) {
-                $this->pdo->query($queryString);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function escapeIdentifier($string)
-    {
-        // FIXME this is MySQL only
-        return '`' . str_replace('`', '\\`', $string) . '`';
-    }
+    abstract protected function sendConfiguration(array $configuration);
 
     /**
      * {@inheritdoc}
@@ -126,6 +109,19 @@ class PDOConnection implements ConnectionInterface
     public function escapeBlob($word)
     {
         return $this->getPdo()->quote($word, \PDO::PARAM_LOB);
+    }
+
+    /**
+     * Create the result iterator instance
+     *
+     * @param \PDOStatement $statement
+     * @param string $enableConverters
+     *
+     * @return ResultIteratorInterface
+     */
+    protected function createResultIterator(\PDOStatement $statement, $enableConverters = true)
+    {
+        return new DefaultResultIterator($statement, $enableConverters);
     }
 
     /**
@@ -145,7 +141,7 @@ class PDOConnection implements ConnectionInterface
 
         $statement->execute($parameters);
 
-        $ret = new PDOResultIterator($statement, $enableConverters);
+        $ret = $this->createResultIterator($statement, $enableConverters);
         $ret->setConverter($this->converter);
 
         return $ret;
@@ -160,9 +156,9 @@ class PDOConnection implements ConnectionInterface
             $identifier = md5($sql);
         }
 
-        // MySQL is so stupid when it comes to prepared statements that I would
-        // prefer to just store the SQL and run it later...
-        // FIXME this is PgSQL can do better
+        // Default behaviour, because databases such as MySQL don't really
+        // prepare SQL statements, is to emulate it by keeping a copy of the
+        // SQL query in memory and giving to the user a computed identifier.
         $this->prepared[$identifier] = $sql;
 
         return $identifier;
@@ -195,7 +191,7 @@ class PDOConnection implements ConnectionInterface
      */
     public function setClientEncoding($encoding)
     {
-        // FIXME this is MySQL only
-        $this->getPdo()->query("SET character_set_client = ?", [$encoding]);
+        // SQL standard SET NAMES command.
+        $this->getPdo()->query("SET NAMES ?", [$encoding]);
     }
 }

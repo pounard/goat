@@ -4,9 +4,32 @@ namespace Goat\Core\Client;
 
 use Goat\Core\Converter\ConverterAwareTrait;
 
-trait ConnectionTrait
+trait ConnectionTrait /* implements ConnectionInterface */
 {
     use ConverterAwareTrait;
+
+    /**
+     * Write cast clause
+     *
+     * Use '?' for the value placeholder, and '%s' as the type
+     *
+     * @param string $type
+     *
+     * @return string
+     */
+    protected function writeCast($type)
+    {
+        // This is supposedly SQL-92 standard compliant
+        return "cast(? as %s)";
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCastType($type)
+    {
+        return $type;
+    }
 
     /**
      * Converts all PostgreSQL compatible "$*::TYPE" identifiers in the query
@@ -46,7 +69,13 @@ trait ConnectionTrait
                 $replacement = $this->converter->extract($type, $replacement);
 
                 if ($this->converter->needsCast($type)) {
-                    $token = sprintf("cast(? as %s)", $this->converter->cast($type));
+
+                    $castAs = $this->converter->cast($type);
+                    if (!$castAs) {
+                        $castAs = $type;
+                    }
+
+                    $token = sprintf($this->writeCast($type), $this->getCastType($castAs));
                 }
 
                 $parameters[$index] = $replacement;

@@ -35,6 +35,5 @@ class DecimalConverter implements ConverterInterface
      */
     public function cast($type)
     {
-        return 'decimal';
     }
 }

@@ -2,24 +2,20 @@
 
 namespace Goat\Tests\Core\Client;
 
-use Goat\Core\Session;
-use Goat\Driver\PDO\PDOConnection;
+use Goat\Tests\ConnectionAwareTestTrait;
 
-class PDOResultIteratorTest extends \PHPUnit_Framework_TestCase
+class MySQLResultIteratorTest extends \PHPUnit_Framework_TestCase
 {
-    protected function setUp()
-    {
-        parent::setUp();
+    use ConnectionAwareTestTrait;
 
-        if (!getenv('MYSQL_DSN')) {
-            $this->markTestSkipped("Please set-up the MYSQL_DSN environment variable");
-        }
+    protected function getDriver()
+    {
+        return 'MYSQL';
     }
 
     public function testConnection()
     {
-        $connection = new PDOConnection(getenv('MYSQL_DSN'), getenv('MYSQL_USERNAME'), getenv('MYSQL_PASSWORD'));
-        new Session($connection); // This will register default converters
+        $connection = $this->getConnection();
 
         $connection->query("
             create temporary table type_test (

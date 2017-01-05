@@ -25,7 +25,7 @@ interface ConverterInterface
     public function extract($type, $value);
 
     /**
-     * Should this converter needs to cast the value to MySQL
+     * Should this converter needs to cast the value to the server
      *
      * @param string $type
      *
@@ -34,11 +34,13 @@ interface ConverterInterface
     public function needsCast($type);
 
     /**
-     * Get MySQL type name to cast to
+     * Get SQL type name to cast to
      *
      * @param string $type
      *
-     * @return string
+     * @return null|string
+     *   You may return null if you consider that the given type is valid
+     *   for cast, and let the server handle it as-is
      */
     public function cast($type);
 }

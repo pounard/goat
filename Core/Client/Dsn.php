@@ -179,12 +179,21 @@ final class Dsn
      */
     public function formatPdo()
     {
-        $map = [
-            'port'    => $this->port,
-            'dbname'  => $this->database,
-            // We need to default to something
-            'charset' => $this->charset,
-        ];
+        $map = ['port' => $this->port, 'dbname' => $this->database];
+
+        // @todo this should be the connection object responsability to set the
+        //   client options, because they may differ from versions to versions
+        //   even using the same driver
+        switch ($this->driver) {
+
+            case 'mysql':
+                $map['charset'] = $this->charset;
+                break;
+
+            case 'pgsql':
+                $map['client_encoding'] = $this->charset;
+                break;
+        }
 
         if ($this->isUnixSocket()) {
             $dsn = $this->driver . ':unix_socket=' . $this->host;

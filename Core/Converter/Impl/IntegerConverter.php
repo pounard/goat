@@ -27,7 +27,7 @@ class IntegerConverter implements ConverterInterface
      */
     public function needsCast($type)
     {
-        return true;
+        return false;
     }
 
     /**
@@ -35,6 +35,5 @@ class IntegerConverter implements ConverterInterface
      */
     public function cast($type)
     {
-        return 'signed integer';
     }
 }
