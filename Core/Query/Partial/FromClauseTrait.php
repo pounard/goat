@@ -4,6 +4,7 @@ namespace Goat\Core\Query\Partial;
 
 use Goat\Core\Error\QueryError;
 use Goat\Core\Query\Query;
+use Goat\Core\Query\RawStatement;
 use Goat\Core\Query\Where;
 
 /**
@@ -11,8 +12,10 @@ use Goat\Core\Query\Where;
  *
  * It gathers all the FROM and JOIN statements altogether.
  */
-class FromClause extends SelectClause
+trait FromClauseTrait
 {
+    use AliasHolderTrait;
+
     private $joins = [];
 
     /**
@@ -20,7 +23,7 @@ class FromClause extends SelectClause
      *
      * @return array
      */
-    public function getAllJoin()
+    final public function getAllJoin()
     {
         return $this->joins;
     }
@@ -35,7 +38,7 @@ class FromClause extends SelectClause
      *
      * @return $this
      */
-    public function join($relation, $condition = null, $alias = null, $mode = Query::JOIN_INNER)
+    final public function join($relation, $condition = null, $alias = null, $mode = Query::JOIN_INNER)
     {
         if (null === $alias) {
             $alias = $this->getAliasFor($relation);
@@ -69,7 +72,7 @@ class FromClause extends SelectClause
      *
      * @return Where
      */
-    public function joinWhere($relation, $alias = null, $mode = Query::JOIN_INNER)
+    final public function joinWhere($relation, $alias = null, $mode = Query::JOIN_INNER)
     {
         if (null === $alias) {
             $alias = $this->getAliasFor($relation);
@@ -93,7 +96,7 @@ class FromClause extends SelectClause
      *
      * @return $this
      */
-    public function innerJoin($relation, $condition = null, $alias = null)
+    final public function innerJoin($relation, $condition = null, $alias = null)
     {
         $this->join($relation, $condition, $alias, Query::JOIN_INNER);
 
@@ -109,7 +112,7 @@ class FromClause extends SelectClause
      *
      * @return $this
      */
-    public function leftJoin($relation, $condition = null, $alias = null)
+    final public function leftJoin($relation, $condition = null, $alias = null)
     {
         $this->join($relation, $condition, $alias, Query::JOIN_LEFT_OUTER);
 
@@ -124,7 +127,7 @@ class FromClause extends SelectClause
      *
      * @return $this
      */
-    public function innerJoinWhere($relation, $alias = null)
+    final public function innerJoinWhere($relation, $alias = null)
     {
         return $this->joinWhere($relation, $alias, Query::JOIN_INNER);
     }
@@ -137,7 +140,7 @@ class FromClause extends SelectClause
      *
      * @return $this
      */
-    public function leftJoinWhere($relation, $alias = null)
+    final public function leftJoinWhere($relation, $alias = null)
     {
         return $this->joinWhere($relation, $alias, Query::JOIN_LEFT_OUTER);
     }
@@ -145,7 +148,7 @@ class FromClause extends SelectClause
     /**
      * Deep clone support.
      */
-    public function __clone()
+    protected function cloneJoins()
     {
         foreach ($this->joins as $index => $join) {
             $this->joins[$index][1] = clone $join[1];

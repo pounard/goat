@@ -3,13 +3,15 @@
 namespace Goat\Core\Query;
 
 use Goat\Core\Error\QueryError;
+use Goat\Core\Query\Partial\AbstractQuery;
+use Goat\Core\Query\Partial\ReturningClauseTrait;
 
 /**
  * Represents an INSERT VALUES query
  */
-class InsertValuesQuery implements Query
+class InsertValuesQuery extends AbstractQuery
 {
-    use QueryTrait;
+    use ReturningClauseTrait;
 
     private $relation;
     private $columns = [];
@@ -24,17 +26,8 @@ class InsertValuesQuery implements Query
      */
     public function __construct($relation)
     {
-        $this->relation = $relation;
-    }
-
-    /**
-     * Get SQL from relation
-     *
-     * @return string
-     */
-    public function getRelation()
-    {
-        return $this->relation;
+        // INSERT queries main relation cannot be aliased
+        parent::__construct($relation);
     }
 
     /**

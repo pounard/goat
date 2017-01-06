@@ -3,21 +3,29 @@
 namespace Goat\Core\Query;
 
 use Goat\Core\Error\QueryError;
-use Goat\Core\Query\Partial\FromClause;
+use Goat\Core\Query\Partial\AbstractQuery;
+use Goat\Core\Query\Partial\FromClauseTrait;
 
 /**
  * Represents a SELECT query
+ *
+ * @todo
+ *   - support a SelectQuery as FROM relation
+ *   - implement __clone() once this done
  */
-class SelectQuery extends FromClause implements Query
+class SelectQuery extends AbstractQuery
 {
-    use QueryTrait;
+    use FromClauseTrait;
 
-    private $where;
-    private $having;
+    private $columns = [];
     private $groups = [];
-    private $orders = [];
+    private $having;
     private $limit = 0;
     private $offset = 0;
+    private $orders = [];
+    private $relation;
+    private $relationAlias;
+    private $where;
 
     /**
      * Build a new query
@@ -31,8 +39,96 @@ class SelectQuery extends FromClause implements Query
     {
         parent::__construct($relation, $alias);
 
-        $this->where = new Where();
         $this->having = new Where();
+        $this->where = new Where();
+    }
+
+    /**
+     * Get select columns array
+     *
+     * @return array
+     */
+    public function getAllColumns()
+    {
+        return $this->columns;
+    }
+
+    /**
+     * Remove everything from the current SELECT clause
+     *
+     * @return $this
+     */
+    public function removeAllColumns()
+    {
+        $this->columns = [];
+
+        return $this;
+    }
+
+    /**
+     * Set or replace a column with a content.
+     *
+     * @param string $statement
+     *   SQL select column
+     * @param string
+     *   If alias to be different from the column
+     *
+     * @return $this
+     */
+    public function column($statement, $alias = null)
+    {
+        $noAlias = false;
+
+        if (!$alias) {
+            if (!is_string($statement)) {
+                throw new QueryError("when providing no alias for select column, statement must be a string");
+            }
+
+            // Match for RELATION.COLUMN for aliasing properly
+            if (false !==  strpos($statement, '.')) {
+                list(, $column) = explode('.', $statement);
+
+                if ('*' === $column) {
+                    $alias = $statement;
+                    $noAlias = true;
+                } else {
+                    $alias = $column;
+                }
+
+            } else {
+                $alias = $statement;
+            }
+        }
+
+        $this->columns[$alias] = [$statement, ($noAlias ? null : $alias)];
+
+        return $this;
+    }
+
+    /**
+     * Remove column from projection
+     *
+     * @param string $name
+     *
+     * @return $this
+     */
+    public function removeColumn($alias)
+    {
+        unset($this->columns[$alias]);
+
+        return $this;
+    }
+
+    /**
+     * Does this project have the given column
+     *
+     * @param string $name
+     *
+     * @return boolean
+     */
+    public function hasColumn($alias)
+    {
+        return isset($this->columns[$alias]);
     }
 
     /**
