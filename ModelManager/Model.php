@@ -64,19 +64,19 @@ class Model extends ReadonlyModel
     {
         $values = $this->structure->extract($entity);
 
-        // Exclude null parts of the primary key
-        // @todo
-
-        $sql = strtr(
-            "insert into :relation (:fields) values (:values)",
-            [
-                ':relation'   => $this->getStructure()->getRelation(),
-                ':fields'     => $this->getCommaSeparatedIdentifierList(array_keys($values)),
-                ':values'     => $this->getCommaSeparatedArgumentList(array_keys($values)),
-            ]
-        );
-
-        $this->query($sql, array_values($values));
+        $this
+            ->connection
+            ->insertValues(
+                $this->getStructure()->getRelation()
+            )
+            ->columns(
+                array_keys($values)
+            )
+            ->values(
+                array_values($values)
+            )
+            ->execute()
+        ;
 
         // For the sake of consistency, we need to update the current entity
         // instance for the users, but there is one problem, we cannot fetch

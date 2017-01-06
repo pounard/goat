@@ -76,6 +76,13 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface
     public function executePreparedQuery($identifier, $parameters = null, $enableConverters = true);
 
     /**
+     * Get last insert identifier
+     *
+     * @return scalar
+     */
+    // public function getLastInsertId();
+
+    /**
      * Create a select query builder
      *
      * @param string $relation

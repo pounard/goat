@@ -36,4 +36,12 @@ class IntegerConverter implements ConverterInterface
     public function cast($type)
     {
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function canProcess($value)
+    {
+        return is_int($value) || ctype_digit($value);
+    }
 }

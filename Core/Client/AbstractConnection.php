@@ -94,8 +94,9 @@ abstract class AbstractConnection implements ConnectionInterface
     {
         $index      = 0;
         $parameters = $arguments->getAll();
+        $done       = [];
 
-        $rawSQL = preg_replace_callback('/\$(\*|\d+)(?:::([\w\."]+(?:\[\])?)|)?/', function ($matches) use (&$parameters, &$index) {
+        $rawSQL = preg_replace_callback('/\$(\*|\d+)(?:::([\w\."]+(?:\[\])?)|)?/', function ($matches) use (&$parameters, &$index, &$done) {
 
             $placeholder = $this->getPlaceholder($index);
 
@@ -120,6 +121,7 @@ abstract class AbstractConnection implements ConnectionInterface
                 }
 
                 $parameters[$index] = $replacement;
+                $done[$index] = true;
             }
 
             ++$index;
@@ -133,7 +135,11 @@ abstract class AbstractConnection implements ConnectionInterface
         // understand; for example a non explicitely casted \DateTime object
         // into the query will end up as a \DateTime object and the query
         // will fail.
-        // @todo
+        if (count($done) !== count($parameters)) {
+            foreach (array_diff_key($parameters, $done) as $index => $value) {
+                $parameters[$index] = $this->converter->guess($value);
+            }
+        }
 
         return [$rawSQL, $parameters];
     }

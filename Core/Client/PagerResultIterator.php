@@ -2,7 +2,7 @@
 
 namespace Goat\Core\Client;
 
-use Goat\Core\Converter\ConverterInterface;
+use Goat\Core\Converter\ConverterMap;
 
 /**
  * Wraps a result iterator in order to paginate results
@@ -36,7 +36,7 @@ final class PagerResultIterator implements ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function setConverter(ConverterInterface $converter)
+    public function setConverter(ConverterMap $converter)
     {
         return $this->result->setConverter($converter);
     }

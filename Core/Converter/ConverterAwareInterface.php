@@ -7,9 +7,9 @@ interface ConverterAwareInterface
     /**
      * Set connection
      *
-     * @param ConverterInterface $connection
+     * @param ConverterMap $connection
      *
      * @return $this
      */
-    public function setConverter(ConverterInterface $converter);
+    public function setConverter(ConverterMap $converter);
 }

@@ -47,4 +47,12 @@ class StringConverter implements ConverterInterface, EscaperAwareInterface
     public function cast($type)
     {
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function canProcess($value)
+    {
+        return is_string($value);
+    }
 }

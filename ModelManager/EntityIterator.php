@@ -3,7 +3,7 @@
 namespace Goat\ModelManager;
 
 use Goat\Core\Client\ResultIteratorInterface;
-use Goat\Core\Converter\ConverterInterface;
+use Goat\Core\Converter\ConverterMap;
 
 /**
  * Basic entity generator implementation, no cache.
@@ -29,7 +29,7 @@ class EntityIterator implements \IteratorAggregate, ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function setConverter(ConverterInterface $converter)
+    public function setConverter(ConverterMap $converter)
     {
         throw new \LogicException("you cannot change entity iterator converter");
     }

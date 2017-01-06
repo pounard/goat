@@ -6,7 +6,7 @@ use Goat\Core\Converter\Impl\StringConverter;
 use Goat\Core\DebuggableTrait;
 use Goat\Core\Error\ConfigurationError;
 
-class Converter implements ConverterInterface
+class ConverterMap
 {
     use DebuggableTrait;
 
@@ -123,5 +123,19 @@ class Converter implements ConverterInterface
     public function cast($type)
     {
         return $this->get($type)->cast($type);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function guess($value)
+    {
+        foreach ($this->converters as $type => $converter) {
+            if ($converter->canProcess($value)) {
+                return $converter->extract($type, $value);
+            }
+        }
+
+        return $value;
     }
 }

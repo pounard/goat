@@ -103,4 +103,12 @@ class TimestampConverter implements ConverterInterface
               return 'timestamp';
         }
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function canProcess($value)
+    {
+        return $value instanceof \DateTimeInterface;
+    }
 }

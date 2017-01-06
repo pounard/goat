@@ -4,7 +4,7 @@ namespace Goat\Tests;
 
 use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Client\Dsn;
-use Goat\Core\Converter\Converter;
+use Goat\Core\Converter\ConverterMap;
 use Goat\Core\Converter\Impl\DecimalConverter;
 use Goat\Core\Converter\Impl\IntegerConverter;
 use Goat\Core\Converter\Impl\StringConverter;
@@ -38,13 +38,16 @@ trait ConnectionAwareTestTrait
         $default = new StringConverter();
         $default->setEscaper($connection);
 
-        return (new Converter())
+        // Order of converters and types gives you the order in which they will
+        // be guessed if no type is specified, go from the more complex to the
+        // lesser to ensure there is no data loss in such case.
+        return (new ConverterMap())
             ->register(['varchar'], $default)
             // In MySQL there is no bytea, blob is more similar to text.
             ->register(['bytea'], $default)
-            ->register(['integer' ,'int', 'int4', 'int8', 'serial'], new IntegerConverter())
-            ->register(['float4', 'float8', 'double', 'decimal', 'numeric'], new DecimalConverter())
-            ->register(['date', 'time', 'datetime', 'timestamp'], new TimestampConverter())
+            ->register(['int8', 'int4', 'integer', 'int', 'serial'], new IntegerConverter())
+            ->register(['float8', 'float4', 'double', 'decimal', 'numeric'], new DecimalConverter())
+            ->register(['timestamp', 'datetime', 'date', 'time'], new TimestampConverter())
             ->setFallback($default)
         ;
     }

@@ -5,18 +5,18 @@ namespace Goat\Core\Converter;
 trait ConverterAwareTrait
 {
     /**
-     * @var ConverterInterface
+     * @var ConverterMap
      */
     protected $converter;
 
     /**
      * Set connection
      *
-     * @param ConverterInterface $connection
+     * @param ConverterMap $connection
      *
      * @return $this
      */
-    public function setConverter(ConverterInterface $converter)
+    public function setConverter(ConverterMap $converter)
     {
         $this->converter = $converter;
 

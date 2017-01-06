@@ -36,4 +36,12 @@ class DecimalConverter implements ConverterInterface
     public function cast($type)
     {
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function canProcess($value)
+    {
+        return is_numeric($value);
+    }
 }

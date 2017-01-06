@@ -43,4 +43,13 @@ interface ConverterInterface
      *   for cast, and let the server handle it as-is
      */
     public function cast($type);
+
+    /**
+     * Can this value be processed
+     *
+     * @param mixed $value
+     *
+     * @return boolean
+     */
+    public function canProcess($value);
 }
