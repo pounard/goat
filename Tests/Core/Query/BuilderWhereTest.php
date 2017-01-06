@@ -4,9 +4,9 @@ namespace Goat\Tests\Core\Query;
 
 use Goat\Core\Query\Where;
 
-class WhereTest extends \PHPUnit_Framework_TestCase
+class BuilderWhereTest extends \PHPUnit_Framework_TestCase
 {
-    use SqlTestTrait;
+    use BuilderTestTrait;
 
     public function testWhere()
     {

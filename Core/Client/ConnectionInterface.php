@@ -6,16 +6,25 @@ use Goat\Core\Converter\ConverterAwareInterface;
 use Goat\Core\Query\InsertQueryQuery;
 use Goat\Core\Query\InsertValuesQuery;
 use Goat\Core\Query\Query;
-use Goat\Core\Query\RawStatement;
 use Goat\Core\Query\SelectQuery;
 use Goat\Core\Query\SqlFormatterInterface;
 
 interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface
 {
     /**
+     * Does the backend supports RETURNING clauses
+     *
+     * @return boolean
+     */
+    public function supportsReturning();
+
+    /**
      * Send query
      *
-     * @param string|SelectQuery|RawStatement $sql
+     * @param string|Query $query
+     *   If a query is given here, and parameters is empty, it will use the
+     *   Query instance parameters, but if you provide parameters, it will
+     *   override them
      * @param mixed[] $parameters
      *   Query parameters
      * @param boolean $enableConverters
@@ -23,20 +32,34 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface
      *
      * @return ResultIteratorInterface
      */
-    public function query($sql, array $parameters = [], $enableConverters = true);
+    public function query($query, array $parameters = [], $enableConverters = true);
+
+    /**
+     * Perform only, do not return a result but affected row count instead
+     *
+     * @param string|Query $query
+     *   If a query is given here, and parameters is empty, it will use the
+     *   Query instance parameters, but if you provide parameters, it will
+     *   override them
+     * @param mixed[] $parameters
+     *   Query parameters
+     *
+     * @return int
+     */
+    public function perform($query, array $parameters = []);
 
     /**
      * Prepare query
      *
-     * @param string|SelectQuery|RawStatement $sql
-     *   Bare SQL
+     * @param string|Query $query
+     *   Bare SQL or Query instance
      * @param string $identifier
      *   Query unique identifier, if null given one will be generated
      *
      * @return string
      *   The given or generated identifier
      */
-    public function prepareQuery($sql, $identifier = null);
+    public function prepareQuery($query, $identifier = null);
 
     /**
      * Prepare query

@@ -38,9 +38,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
     }
 
     /**
-     * Format columns for 'select'
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function formatProjectionAll(array $columns)
     {
@@ -55,6 +53,22 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
         }
 
         return implode(', ', $output);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function formatReturning($statement, $alias = null)
+    {
+        return $this->formatProjection($statement, $alias);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function formatReturningAll(array $return)
+    {
+        return $this->formatProjectionAll($return);
     }
 
     /**
@@ -201,7 +215,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      *
      * @return string
      */
-    private function formatValuesInsert(InsertValuesQuery $query)
+    protected function formatValuesInsert(InsertValuesQuery $query)
     {
         $output = [];
 
@@ -236,6 +250,50 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
         }
         $output[] = implode(', ', $values);
 
+        $return = $query->getAllReturn();
+        if ($return) {
+            $output[] = sprintf("returning %s", $this->formatReturningAll($return));
+        }
+
+        return implode("\n", $output);
+    }
+
+    /**
+     * Format given insert query
+     *
+     * @param InsertQueryQuery $query
+     *
+     * @return string
+     */
+    protected function formatQueryInsert(InsertQueryQuery $query)
+    {
+        $output = [];
+
+        $escaper = $this->escaper;
+        $columns = $query->getAllColumns();
+        $subQuery = $query->getQuery();
+
+        $output[] = sprintf(
+            "insert into %s",
+            $this->escaper->escapeIdentifier($query->getRelation())
+        );
+
+        if ($columns) {
+            $output[] = sprintf(
+                "(%s) values",
+                implode(', ', array_map(function ($column) use ($escaper) {
+                    return $escaper->escapeIdentifier($column);
+                }, $columns))
+            );
+        }
+
+        $output[] = $this->format($subQuery);
+
+        $return = $query->getAllReturn();
+        if ($return) {
+            $output[] = sprintf("returning %s", $this->formatReturningAll($return));
+        }
+
         return implode("\n", $output);
     }
 
@@ -246,7 +304,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      *
      * @return string
      */
-    private function formatSelect(SelectQuery $query)
+    protected function formatSelect(SelectQuery $query)
     {
         $output = [];
         $output[] = sprintf(
@@ -281,7 +339,9 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
     {
         if ($query instanceof SelectQuery) {
             return $this->formatSelect($query);
-        } else if ($query instanceof InsertValuesQuery) {
+        } else if ($query instanceof InsertQueryQuery) {
+            return $this->formatQueryInsert($query);
+        }  else if ($query instanceof InsertValuesQuery) {
             return $this->formatValuesInsert($query);
         }
 

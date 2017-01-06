@@ -33,6 +33,14 @@ class PgSQLConnection extends AbstractConnection
     /**
      * {@inheritdoc}
      */
+    public function supportsReturning()
+    {
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function escapeIdentifier($string)
     {
         return '"' . str_replace('"', '\\"', $string) . '"';

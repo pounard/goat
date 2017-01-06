@@ -220,4 +220,12 @@ final class PagerResultIterator implements ResultIteratorInterface
     {
         return $this->result->fetchColumn($name);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function fetch()
+    {
+        return $this->result->fetch();
+    }
 }

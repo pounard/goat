@@ -46,7 +46,7 @@ class Where
      * @var string
      *   Computed SQL string
      */
-    protected $sql;
+    protected $rawSQL;
 
     /**
      * @var string
@@ -106,7 +106,7 @@ class Where
     {
         if (null !== $this->arguments) {
             $this->arguments = null;
-            $this->sql = null;
+            $this->rawSQL = null;
         }
     }
 
@@ -247,7 +247,7 @@ class Where
      */
     public function getArguments()
     {
-        if (null === $this->sql) {
+        if (null === $this->rawSQL) {
             $this->format();
         }
 
@@ -264,8 +264,8 @@ class Where
     {
         $output = [];
 
-        if (null !== $this->sql) {
-            return $this->sql;
+        if (null !== $this->rawSQL) {
+            return $this->rawSQL;
         }
 
         $this->arguments = [];
@@ -324,7 +324,7 @@ class Where
             }
         }
 
-        return $this->sql = implode("\n" . $this->operator . ' ', $output);
+        return $this->rawSQL = implode("\n" . $this->operator . ' ', $output);
     }
 
     /**

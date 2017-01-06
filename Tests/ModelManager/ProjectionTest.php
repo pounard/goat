@@ -1,13 +1,14 @@
 <?php
 
-namespace Goat\Tests\Core\Query;
+namespace Goat\Tests\ModelManager;
 
-use Goat\ModelManager\Projection;
 use Goat\ModelManager\EntityStructure;
+use Goat\ModelManager\Projection;
+use Goat\Tests\Core\Query\BuilderTestTrait;
 
 class ProjectionTest extends \PHPUnit_Framework_TestCase
 {
-    use SqlTestTrait;
+    use BuilderTestTrait;
 
     public function testProjectionBasics()
     {

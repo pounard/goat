@@ -207,4 +207,12 @@ class DefaultResultIterator implements ResultIteratorInterface
 
         $this->statement->fetchColumn($name);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function fetch()
+    {
+        return $this->hydrate($this->statement->fetch());
+    }
 }

@@ -76,4 +76,11 @@ interface ResultIteratorInterface extends \IteratorAggregate, \Countable, Conver
      * @return mixed[]
      */
     public function fetchColumn($name = null);
+
+    /**
+     * Get next element and move forward
+     *
+     * @return mixed
+     */
+    public function fetch();
 }

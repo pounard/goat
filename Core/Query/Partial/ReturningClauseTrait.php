@@ -3,6 +3,7 @@
 namespace Goat\Core\Query\Partial;
 
 use Goat\Core\Error\QueryError;
+use Goat\Core\Query\RawStatement;
 
 /**
  * Represents the RETURNING part of any query.
@@ -52,8 +53,8 @@ trait ReturningClauseTrait
         $noAlias = false;
 
         if (!$alias) {
-            if (!is_string($statement)) {
-                throw new QueryError("RETURNING values can only be column names from the previous statement");
+            if (!is_string($statement) && !$statement instanceof RawStatement) {
+                throw new QueryError("RETURNING values can only be column names or expressions using them from the previous statement");
             }
 
             // Match for RELATION.COLUMN for aliasing properly
@@ -101,5 +102,13 @@ trait ReturningClauseTrait
     public function hasReturn($alias)
     {
         return isset($this->return[$alias]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function willReturnRows()
+    {
+        return !empty($this->return);
     }
 }

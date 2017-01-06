@@ -4,19 +4,22 @@ namespace Goat\Core\Error;
 
 class DriverError extends GoatError
 {
-    private $sql;
+    private $rawSQL;
     private $parameters;
 
     /**
      * Default constructor
      *
-     * @param string $sql
+     * @param string $rawSQL
      * @param array $parameters
      * @param \Exception|\Error $previous
      */
-    public function __construct($sql, $parameters, $previous)
+    public function __construct($rawSQL, $parameters, $previous)
     {
-        $message = sprintf("error while querying backend, query is: %s", $sql);
+        $this->rawSQL = $rawSQL;
+        $this->parameters = $parameters;
+
+        $message = sprintf("error while querying backend, query is: %s", $rawSQL);
 
         parent::__construct($message, null, $previous);
     }

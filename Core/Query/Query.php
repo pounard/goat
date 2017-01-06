@@ -2,6 +2,8 @@
 
 namespace Goat\Core\Query;
 
+use Goat\Core\Client\ResultIteratorInterface;
+
 interface Query
 {
     const JOIN_INNER = 4;
@@ -33,9 +35,36 @@ interface Query
     public function execute($class = Query::RET_PROXY, array $parameters = []);
 
     /**
+     * Execute query with the given parameters and return the affected row count
+     *
+     * @param array $parameters
+     *   Key/value pairs or argument list, anonymous and named parameters
+     *   cannot be mixed up within the same query
+     *
+     * @return int
+     */
+    public function perform(array $parameters = []);
+
+    /**
      * Get query arguments
      *
      * @return string[]
      */
     public function getArguments();
+
+    /**
+     * Should this query return something
+     *
+     * For INSERT, MERGE, UPDATE or DELETE queries without a RETURNING clause
+     * this should return false, same goes for PostgresSQL PERFORM.
+     *
+     * Note that SELECT queries might also be run with a PERFORM returning
+     * nothing, for example in some cases with FOR UPDATE.
+     *
+     * This may trigger some optimizations, for example with PDO this will
+     * force the RETURN_AFFECTED behavior.
+     *
+     * @return boolean
+     */
+    public function willReturnRows();
 }

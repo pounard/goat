@@ -60,15 +60,7 @@ abstract class AbstractQuery implements Query, ConnectionAwareInterface
     }
 
     /**
-     * Execute query with the given parameters and return the result iterator
-     *
-     * @param array $parameters
-     *   Key/value pairs or argument list, anonymous and named parameters
-     *   cannot be mixed up within the same query
-     * @param string $class
-     *   Object class that the iterator should return
-     *
-     * @return ResultIteratorInterface
+     * {@inheritdoc}
      */
     final public function execute($class = Query::RET_PROXY, array $parameters = [])
     {
@@ -76,9 +68,18 @@ abstract class AbstractQuery implements Query, ConnectionAwareInterface
             throw new GoatError("this query has no reference to any connection, therefore cannot execute itself");
         }
 
-        return $this->connection->query(
-            $this->connection->getSqlFormatter()->format($this),
-            $this->getArguments()
-        );
+        return $this->connection->query($this, $parameters);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function perform(array $parameters = [])
+    {
+        if (!$this->connection) {
+            throw new GoatError("this query has no reference to any connection, therefore cannot execute itself");
+        }
+
+        return $this->connection->perform($this, $parameters);
     }
 }

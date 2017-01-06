@@ -7,9 +7,9 @@ use Goat\Core\Query\RawStatement;
 use Goat\Core\Query\SelectQuery;
 use Goat\Core\Query\SqlFormatter;
 
-class SelectQueryTest extends \PHPUnit_Framework_TestCase
+class BuilderSelectTest extends \PHPUnit_Framework_TestCase
 {
-    use SqlTestTrait;
+    use BuilderTestTrait;
 
     public function testSimpleQuery()
     {

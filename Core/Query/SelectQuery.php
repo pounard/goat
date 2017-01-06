@@ -18,11 +18,13 @@ class SelectQuery extends AbstractQuery
     use FromClauseTrait;
 
     private $columns = [];
+    private $forUpdate = false;
     private $groups = [];
     private $having;
     private $limit = 0;
     private $offset = 0;
     private $orders = [];
+    private $performOnly = false;
     private $relation;
     private $relationAlias;
     private $where;
@@ -41,6 +43,40 @@ class SelectQuery extends AbstractQuery
 
         $this->having = new Where();
         $this->where = new Where();
+    }
+
+    /**
+     * Set the query as a SELECT ... FOR UPDATE query
+     *
+     * @return $this
+     */
+    public function forUpdate()
+    {
+        $this->forUpdate = true;
+
+        return $this;
+    }
+
+    /**
+     * Is this a SELECT ... FOR UPDATE
+     *
+     * @return boolean
+     */
+    public function isForUpdate()
+    {
+        return $this->forUpdate;
+    }
+
+    /**
+     * Explicitely tell to the driver we don't want any return
+     *
+     * @return $this
+     */
+    public function performOnly()
+    {
+        $this->performOnly = true;
+
+        return $this;
     }
 
     /**
@@ -341,6 +377,14 @@ class SelectQuery extends AbstractQuery
             ->range(0, 0)
             ->column("count(*)", $countAlias)
         ;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function willReturnRows()
+    {
+        return !$this->performOnly;
     }
 
     /**

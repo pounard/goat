@@ -2,8 +2,6 @@
 
 namespace Goat\Core\Query;
 
-use Goat\Core\Client\QueryInterface;
-
 /**
  * SQL formatter
  */
@@ -30,6 +28,28 @@ interface SqlFormatterInterface
      * @return string
      */
     public function formatProjectionAll(array $columns);
+
+    /**
+     * Format projection for a single column or statement
+     *
+     * @param string|RawStatement $statement
+     * @param string $alias
+     *
+     * @return string
+     */
+    public function formatReturning($statement, $alias = null);
+
+    /**
+     * Format the whole projection
+     *
+     * @param array $return
+     *   Each column is an array that must contain:
+     *     - 0: string or RawStatement: column name or SQL statement
+     *     - 1: column alias, can be empty or null for no aliasing
+     *
+     * @return string
+     */
+    public function formatReturningAll(array $return);
 
     /**
      * Format a single order by

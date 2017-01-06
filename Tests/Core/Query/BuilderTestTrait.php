@@ -2,7 +2,7 @@
 
 namespace Goat\Tests\Core\Query;
 
-trait SqlTestTrait
+trait BuilderTestTrait
 {
     protected function normalize($string)
     {

@@ -2,8 +2,7 @@
 
 namespace Goat\Driver\PDO;
 
-use Goat\Core\Client\ConnectionInterface;
-use Goat\Core\Client\ConnectionTrait;
+use Goat\Core\Client\AbstractConnection as BaseConnection;
 use Goat\Core\Client\Dsn;
 use Goat\Core\Client\ResultIteratorInterface;
 use Goat\Core\Error\ConfigurationError;
@@ -11,14 +10,15 @@ use Goat\Core\Error\DriverError;
 use Goat\Core\Error\QueryError;
 use Goat\Core\Query\InsertQueryQuery;
 use Goat\Core\Query\InsertValuesQuery;
+use Goat\Core\Query\Query;
 use Goat\Core\Query\SelectQuery;
 use Goat\Core\Query\SqlFormatter;
 use Goat\Core\Query\SqlFormatterInterface;
+use Goat\Core\Client\EmptyResultIterator;
+use Goat\Core\Error\GoatError;
 
-abstract class AbstractConnection implements ConnectionInterface
+abstract class AbstractConnection extends BaseConnection
 {
-    use ConnectionTrait;
-
     /**
      * @var Dsn
      */
@@ -140,46 +140,78 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function query($sql, array $parameters = [], $enableConverters = true)
+    public function query($query, array $parameters = [], $enableConverters = true)
     {
+        if ($query instanceof Query) {
+            if (!$query->willReturnRows()) {
+                $affectedRowCount = $this->perform($query, $parameters);
+
+                return new EmptyResultIterator($affectedRowCount);
+            }
+        }
+
         try {
-            list($sql, $parameters) = $this->rewriteQueryAndParameters($sql, $parameters);
+            list($rawSQL, $parameters) = $this->getProperSql($query, $parameters);
 
-            $statement = $this
-                ->getPdo()
-                ->prepare(
-                    $sql,
-                    [\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY]
-                )
-            ;
-
+            $statement = $this->getPdo()->prepare($rawSQL, [\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY]);
             $statement->execute($parameters);
 
             $ret = $this->createResultIterator($statement, $enableConverters);
             $ret->setConverter($this->converter);
 
+            // echo $rawSQL, "\n\n";
+
             return $ret;
 
+        } catch (GoatError $e) {
+            throw $e;
         } catch (\PDOException $e) {
-            throw new DriverError($sql, $parameters, $e);
+            throw new DriverError($rawSQL, $parameters, $e);
         } catch (\Exception $e) {
-            throw new DriverError($sql, $parameters, $e);
+            throw new DriverError($rawSQL, $parameters, $e);
         }
     }
 
     /**
      * {@inheritdoc}
      */
-    public function prepareQuery($sql, $identifier = null)
+    public function perform($query, array $parameters = [], $enableConverters = true)
     {
+        try {
+            list($rawSQL, $parameters) = $this->getProperSql($query, $parameters);
+
+            // We still use PDO prepare emulation, it's better for security
+            $statement = $this->getPdo()->prepare($rawSQL, [\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY]);
+            $statement->execute($parameters);
+
+            // echo $rawSQL, "\n\n";
+
+            return $statement->rowCount();
+
+        } catch (GoatError $e) {
+            throw $e;
+        } catch (\PDOException $e) {
+            throw new DriverError($rawSQL, $parameters, $e);
+        } catch (\Exception $e) {
+            throw new DriverError($rawSQL, $parameters, $e);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function prepareQuery($query, $identifier = null)
+    {
+        list($rawSQL) = $this->getProperSql($query);
+
         if (null === $identifier) {
-            $identifier = md5($sql);
+            $identifier = md5($rawSQL);
         }
 
         // Default behaviour, because databases such as MySQL don't really
         // prepare SQL statements, is to emulate it by keeping a copy of the
         // SQL query in memory and giving to the user a computed identifier.
-        $this->prepared[$identifier] = $sql;
+        $this->prepared[$identifier] = $rawSQL;
 
         return $identifier;
     }

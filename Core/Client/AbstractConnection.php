@@ -4,8 +4,9 @@ namespace Goat\Core\Client;
 
 use Goat\Core\Converter\ConverterAwareTrait;
 use Goat\Core\Error\QueryError;
+use Goat\Core\Query\Query;
 
-trait ConnectionTrait /* implements ConnectionInterface */
+abstract class AbstractConnection implements ConnectionInterface
 {
     use ConverterAwareTrait;
 
@@ -27,6 +28,14 @@ trait ConnectionTrait /* implements ConnectionInterface */
     /**
      * {@inheritdoc}
      */
+    public function supportsReturning()
+    {
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getCastType($type)
     {
         return $type;
@@ -39,24 +48,25 @@ trait ConnectionTrait /* implements ConnectionInterface */
      * types when data is returned from the query, this is a bit ugly, but it
      * will allow the users to specify the datatype they'd like in return
      *
-     * @param string $sql
+     * @param string $rawSQL
      *   Bare SQL
      * @param mixed[] $parameters
      *   Parameters array to be converted
      *
-     * @return string
-     *   Rewritten query
+     * @return array
+     *   First value is the query string, second is the reworked array
+     *   of parameters, if conversions were needed
      */
-    protected function rewriteQueryAndParameters($sql, array $parameters)
+    private function rewriteQueryAndParameters($rawSQL, array $parameters)
     {
         if (!$parameters) {
-            return [$sql, []];
+            return [$rawSQL, []];
         }
 
         $index      = 0;
         $parameters = array_values($parameters);
 
-        $sql = preg_replace_callback('/\$(\*|\d+)(?:::([\w\."]+(?:\[\])?)|)?/', function ($matches) use (&$parameters, &$index) {
+        $rawSQL = preg_replace_callback('/\$(\*|\d+)(?:::([\w\."]+(?:\[\])?)|)?/', function ($matches) use (&$parameters, &$index) {
             $token = '?';
 
             if (!array_key_exists($index, $parameters)) {
@@ -86,13 +96,36 @@ trait ConnectionTrait /* implements ConnectionInterface */
 
             return $token;
 
-        }, $sql);
+        }, $rawSQL);
 
-        return [$sql, $parameters];
+        return [$rawSQL, $parameters];
     }
 
-    protected function hydrate($value, $type)
+    /**
+     * Return the proper SQL and set of parameters
+     *
+     * @param string|Query $input
+     * @param mixed[] $parameters
+     *
+     * @return array
+     *   First value is the query string, second is the reworked array
+     *   of parameters, if conversions were needed
+     */
+    final protected function getProperSql($input, array $parameters = [])
     {
-        return $value;
+        if (!is_string($input)) {
+
+            if (!$input instanceof Query) {
+                throw new QueryError(sprintf("query must be a bare string or an instance of %s", Query::class));
+            }
+
+            if (empty($parameters)) {
+                $parameters = $input->getArguments();
+            }
+
+            $input = $this->getSqlFormatter()->format($input);
+        }
+
+        return $this->rewriteQueryAndParameters($input, $parameters);
     }
 }
