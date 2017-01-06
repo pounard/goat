@@ -131,15 +131,26 @@ interface SqlFormatterInterface
      *   O means no limit
      * @param int $offset
      *   0 means default offset
+     *
+     * @return string
      */
     public function formatRange($limit = 0, $offset = 0);
 
     /**
-     * Format the query
+     * Format where instance
      *
-     * @param Query $query
+     * @param Where $where
      *
      * @return string
      */
-    public function format(Query $query);
+    public function formatWhere(Where $where);
+
+    /**
+     * Format the query
+     *
+     * @param Query|Where|RawStatement $query
+     *
+     * @return string
+     */
+    public function format($query);
 }

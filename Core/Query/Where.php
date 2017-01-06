@@ -2,6 +2,7 @@
 
 namespace Goat\Core\Query;
 
+use Goat\Core\Client\ArgumentBag;
 use Goat\Core\Error\QueryError;
 
 /**
@@ -37,16 +38,9 @@ class Where
     const NOT_LIKE = 'not like';
 
     /**
-     * @var mixed[]
-     *   Computed arguments
+     * @var ArgumentBag
      */
     protected $arguments;
-
-    /**
-     * @var string
-     *   Computed SQL string
-     */
-    protected $rawSQL;
 
     /**
      * @var string
@@ -104,44 +98,7 @@ class Where
      */
     protected function reset()
     {
-        if (null !== $this->arguments) {
-            $this->arguments = null;
-            $this->rawSQL = null;
-        }
-    }
-
-    /**
-     * Create placeholder list for the given arguments
-     *
-     * This will be used only in order to build 'in' and 'not in' conditions
-     *
-     * @param mixed[] $arguments
-     *   Arbitrary arguments
-     * @param string $type = null
-     *   Data type of arguments
-     *
-     * @return string
-     */
-    protected function createPlaceholders($arguments, $type = '')
-    {
-        return implode(', ', array_map(function () { return '$*'; }, $arguments));
-    }
-
-    /**
-     * Merge given arguments into current argument array
-     *
-     * @param mixed $arguments
-     *   Can be either a single value or an array of values
-     */
-    protected function mergeArguments($arguments)
-    {
-        if (is_array($arguments)) {
-            foreach ($arguments as $argument) {
-                $this->arguments[] = $argument;
-            }
-        } else {
-            $this->arguments[] = $arguments;
-        }
+        $this->arguments = null;
     }
 
     /**
@@ -237,121 +194,70 @@ class Where
     }
 
     /**
-     * Get ordered arguments for the formatted where statement
+     * Get arguments
      *
-     * This method will force the SQL string to be pre-computed and stored
-     * internally, later ::__toString() or ::format() calls will return the
-     * pre-computed values.
-     *
-     * @return mixed[]
+     * @return ArgumentBag
      */
     public function getArguments()
     {
-        if (null === $this->rawSQL) {
-            $this->format();
+        if (null !== $this->arguments) {
+            return $this->arguments;
         }
 
-        return $this->arguments;
-    }
-
-    /**
-     * That's what ::format() really does, and will be used for recursion, we
-     * cannot allow sub-statements to be formatted by the end user.
-     *
-     * @return string
-     */
-    protected function doFormat()
-    {
-        $output = [];
-
-        if (null !== $this->rawSQL) {
-            return $this->rawSQL;
-        }
-
-        $this->arguments = [];
-
-        if ($this->isEmpty()) {
-            // Definitely legit
-            return '1';
-        }
+        $arguments = new ArgumentBag();
 
         foreach ($this->conditions as $condition) {
             if ($condition instanceof Where) {
 
                 if (!$condition->isEmpty()) {
-                    $output[] = "(\n" . $condition->doFormat() . "\n)";
-                    $this->mergeArguments($condition->getArguments());
+                    $arguments->append($condition->getArguments());
                 }
 
             } else {
-                list($column, $value, $operator) = $condition;
-
+                list(, $value, $operator) = $condition;
 
                 if ($value instanceof RawStatement) {
-                    $this->mergeArguments($value->getArguments());
-                    $output[] = sprintf('%s %s %s', $column, $operator, $value);
+                    $arguments->appendArray($value->getParameters());
                 } else {
                     switch ($operator) {
 
-                        case self::ARBITRARY:
-                            $output[] = $column;
-                            $this->mergeArguments($value);
-                            break;
-
-                        case self::IS_NULL:
-                        case self::NOT_IS_NULL:
-                            $output[] = sprintf('%s %s', $column, $operator);
-                            break;
-
-                        case self::IN:
-                        case self::NOT_IN:
-                            $output[] = sprintf('%s %s (%s)', $column, $operator, $this->createPlaceholders($value));
-                            $this->mergeArguments($value);
-                            break;
-
-                        case self::BETWEEN:
-                        case self::NOT_BETWEEN:
-                            $output[] = sprintf('%s %s $* and $*', $column, $operator);
-                            $this->mergeArguments($value);
+                        case Where::IS_NULL:
+                        case Where::NOT_IS_NULL:
                             break;
 
                         default:
-                            $output[] = sprintf('%s %s $*', $column, $operator);
-                            $this->mergeArguments($value);
+                            if (is_array($value)) {
+                                $arguments->appendArray($value);
+                            } else {
+                                $arguments->add($value);
+                            }
                             break;
                     }
                 }
             }
         }
 
-        return $this->rawSQL = implode("\n" . $this->operator . ' ', $output);
+        return $this->arguments = $arguments;
     }
 
     /**
-     * Get the formatted where clause
-     *
-     * It will also build the ordered list of arguments internally and serve
-     * as a cache for later faster retrieving. Each new call to this method
-     * will return the pre-computed output until a new condition or statement
-     * is added.
+     * Get operator
      *
      * @return string
      */
-    public function format()
+    public function getOperator()
     {
-        return $this->doFormat();
+        return $this->operator;
     }
 
     /**
-     * Alias of ::format()
+     * Get conditions
      *
-     * @return string
-     *
-     * @see Where::format()
+     * @return mixed[]
      */
-    public function __toString()
+    public function getConditions()
     {
-        return $this->format();
+        return $this->conditions;
     }
 
     /**
@@ -359,11 +265,7 @@ class Where
      */
     public function __clone()
     {
-        foreach ($this->arguments as $index => $value) {
-            if (is_object($value)) {
-                $this->arguments[$index] = clone $value;
-            }
-        }
+        $this->arguments = null;
 
         foreach ($this->conditions as $index => $condition) {
             if (is_object($condition)) {

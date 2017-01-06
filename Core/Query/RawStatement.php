@@ -8,21 +8,21 @@ namespace Goat\Core\Query;
 class RawStatement
 {
     private $statement;
-    private $arguments = [];
+    private $parameters = [];
 
     /**
      * Default constructor
      *
      * @param string $statement
      *   Raw SQL string
-     * @param array $arguments
+     * @param array $parameters
      *   Key/value pairs or argument list, anonymous and named parameters
      *   cannot be mixed up within the same query
      */
-    public function __construct($statement, array $arguments = [])
+    public function __construct($statement, array $parameters = [])
     {
         $this->statement = $statement;
-        $this->arguments = $arguments;
+        $this->parameters = $parameters;
     }
 
     /**
@@ -31,9 +31,9 @@ class RawStatement
      * @return array
      *   Key/value pairs or argument list
      */
-    public function getArguments()
+    public function getParameters()
     {
-        return $this->arguments;
+        return $this->parameters;
     }
 
     /**
@@ -61,9 +61,9 @@ class RawStatement
      */
     public function __clone()
     {
-        foreach ($this->arguments as $index => $value) {
+        foreach ($this->parameters as $index => $value) {
             if (is_object($value)) {
-                $this->arguments[$index] = clone $value;
+                $this->parameters[$index] = clone $value;
             }
         }
 

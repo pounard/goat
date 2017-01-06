@@ -2,9 +2,11 @@
 
 namespace Goat\Tests\Core\Query;
 
+use Goat\Core\Query\SqlFormatter;
+
 trait BuilderTestTrait
 {
-    protected function normalize($string)
+    private function normalize($string)
     {
         $string = preg_replace('@\s*(\(|\))\s*@ms', '$1', $string);
         $string = preg_replace('@\s*,\s*@ms', ',', $string);
@@ -15,11 +17,16 @@ trait BuilderTestTrait
         return $string;
     }
 
-    public function assertSameSql($expected, $actual)
+    protected function assertSameSql($expected, $actual)
     {
         return $this->assertSame(
             $this->normalize($expected),
             $this->normalize($actual)
         );
+    }
+
+    protected function createStandardSQLFormatter()
+    {
+        return new SqlFormatter(new NullEscaper());
     }
 }

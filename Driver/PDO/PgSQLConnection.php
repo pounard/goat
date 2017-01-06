@@ -25,9 +25,11 @@ class PgSQLConnection extends AbstractConnection
     /**
      * {@inheritdoc}
      */
-    protected function writeCast($type)
+    protected function writeCast($placeholder, $type)
     {
-        return "?::%s";
+        // No surprises there, PostgreSQL is very straight-forward and just
+        // uses the datatypes as it handles it. Very stable and robust.
+        return sprintf("%s::%s", $placeholder, $type);
     }
 
     /**

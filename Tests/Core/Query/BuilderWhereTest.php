@@ -10,6 +10,8 @@ class BuilderWhereTest extends \PHPUnit_Framework_TestCase
 
     public function testWhere()
     {
+        $formatter = $this->createStandardSQLFormatter();
+
         $where = (new Where())
             // Simple '<>' operator
             ->condition('foo', 'bar', Where::NOT_EQUAL)
@@ -88,7 +90,7 @@ and (
 )
 EOT;
 
-        $this->assertSameSql($reference, (string)$where);
+        $this->assertSameSql($reference, $formatter->formatWhere($where));
 
         // And now the exact same where, using convenience methods
         $where = (new Where())
@@ -101,7 +103,7 @@ EOT;
             ->orStatement()
                 // Custom operator cannot have a convenience method
                 ->condition('theWorld', 'enough', 'is not')
-                // Statement is statement, no surprises
+                // Statement is statement, yield no surprises
                 ->statement('count(theWorld) = $*::int4', [1])
                 ->andStatement()
                     ->isEqual('1', 0)
@@ -127,28 +129,30 @@ EOT;
         ;
 
         // Expected is the exact same
-        $this->assertSameSql($reference, (string)$where);
+        $this->assertSameSql($reference, $formatter->formatWhere($where));
     }
 
     public function testWhereWhenEmpty()
     {
+        $formatter = $this->createStandardSQLFormatter();
+
         $where = (new Where());
 
         // Where is empty
         $this->assertTrue($where->isEmpty());
-        $this->assertSameSql("1", (string)$where);
+        $this->assertSameSql("1", $formatter->formatWhere($where));
 
         // Where is not empty anymore
         $where->isNotNull('a');
         $this->assertFalse($where->isEmpty());
-        $this->assertSameSql("a is not null", (string)$where);
+        $this->assertSameSql("a is not null", $formatter->formatWhere($where));
 
         // Statement is empty
         $statement = $where->andStatement();
         $this->assertTrue($statement->isEmpty());
-        $this->assertSameSql("1", (string)$statement);
+        $this->assertSameSql("1", $formatter->formatWhere($statement));
 
         // Statement is ignored, because empty
-        $this->assertSameSql("a is not null", (string)$where);
+        $this->assertSameSql("a is not null", $formatter->formatWhere($where));
     }
 }

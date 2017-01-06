@@ -5,6 +5,7 @@ namespace Goat\Core\Query;
 use Goat\Core\Error\QueryError;
 use Goat\Core\Query\Partial\AbstractQuery;
 use Goat\Core\Query\Partial\FromClauseTrait;
+use Goat\Core\Client\ArgumentBag;
 
 /**
  * Represents a SELECT query
@@ -104,7 +105,9 @@ class SelectQuery extends AbstractQuery
     /**
      * Set or replace a column with a content.
      *
-     * @param string $statement
+     * If you need to pass arguments, use a RawStatement instance.
+     *
+     * @param string|RawStatement $statement
      *   SQL select column
      * @param string
      *   If alias to be different from the column
@@ -354,10 +357,37 @@ class SelectQuery extends AbstractQuery
      */
     public function getArguments()
     {
-        return array_merge(
-            $this->where->getArguments(),
-            $this->having->getArguments()
-        );
+        $arguments = new ArgumentBag();
+
+        // SELECT
+        foreach ($this->columns as $column) {
+            if ($column[0] instanceof RawStatement) {
+                $arguments->appendArray($column[0]->getArguments());
+            }
+        }
+
+        // JOIN
+        foreach ($this->joins as $join) {
+            // Second argument is always a Where instance
+            $arguments->append($join[1]->getArguments());
+        }
+
+        // WHERE
+        if (!$this->where->isEmpty()) {
+            $arguments->append($this->where->getArguments());
+        }
+
+        // GROUP BY
+        // @todo ?
+        // ORDER BY
+        // @todo ?
+
+        // HAVING
+        if (!$this->having->isEmpty()) {
+            $arguments->append($this->having->getArguments());
+        }
+
+        return $arguments;
     }
 
     /**
@@ -372,6 +402,8 @@ class SelectQuery extends AbstractQuery
      */
     public function getCountQuery($countAlias = 'count')
     {
+        // @todo do not remove necessary fields for group by and other
+        //   aggregates functions (SQL standard)
         return (clone $this)
             ->removeAllColumns()
             ->range(0, 0)

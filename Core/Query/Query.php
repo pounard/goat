@@ -2,6 +2,7 @@
 
 namespace Goat\Core\Query;
 
+use Goat\Core\Client\ArgumentBag;
 use Goat\Core\Client\ResultIteratorInterface;
 
 interface Query
@@ -24,11 +25,11 @@ interface Query
     /**
      * Execute query with the given parameters and return the result iterator
      *
+     * @param string $class
+     *   Object class that the iterator should return
      * @param array $parameters
      *   Key/value pairs or argument list, anonymous and named parameters
      *   cannot be mixed up within the same query
-     * @param string $class
-     *   Object class that the iterator should return
      *
      * @return ResultIteratorInterface
      */
@@ -48,7 +49,11 @@ interface Query
     /**
      * Get query arguments
      *
-     * @return string[]
+     * Those arguments will be later converted by the driven prior to the
+     * query being sent to the backend; for this to work type cast information
+     * must lie into the query
+     *
+     * @return ArgumentBag
      */
     public function getArguments();
 

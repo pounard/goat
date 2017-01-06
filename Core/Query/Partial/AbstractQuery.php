@@ -44,7 +44,7 @@ abstract class AbstractQuery implements Query, ConnectionAwareInterface
      *
      * @return string
      */
-    final public function getRelation()
+    public function getRelation()
     {
         return $this->relation;
     }

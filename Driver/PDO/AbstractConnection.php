@@ -140,7 +140,7 @@ abstract class AbstractConnection extends BaseConnection
     /**
      * {@inheritdoc}
      */
-    public function query($query, array $parameters = [], $enableConverters = true)
+    public function query($query, $parameters = null, $enableConverters = true)
     {
         if ($query instanceof Query) {
             if (!$query->willReturnRows()) {
@@ -149,6 +149,8 @@ abstract class AbstractConnection extends BaseConnection
                 return new EmptyResultIterator($affectedRowCount);
             }
         }
+
+        $rawSQL = null;
 
         try {
             list($rawSQL, $parameters) = $this->getProperSql($query, $parameters);
@@ -175,8 +177,10 @@ abstract class AbstractConnection extends BaseConnection
     /**
      * {@inheritdoc}
      */
-    public function perform($query, array $parameters = [], $enableConverters = true)
+    public function perform($query, $parameters = null, $enableConverters = true)
     {
+        $rawSQL = null;
+
         try {
             list($rawSQL, $parameters) = $this->getProperSql($query, $parameters);
 
@@ -219,7 +223,7 @@ abstract class AbstractConnection extends BaseConnection
     /**
      * {@inheritdoc}
      */
-    public function executePreparedQuery($identifier, array $parameters = [], $enableConverters = true)
+    public function executePreparedQuery($identifier, $parameters = null, $enableConverters = true)
     {
         if (!isset($this->prepared[$identifier])) {
             throw new QueryError(sprintf("'%s': query was not prepared", $identifier));

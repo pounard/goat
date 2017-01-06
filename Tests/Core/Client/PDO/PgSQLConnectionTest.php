@@ -30,5 +30,7 @@ class PgSQLConnectionTest extends \PHPUnit_Framework_TestCase
             $count++;
         }
         $this->assertEquals(1, $count);
+
+        $this->assertTrue($connection->supportsReturning());
     }
 }

@@ -3,6 +3,7 @@
 namespace Goat\ModelManager;
 
 use Goat\Core\Query\Where;
+use Goat\Core\Client\ArgumentBag;
 
 /**
  * Goat base model, in opposition to Pomm default Model implementation, this
@@ -214,11 +215,15 @@ class Model extends ReadonlyModel
             [
                 ':relation'   => $this->structure->getRelation(),
                 ':update'     => join(', ', $set),
-                ':condition'  => (string)$where,
+                ':condition'  => $this->connection->getSqlFormatter()->format($where),
             ]
         );
 
-        $this->query($sql, array_merge(array_values($updates), $where->getArguments()));
+        $arguments = new ArgumentBag();
+        $arguments->appendArray($updates);
+        $arguments->append($where->getArguments());
+
+        $this->query($sql, $arguments);
 
         // Sorry, but MySQL can't do RETURNING, so at least, let's just be
         // signature compatible

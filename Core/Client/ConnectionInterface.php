@@ -25,14 +25,14 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface
      *   If a query is given here, and parameters is empty, it will use the
      *   Query instance parameters, but if you provide parameters, it will
      *   override them
-     * @param mixed[] $parameters
+     * @param mixed[]|ArgumentBag $parameters
      *   Query parameters
      * @param boolean $enableConverters
      *   If set to false, converters would be disabled
      *
      * @return ResultIteratorInterface
      */
-    public function query($query, array $parameters = [], $enableConverters = true);
+    public function query($query, $parameters = null, $enableConverters = true);
 
     /**
      * Perform only, do not return a result but affected row count instead
@@ -41,12 +41,12 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface
      *   If a query is given here, and parameters is empty, it will use the
      *   Query instance parameters, but if you provide parameters, it will
      *   override them
-     * @param mixed[] $parameters
+     * @param mixed[]|ArgumentBag $parameters
      *   Query parameters
      *
      * @return int
      */
-    public function perform($query, array $parameters = []);
+    public function perform($query, $parameters = null);
 
     /**
      * Prepare query
@@ -66,14 +66,14 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface
      *
      * @param string $identifier
      *   Query unique identifier
-     * @param mixed[] $parameters
+     * @param mixed[]|ArgumentBag $parameters
      *   Query parameters
      * @param boolean $enableConverters
      *   If set to false, converters would be disabled
      *
      * @return ResultIteratorInterface
      */
-    public function executePreparedQuery($identifier, array $parameters = [], $enableConverters = true);
+    public function executePreparedQuery($identifier, $parameters = null, $enableConverters = true);
 
     /**
      * Create a select query builder

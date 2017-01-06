@@ -70,15 +70,15 @@ EOT;
         $having->statement('count(n.nid) < $*', 3);
 
         $this->assertSameSql($reference, $formatter->format($query));
-        $this->assertSame($referenceArguments, $query->getArguments());
+        $this->assertSame($referenceArguments, $query->getArguments()->getAll());
 
         $countQuery = $query->getCountQuery();
         $this->assertSameSql($countReference, $formatter->format($countQuery));
-        $this->assertSame($referenceArguments, $countQuery->getArguments());
+        $this->assertSame($referenceArguments, $countQuery->getArguments()->getAll());
 
         $clonedQuery = clone $query;
         $this->assertSameSql($reference, $formatter->format($clonedQuery));
-        $this->assertSame($referenceArguments, $clonedQuery->getArguments());
+        $this->assertSame($referenceArguments, $clonedQuery->getArguments()->getAll());
 
         // Builder way
         $query = (new SelectQuery('task', 't'))
@@ -104,15 +104,15 @@ EOT;
         ;
 
         $this->assertSameSql($reference, $formatter->format($query));
-        $this->assertSame($referenceArguments, $query->getArguments());
+        $this->assertSame($referenceArguments, $query->getArguments()->getAll());
 
         $countQuery = $query->getCountQuery();
         $this->assertSameSql($countReference, $formatter->format($countQuery));
-        $this->assertSame($referenceArguments, $countQuery->getArguments());
+        $this->assertSame($referenceArguments, $countQuery->getArguments()->getAll());
 
         $clonedQuery = clone $query;
         $this->assertSameSql($reference, $formatter->format($clonedQuery));
-        $this->assertSame($referenceArguments, $clonedQuery->getArguments());
+        $this->assertSame($referenceArguments, $clonedQuery->getArguments()->getAll());
 
         // Same without alias
         $reference = <<<EOT
@@ -166,14 +166,14 @@ EOT;
         ;
 
         $this->assertSameSql($reference, $formatter->format($query));
-        $this->assertSame($referenceArguments, $query->getArguments());
+        $this->assertSame($referenceArguments, $query->getArguments()->getAll());
 
         $countQuery = $query->getCountQuery();
         $this->assertSameSql($countReference, $formatter->format($countQuery));
-        $this->assertSame($referenceArguments, $countQuery->getArguments());
+        $this->assertSame($referenceArguments, $countQuery->getArguments()->getAll());
 
         $clonedQuery = clone $query;
         $this->assertSameSql($reference, $formatter->format($clonedQuery));
-        $this->assertSame($referenceArguments, $clonedQuery->getArguments());
+        $this->assertSame($referenceArguments, $clonedQuery->getArguments()->getAll());
     }
 }

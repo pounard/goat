@@ -2,6 +2,7 @@
 
 namespace Goat\ModelManager;
 
+use Goat\Core\Client\ArgumentBag;
 use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Client\PagerResultIterator;
 use Goat\Core\Query\Where;
@@ -53,12 +54,12 @@ class ReadonlyModel
      * Execute query and return entities
      *
      * @param string $sql
-     * @param array $values
+     * @param null|mixed[]|ArgumentBag $values
      * @param Projection $projection
      *
      * @return EntityIterator|EntityInterface[]
      */
-    protected function query($sql, array $values = [], Projection $projection = null)
+    protected function query($sql, $values = null, Projection $projection = null)
     {
         $result = $this->connection->query($sql, $values);
 
@@ -101,7 +102,7 @@ class ReadonlyModel
                 [
                     ':projection' => $this->createProjection(),
                     ':relation'   => $this->getStructure()->getRelation(),
-                    ':condition'  => $where,
+                    ':condition'  => $this->connection->getSqlFormatter()->format($where),
                     ':suffix'     => $suffix,
                 ]
             );
@@ -164,7 +165,7 @@ class ReadonlyModel
             [
                 ':projection' => $this->createProjection(),
                 ':relation'   => $this->getStructure()->getRelation(),
-                ':condition'  => $where,
+                ':condition'  => $this->connection->getSqlFormatter()->format($where),
             ]
         );
 
@@ -202,7 +203,7 @@ class ReadonlyModel
                 "select count(*) as result from :relation where :condition :suffix",
                 [
                     ':relation'   => $this->getStructure()->getRelation(),
-                    ':condition'  => $where,
+                    ':condition'  => $this->connection->getSqlFormatter()->format($where),
                     ':suffix'     => $suffix,
                 ]
             );
@@ -237,7 +238,7 @@ class ReadonlyModel
                 "select exists (select 1 from :relation where :condition) as result",
                 [
                     ':relation'   => $this->getStructure()->getRelation(),
-                    ':condition'  => $where,
+                    ':condition'  => $this->connection->getSqlFormatter()->format($where),
                 ]
             );
         }

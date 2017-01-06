@@ -171,7 +171,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
         if ($condition->isEmpty()) {
             return sprintf("%s %s %s", $prefix, $relation, $alias);
         } else {
-            return sprintf("%s %s %s on (%s)", $prefix, $relation, $alias, $condition);
+            return sprintf("%s %s %s on (%s)", $prefix, $relation, $alias, $this->formatWhere($condition));
         }
     }
 
@@ -206,6 +206,81 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
         } else {
             return '';
         }
+    }
+
+    /**
+     * Create placeholder list for the given arguments
+     *
+     * This will be used only in order to build 'in' and 'not in' conditions
+     *
+     * @param mixed[] $arguments
+     *   Arbitrary arguments
+     * @param string $type = null
+     *   Data type of arguments
+     *
+     * @return string
+     */
+    protected function formatPlaceholders($arguments, $type = '')
+    {
+        return implode(', ', array_map(function () { return '$*'; }, $arguments));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function formatWhere(Where $where)
+    {
+        if ($where->isEmpty()) {
+            // Definitely legit (except for pgsql which awaits a boolean)
+            return '1';
+        }
+
+        $output = [];
+
+        foreach ($where->getConditions() as $condition) {
+            if ($condition instanceof Where) {
+
+                if (!$condition->isEmpty()) {
+                    $output[] = "(\n" . $this->formatWhere($condition) . "\n)";
+                }
+
+            } else {
+                list($column, $value, $operator) = $condition;
+
+
+                if ($value instanceof RawStatement) {
+                    $output[] = sprintf('%s %s %s', $column, $operator, $value);
+                } else {
+                    switch ($operator) {
+
+                        case Where::ARBITRARY:
+                            $output[] = $column;
+                            break;
+
+                        case Where::IS_NULL:
+                        case Where::NOT_IS_NULL:
+                            $output[] = sprintf('%s %s', $column, $operator);
+                            break;
+
+                        case Where::IN:
+                        case Where::NOT_IN:
+                            $output[] = sprintf('%s %s (%s)', $column, $operator, $this->formatPlaceholders($value));
+                            break;
+
+                        case Where::BETWEEN:
+                        case Where::NOT_BETWEEN:
+                            $output[] = sprintf('%s %s $* and $*', $column, $operator);
+                            break;
+
+                        default:
+                            $output[] = sprintf('%s %s $*', $column, $operator);
+                            break;
+                    }
+                }
+            }
+        }
+
+        return implode("\n" . $where->getOperator() . ' ', $output);
     }
 
     /**
@@ -317,7 +392,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
 
         $where = $query->where();
         if (!$where->isEmpty()) {
-            $output[] = sprintf('where %s', $where);
+            $output[] = sprintf('where %s', $this->formatWhere($where));
         }
 
         $output[] = $this->formatGroupByAll($query->getAllGroupBy());
@@ -326,7 +401,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
 
         $having = $query->having();
         if (!$having->isEmpty()) {
-            $output[] = sprintf('having %s', $having);
+            $output[] = sprintf('having %s', $this->formatWhere($having));
         }
 
         return implode("\n", $output);
@@ -335,7 +410,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
     /**
      * {@inheritdoc}
      */
-    public function format(Query $query)
+    public function format($query)
     {
         if ($query instanceof SelectQuery) {
             return $this->formatSelect($query);
@@ -343,6 +418,10 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
             return $this->formatQueryInsert($query);
         }  else if ($query instanceof InsertValuesQuery) {
             return $this->formatValuesInsert($query);
+        } else if ($query instanceof Where) {
+            return $this->formatWhere($query);
+        } else if ($query instanceof RawStatement) {
+            return $query->getStatement();
         }
 
         throw new NotImplementedError();

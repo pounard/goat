@@ -5,6 +5,7 @@ namespace Goat\Core\Query;
 use Goat\Core\Error\QueryError;
 use Goat\Core\Query\Partial\AbstractQuery;
 use Goat\Core\Query\Partial\ReturningClauseTrait;
+use Goat\Core\Client\ArgumentBag;
 
 /**
  * Represents an INSERT VALUES query
@@ -13,10 +14,10 @@ class InsertValuesQuery extends AbstractQuery
 {
     use ReturningClauseTrait;
 
-    private $relation;
+    private $arguments;
     private $columns = [];
+    private $relation;
     private $valueCount = 0;
-    private $arguments = [];
 
     /**
      * Build a new query
@@ -28,6 +29,8 @@ class InsertValuesQuery extends AbstractQuery
     {
         // INSERT queries main relation cannot be aliased
         parent::__construct($relation);
+
+        $this->arguments = new ArgumentBag();
     }
 
     /**
@@ -90,7 +93,7 @@ class InsertValuesQuery extends AbstractQuery
         }
 
         foreach ($values as $value) {
-            $this->arguments[] = $value;
+            $this->arguments->add($value);
         }
 
         $this->valueCount++;

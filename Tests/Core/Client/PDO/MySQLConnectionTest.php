@@ -30,5 +30,7 @@ class MySQLConnectionTest extends \PHPUnit_Framework_TestCase
             $count++;
         }
         $this->assertEquals(1, $count);
+
+        $this->assertFalse($connection->supportsReturning());
     }
 }
