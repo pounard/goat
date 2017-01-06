@@ -7,9 +7,10 @@ use Goat\Core\Client\ConnectionTrait;
 use Goat\Core\Client\Dsn;
 use Goat\Core\Client\ResultIteratorInterface;
 use Goat\Core\Error\ConfigurationError;
+use Goat\Core\Error\DriverError;
 use Goat\Core\Error\QueryError;
-use Goat\Core\Query\InsertValuesQuery;
 use Goat\Core\Query\InsertQueryQuery;
+use Goat\Core\Query\InsertValuesQuery;
 use Goat\Core\Query\SelectQuery;
 use Goat\Core\Query\SqlFormatter;
 use Goat\Core\Query\SqlFormatterInterface;
@@ -141,22 +142,29 @@ abstract class AbstractConnection implements ConnectionInterface
      */
     public function query($sql, array $parameters = [], $enableConverters = true)
     {
-        list($sql, $parameters) = $this->rewriteQueryAndParameters($sql, $parameters);
+        try {
+            list($sql, $parameters) = $this->rewriteQueryAndParameters($sql, $parameters);
 
-        $statement = $this
-            ->getPdo()
-            ->prepare(
-                $sql,
-                [\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY]
-            )
-        ;
+            $statement = $this
+                ->getPdo()
+                ->prepare(
+                    $sql,
+                    [\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY]
+                )
+            ;
 
-        $statement->execute($parameters);
+            $statement->execute($parameters);
 
-        $ret = $this->createResultIterator($statement, $enableConverters);
-        $ret->setConverter($this->converter);
+            $ret = $this->createResultIterator($statement, $enableConverters);
+            $ret->setConverter($this->converter);
 
-        return $ret;
+            return $ret;
+
+        } catch (\PDOException $e) {
+            throw new DriverError($sql, $parameters, $e);
+        } catch (\Exception $e) {
+            throw new DriverError($sql, $parameters, $e);
+        }
     }
 
     /**
