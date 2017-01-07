@@ -10,7 +10,7 @@ class PgSQLResultIteratorTest extends \PHPUnit_Framework_TestCase
 
     protected function getDriver()
     {
-        return 'PGSQL';
+        return 'PDO_PGSQL';
     }
 
     public function testConnection()

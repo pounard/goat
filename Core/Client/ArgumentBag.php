@@ -39,7 +39,10 @@ class ArgumentBag
         $this->data[$index] = $value;
         $this->names[$index] = $name;
         $this->types[$index] = $type;
-        $this->nameMap[$name] = $index;
+
+        if ($name) {
+            $this->nameMap[$name] = $index;
+        }
     }
 
     /**

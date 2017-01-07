@@ -3,19 +3,29 @@
 namespace Goat\Core\Client;
 
 use Goat\Core\Converter\ConverterAwareTrait;
+use Goat\Core\DebuggableTrait;
 use Goat\Core\Error\QueryError;
 use Goat\Core\Query\Query;
 
 abstract class AbstractConnection implements ConnectionInterface
 {
     use ConverterAwareTrait;
+    use DebuggableTrait;
 
     /**
      * {@inheritdoc}
      */
     public function supportsReturning()
     {
-        return false;
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supportsDeferingConstraints()
+    {
+        return true;
     }
 
     /**

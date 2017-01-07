@@ -13,7 +13,7 @@ class PgSQLModelTest extends \PHPUnit_Framework_TestCase
 
     protected function getDriver()
     {
-        return 'PGSQL';
+        return 'PDO_PGSQL';
     }
 
     protected function setUp()

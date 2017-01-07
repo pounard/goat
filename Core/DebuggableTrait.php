@@ -2,7 +2,9 @@
 
 namespace Goat\Core;
 
-trait DebuggableTrait
+use Goat\Core\Error\GoatError;
+
+trait DebuggableTrait /* implements DebuggableInterface */
 {
     protected $debug = false;
 
@@ -14,5 +16,19 @@ trait DebuggableTrait
     public function setDebug($debug = true)
     {
         $this->debug = (bool)$debug;
+    }
+
+    public function debugMessage($message, $level = E_USER_WARNING)
+    {
+        if ($this->debug) {
+            trigger_error($message, $level);
+        }
+    }
+
+    public function debugRaiseException($message = null, $code = null, $previous = null)
+    {
+        if ($this->debug) {
+            throw new GoatError($message, $code, $previous);
+        }
     }
 }

@@ -2,6 +2,8 @@
 
 namespace Goat\Driver\PDO;
 
+use Goat\Core\Transaction\Transaction;
+
 class MySQLConnection extends AbstractConnection
 {
     /**
@@ -20,6 +22,33 @@ class MySQLConnection extends AbstractConnection
         }
 
         return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supportsReturning()
+    {
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supportsDeferingConstraints()
+    {
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function transaction($isolationLevel = Transaction::REPEATABLE_READ)
+    {
+        $ret = new MySQLTransaction($isolationLevel);
+        $ret->setConnection($this);
+
+        return $ret;
     }
 
     /**

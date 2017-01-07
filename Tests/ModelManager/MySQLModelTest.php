@@ -13,7 +13,7 @@ class MySQLModelTest extends \PHPUnit_Framework_TestCase
 
     protected function getDriver()
     {
-        return 'MYSQL';
+        return 'PDO_MYSQL';
     }
 
     public function testReadOperations()

@@ -3,13 +3,15 @@
 namespace Goat\Core\Client;
 
 use Goat\Core\Converter\ConverterAwareInterface;
+use Goat\Core\DebuggableInterface;
 use Goat\Core\Query\InsertQueryQuery;
 use Goat\Core\Query\InsertValuesQuery;
 use Goat\Core\Query\Query;
 use Goat\Core\Query\SelectQuery;
 use Goat\Core\Query\SqlFormatterInterface;
+use Goat\Core\Transaction\Transaction;
 
-interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface
+interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface, DebuggableInterface
 {
     /**
      * Does the backend supports RETURNING clauses
@@ -17,6 +19,20 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface
      * @return boolean
      */
     public function supportsReturning();
+
+    /**
+     * Does the backend supports defering constraints
+     *
+     * @return boolean
+     */
+    public function supportsDeferingConstraints();
+
+    /**
+     * Creates a transaction
+     *
+     * @return Transaction
+     */
+    public function transaction($isolationLevel = Transaction::REPEATABLE_READ);
 
     /**
      * Send query

@@ -26,7 +26,7 @@ trait ConnectionAwareTestTrait
      */
     protected function getDriver()
     {
-        return 'PGSQL';
+        return 'PDO_PGSQL';
     }
 
     /**

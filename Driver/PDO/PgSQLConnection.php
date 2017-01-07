@@ -2,6 +2,8 @@
 
 namespace Goat\Driver\PDO;
 
+use Goat\Core\Transaction\Transaction;
+
 class PgSQLConnection extends AbstractConnection
 {
     /**
@@ -38,6 +40,25 @@ class PgSQLConnection extends AbstractConnection
     public function supportsReturning()
     {
         return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supportsDeferingConstraints()
+    {
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function transaction($isolationLevel = Transaction::REPEATABLE_READ)
+    {
+        $ret = new PgSQLTransaction($isolationLevel);
+        $ret->setConnection($this);
+
+        return $ret;
     }
 
     /**
