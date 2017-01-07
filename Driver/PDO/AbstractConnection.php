@@ -4,9 +4,12 @@ namespace Goat\Driver\PDO;
 
 use Goat\Core\Client\AbstractConnection as BaseConnection;
 use Goat\Core\Client\Dsn;
+use Goat\Core\Client\EmptyResultIterator;
 use Goat\Core\Client\ResultIteratorInterface;
+use Goat\Core\Converter\ConverterMap;
 use Goat\Core\Error\ConfigurationError;
 use Goat\Core\Error\DriverError;
+use Goat\Core\Error\GoatError;
 use Goat\Core\Error\QueryError;
 use Goat\Core\Query\InsertQueryQuery;
 use Goat\Core\Query\InsertValuesQuery;
@@ -14,8 +17,6 @@ use Goat\Core\Query\Query;
 use Goat\Core\Query\SelectQuery;
 use Goat\Core\Query\SqlFormatter;
 use Goat\Core\Query\SqlFormatterInterface;
-use Goat\Core\Client\EmptyResultIterator;
-use Goat\Core\Error\GoatError;
 
 abstract class AbstractConnection extends BaseConnection
 {
@@ -60,6 +61,9 @@ abstract class AbstractConnection extends BaseConnection
 
         $this->configuration = $configuration;
         $this->formatter = new SqlFormatter($this);
+
+        // Register an empty instance for the converter, in case.
+        $this->converter = new ConverterMap();
     }
 
     /**
@@ -134,7 +138,7 @@ abstract class AbstractConnection extends BaseConnection
      */
     protected function createResultIterator(\PDOStatement $statement, $enableConverters = true)
     {
-        return new DefaultResultIterator($statement, $enableConverters);
+        return new DefaultResultIterator($statement, $this->converter, $enableConverters);
     }
 
     /**

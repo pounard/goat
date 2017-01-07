@@ -4,6 +4,7 @@ namespace Goat\Driver\PDO;
 
 use Goat\Core\Client\ResultIteratorInterface;
 use Goat\Core\Client\ResultIteratorTrait;
+use Goat\Core\Converter\ConverterMap;
 use Goat\Core\Error\InvalidDataAccessError;
 
 class DefaultResultIterator implements ResultIteratorInterface
@@ -22,11 +23,12 @@ class DefaultResultIterator implements ResultIteratorInterface
      * @param \PDOStatement $statement
      * @param boolean $useConverter
      */
-    public function __construct(\PDOStatement $statement, $useConverter = true)
+    public function __construct(\PDOStatement $statement, ConverterMap $converter, $useConverter = true)
     {
         $this->statement = $statement;
         $this->statement->setFetchMode(\PDO::FETCH_ASSOC);
 
+        $this->converter = $converter;
         $this->useConverter = $useConverter;
 
         $this->collectMetaData();
@@ -41,11 +43,15 @@ class DefaultResultIterator implements ResultIteratorInterface
      */
     protected function parseType($nativeType)
     {
+        $nativeType = strtolower($nativeType);
+
         switch (strtolower($nativeType)) {
 
             case 'string':
             case 'var_string':
             case 'varchar':
+            case 'char':
+            case 'character':
                 return 'varchar';
 
             case 'blob':
@@ -81,6 +87,10 @@ class DefaultResultIterator implements ResultIteratorInterface
                 return 'float8';
 
             default:
+                if ($this->converter->typeExists($nativeType)) {
+                    return $nativeType;
+                }
+
                 trigger_error(sprintf("'%s': unknown type", $nativeType));
                 return 'unknown';
         }
@@ -213,6 +223,10 @@ class DefaultResultIterator implements ResultIteratorInterface
      */
     public function fetch()
     {
-        return $this->hydrate($this->statement->fetch());
+        $row = $this->statement->fetch();
+
+        if ($row) {
+            return $this->hydrate($row);
+        }
     }
 }

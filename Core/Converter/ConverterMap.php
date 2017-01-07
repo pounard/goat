@@ -126,7 +126,24 @@ class ConverterMap
     }
 
     /**
-     * {@inheritdoc}
+     * Is there a type registered with this name
+     *
+     * @param string $type
+     *
+     * @return boolean
+     */
+    public function typeExists($type)
+    {
+        return isset($this->converters[$type]);
+    }
+
+    /**
+     * Proceed to optimistic conversion using the first converter that accepts
+     * the given value
+     *
+     * @param mixed $value
+     *
+     * @return mixed
      */
     public function guess($value)
     {

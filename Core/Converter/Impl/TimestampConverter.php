@@ -69,6 +69,7 @@ class TimestampConverter implements ConverterInterface
                 return $this->formatDate($value);
 
             case 'timestamp':
+            case 'timestampz':
                 return $this->formatTimestamp($value);
 
             case 'time';

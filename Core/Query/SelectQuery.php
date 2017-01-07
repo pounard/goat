@@ -145,6 +145,29 @@ class SelectQuery extends AbstractQuery
     }
 
     /**
+     * Set or replace multiple columns at once
+     *
+     * @param string[] $columns
+     *   Keys are aliases, values are SQL statements; if you do not wish to
+     *   set aliases, keep the numeric indexes, if you want to use an integer
+     *   as alias, just write it as a string, for example: "42".
+     *
+     * @return $this
+     */
+    public function columns(array $columns)
+    {
+        foreach ($columns as $alias => $statement) {
+            if (is_int($alias)) {
+                $this->column($statement);
+            } else {
+                $this->column($statement, $alias);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * Remove column from projection
      *
      * @param string $name
