@@ -2,13 +2,16 @@
 
 namespace Goat\Core\Query;
 
+use Goat\Core\Client\ArgumentBag;
+use Goat\Core\Client\ArgumentHolderInterface;
+
 /**
  * Represents a raw SQL statement, for internal use only
  */
-class RawStatement
+class RawStatement implements ArgumentHolderInterface
 {
     private $statement;
-    private $parameters = [];
+    private $arguments;
 
     /**
      * Default constructor
@@ -22,18 +25,8 @@ class RawStatement
     public function __construct($statement, array $parameters = [])
     {
         $this->statement = $statement;
-        $this->parameters = $parameters;
-    }
-
-    /**
-     * Get query arguments
-     *
-     * @return array
-     *   Key/value pairs or argument list
-     */
-    public function getParameters()
-    {
-        return $this->parameters;
+        $this->arguments = new ArgumentBag();
+        $this->arguments->appendArray($parameters);
     }
 
     /**
@@ -57,18 +50,18 @@ class RawStatement
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function getArguments()
+    {
+        return $this->arguments;
+    }
+
+    /**
      * Deep clone support.
      */
     public function __clone()
     {
-        foreach ($this->parameters as $index => $value) {
-            if (is_object($value)) {
-                $this->parameters[$index] = clone $value;
-            }
-        }
-
-        if (is_object($this->statement)) {
-            $this->statement = clone $this->statement;
-        }
+        $this->arguments = clone $this->arguments;
     }
 }

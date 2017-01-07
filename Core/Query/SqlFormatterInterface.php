@@ -148,7 +148,7 @@ interface SqlFormatterInterface
     /**
      * Format the query
      *
-     * @param Query|Where|RawStatement $query
+     * @param Query|Where|RawStatement|string $query
      *
      * @return string
      */

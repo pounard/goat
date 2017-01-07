@@ -16,11 +16,6 @@ class PgSQLModelTest extends \PHPUnit_Framework_TestCase
         return 'PDO_PGSQL';
     }
 
-    protected function setUp()
-    {
-        //$this->markTestSkipped("not working yet with pgsql");
-    }
-
     public function testReadOperations()
     {
         $connection = $this->getConnection();

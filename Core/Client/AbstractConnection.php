@@ -5,7 +5,11 @@ namespace Goat\Core\Client;
 use Goat\Core\Converter\ConverterAwareTrait;
 use Goat\Core\DebuggableTrait;
 use Goat\Core\Error\QueryError;
+use Goat\Core\Query\InsertQueryQuery;
+use Goat\Core\Query\InsertValuesQuery;
 use Goat\Core\Query\Query;
+use Goat\Core\Query\SelectQuery;
+use Goat\Core\Query\UpdateQuery;
 
 abstract class AbstractConnection implements ConnectionInterface
 {
@@ -34,6 +38,50 @@ abstract class AbstractConnection implements ConnectionInterface
     public function getCastType($type)
     {
         return $type;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function select($relation, $alias = null)
+    {
+        $select = new SelectQuery($relation, $alias);
+        $select->setConnection($this);
+
+        return $select;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function update($relation, $alias = null)
+    {
+        $update = new UpdateQuery($relation, $alias);
+        $update->setConnection($this);
+
+        return $update;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function insertQuery($relation)
+    {
+        $insert = new InsertQueryQuery($relation);
+        $insert->setConnection($this);
+
+        return $insert;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function insertValues($relation)
+    {
+        $insert = new InsertValuesQuery($relation);
+        $insert->setConnection($this);
+
+        return $insert;
     }
 
     /**

@@ -48,6 +48,8 @@ class EntityIterator implements \IteratorAggregate, ResultIteratorInterface
     public function getIterator()
     {
         if (null === $this->cache) {
+            $this->cache = [];
+
             foreach ($this->result as $row) {
                 $this->cache[] = $this->structure->create($row);
             }

@@ -88,7 +88,7 @@ class PgSQLReadonlyModelTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(100, $model->countWhere());
 
         // Start
-        $pager = $model->findAllWithPager(null, '', 7, 1);
+        $pager = $model->findAllWithPager(null, 7, 1);
         $this->assertSame(7, count($pager));
         $this->assertSame(100, $pager->getTotalCount());
         $this->assertSame(0, $pager->getStartOffset());
@@ -99,7 +99,7 @@ class PgSQLReadonlyModelTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($pager->hasNextPage());
 
         // Middle
-        $pager = $model->findAllWithPager(null, '', 7, 3);
+        $pager = $model->findAllWithPager(null, 7, 3);
         $this->assertCount(7, $pager);
         $this->assertSame(14, $pager->getStartOffset());
         $this->assertSame(21, $pager->getStopOffset());
@@ -109,7 +109,7 @@ class PgSQLReadonlyModelTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($pager->hasNextPage());
 
         // Important one: the last is not a full page
-        $pager = $model->findAllWithPager(null, '', 7, 15);
+        $pager = $model->findAllWithPager(null, 7, 15);
         $this->assertCount(2, $pager);
         $this->assertSame(98, $pager->getStartOffset());
         $this->assertSame(100, $pager->getStopOffset());

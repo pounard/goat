@@ -11,10 +11,7 @@ use Goat\Core\Error\ConfigurationError;
 use Goat\Core\Error\DriverError;
 use Goat\Core\Error\GoatError;
 use Goat\Core\Error\QueryError;
-use Goat\Core\Query\InsertQueryQuery;
-use Goat\Core\Query\InsertValuesQuery;
 use Goat\Core\Query\Query;
-use Goat\Core\Query\SelectQuery;
 use Goat\Core\Query\SqlFormatter;
 use Goat\Core\Query\SqlFormatterInterface;
 
@@ -60,10 +57,20 @@ abstract class AbstractConnection extends BaseConnection
         }
 
         $this->configuration = $configuration;
-        $this->formatter = new SqlFormatter($this);
+        $this->formatter = $this->createFormatter();
 
         // Register an empty instance for the converter, in case.
         $this->converter = new ConverterMap();
+    }
+
+    /**
+     * Create SQL formatter
+     *
+     * @return SqlFormatterInterface
+     */
+    protected function createFormatter()
+    {
+        return new SqlFormatter($this);
     }
 
     /**
@@ -234,39 +241,6 @@ abstract class AbstractConnection extends BaseConnection
         }
 
         return $this->query($this->prepared[$identifier], $parameters, $enableConverters);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function select($relation, $alias = null)
-    {
-        $select = new SelectQuery($relation, $alias);
-        $select->setConnection($this);
-
-        return $select;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function insertQuery($relation)
-    {
-        $insert = new InsertQueryQuery($relation);
-        $insert->setConnection($this);
-
-        return $insert;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function insertValues($relation)
-    {
-        $insert = new InsertValuesQuery($relation);
-        $insert->setConnection($this);
-
-        return $insert;
     }
 
     /**

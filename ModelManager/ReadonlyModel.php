@@ -2,14 +2,12 @@
 
 namespace Goat\ModelManager;
 
-use Goat\Core\Client\ArgumentBag;
 use Goat\Core\Client\ConnectionAwareInterface;
 use Goat\Core\Client\ConnectionAwareTrait;
 use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Client\PagerResultIterator;
-use Goat\Core\Query\Where;
 use Goat\Core\Query\SelectQuery;
-use Goat\Core\Query\RawStatement;
+use Goat\Core\Query\Where;
 
 class ReadonlyModel implements ConnectionAwareInterface
 {
@@ -78,6 +76,34 @@ class ReadonlyModel implements ConnectionAwareInterface
         }
 
         return new EntityIterator($select->execute(), $this->structure);
+    }
+
+    /**
+     * From the given entity, get the primary key array
+     *
+     * @param EntityInterface $entity
+     *
+     * @return mixed[] $primaryKey
+     */
+    protected function getEntityPrimaryKey(EntityInterface $entity)
+    {
+        $definition = $this->structure->getPrimaryKey();
+
+        if (!$definition) {
+            throw new \LogicException("primary key is not defined, findByPK is disabled");
+        }
+
+        $ret = [];
+
+        foreach ($definition as $name) {
+            if ($entity->has($name)) {
+                $ret[$name] = $entity->get($name);
+            } else {
+                $ret[$name] = null;
+            }
+        }
+
+        return $ret;
     }
 
     /**

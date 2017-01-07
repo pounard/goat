@@ -53,32 +53,34 @@ different software design and approach:
 
 # Status
 
- *  parametric testing for backends
- *  allow named parameters
- *  untangle ArgumentBag
- *  UPDATE queries
- *  MERGE queries
- *  DELETE queries
- *  SELECT with sub-select at select level
- *  UNION queries
- *  WHERE with SELECT within
- *  WITH support
- *  fallback when RETURNING is not supported
  *  [x] transaction support
+ *  [x] untangle ArgumentBag
+ *  allow named parameters
  *  better parameter handling in AbstractConnection
- *  RIGHT and FULL JOIN types
+ *  DELETE queries
+ *  document transaction: deffer helpers
+ *  document transaction: immediate per default
+ *  document transaction: isolation levels
+ *  fallback when RETURNING is not supported
+ *  improve WHERE builder tests: raw statement / sub where
+ *  improve WHERE builder tests: subqueries tests
+ *  MERGE queries
  *  MySQL autocommit disable in configuration
  *  MySQL default transaction level in configuration
- *  document transaction: immediate per default
- *  document transaction: deffer helpers
- *  document transaction: isolation levels
+ *  parametric testing for backends
+ *  RIGHT and FULL JOIN types
+ *  SELECT with sub-select at select level
+ *  UNION queries
+ *  UPDATE queries
+ *  WHERE with SELECT within
+ *  WITH support
 
 # Driver support
 
- *  Complete PostgreSQL 9.1 and higher (via PDO);
- *  Partial PostgreSQL 7.4 support (via PDO);
  *  Complete MySQL 5.5 and higher (via PDO);
+ *  Complete PostgreSQL 9.1 and higher (via PDO);
  *  Partial MySQL 5.1 support (via PDO);
+ *  Partial PostgreSQL 7.4 support (via PDO);
 
 # Documentation
 

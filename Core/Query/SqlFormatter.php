@@ -9,7 +9,8 @@ use Goat\Core\Error\NotImplementedError;
 use Goat\Core\Error\QueryError;
 
 /**
- * Standard SQL query formatter
+ * Standard SQL query formatter: this implementation conforms as much as it
+ * can to SQL-92 standard, and higher revisions for some functions.
  */
 class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
 {
@@ -23,6 +24,41 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
     public function __construct(EscaperInterface $escaper)
     {
         $this->setEscaper($escaper);
+    }
+
+    /**
+     * Format a single set clause (update queries)
+     *
+     * @param string $column
+     * @param string|RawStatement $statement
+     *
+     * @return string
+     */
+    protected function formatSetClause($column, $statement)
+    {
+        return sprintf(
+            "%s = %s",
+            $this->escaper->escapeIdentifier($column),
+            // @todo differenciate and escape column references from this
+            $statement
+        );
+    }
+
+    /**
+     * Format all set clauses (update queries)
+     *
+     * @param string[]|RawStatement[] $columns
+     *   Keys are column names, values are strings or RawStatement instances
+     */
+    protected function formatSetClauseAll(array $columns)
+    {
+        $output = [];
+
+        foreach ($columns as $column => $statement) {
+            $output[] = $this->formatSetClause($column, $statement);
+        }
+
+        return implode(",\n", $output);
     }
 
     /**
@@ -328,6 +364,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
         }
         $output[] = implode(', ', $values);
 
+
         $return = $query->getAllReturn();
         if ($return) {
             $output[] = sprintf("returning %s", $this->formatReturningAll($return));
@@ -366,6 +403,48 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
         }
 
         $output[] = $this->format($subQuery);
+
+        $return = $query->getAllReturn();
+        if ($return) {
+            $output[] = sprintf("returning %s", $this->formatReturningAll($return));
+        }
+
+        return implode("\n", $output);
+    }
+
+    /**
+     * Format given update query
+     *
+     * @param UpdateQuery $query
+     *
+     * @return string
+     */
+    protected function formatUpdate(UpdateQuery $query)
+    {
+        $output = [];
+
+        $columns = $query->getUpdatedColumns();
+        if (empty($columns)) {
+            throw new QueryError("cannot run an update query without any columns to update");
+        }
+
+        $output[] = sprintf(
+            "update %s\nset\n%s",
+            $this->escaper->escapeIdentifier($query->getRelationAlias()),
+            $this->formatSetClauseAll($columns)
+        );
+
+        // From the SQL 92 standard (which PostgreSQL does support here) the
+        // FROM and JOIN must be written AFTER the SET clause. MySQL does not.
+        $joins = $query->getAllJoin();
+        if ($joins) {
+            $output[] = sprintf(
+                "from %s %s\n%",
+                $query->getRelation(),
+                $query->getRelationAlias(),
+                $this->formatJoinAll($joins)
+            );
+        }
 
         $return = $query->getAllReturn();
         if ($return) {
@@ -419,8 +498,10 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
             return $this->formatSelect($query);
         } else if ($query instanceof InsertQueryQuery) {
             return $this->formatQueryInsert($query);
-        }  else if ($query instanceof InsertValuesQuery) {
+        } else if ($query instanceof InsertValuesQuery) {
             return $this->formatValuesInsert($query);
+        } else if ($query instanceof UpdateQuery) {
+            return $this->formatUpdate($query);
         } else if ($query instanceof Where) {
             return $this->formatWhere($query);
         } else if ($query instanceof RawStatement) {

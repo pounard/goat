@@ -2,10 +2,10 @@
 
 namespace Goat\Core\Query;
 
+use Goat\Core\Client\ArgumentBag;
 use Goat\Core\Error\QueryError;
 use Goat\Core\Query\Partial\AbstractQuery;
 use Goat\Core\Query\Partial\FromClauseTrait;
-use Goat\Core\Client\ArgumentBag;
 
 /**
  * Represents a SELECT query
@@ -385,7 +385,7 @@ class SelectQuery extends AbstractQuery
         // SELECT
         foreach ($this->columns as $column) {
             if ($column[0] instanceof RawStatement) {
-                $arguments->appendArray($column[0]->getParameters());
+                $arguments->append($column[0]->getArguments());
             }
         }
 
@@ -447,6 +447,8 @@ class SelectQuery extends AbstractQuery
      */
     public function __clone()
     {
+        $this->cloneJoins();
+
         foreach ($this->orders as $index => $order) {
             if (is_object($order[0])) {
                 $this->joins[$index][0] = clone $order[0];

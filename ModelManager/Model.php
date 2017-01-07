@@ -3,7 +3,6 @@
 namespace Goat\ModelManager;
 
 use Goat\Core\Query\Where;
-use Goat\Core\Client\ArgumentBag;
 
 /**
  * Goat base model, in opposition to Pomm default Model implementation, this
@@ -62,23 +61,6 @@ class Model extends ReadonlyModel
      */
     public function insertOne(EntityInterface $entity)
     {
-        $values = $this->structure->extract($entity);
-
-        $this
-            ->connection
-            ->insertValues(
-                $this->getStructure()->getRelation()
-            )
-            ->columns(
-                array_keys($values)
-            )
-            ->values(
-                array_values($values)
-            )
-            ->execute()
-        ;
-
-        /*
         // For the sake of consistency, we need to update the current entity
         // instance for the users, but there is one problem, we cannot fetch
         // it other than using the last insert id function, so, we are going to
@@ -95,6 +77,7 @@ class Model extends ReadonlyModel
         // load back the row, and complete the entity from what we selected.
         $primaryKey = $this->structure->getPrimaryKey();
         $guessedKey = [];
+        $updated    = null;
 
         // First, find if there is a serial inserted, note that the entity
         // structure must know it either we are fucked.
@@ -105,41 +88,62 @@ class Model extends ReadonlyModel
                 break;
             }
         }
+
+        $values = $this->structure->extract($entity);
         if ($serial) {
-            // Gotcha serial! Fetch the last inserted identifier
-            $guessedKey[$serial] = $this->connection->query("select last_insert_id()")->fetchField();
+            // Remove serial values from the values to insert
+            unset($values[$serial]);
         }
 
-        // Having a serial or not, we must find the other values
-        foreach ($primaryKey as $name) {
-            // Using has() here allow to skip automatically inserted values
-            // which in real life using MySQL can only be one serial per table
-            if ($entity->has($name)) {
-                $guessedKey[$name] = $entity->get($name);
+        $query = $this
+            ->connection
+            ->insertValues($this->getStructure()->getRelation())
+            ->columns(array_keys($values))
+            ->values(array_values($values))
+        ;
+
+        if ($this->connection->supportsReturning()) {
+            foreach ($this->structure->getFieldNames() as $name) {
+                $query->returning($name);
             }
-        }
 
-        if (!$guessedKey) {
-            // For some reason, it might not be OK, but I supposed that this
-            // could happen in only 2 cases:
-            //  - structure is wrongly defined: 99% of chances our generated
-            //    query failed too, so I won't treat this case
-            //  - there is no primary key: sorry, but I'll just not update the
-            //    entity since MySQL can do RETURNING statements
-            return;
-        }
+            $updated = $query->execute()->fetch();
 
-        $inserted = $this->findByPK($guessedKey);
-        if ($inserted) {
-            foreach (array_keys($this->structure->getDefinition()) as $name) {
-                if ($inserted->has($name)) {
-                    // Because the structure has defined all fields on the
-                    // entity when creating it, it should not fail
-                    $entity->set($name, $inserted->get($name));
+        } else {
+            // RETURNING emulation
+            $query->execute();
+
+            if ($serial) {
+                // Gotcha serial! Fetch the last inserted identifier
+                $guessedKey[$serial] = $this->connection->query("select last_insert_id()")->fetchField();
+            }
+
+            // Having a serial or not, we must find the other values
+            foreach ($primaryKey as $name) {
+                // Using has() here allow to skip automatically inserted values
+                // which in real life using MySQL can only be one serial per table
+                if ($entity->has($name)) {
+                    $guessedKey[$name] = $entity->get($name);
                 }
             }
+
+            if (!$guessedKey) {
+                // For some reason, it might not be OK, but I supposed that this
+                // could happen in only 2 cases:
+                //  - structure is wrongly defined: 99% of chances our generated
+                //    query failed too, so I won't treat this case
+                //  - there is no primary key: sorry, but I'll just not update the
+                //    entity since MySQL can do RETURNING statements
+                return;
+            }
+
+            $updated = $this->findByPK($guessedKey);
+            $updated = $updated ? $updated->getAll() : null;
         }
-         */
+
+        if ($updated) {
+            $entity->setAll($updated);
+        }
     }
 
     /**
@@ -165,7 +169,7 @@ class Model extends ReadonlyModel
      */
     public function update(EntityInterface $entity)
     {
-
+        return $this->updateByPk($this->getEntityPrimaryKey($entity), $entity->getAll());
     }
 
     /**
@@ -175,7 +179,9 @@ class Model extends ReadonlyModel
      */
     public function updateAll($entities)
     {
-
+        foreach ($entities as $entity) {
+            $this->update($entity);
+        }
     }
 
     /**
@@ -193,7 +199,14 @@ class Model extends ReadonlyModel
      */
     public function updateWhere(Where $where, array $updates)
     {
-
+        return $this
+            ->connection
+            ->update($this->structure->getRelation())
+            ->sets($updates)
+            ->statement($where)
+            ->execute()
+            ->countRows()
+        ;
     }
 
     /**
@@ -203,29 +216,13 @@ class Model extends ReadonlyModel
     {
         $where = $this->getPrimaryKeyWhere($primaryKey);
 
-        $set = [];
-        foreach (array_keys($updates) as $name) {
-            if ($type = $this->structure->getTypeFor($name)) {
-                $set[] = sprintf("%s = $*::%s", $this->connection->escapeIdentifier($name), $type);
-            } else {
-                $set[] = sprintf("%s = $*", $this->connection->escapeIdentifier($name));
-            }
-        }
-
-        $sql = strtr(
-            "update :relation set :update where :condition",
-            [
-                ':relation'   => $this->structure->getRelation(),
-                ':update'     => join(', ', $set),
-                ':condition'  => $this->connection->getSqlFormatter()->format($where),
-            ]
-        );
-
-        $arguments = new ArgumentBag();
-        $arguments->appendArray($updates);
-        $arguments->append($where->getArguments());
-
-        $this->query($sql, $arguments);
+        $this
+            ->connection
+            ->update($this->structure->getRelation())
+            ->sets($updates)
+            ->statement($where)
+            ->execute()
+        ;
 
         // Sorry, but MySQL can't do RETURNING, so at least, let's just be
         // signature compatible

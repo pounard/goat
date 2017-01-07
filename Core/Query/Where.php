@@ -105,7 +105,7 @@ class Where
      * Add a condition
      *
      * @param string $column
-     * @param mixed $value
+     * @param string|RawStatement|Where|SelectQuery $value
      * @param string $operator
      *
      * @return $this
@@ -207,7 +207,7 @@ class Where
         $arguments = new ArgumentBag();
 
         foreach ($this->conditions as $condition) {
-           // @todo This should not happen
+            // @todo This should not happen
             if ($condition instanceof Where) {
                 if (!$condition->isEmpty()) {
                     $arguments->append($condition->getArguments());
@@ -215,10 +215,15 @@ class Where
             } else {
                 list($column, $value, $operator) = $condition;
 
-                if ($value instanceof RawStatement) {
-                    $arguments->appendArray($value->getParameters());
-                } else if ($column instanceof Where) { // @todo what?!!!
+                // @todo What??
+                if ($column instanceof Where) {
                     $arguments->append($column->getArguments());
+                }
+                // Value can be a nested query, this is valid
+                if ($value instanceof Query) {
+                    $arguments->append($value->getArguments());
+                } else if ($value instanceof RawStatement) {
+                    $arguments->append($value->getArguments());
                 } else {
                     switch ($operator) {
 

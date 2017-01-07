@@ -10,6 +10,7 @@ use Goat\Core\Query\Query;
 use Goat\Core\Query\SelectQuery;
 use Goat\Core\Query\SqlFormatterInterface;
 use Goat\Core\Transaction\Transaction;
+use Goat\Core\Query\UpdateQuery;
 
 interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface, DebuggableInterface
 {
@@ -109,6 +110,18 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface,
      * @return SelectQuery
      */
     public function select($relation, $alias = null);
+
+    /**
+     * Create an update query builder
+     *
+     * @param string $relation
+     *   SQL from statement relation name
+     * @param string $alias
+     *   Alias for from clause relation
+     *
+     * @return UpdateQuery
+     */
+    public function update($relation, $alias = null);
 
     /**
      * Create an insert query builder

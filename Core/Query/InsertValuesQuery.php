@@ -2,10 +2,10 @@
 
 namespace Goat\Core\Query;
 
+use Goat\Core\Client\ArgumentBag;
 use Goat\Core\Error\QueryError;
 use Goat\Core\Query\Partial\AbstractQuery;
 use Goat\Core\Query\Partial\ReturningClauseTrait;
-use Goat\Core\Client\ArgumentBag;
 
 /**
  * Represents an INSERT VALUES query

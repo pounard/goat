@@ -100,4 +100,12 @@ interface EntityInterface
      *   If property is not defined
      */
     public function setAll($values);
+
+    /**
+     * Get all values as an array
+     *
+     * @return mixed[]
+     *   Keys are field names, values are values
+     */
+    public function getAll();
 }

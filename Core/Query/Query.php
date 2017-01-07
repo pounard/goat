@@ -3,9 +3,10 @@
 namespace Goat\Core\Query;
 
 use Goat\Core\Client\ArgumentBag;
+use Goat\Core\Client\ArgumentHolderInterface;
 use Goat\Core\Client\ResultIteratorInterface;
 
-interface Query
+interface Query extends ArgumentHolderInterface
 {
     const JOIN_INNER = 4;
     const JOIN_LEFT = 2;
@@ -45,17 +46,6 @@ interface Query
      * @return int
      */
     public function perform(array $parameters = []);
-
-    /**
-     * Get query arguments
-     *
-     * Those arguments will be later converted by the driven prior to the
-     * query being sent to the backend; for this to work type cast information
-     * must lie into the query
-     *
-     * @return ArgumentBag
-     */
-    public function getArguments();
 
     /**
      * Should this query return something

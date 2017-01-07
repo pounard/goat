@@ -118,8 +118,19 @@ trait EntityTrait
     {
         $this->touch();
 
-        foreach ($this->values as $name => $value) {
+        foreach ($values as $name => $value) {
             $this->values[$this->getFieldName($name)] = $value;
         }
+    }
+
+    /**
+     * Get all values as an array
+     *
+     * @return mixed[]
+     *   Keys are field names, values are values
+     */
+    public function getAll()
+    {
+        return $this->values;
     }
 }
