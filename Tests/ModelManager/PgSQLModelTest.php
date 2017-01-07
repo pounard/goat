@@ -18,7 +18,7 @@ class PgSQLModelTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->markTestSkipped("not working yet with pgsql");
+        //$this->markTestSkipped("not working yet with pgsql");
     }
 
     public function testReadOperations()
@@ -36,7 +36,7 @@ class PgSQLModelTest extends \PHPUnit_Framework_TestCase
 
         $model = new Model($connection, new SomeStructure());
 
-        $this->assertSame(0, $model->countWhere((new Where())->statement('1')));
+        $this->assertSame(0, $model->countWhere());
 
         $reference = [
             ['foo' => -12,  'bar' => 'what',                              'baz' => new \DateTime('2012-05-22 08:30:00')],

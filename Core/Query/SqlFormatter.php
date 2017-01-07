@@ -30,7 +30,10 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      */
     public function formatProjection($statement, $alias = null)
     {
-        if ($alias) {
+        // We cannot alias columns with a numeric identifier;
+        // aliasing with the same string as the column name
+        // makes no sense either.
+        if ($alias && $alias !== (string)$statement && !is_numeric($alias)) {
             return $statement . ' as ' . $alias;
         }
 
@@ -238,23 +241,23 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
         $output = [];
 
         foreach ($where->getConditions() as $condition) {
+            // @todo This should not happen
             if ($condition instanceof Where) {
-
                 if (!$condition->isEmpty()) {
                     $output[] = "(\n" . $this->formatWhere($condition) . "\n)";
                 }
-
             } else {
                 list($column, $value, $operator) = $condition;
 
-
                 if ($value instanceof RawStatement) {
+                    $output[] = sprintf('%s %s %s', $column, $operator, $value);
+                } else if ($value instanceof Where) {
                     $output[] = sprintf('%s %s %s', $column, $operator, $value);
                 } else {
                     switch ($operator) {
 
                         case Where::ARBITRARY:
-                            $output[] = $column;
+                            $output[] = $this->format($column);
                             break;
 
                         case Where::IS_NULL:
@@ -422,6 +425,8 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
             return $this->formatWhere($query);
         } else if ($query instanceof RawStatement) {
             return $query->getStatement();
+        } else if (is_string($query)) {
+            return $query;
         }
 
         throw new NotImplementedError();

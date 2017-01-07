@@ -3,16 +3,17 @@
 namespace Goat\ModelManager;
 
 use Goat\Core\Client\ArgumentBag;
+use Goat\Core\Client\ConnectionAwareInterface;
+use Goat\Core\Client\ConnectionAwareTrait;
 use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Client\PagerResultIterator;
 use Goat\Core\Query\Where;
+use Goat\Core\Query\SelectQuery;
+use Goat\Core\Query\RawStatement;
 
-class ReadonlyModel
+class ReadonlyModel implements ConnectionAwareInterface
 {
-    /**
-     * @var ConnectionInterface
-     */
-    protected $connection;
+    use ConnectionAwareTrait;
 
     /**
      * @var EntityStructure
@@ -26,7 +27,7 @@ class ReadonlyModel
      */
     public function __construct(ConnectionInterface $connection, EntityStructure $structure)
     {
-        $this->connection = $connection;
+        $this->setConnection($connection);
         $this->structure = $structure;
     }
 
@@ -41,74 +42,42 @@ class ReadonlyModel
     }
 
     /**
-     * Creates projection based on structure fields
+     * Create select query that matches the entity structure
      *
-     * @return Projection
+     * @return SelectQuery
      */
-    final public function createProjection()
+    protected function createSelectQuery()
     {
-        return new Projection($this->structure);
+        $relation = $this->structure->getRelation();
+        $alias    = 'entity';
+        $select   = $this->connection->select($relation, $alias);
+
+        foreach ($this->structure->getFieldNames() as $column) {
+            $select->column(sprintf("%s.%s", $alias, $column));
+        }
+
+        return $select;
     }
 
     /**
-     * Execute query and return entities
-     *
-     * @param string $sql
-     * @param null|mixed[]|ArgumentBag $values
-     * @param Projection $projection
-     *
-     * @return EntityIterator|EntityInterface[]
-     */
-    protected function query($sql, $values = null, Projection $projection = null)
-    {
-        $result = $this->connection->query($sql, $values);
-
-        return new EntityIterator($result, $this->structure);
-    }
-
-    /**
-     * Find entities using SQL suffix
+     * Find entities
      *
      * Return all elements from a relation.
      *
      * @param Where $where
      *   Either an array of values (as conditions) or a Where instance
-     * @param string $suffix
-     *   If given, it is append to the query. This is mainly useful for
-     *   "order by" statements.
-     *   NOTE: suffix is inserted as is with NO ESCAPING. DO NOT use it to place
-     *   "where" condition nor any untrusted params.
      *
      * @return EntityInterface[]
      */
-    public function findAll(Where $where = null, $suffix = '')
+    public function findAll(Where $where = null)
     {
-        if (!$where) {
-            $where = new Where();
+        $select = $this->createSelectQuery();
+
+        if ($where) {
+            $select->statement($where);
         }
 
-        if ($where->isEmpty()) {
-            $sql = strtr(
-                "select :projection from :relation :suffix",
-                [
-                    ':projection' => $this->createProjection(),
-                    ':relation'   => $this->getStructure()->getRelation(),
-                    ':suffix'     => $suffix,
-                ]
-            );
-        } else {
-            $sql = strtr(
-                "select :projection from :relation where :condition :suffix",
-                [
-                    ':projection' => $this->createProjection(),
-                    ':relation'   => $this->getStructure()->getRelation(),
-                    ':condition'  => $this->connection->getSqlFormatter()->format($where),
-                    ':suffix'     => $suffix,
-                ]
-            );
-        }
-
-        return $this->query($sql, $where->getArguments());
+        return new EntityIterator($select->execute(), $this->structure);
     }
 
     /**
@@ -158,18 +127,10 @@ class ReadonlyModel
      */
     public function findByPK($primaryKey)
     {
-        $where = $this->getPrimaryKeyWhere($primaryKey);
+        $select = $this->createSelectQuery();
+        $select->statement($this->getPrimaryKeyWhere($primaryKey));
 
-        $sql = strtr(
-            "select :projection from :relation where :condition limit 1 offset 0",
-            [
-                ':projection' => $this->createProjection(),
-                ':relation'   => $this->getStructure()->getRelation(),
-                ':condition'  => $this->connection->getSqlFormatter()->format($where),
-            ]
-        );
-
-        $result = $this->query($sql, $where->getArguments());
+        $result = new EntityIterator($select->execute(), $this->structure);
 
         foreach ($result as $entity) {
             return $entity;
@@ -180,85 +141,70 @@ class ReadonlyModel
      * Return the number of records matching a condition
      *
      * @param Where $where
-     * @param string $suffix
      *
      * @return int
      */
-    public function countWhere(Where $where = null, $suffix = '')
+    public function countWhere(Where $where = null)
     {
-        if (!$where) {
-            $where = new Where();
+        $relation = $this->structure->getRelation();
+        $alias = 'entity';
+        $select = $this->connection->select($relation, $alias);
+
+        if ($where) {
+            $select->statement($where);
         }
 
-        if ($where->isEmpty()) {
-            $sql = strtr(
-                "select count(*) as result from :relation :suffix",
-                [
-                    ':relation'   => $this->getStructure()->getRelation(),
-                    ':suffix'     => $suffix,
-                ]
-            );
-        } else {
-            $sql = strtr(
-                "select count(*) as result from :relation where :condition :suffix",
-                [
-                    ':relation'   => $this->getStructure()->getRelation(),
-                    ':condition'  => $this->connection->getSqlFormatter()->format($where),
-                    ':suffix'     => $suffix,
-                ]
-            );
-        }
-
-        return (int)$this->query($sql, $where->getArguments())->fetchField();
+        return $select
+            ->column('count(*)', 'count')
+            ->execute()
+            ->fetchField('count')
+        ;
     }
 
     /**
      * Check if rows matching the given condition do exist or not
      *
      * @param mixed $where
-     * @param array $values
      *
      * @return bool
      */
-    public function existWhere(Where $where = null, $suffix = '')
+    public function existWhere(Where $where = null)
     {
-        if (!$where) {
-            $where = new Where();
+        $relation = $this->structure->getRelation();
+        $alias = 'entity';
+        $select = $this->connection->select($relation, $alias);
+
+        if ($where) {
+            $select->statement($where);
         }
 
-        if ($where->isEmpty()) {
-            $sql = strtr(
-                "select exists (select 1 from :relation) as result",
-                [
-                    ':relation'   => $this->getStructure()->getRelation(),
-                ]
-            );
-        } else {
-            $sql = strtr(
-                "select exists (select 1 from :relation where :condition) as result",
-                [
-                    ':relation'   => $this->getStructure()->getRelation(),
-                    ':condition'  => $this->connection->getSqlFormatter()->format($where),
-                ]
-            );
-        }
-
-        return (bool)$this->query($sql, $where->getArguments())->fetchField();
+        return (bool)$select
+            ->column('1', 'one')
+            ->range(1, 0)
+            ->execute()
+            ->fetchField()
+        ;
     }
 
     /**
      * Alias of ::findAll() but it will get you a nice pager
      *
      * @param Where $where
-     * @param string $suffix
      * @param string $limit
      * @param string $page
      */
-    public function findAllWithPager(Where $where = null, $suffix = '', $limit = 100, $page = 1)
+    public function findAllWithPager(Where $where = null, $limit = 100, $page = 1)
     {
+        $offset = $limit * ($page - 1);
+        $select = $this->createSelectQuery()->range($limit, $offset);
+
+        if ($where) {
+            $select->statement($where);
+        }
+
         return new PagerResultIterator(
-            $this->findAll($where, $suffix . sprintf(' limit %d offset %d', $limit, $limit * ($page - 1))),
-            $this->countWhere($where, $suffix),
+            new EntityIterator($select->execute(), $this->structure),
+            $this->countWhere($where),
             $limit,
             $page
         );

@@ -53,6 +53,7 @@ different software design and approach:
 
 # Status
 
+ *  parametric testing for backends
  *  allow named parameters
  *  untangle ArgumentBag
  *  UPDATE queries
@@ -63,7 +64,7 @@ different software design and approach:
  *  WHERE with SELECT within
  *  WITH support
  *  fallback when RETURNING is not supported
- *  transaction support
+ *  [x] transaction support
  *  better parameter handling in AbstractConnection
  *  RIGHT and FULL JOIN types
  *  MySQL autocommit disable in configuration

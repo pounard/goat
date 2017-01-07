@@ -34,7 +34,7 @@ trait ConnectionAwareTestTrait
      *
      * @return Converter
      */
-    protected function createConverter(ConnectionInterface $connection)
+    final protected function createConverter(ConnectionInterface $connection)
     {
         $default = new StringConverter();
         $default->setEscaper($connection);
@@ -113,7 +113,7 @@ trait ConnectionAwareTestTrait
      * @param string $password
      * @param string $encoding
      */
-    protected function createConnection($encoding = 'utf8')
+    final protected function createConnection($encoding = 'utf8')
     {
         $driver = $this->getDriver();
 

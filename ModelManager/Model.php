@@ -78,6 +78,7 @@ class Model extends ReadonlyModel
             ->execute()
         ;
 
+        /*
         // For the sake of consistency, we need to update the current entity
         // instance for the users, but there is one problem, we cannot fetch
         // it other than using the last insert id function, so, we are going to
@@ -138,6 +139,7 @@ class Model extends ReadonlyModel
                 }
             }
         }
+         */
     }
 
     /**

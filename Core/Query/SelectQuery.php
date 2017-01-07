@@ -363,10 +363,10 @@ class SelectQuery extends AbstractQuery
     public function range($limit, $offset = 0)
     {
         if (!is_int($limit) || $limit < 0) {
-            throw new QueryError("limit must be a positive integer");
+            throw new QueryError(sprintf("limit must be a positive integer: '%s' given", $limit));
         }
         if (!is_int($offset) || $offset < 0) {
-            throw new QueryError("offset must be a positive integer");
+            throw new QueryError(sprintf("offset must be a positive integer: '%s' given", $offset));
         }
 
         $this->limit = $limit;
@@ -385,7 +385,7 @@ class SelectQuery extends AbstractQuery
         // SELECT
         foreach ($this->columns as $column) {
             if ($column[0] instanceof RawStatement) {
-                $arguments->appendArray($column[0]->getArguments());
+                $arguments->appendArray($column[0]->getParameters());
             }
         }
 

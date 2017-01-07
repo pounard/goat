@@ -10,7 +10,6 @@ Driver
   Connection
   ResultIterator
   WhereBuilder
-  ProjectionBuilder
   Transaction
 
 Core
@@ -24,7 +23,6 @@ Core
       // All methods to build a where
   Impl
     ResultIteratorTrait
-    StandardProjectionBuilder
     StandardWhereBuilder
 
 Mapper
