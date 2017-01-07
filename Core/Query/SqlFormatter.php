@@ -36,12 +36,14 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      */
     protected function formatSetClause($column, $statement)
     {
-        return sprintf(
-            "%s = %s",
-            $this->escaper->escapeIdentifier($column),
-            // @todo differenciate and escape column references from this
-            $statement
-        );
+        $identifier = $this->escaper->escapeIdentifier($column);
+
+        // @todo differenciate and escape column references from this
+        if ($statement instanceof RawStatement) {
+            return sprintf("%s = %s", $identifier, $statement);
+        } else {
+            return sprintf("%s = $*", $identifier);
+        }
     }
 
     /**
@@ -444,6 +446,11 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
                 $query->getRelationAlias(),
                 $this->formatJoinAll($joins)
             );
+        }
+
+        $where = $query->where();
+        if (!$where->isEmpty()) {
+            $output[] = sprintf('where %s', $this->formatWhere($where));
         }
 
         $return = $query->getAllReturn();

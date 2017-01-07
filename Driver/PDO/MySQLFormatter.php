@@ -33,6 +33,11 @@ class MySQLFormatter extends SqlFormatter
             $this->formatSetClauseAll($columns)
         );
 
+        $where = $query->where();
+        if (!$where->isEmpty()) {
+            $output[] = sprintf('where %s', $this->formatWhere($where));
+        }
+
         $return = $query->getAllReturn();
         if ($return) {
             $output[] = sprintf("returning %s", $this->formatReturningAll($return));
