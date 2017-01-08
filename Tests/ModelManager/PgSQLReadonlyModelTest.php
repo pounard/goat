@@ -7,13 +7,11 @@ use Goat\ModelManager\DefaultEntity;
 use Goat\ModelManager\EntityInterface;
 use Goat\ModelManager\EntityStructure;
 use Goat\ModelManager\ReadonlyModel;
-use Goat\Tests\ConnectionAwareTestTrait;
+use Goat\Tests\ConnectionAwareTest;
 use Goat\Tests\ModelManager\Mock\SomeStructure;
 
-class PgSQLReadonlyModelTest extends \PHPUnit_Framework_TestCase
+class PgSQLReadonlyModelTest extends ConnectionAwareTest
 {
-    use ConnectionAwareTestTrait;
-
     protected function getDriver()
     {
         return 'PDO_PGSQL';

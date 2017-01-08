@@ -13,7 +13,7 @@ use Goat\Core\Converter\Impl\TimestampConverter;
 use Goat\Driver\PDO\MySQLConnection;
 use Goat\Driver\PDO\PgSQLConnection;
 
-trait ConnectionAwareTestTrait
+abstract class ConnectionAwareTest extends \PHPUnit_Framework_TestCase
 {
     private $connection;
     private $converter;
@@ -27,6 +27,39 @@ trait ConnectionAwareTestTrait
     protected function getDriver()
     {
         return 'PDO_PGSQL';
+    }
+
+    /**
+     * Create test case schema
+     */
+    protected function createTestSchema(ConnectionInterface $connection)
+    {
+    }
+
+    /**
+     * Create test case schema
+     */
+    protected function createTestData(ConnectionInterface $connection)
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function setUp()
+    {
+        parent::setUp();
+
+        $connection = $this->getConnection();
+        $this->createTestSchema($connection);
+        $this->createTestData($connection);
+    }
+
+    protected function tearDown()
+    {
+        $this->connection = null;
+        $this->converter = null;
+        $this->encoding = null;
     }
 
     /**

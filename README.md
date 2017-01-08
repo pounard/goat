@@ -55,6 +55,7 @@ different software design and approach:
 
  *  [x] transaction support
  *  [x] untangle ArgumentBag
+ *  [x] UPDATE queries
  *  allow named parameters
  *  better parameter handling in AbstractConnection
  *  DELETE queries
@@ -62,6 +63,7 @@ different software design and approach:
  *  document transaction: immediate per default
  *  document transaction: isolation levels
  *  fallback when RETURNING is not supported
+ *  generic way to dissociate raw SQL string from raw values
  *  improve WHERE builder tests: raw statement / sub where
  *  improve WHERE builder tests: subqueries tests
  *  MERGE queries
@@ -71,7 +73,7 @@ different software design and approach:
  *  RIGHT and FULL JOIN types
  *  SELECT with sub-select at select level
  *  UNION queries
- *  UPDATE queries
+ *  UPDATE query testing
  *  WHERE with SELECT within
  *  WITH support
 

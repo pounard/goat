@@ -2,6 +2,8 @@
 
 namespace Goat\Tests\Core\Transaction;
 
+use Goat\Core\Client\ConnectionInterface;
+
 class PgSQLTransactionTest extends AbstractTransactionTest
 {
     protected function getDriver()
@@ -12,9 +14,8 @@ class PgSQLTransactionTest extends AbstractTransactionTest
     /**
      * MySQL does not supports DEFERRABLE so we add it here.
      */
-    protected function createTestTable()
+    protected function createTestSchema(ConnectionInterface $connection)
     {
-        $connection = $this->getConnection();
         $connection->query("
             create temporary table transaction_test (
                 id serial primary key,
@@ -34,14 +35,5 @@ class PgSQLTransactionTest extends AbstractTransactionTest
                 unique (bar)
                 deferrable
         ");
-
-        $connection
-            ->insertValues('transaction_test')
-            ->columns(['foo', 'bar'])
-            ->values([1, 'a'])
-            ->values([2, 'b'])
-            ->values([3, 'c'])
-            ->execute()
-        ;
     }
 }

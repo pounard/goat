@@ -2,12 +2,10 @@
 
 namespace Goat\Tests\Core\Client;
 
-use Goat\Tests\ConnectionAwareTestTrait;
+use Goat\Tests\ConnectionAwareTest;
 
-class PgSQLResultIteratorTest extends \PHPUnit_Framework_TestCase
+class PgSQLResultIteratorTest extends ConnectionAwareTest
 {
-    use ConnectionAwareTestTrait;
-
     protected function getDriver()
     {
         return 'PDO_PGSQL';

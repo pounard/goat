@@ -2,12 +2,10 @@
 
 namespace Goat\Tests\Core\Client;
 
-use Goat\Tests\ConnectionAwareTestTrait;
+use Goat\Tests\ConnectionAwareTest;
 
-class MySQLResultIteratorTest extends \PHPUnit_Framework_TestCase
+class MySQLResultIteratorTest extends ConnectionAwareTest
 {
-    use ConnectionAwareTestTrait;
-
     protected function getDriver()
     {
         return 'PDO_MYSQL';

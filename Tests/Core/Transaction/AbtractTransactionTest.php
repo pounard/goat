@@ -2,20 +2,18 @@
 
 namespace Goat\Tests\Core\Transaction;
 
-use Goat\Tests\ConnectionAwareTestTrait;
-use Goat\Core\Error\TransactionFailedError;
+use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Error\GoatError;
+use Goat\Core\Error\TransactionFailedError;
+use Goat\Tests\ConnectionAwareTest;
 
-abstract class AbstractTransactionTest extends \PHPUnit_Framework_TestCase
+abstract class AbstractTransactionTest extends ConnectionAwareTest
 {
-    use ConnectionAwareTestTrait;
-
     /**
-     * Create test case table
+     * {@inheritdoc}
      */
-    protected function createTestTable()
+    protected function createTestSchema(ConnectionInterface $connection)
     {
-        $connection = $this->getConnection();
         $connection->query("
             create temporary table transaction_test (
                 id serial primary key,
@@ -33,7 +31,13 @@ abstract class AbstractTransactionTest extends \PHPUnit_Framework_TestCase
                 add constraint transaction_test_bar
                 unique (bar)
         ");
+    }
 
+    /**
+     * {@inheritdoc}
+     */
+    protected function createTestData(ConnectionInterface $connection)
+    {
         $connection
             ->insertValues('transaction_test')
             ->columns(['foo', 'bar'])
@@ -42,16 +46,6 @@ abstract class AbstractTransactionTest extends \PHPUnit_Framework_TestCase
             ->values([3, 'c'])
             ->execute()
         ;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->createTestTable();
     }
 
     /**

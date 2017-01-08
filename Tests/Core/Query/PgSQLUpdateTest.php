@@ -4,7 +4,7 @@ namespace Goat\Tests\Core\Query;
 
 use Goat\Core\Query\Query;
 
-class PgSQLInsertValuesTest extends AbstractInsertValuesTest
+class PgSQLUpdateTest extends AbstractUpdateTest
 {
     protected function getDriver()
     {

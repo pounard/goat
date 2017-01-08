@@ -4,13 +4,11 @@ namespace Goat\Tests\ModelManager;
 
 use Goat\Core\Query\Where;
 use Goat\ModelManager\Model;
-use Goat\Tests\ConnectionAwareTestTrait;
+use Goat\Tests\ConnectionAwareTest;
 use Goat\Tests\ModelManager\Mock\SomeStructure;
 
-class MySQLModelTest extends \PHPUnit_Framework_TestCase
+class MySQLModelTest extends ConnectionAwareTest
 {
-    use ConnectionAwareTestTrait;
-
     protected function getDriver()
     {
         return 'PDO_MYSQL';
