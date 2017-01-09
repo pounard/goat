@@ -2,7 +2,6 @@
 
 namespace Goat\Core\Query;
 
-use Goat\Core\Client\ArgumentBag;
 use Goat\Core\Client\ArgumentHolderInterface;
 use Goat\Core\Client\ResultIteratorInterface;
 

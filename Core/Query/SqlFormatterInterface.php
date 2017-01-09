@@ -10,7 +10,7 @@ interface SqlFormatterInterface
     /**
      * Format projection for a single column or statement
      *
-     * @param string|RawStatement $statement
+     * @param string|Statement $statement
      * @param string $alias
      *
      * @return string
@@ -22,7 +22,7 @@ interface SqlFormatterInterface
      *
      * @param array $columns
      *   Each column is an array that must contain:
-     *     - 0: string or RawStatement: column name or SQL statement
+     *     - 0: string or Statement: column name or SQL statement
      *     - 1: column alias, can be empty or null for no aliasing
      *
      * @return string
@@ -32,7 +32,7 @@ interface SqlFormatterInterface
     /**
      * Format projection for a single column or statement
      *
-     * @param string|RawStatement $statement
+     * @param string|Statement $statement
      * @param string $alias
      *
      * @return string
@@ -44,7 +44,7 @@ interface SqlFormatterInterface
      *
      * @param array $return
      *   Each column is an array that must contain:
-     *     - 0: string or RawStatement: column name or SQL statement
+     *     - 0: string or Statement: column name or SQL statement
      *     - 1: column alias, can be empty or null for no aliasing
      *
      * @return string
@@ -148,7 +148,7 @@ interface SqlFormatterInterface
     /**
      * Format the query
      *
-     * @param Query|Where|RawStatement|string $query
+     * @param Query|Where|Statement|string $query
      *
      * @return string
      */

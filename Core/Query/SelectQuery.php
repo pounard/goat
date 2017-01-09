@@ -105,9 +105,9 @@ class SelectQuery extends AbstractQuery
     /**
      * Set or replace a column with a content.
      *
-     * If you need to pass arguments, use a RawStatement instance.
+     * If you need to pass arguments, use a Statement instance.
      *
-     * @param string|RawStatement $statement
+     * @param string|Statement $statement
      *   SQL select column
      * @param string
      *   If alias to be different from the column
@@ -384,7 +384,7 @@ class SelectQuery extends AbstractQuery
 
         // SELECT
         foreach ($this->columns as $column) {
-            if ($column[0] instanceof RawStatement) {
+            if ($column[0] instanceof Statement) {
                 $arguments->append($column[0]->getArguments());
             }
         }

@@ -30,7 +30,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      * Format a single set clause (update queries)
      *
      * @param string $column
-     * @param string|RawStatement $statement
+     * @param string|Statement $statement
      *
      * @return string
      */
@@ -39,7 +39,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
         $identifier = $this->escaper->escapeIdentifier($column);
 
         // @todo differenciate and escape column references from this
-        if ($statement instanceof RawStatement) {
+        if ($statement instanceof Statement) {
             return sprintf("%s = %s", $identifier, $statement);
         } else {
             return sprintf("%s = $*", $identifier);
@@ -49,8 +49,8 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
     /**
      * Format all set clauses (update queries)
      *
-     * @param string[]|RawStatement[] $columns
-     *   Keys are column names, values are strings or RawStatement instances
+     * @param string[]|Statement[] $columns
+     *   Keys are column names, values are strings or Statement instances
      */
     protected function formatSetClauseAll(array $columns)
     {
@@ -287,7 +287,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
             } else {
                 list($column, $value, $operator) = $condition;
 
-                if ($value instanceof RawStatement) {
+                if ($value instanceof Statement) {
                     $output[] = sprintf('%s %s %s', $column, $operator, $value);
                 } else if ($value instanceof Where) {
                     $output[] = sprintf('%s %s %s', $column, $operator, $value);
@@ -430,21 +430,33 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
             throw new QueryError("cannot run an update query without any columns to update");
         }
 
-        $output[] = sprintf(
-            "update %s\nset\n%s",
-            $this->escaper->escapeIdentifier($query->getRelationAlias()),
-            $this->formatSetClauseAll($columns)
-        );
-
         // From the SQL 92 standard (which PostgreSQL does support here) the
         // FROM and JOIN must be written AFTER the SET clause. MySQL does not.
         $joins = $query->getAllJoin();
+
         if ($joins) {
+            // FIXME: use a table in UPDATE then the same in the FROM actually
+            // does a self-join with a cartesian product, which will force the
+            // update of all rows, whatever are the other conditions
+            // @todo
+            //   - either all tables in join are inner join, then use a specific
+            //     function to set "from" to the first, then join for the others
+            //   - either there are all not inner join, then do a sub query with
+            //     and a where in
             $output[] = sprintf(
-                "from %s %s\n%",
-                $query->getRelation(),
-                $query->getRelationAlias(),
+                "update %s\nset\n%s\nfrom %s as %s\n%s",
+                $this->escaper->escapeIdentifier($query->getRelation()),
+                $this->formatSetClauseAll($columns),
+                $this->escaper->escapeIdentifier($query->getRelation()),
+                $this->escaper->escapeIdentifier($query->getRelationAlias()),
                 $this->formatJoinAll($joins)
+            );
+        } else {
+            $output[] = sprintf(
+                "update %s %s\nset\n%s",
+                $this->escaper->escapeIdentifier($query->getRelation()),
+                $this->escaper->escapeIdentifier($query->getRelationAlias()),
+                $this->formatSetClauseAll($columns)
             );
         }
 
@@ -511,7 +523,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
             return $this->formatUpdate($query);
         } else if ($query instanceof Where) {
             return $this->formatWhere($query);
-        } else if ($query instanceof RawStatement) {
+        } else if ($query instanceof Statement) {
             return $query->getStatement();
         } else if (is_string($query)) {
             return $query;

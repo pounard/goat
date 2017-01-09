@@ -3,7 +3,7 @@
 namespace Goat\Tests\Core\Query;
 
 use Goat\Core\Query\Query;
-use Goat\Core\Query\RawStatement;
+use Goat\Core\Query\Statement;
 use Goat\Core\Query\SelectQuery;
 use Goat\Core\Query\SqlFormatter;
 
@@ -93,7 +93,7 @@ EOT;
         ;
         $query
             ->leftJoinWhere('task_note', 'n')
-            ->condition('n.task_id', new RawStatement('t.id'))
+            ->condition('n.task_id', new Statement('t.id'))
         ;
         $where = $query->where()
             ->condition('t.user_id', 12)

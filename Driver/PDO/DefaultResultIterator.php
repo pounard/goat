@@ -207,15 +207,19 @@ class DefaultResultIterator implements ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function fetchColumn($name = null)
+    public function fetchColumn($name = 0)
     {
-        if (null !== $name) {
-            $name = 0;
-        } else if (!is_int($name)) {
-            $name = $this->getColumnNumber($name);
+        if (is_int($name)) {
+            $name = $this->getColumnName($name);
         }
 
-        $this->statement->fetchColumn($name);
+        $ret = [];
+
+        foreach ($this as $row) {
+            $ret[] = $row[$name];
+        }
+
+        return $ret;
     }
 
     /**

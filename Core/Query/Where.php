@@ -105,7 +105,7 @@ class Where
      * Add a condition
      *
      * @param string $column
-     * @param string|RawStatement|Where|SelectQuery $value
+     * @param string|Statement|Where|SelectQuery $value
      * @param string $operator
      *
      * @return $this
@@ -156,11 +156,11 @@ class Where
      * @param string $raw
      * @param mixed[] $arguments
      *
-     * @return RawStatement
+     * @return Statement
      */
     public function raw($statement, $arguments = [])
     {
-        return new RawStatement($statement, $arguments);
+        return new Statement($statement, $arguments);
     }
 
     /**
@@ -222,7 +222,7 @@ class Where
                 // Value can be a nested query, this is valid
                 if ($value instanceof Query) {
                     $arguments->append($value->getArguments());
-                } else if ($value instanceof RawStatement) {
+                } else if ($value instanceof Statement) {
                     $arguments->append($value->getArguments());
                 } else {
                     switch ($operator) {

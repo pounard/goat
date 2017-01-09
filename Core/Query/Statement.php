@@ -8,7 +8,7 @@ use Goat\Core\Client\ArgumentHolderInterface;
 /**
  * Represents a raw SQL statement, for internal use only
  */
-class RawStatement implements ArgumentHolderInterface
+class Statement implements ArgumentHolderInterface
 {
     private $statement;
     private $arguments;

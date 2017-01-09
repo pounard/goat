@@ -4,6 +4,7 @@ namespace Goat\Tests\Core\Query;
 
 use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Query\Query;
+use Goat\Core\Query\Where;
 use Goat\Tests\ConnectionAwareTest;
 
 abstract class AbstractUpdateTest extends ConnectionAwareTest
@@ -45,14 +46,14 @@ abstract class AbstractUpdateTest extends ConnectionAwareTest
 
         $idList = $connection
             ->select('users')
-            ->columns(['id'])
+            ->column('id')
             ->orderBy('name')
             ->execute()
-            ->fetchColumn('id')
+            ->fetchColumn()
         ;
 
         $idAdmin = $idList[0];
-        $idJean = $idList[0];
+        $idJean = $idList[1];
 
         $connection
             ->insertValues('some_table')
@@ -71,7 +72,41 @@ abstract class AbstractUpdateTest extends ConnectionAwareTest
      */
     public function testUpdateWhere()
     {
-        $this->markTestIncomplete();
+        $connection = $this->getConnection();
+
+        $result = $connection
+            ->update('some_table')
+            ->condition('foo', 42)
+            ->set('foo', 43)
+            ->execute()
+        ;
+
+        $this->assertSame(1, $result->countRows());
+
+        $result = $connection
+            ->select('some_table')
+            ->condition('foo', 43)
+            ->execute()
+        ;
+
+        $this->assertSame(1, $result->countRows());
+        $this->assertSame('a', $result->fetch()['bar']);
+
+        $query = $connection->update('some_table', 'trout');
+        $query
+            ->where()
+            ->open(Where::OR_STATEMENT)
+                ->condition('trout.foo', 43)
+                ->condition('trout.foo', 666)
+            ->close()
+        ;
+
+        $result = $query
+            ->set('bar', 'cassoulet')
+            ->execute()
+        ;
+
+        $this->assertSame(2, $result->countRows());
     }
 
     /**
@@ -79,7 +114,37 @@ abstract class AbstractUpdateTest extends ConnectionAwareTest
      */
     public function testUpdateJoin()
     {
-        $this->markTestIncomplete();
+        $connection = $this->getConnection();
+
+        $result = $connection
+            ->update('some_table', 't')
+            ->set('foo', 127)
+            ->join('users', "u.id = t.id_user", 'u')
+            ->condition('u.name', 'admin')
+            ->execute()
+        ;
+
+        $this->assertSame(3, $result->countRows());
+
+        $result = $connection
+            ->select('some_table', 'roger')
+            ->join('users', 'john.id = roger.id_user', 'john')
+            ->condition('john.name', 'admin')
+            ->execute()
+        ;
+
+        $this->assertSame(3, $result->countRows());
+        foreach ($result as $row) {
+            $this->assertSame(127, $row['foo']);
+        }
+
+        $result = $connection
+            ->select('some_table')
+            ->condition('foo', 127)
+            ->execute()
+        ;
+
+        $this->assertSame(3, $result->countRows());
     }
 
     /**
