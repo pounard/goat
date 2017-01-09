@@ -3,6 +3,7 @@
 namespace Goat\Core\Query;
 
 use Goat\Core\Client\ArgumentBag;
+use Goat\Core\Client\ArgumentHolderInterface;
 use Goat\Core\Error\QueryError;
 use Goat\Core\Query\Partial\AbstractQuery;
 use Goat\Core\Query\Partial\FromClauseTrait;
@@ -105,41 +106,22 @@ class SelectQuery extends AbstractQuery
     /**
      * Set or replace a column with a content.
      *
-     * If you need to pass arguments, use a Statement instance.
+     * If you need to pass arguments, use a Expression instance.
      *
-     * @param string|Statement $statement
+     * @param string|Expression $expression
      *   SQL select column
      * @param string
      *   If alias to be different from the column
      *
      * @return $this
      */
-    public function column($statement, $alias = null)
+    public function column($expression, $alias = null)
     {
-        $noAlias = false;
-
-        if (!$alias) {
-            if (!is_string($statement)) {
-                throw new QueryError("when providing no alias for select column, statement must be a string");
-            }
-
-            // Match for RELATION.COLUMN for aliasing properly
-            if (false !==  strpos($statement, '.')) {
-                list(, $column) = explode('.', $statement);
-
-                if ('*' === $column) {
-                    $alias = $statement;
-                    $noAlias = true;
-                } else {
-                    $alias = $column;
-                }
-
-            } else {
-                $alias = $statement;
-            }
+        if (!$expression instanceof ExpressionInterface) {
+            $expression = new ExpressionColumn($expression);
         }
 
-        $this->columns[$alias] = [$statement, ($noAlias ? null : $alias)];
+        $this->columns[] = [$expression, $alias];
 
         return $this;
     }
@@ -168,6 +150,20 @@ class SelectQuery extends AbstractQuery
     }
 
     /**
+     * Find column index for given alias
+     *
+     * @param string $alias
+     */
+    private function findColumnIndex($alias)
+    {
+        foreach ($this->columns as $index => $data) {
+            if ($data[1] === $alias) {
+                return $index;
+            }
+        }
+    }
+
+    /**
      * Remove column from projection
      *
      * @param string $name
@@ -176,7 +172,11 @@ class SelectQuery extends AbstractQuery
      */
     public function removeColumn($alias)
     {
-        unset($this->columns[$alias]);
+        $index = $this->findColumnIndex($alias);
+
+        if (null !== $index) {
+            unset($this->columns[$index]);
+        }
 
         return $this;
     }
@@ -190,7 +190,7 @@ class SelectQuery extends AbstractQuery
      */
     public function hasColumn($alias)
     {
-        return isset($this->columns[$alias]);
+        return (bool)$this->findColumnIndex($alias);
     }
 
     /**
@@ -250,9 +250,9 @@ class SelectQuery extends AbstractQuery
      *
      * @return $this
      */
-    public function statement($statement, $arguments = [])
+    public function expression($statement, $arguments = [])
     {
-        $this->where->statement($statement, $arguments);
+        $this->where->expression($statement, $arguments);
 
         return $this;
     }
@@ -283,9 +283,9 @@ class SelectQuery extends AbstractQuery
      *
      * @return $this
      */
-    public function havingStatement($statement, $arguments = [])
+    public function havingExpression($statement, $arguments = [])
     {
-        $this->having->statement($statement, $arguments);
+        $this->having->expression($statement, $arguments);
 
         return $this;
     }
@@ -325,6 +325,10 @@ class SelectQuery extends AbstractQuery
      */
     public function orderBy($column, $order = Query::ORDER_ASC, $null = Query::NULL_IGNORE)
     {
+        if (!$column instanceof ExpressionInterface) {
+            $column = new ExpressionColumn($column);
+        }
+
         $this->orders[] = [$column, $order, $null];
 
         return $this;
@@ -341,8 +345,12 @@ class SelectQuery extends AbstractQuery
      */
     public function groupBy($column)
     {
-        if (!is_string($column)) {
+        if (!is_string($column) && !$column instanceof ExpressionColumn) {
             throw new QueryError("grouping by something else than a column name is not supported");
+        }
+
+        if (is_string($column)) {
+            $column = new ExpressionColumn($column);
         }
 
         $this->groups[] = $column;
@@ -384,15 +392,19 @@ class SelectQuery extends AbstractQuery
 
         // SELECT
         foreach ($this->columns as $column) {
-            if ($column[0] instanceof Statement) {
+            if ($column[0] instanceof ArgumentHolderInterface) {
                 $arguments->append($column[0]->getArguments());
             }
         }
 
         // JOIN
         foreach ($this->joins as $join) {
-            // Second argument is always a Where instance
-            $arguments->append($join[1]->getArguments());
+            if ($join[0] instanceof ArgumentHolderInterface) {
+                $arguments->append($join[0]->getArguments());
+            }
+            if ($join[1] instanceof ArgumentHolderInterface) {
+                $arguments->append($join[1]->getArguments());
+            }
         }
 
         // WHERE
@@ -401,9 +413,11 @@ class SelectQuery extends AbstractQuery
         }
 
         // GROUP BY
-        // @todo ?
-        // ORDER BY
-        // @todo ?
+        foreach ($this->orders as $order) {
+            if ($order[0] instanceof ArgumentHolderInterface) {
+                $arguments->append($order[0]->getArguments());
+            }
+        }
 
         // HAVING
         if (!$this->having->isEmpty()) {
@@ -430,7 +444,7 @@ class SelectQuery extends AbstractQuery
         return (clone $this)
             ->removeAllColumns()
             ->range(0, 0)
-            ->column("count(*)", $countAlias)
+            ->column(new Expression("count(*)"), $countAlias)
         ;
     }
 
@@ -449,10 +463,12 @@ class SelectQuery extends AbstractQuery
     {
         $this->cloneJoins();
 
+        foreach ($this->columns as $index => $column) {
+            $this->columns[0] = clone $column[0];
+        }
+
         foreach ($this->orders as $index => $order) {
-            if (is_object($order[0])) {
-                $this->joins[$index][0] = clone $order[0];
-            }
+            $this->orders[$index][0] = clone $order[0];
         }
 
         $this->where = clone $this->where;

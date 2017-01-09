@@ -26,9 +26,8 @@ class MySQLFormatter extends SqlFormatter
         // From the SQL 92 standard (which PostgreSQL does support here) the
         // FROM and JOIN must be written AFTER the SET clause. MySQL does not.
         $output[] = sprintf(
-            "update %s %s\n%s\nset\n%s",
-            $this->escaper->escapeIdentifier($query->getRelation()),
-            $this->escaper->escapeIdentifier($query->getRelationAlias()),
+            "update %s\n%s\nset\n%s",
+            $this->formatExpressionRelation($query->getRelation()),
             $this->formatJoinAll($query->getAllJoin()),
             $this->formatSetClauseAll($columns)
         );

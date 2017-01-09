@@ -3,6 +3,7 @@
 namespace Goat\Core\Query\Partial;
 
 use Goat\Core\Error\QueryError;
+use Goat\Core\Query\ExpressionRelation;
 
 /**
  * Aliasing and conflict dedupe logic.
@@ -11,6 +12,40 @@ trait AliasHolderTrait
 {
     private $aliasIndex = 0;
     private $relations = [];
+
+    /**
+     * Normalize relation reference
+     *
+     * @param string|ExpressionRelation $relation
+     * @param string $alias
+     *
+     * @throws QueryError
+     */
+    protected function normalizeRelation($relation, $alias)
+    {
+        if ($relation instanceof ExpressionRelation) {
+            if ($relation->getAlias() && $alias) {
+                throw new QueryError(sprintf(
+                    "relation %s is already prefixed by %s, conflicts with %s",
+                    $relation->getRelation(),
+                    $relation->getAlias(),
+                    $alias
+                ));
+            }
+        } else {
+            if (null === $alias) {
+                $alias = $this->getAliasFor($relation);
+            } else {
+                if ($this->aliasExists($alias)) {
+                    throw new QueryError(sprintf("%s alias is already registered for relation %s", $alias, $this->relations[$alias]));
+                }
+            }
+
+            $relation = new ExpressionRelation($relation, $alias);
+        }
+
+        return $relation;
+    }
 
     /**
      * Get alias for relation, if none registered add a new one

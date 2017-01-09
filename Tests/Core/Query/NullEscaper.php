@@ -14,7 +14,7 @@ class NullEscaper implements EscaperInterface
      */
     public function escapeIdentifier($string)
     {
-        return $string;
+        return '"' . $string . '"';
     }
 
     /**
@@ -22,7 +22,7 @@ class NullEscaper implements EscaperInterface
      */
     public function escapeLiteral($string)
     {
-        return $string;
+        return "'" . $string . "'";
     }
 
     /**
@@ -30,6 +30,6 @@ class NullEscaper implements EscaperInterface
      */
     public function escapeBlob($word)
     {
-        return $word;
+        return '#' . $word . '#';
     }
 }

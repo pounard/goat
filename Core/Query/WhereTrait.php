@@ -22,12 +22,12 @@ trait WhereTrait
      * Start a new parenthesis statement
      *
      * @param string $operator
-     *   Where::OP_AND or Where::OP_OR, determine which will be the operator
+     *   Where::AND or Where::OR, determine which will be the operator
      *   inside this where statement
      *
      * @return $this
      */
-    abstract public function open($operator = Where::AND_STATEMENT);
+    abstract public function open($operator = Where::AND);
 
     /**
      * End a previously started statement
@@ -199,17 +199,17 @@ trait WhereTrait
     /**
      * Open an and clause
      */
-    public function andStatement()
+    public function and()
     {
-        return $this->open(Where::AND_STATEMENT);
+        return $this->open(Where::AND);
     }
 
     /**
      * Open an or clause
      */
-    public function orStatement()
+    public function or()
     {
-        return $this->open(Where::OR_STATEMENT);
+        return $this->open(Where::OR);
     }
 
     /**

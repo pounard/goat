@@ -32,7 +32,7 @@ class MySQLReadonlyModelTest extends ConnectionAwareTest
 
         $model = new ReadonlyModel($connection, new SomeStructure());
 
-        $this->assertSame(0, $model->countWhere((new Where())->statement('1 = 1')));
+        $this->assertSame(0, $model->countWhere((new Where())->expression('1 = 1')));
 
         // Ok now insert stuff using raw SQL, this only tests the readonly
         // implementation not the full-on

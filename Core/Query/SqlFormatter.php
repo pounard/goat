@@ -30,58 +30,76 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      * Format a single set clause (update queries)
      *
      * @param string $column
-     * @param string|Statement $statement
+     * @param string|Expression $statement
      *
      * @return string
      */
-    protected function formatSetClause($column, $statement)
+    protected function formatUpdateSetItem($column, $statement)
     {
-        $identifier = $this->escaper->escapeIdentifier($column);
-
-        // @todo differenciate and escape column references from this
-        if ($statement instanceof Statement) {
-            return sprintf("%s = %s", $identifier, $statement);
-        } else {
-            return sprintf("%s = $*", $identifier);
-        }
+        return sprintf(
+            "%s = %s",
+            $this->escaper->escapeIdentifier($column),
+            $this->format($statement)
+        );
     }
 
     /**
      * Format all set clauses (update queries)
      *
-     * @param string[]|Statement[] $columns
-     *   Keys are column names, values are strings or Statement instances
+     * @param string[]|Expression[] $columns
+     *   Keys are column names, values are strings or Expression instances
      */
-    protected function formatSetClauseAll(array $columns)
+    protected function formatUpdateSet(array $columns)
     {
         $output = [];
 
         foreach ($columns as $column => $statement) {
-            $output[] = $this->formatSetClause($column, $statement);
+            $output[] = $this->formatUpdateSetItem($column, $statement);
         }
 
         return implode(",\n", $output);
     }
 
     /**
-     * {@inheritdoc}
+     * Format projection for a single select column or statement
+     *
+     * @param string|ExpressionInterface $statement
+     * @param string $alias
+     *
+     * @return string
      */
-    public function formatProjection($statement, $alias = null)
+    protected function formatSelectItem($expression, $alias = null)
     {
+        if (is_string($expression)) {
+            $expression = new ExpressionColumn($expression);
+        }
+
+        $output = $this->format($expression);
+
         // We cannot alias columns with a numeric identifier;
         // aliasing with the same string as the column name
         // makes no sense either.
-        if ($alias && $alias !== (string)$statement && !is_numeric($alias)) {
-            return $statement . ' as ' . $alias;
+        if ($alias && !is_numeric($alias)) {
+            $alias = $this->escaper->escapeIdentifier($alias);
+            if ($alias !== $output) {
+                return $output . ' as ' . $alias;
+            }
         }
 
-        return $statement;
+        return $output;
     }
 
     /**
-     * {@inheritdoc}
+     * Format the whole projection
+     *
+     * @param array $columns
+     *   Each column is an array that must contain:
+     *     - 0: string or Statement: column name or SQL statement
+     *     - 1: column alias, can be empty or null for no aliasing
+     *
+     * @return string
      */
-    public function formatProjectionAll(array $columns)
+    protected function formatSelect(array $columns)
     {
         if (!$columns) {
             return '*';
@@ -90,33 +108,53 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
         $output = [];
 
         foreach ($columns as $column) {
-            $output[] = $this->formatProjection(...$column);
+            $output[] = $this->formatSelectItem(...$column);
         }
 
-        return implode(', ', $output);
+        return implode(",\n", $output);
     }
 
     /**
-     * {@inheritdoc}
+     * Format projection for a single returning column or statement
+     *
+     * @param string|ExpressionInterface $statement
+     * @param string $alias
+     *
+     * @return string
      */
-    public function formatReturning($statement, $alias = null)
+    protected function formatReturningItem($expression, $alias = null)
     {
-        return $this->formatProjection($statement, $alias);
+        return $this->formatSelectItem($expression, $alias);
     }
 
     /**
-     * {@inheritdoc}
+     * Format the whole projection
+     *
+     * @param array $return
+     *   Each column is an array that must contain:
+     *     - 0: string or Statement: column name or SQL statement
+     *     - 1: column alias, can be empty or null for no aliasing
+     *
+     * @return string
      */
-    public function formatReturningAll(array $return)
+    protected function formatReturning(array $return)
     {
-        return $this->formatProjectionAll($return);
+        return $this->formatSelect($return);
     }
 
     /**
-     * {@inheritdoc}
+     * Format a single order by
+     *
+     * @param string|ExpressionInterface $column
+     * @param int $order
+     *   Query::ORDER_* constant
+     * @param int $null
+     *   Query::NULL_* constant
      */
-    public function formatOrderBy($column, $order, $null)
+    protected function formatOrderByItem($column, $order, $null)
     {
+        $column = $this->format($column);
+
         if (Query::ORDER_ASC === $order) {
             $orderStr = 'asc';
         } else {
@@ -143,9 +181,17 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Format the whole order by clause
+     *
+     * @param $orders
+     *   Each order is an array that must contain:
+     *     - 0: ExpressionInterface
+     *     - 1: Query::ORDER_* constant
+     *     - 2: Query::NULL_* constant
+     *
+     * @return string
      */
-    public function formatOrderByAll(array $orders)
+    protected function formatOrderBy(array $orders)
     {
         if (!$orders) {
             return '';
@@ -155,42 +201,49 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
 
         foreach ($orders as $data) {
             list($column, $order, $null) = $data;
-            $output[] = $this->formatOrderBy($column, $order, $null);
+            $output[] = $this->formatOrderByItem($column, $order, $null);
         }
 
         return "order by " . implode(", ", $output);
     }
 
     /**
-     * {@inheritdoc}
+     * Format the whole group by clause
+     *
+     * @param ExpressionInterface[] $groups
+     *   Array of column names or aliases
+     *
+     * @return string
      */
-    public function formatGroupBy($column)
-    {
-        return $column;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function formatGroupByAll(array $groups)
+    protected function formatGroupBy(array $groups)
     {
         if (!$groups) {
             return '';
         }
 
         $output = [];
-
-        foreach ($groups as $column) {
-            $output[] = $this->formatGroupBy($column);
+        foreach ($groups as $group) {
+            $output[] = $this->format($group);
         }
 
         return "group by " . implode(", ", $output);
     }
 
     /**
-     * {@inheritdoc}
+     * Format a single join statement
+     *
+     * @param ExpressionRelation $relation
+     *   Relation to join on name
+     * @param Where $condition
+     *   There where condition to join upon, it can be empty or null case in
+     *   which this will leave the SQL engine doing a cartesian product with
+     *   the tables
+     * @param int $mode
+     *   Query::JOIN_* constant
+     *
+     * @return string
      */
-    public function formatJoin($mode, $relation, $alias, Where $condition)
+    protected function formatJoinItem(ExpressionRelation $relation, Where $condition, $mode)
     {
         switch ($mode) {
 
@@ -203,6 +256,11 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
                 $prefix = 'left outer join';
                 break;
 
+            case Query::JOIN_RIGHT:
+            case Query::JOIN_RIGHT_OUTER:
+                $prefix = 'right outer join';
+                break;
+
             case Query::JOIN_INNER:
             default:
                 $prefix = 'inner join';
@@ -210,16 +268,34 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
         }
 
         if ($condition->isEmpty()) {
-            return sprintf("%s %s %s", $prefix, $relation, $alias);
+            return sprintf(
+                "%s %s",
+                $prefix,
+                $this->formatExpressionRelation($relation)
+            );
         } else {
-            return sprintf("%s %s %s on (%s)", $prefix, $relation, $alias, $this->formatWhere($condition));
+            return sprintf(
+                "%s %s on (%s)",
+                $prefix,
+                $this->formatExpressionRelation($relation),
+                $this->formatWhere($condition)
+            );
         }
     }
 
     /**
-     * {@inheritdoc}
+     * Format all join statements
+     *
+     * @param array $joins
+     *   Each join is an array that must contain:
+     *     - key must be the relation alias
+     *     - 0: ExpressionRelation relation name
+     *     - 1: Where or null condition
+     *     - 2: Query::JOIN_* constant
+     *
+     * @return string
      */
-    public function formatJoinAll(array $joins)
+    protected function formatJoin(array $joins)
     {
         if (!$joins) {
             return '';
@@ -227,18 +303,24 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
 
         $output = [];
 
-        foreach ($joins as $alias => $join) {
-            list($relation, $condition, $mode) = $join;
-            $output[] = $this->formatJoin($mode, $relation, $alias, $condition);
+        foreach ($joins as $join) {
+            $output[] = $this->formatJoinItem(...$join);
         }
 
         return implode("\n", $output);
     }
 
     /**
-     * {@inheritdoc}
+     * Format range statement
+     *
+     * @param int $limit
+     *   O means no limit
+     * @param int $offset
+     *   0 means default offset
+     *
+     * @return string
      */
-    public function formatRange($limit = 0, $offset = 0)
+    protected function formatRange($limit = 0, $offset = 0)
     {
         if ($limit) {
             return sprintf('limit %d offset %d', $limit, $offset);
@@ -250,9 +332,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
     }
 
     /**
-     * Create placeholder list for the given arguments
-     *
-     * This will be used only in order to build 'in' and 'not in' conditions
+     * Format value list
      *
      * @param mixed[] $arguments
      *   Arbitrary arguments
@@ -261,15 +341,41 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      *
      * @return string
      */
-    protected function formatPlaceholders($arguments, $type = '')
+    protected function formatValueList($arguments)
     {
-        return implode(', ', array_map(function () { return '$*'; }, $arguments));
+        return implode(
+            ', ',
+            array_map(
+                function ($value) {
+                    if ($value instanceof ExpressionInterface || $value instanceof Query || $value instanceof Where) {
+                        return $this->format($value);
+                    } else {
+                        return '$*';
+                    }
+                },
+                $arguments
+            )
+        );
     }
 
     /**
-     * {@inheritdoc}
+     * Format placeholder for a single value
+     *
+     * @param string $argument
      */
-    public function formatWhere(Where $where)
+    protected function formatPlaceholder($argument)
+    {
+        return '$*';
+    }
+
+    /**
+     * Format where instance
+     *
+     * @param Where $where
+     *
+     * @return string
+     */
+    protected function formatWhere(Where $where)
     {
         if ($where->isEmpty()) {
             // Definitely legit (except for pgsql which awaits a boolean)
@@ -279,44 +385,68 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
         $output = [];
 
         foreach ($where->getConditions() as $condition) {
-            // @todo This should not happen
-            if ($condition instanceof Where) {
-                if (!$condition->isEmpty()) {
-                    $output[] = "(\n" . $this->formatWhere($condition) . "\n)";
+            list($column, $value, $operator) = $condition;
+
+            // Do not allow an empty where to be displayed
+            if ($value instanceof Where && $value->isEmpty()) {
+                continue;
+            }
+
+            $columnString = '';
+            $valueString = '';
+
+            if ($column) {
+                $columnString = $this->format($column);
+            }
+
+            if ($value instanceof ExpressionInterface) {
+                $valueString = $this->format($value);
+            } else if ($value instanceof SelectQuery || $value instanceof Where) {
+                $valueString = sprintf('(%s)', $this->format($value));
+            } else if (is_array($value)) {
+                $valueString = sprintf("(%s)", $this->formatValueList($value));
+            } else {
+                $valueString = $this->formatPlaceholder($value);
+            }
+
+            if (!$column) {
+                switch ($operator) {
+
+                    case Where::EXISTS:
+                    case Where::NOT_EXISTS:
+                        $output[] = sprintf('%s %s', $operator, $valueString);
+                        break;
+
+                    case Where::IS_NULL:
+                    case Where::NOT_IS_NULL:
+                        $output[] = sprintf('%s %s', $valueString, $operator);
+                        break;
+
+                    default:
+                       $output[] = $valueString;
+                       break;
                 }
             } else {
-                list($column, $value, $operator) = $condition;
+                switch ($operator) {
 
-                if ($value instanceof Statement) {
-                    $output[] = sprintf('%s %s %s', $column, $operator, $value);
-                } else if ($value instanceof Where) {
-                    $output[] = sprintf('%s %s %s', $column, $operator, $value);
-                } else {
-                    switch ($operator) {
+                    case Where::EXISTS:
+                    case Where::NOT_EXISTS:
+                        $output[] = sprintf('%s %s', $operator, $valueString);
+                        break;
 
-                        case Where::ARBITRARY:
-                            $output[] = $this->format($column);
-                            break;
+                    case Where::IS_NULL:
+                    case Where::NOT_IS_NULL:
+                        $output[] = sprintf('%s %s', $columnString, $operator);
+                        break;
 
-                        case Where::IS_NULL:
-                        case Where::NOT_IS_NULL:
-                            $output[] = sprintf('%s %s', $column, $operator);
-                            break;
+                    case Where::BETWEEN:
+                    case Where::NOT_BETWEEN:
+                        $output[] = sprintf('%s %s $* and $*', $columnString, $operator);
+                        break;
 
-                        case Where::IN:
-                        case Where::NOT_IN:
-                            $output[] = sprintf('%s %s (%s)', $column, $operator, $this->formatPlaceholders($value));
-                            break;
-
-                        case Where::BETWEEN:
-                        case Where::NOT_BETWEEN:
-                            $output[] = sprintf('%s %s $* and $*', $column, $operator);
-                            break;
-
-                        default:
-                            $output[] = sprintf('%s %s $*', $column, $operator);
-                            break;
-                    }
+                    default:
+                        $output[] = sprintf('%s %s %s', $columnString, $operator, $valueString);
+                        break;
                 }
             }
         }
@@ -331,7 +461,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      *
      * @return string
      */
-    protected function formatValuesInsert(InsertValuesQuery $query)
+    protected function formatQueryInsertValues(InsertValuesQuery $query)
     {
         $output = [];
 
@@ -345,7 +475,8 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
 
         $output[] = sprintf(
             "insert into %s",
-            $this->escaper->escapeIdentifier($query->getRelation())
+            // From SQL 92 standard, INSERT queries don't have table alias
+            $this->escaper->escapeIdentifier($query->getRelation()->getRelation())
         );
 
         if ($columns) {
@@ -369,7 +500,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
 
         $return = $query->getAllReturn();
         if ($return) {
-            $output[] = sprintf("returning %s", $this->formatReturningAll($return));
+            $output[] = sprintf("returning %s", $this->formatReturning($return));
         }
 
         return implode("\n", $output);
@@ -382,7 +513,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      *
      * @return string
      */
-    protected function formatQueryInsert(InsertQueryQuery $query)
+    protected function formatQueryInsertFrom(InsertQueryQuery $query)
     {
         $output = [];
 
@@ -392,7 +523,8 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
 
         $output[] = sprintf(
             "insert into %s",
-            $this->escaper->escapeIdentifier($query->getRelation())
+            // From SQL 92 standard, INSERT queries don't have table alias
+            $this->escaper->escapeIdentifier($query->getRelation()->getRelation())
         );
 
         if ($columns) {
@@ -408,7 +540,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
 
         $return = $query->getAllReturn();
         if ($return) {
-            $output[] = sprintf("returning %s", $this->formatReturningAll($return));
+            $output[] = sprintf("returning %s", $this->formatReturning($return));
         }
 
         return implode("\n", $output);
@@ -421,7 +553,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      *
      * @return string
      */
-    protected function formatUpdate(UpdateQuery $query)
+    protected function formatQueryUpdate(UpdateQuery $query)
     {
         $output = [];
 
@@ -445,18 +577,16 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
             //     and a where in
             $output[] = sprintf(
                 "update %s\nset\n%s\nfrom %s as %s\n%s",
-                $this->escaper->escapeIdentifier($query->getRelation()),
-                $this->formatSetClauseAll($columns),
-                $this->escaper->escapeIdentifier($query->getRelation()),
-                $this->escaper->escapeIdentifier($query->getRelationAlias()),
-                $this->formatJoinAll($joins)
+                $this->escaper->escapeIdentifier($query->getRelation()->getRelation()),
+                $this->formatUpdateSet($columns),
+                $this->escaper->escapeIdentifier($query->getRelation()->getRelation()),
+                $this->formatJoin($joins)
             );
         } else {
             $output[] = sprintf(
-                "update %s %s\nset\n%s",
-                $this->escaper->escapeIdentifier($query->getRelation()),
-                $this->escaper->escapeIdentifier($query->getRelationAlias()),
-                $this->formatSetClauseAll($columns)
+                "update %s\nset\n%s",
+                $this->formatExpressionRelation($query->getRelation()),
+                $this->formatUpdateSet($columns)
             );
         }
 
@@ -467,7 +597,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
 
         $return = $query->getAllReturn();
         if ($return) {
-            $output[] = sprintf("returning %s", $this->formatReturningAll($return));
+            $output[] = sprintf("returning %s", $this->formatReturning($return));
         }
 
         return implode("\n", $output);
@@ -480,15 +610,14 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      *
      * @return string
      */
-    protected function formatSelect(SelectQuery $query)
+    protected function formatQuerySelect(SelectQuery $query)
     {
         $output = [];
         $output[] = sprintf(
-            "select %s\nfrom %s %s\n%s",
-            $this->formatProjectionAll($query->getAllColumns()),
-            $query->getRelation(),
-            $query->getRelationAlias(),
-            $this->formatJoinAll($query->getAllJoin())
+            "select %s\nfrom %s\n%s",
+            $this->formatSelect($query->getAllColumns()),
+            $this->formatExpressionRelation($query->getRelation()),
+            $this->formatJoin($query->getAllJoin())
         );
 
         $where = $query->where();
@@ -496,8 +625,8 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
             $output[] = sprintf('where %s', $this->formatWhere($where));
         }
 
-        $output[] = $this->formatGroupByAll($query->getAllGroupBy());
-        $output[] = $this->formatOrderByAll($query->getAllOrderBy());
+        $output[] = $this->formatGroupBy($query->getAllGroupBy());
+        $output[] = $this->formatOrderBy($query->getAllOrderBy());
         $output[] = $this->formatRange(...$query->getRange());
 
         $having = $query->having();
@@ -505,7 +634,98 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
             $output[] = sprintf('having %s', $this->formatWhere($having));
         }
 
-        return implode("\n", $output);
+        return implode("\n", array_filter($output));
+    }
+
+    /**
+     * Format value expression
+     *
+     * @param ExpressionValue $value
+     *
+     * @return string
+     */
+    protected function formatExpression(Expression $expression)
+    {
+        return $expression->getExpression();
+    }
+
+    /**
+     * Format value expression
+     *
+     * @param ExpressionValue $value
+     *
+     * @return string
+     */
+    protected function formatExpressionColumn(ExpressionColumn $column)
+    {
+        $relation = $column->getRelation();
+
+        $target = $column->getColumn();
+        // Allow selection such as "table".*
+        if ('*' !== $target) {
+            $target = $this->escaper->escapeIdentifier($target);
+        }
+
+        if ($relation) {
+            return sprintf(
+                "%s.%s",
+                $this->escaper->escapeIdentifier($relation),
+                $target
+            );
+        } else {
+            return $target;
+        }
+    }
+
+    /**
+     * Format relation expression
+     *
+     * @param ExpressionRelation $value
+     *
+     * @return string
+     */
+    protected function formatExpressionRelation(ExpressionRelation $relation)
+    {
+        $schema = $relation->getSchema();
+        $alias  = $relation->getAlias();
+
+        if ($schema && $alias) {
+            return sprintf(
+                "%s.%s as %s",
+                $this->escaper->escapeIdentifier($schema),
+                $this->escaper->escapeIdentifier($relation->getRelation()),
+                $this->escaper->escapeIdentifier($alias)
+            );
+        } else if ($schema) {
+            return sprintf(
+                "%s.%s",
+                $this->escaper->escapeIdentifier($schema),
+                $this->escaper->escapeIdentifier($relation->getRelation())
+            );
+        } else if ($alias) {
+            return sprintf(
+                "%s as %s",
+                $this->escaper->escapeIdentifier($relation->getRelation()),
+                $this->escaper->escapeIdentifier($alias)
+            );
+        } else {
+            return sprintf(
+                "%s",
+                $this->escaper->escapeIdentifier($relation->getRelation())
+            );
+        }
+    }
+
+    /**
+     * Format value expression
+     *
+     * @param ExpressionValue $value
+     *
+     * @return string
+     */
+    protected function formatExpressionValue(ExpressionValue $value)
+    {
+        return $this->formatPlaceholder($value->getValue());
     }
 
     /**
@@ -513,22 +733,26 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      */
     public function format($query)
     {
-        if ($query instanceof SelectQuery) {
-            return $this->formatSelect($query);
+        if ($query instanceof Expression) {
+            return $this->formatExpression($query);
+        } else if ($query instanceof ExpressionColumn) {
+            return $this->formatExpressionColumn($query);
+        } else if ($query instanceof ExpressionRelation) {
+            return $this->formatExpressionRelation($query);
+        } else if ($query instanceof ExpressionValue) {
+            return $this->formatExpressionValue($query);
+        } else if ($query instanceof SelectQuery) {
+            return $this->formatQuerySelect($query);
         } else if ($query instanceof InsertQueryQuery) {
-            return $this->formatQueryInsert($query);
+            return $this->formatQueryInsertFrom($query);
         } else if ($query instanceof InsertValuesQuery) {
-            return $this->formatValuesInsert($query);
+            return $this->formatQueryInsertValues($query);
         } else if ($query instanceof UpdateQuery) {
-            return $this->formatUpdate($query);
+            return $this->formatQueryUpdate($query);
         } else if ($query instanceof Where) {
             return $this->formatWhere($query);
-        } else if ($query instanceof Statement) {
-            return $query->getStatement();
-        } else if (is_string($query)) {
-            return $query;
         }
-
+var_dump($query);
         throw new NotImplementedError();
     }
 }

@@ -3,39 +3,34 @@
 namespace Goat\Core\Query;
 
 use Goat\Core\Client\ArgumentBag;
+use Goat\Core\Client\ArgumentHolderInterface;
 use Goat\Core\Error\QueryError;
 
 /**
  * Where represents the selection of the SQL query
  */
-class Where
+class Where implements ArgumentHolderInterface
 {
     use WhereTrait;
 
-    const ARBITRARY = 'statement';
-
-    const AND_STATEMENT = 'and';
-    const OR_STATEMENT = 'or';
-
+    const AND = 'and';
     const BETWEEN = 'between';
-    const NOT_BETWEEN = 'not between';
-
     const EQUAL = '=';
-    const NOT_EQUAL = '<>';
-
+    const EXISTS = 'exists';
     const GREATER = '>';
     const GREATER_OR_EQUAL = '>=';
+    const IN = 'in';
+    const IS_NULL = 'is null';
     const LESS = '<';
     const LESS_OR_EQUAL = '<=';
-
-    const IN = 'in';
-    const NOT_IN = 'not in';
-
-    const IS_NULL = 'is null';
-    const NOT_IS_NULL = 'is not null';
-
     const LIKE = 'like';
+    const NOT_BETWEEN = 'not between';
+    const NOT_EQUAL = '<>';
+    const NOT_EXISTS = 'not exists';
+    const NOT_IN = 'not in';
+    const NOT_IS_NULL = 'is not null';
     const NOT_LIKE = 'not like';
+    const OR = 'or';
 
     /**
      * @var ArgumentBag
@@ -45,7 +40,7 @@ class Where
     /**
      * @var string
      */
-    protected $operator = self::AND_STATEMENT;
+    protected $operator = self::AND;
 
     /**
      * @var Where
@@ -61,10 +56,10 @@ class Where
      * Default constructor
      *
      * @param string $operator
-     *   Where::AND_STATEMENT or Where::OR_STATEMENT, determine which will be
+     *   Where::AND or Where::OR, determine which will be
      *   the operator inside this statement
      */
-    public function __construct($operator = self::AND_STATEMENT)
+    public function __construct($operator = self::AND)
     {
         $this->operator = $operator;
     }
@@ -102,22 +97,64 @@ class Where
     }
 
     /**
+     * Normalize value
+     *
+     * @param mixed $value
+     *
+     * @return ExpressionInterface|Where|SelectQuery
+     */
+    private function normalizeValue($value)
+    {
+        if (!$value instanceof ExpressionInterface && !$value instanceof SelectQuery) {
+            return new ExpressionValue($value);
+        }
+
+        return $value;
+    }
+
+    /**
+     * Normalize column reference
+     *
+     * @param string|ExpressionColumn $column
+     *
+     * @return ExpressionColumn
+     */
+    private function normalizeColumn($column)
+    {
+        if ($column instanceof ExpressionColumn) {
+            return $column;
+        }
+        if (is_string($column)) {
+            return new ExpressionColumn($column);
+        }
+        throw new QueryError(sprintf("column reference must be a string or an instance of %s", ExpressionColumn::class));
+    }
+
+    /**
      * Add a condition
      *
-     * @param string $column
-     * @param string|Statement|Where|SelectQuery $value
+     * @param ExpressionColumn $column
+     * @param ExpressionInterface|Where|SelectQuery $value
      * @param string $operator
      *
      * @return $this
      */
     public function condition($column, $value, $operator = self::EQUAL)
     {
+        $column = $this->normalizeColumn($column);
+
+        if (is_array($value)) {
+            $value = array_map([$this, 'normalizeValue'], $value);
+        } else {
+            $value = $this->normalizeValue($value);
+        }
+
         if (self::EQUAL === $operator) {
-            if (is_array($value)) {
+            if (is_array($value) || $value instanceof SelectQuery) {
                 $operator = self::IN;
             }
         } else if (self::NOT_EQUAL === $operator) {
-            if (is_array($value)) {
+            if (is_array($value) || $value instanceof SelectQuery) {
                 $operator = self::NOT_IN;
             }
         } else if (self::BETWEEN === $operator || self::NOT_BETWEEN === $operator) {
@@ -127,40 +164,57 @@ class Where
         }
 
         $this->conditions[] = [$column, $value, $operator];
-
         $this->reset();
 
         return $this;
     }
 
     /**
-     * Add an abitrary statement
+     * Add an abitrary SQL expression
      *
-     * @param string $statement
+     * @param string|ExpressionInterface $expression
      *   SQL string, which may contain parameters
-     * @param mixed[] $arguments
+     * @param mixed|mixed[] $arguments
      *   Parameters for the arbitrary SQL
      *
      * @return $this
      */
-    public function statement($statement, $arguments = [])
+    public function expression($expression, $arguments = [])
     {
-        $this->condition($statement, $arguments, self::ARBITRARY);
+        if ($expression instanceof Where || $expression instanceof ExpressionInterface) {
+            if ($arguments) {
+                throw new QueryError("you cannot call %s::expression() and pass arguments if the given expression is not a string", $expression);
+            }
+        } else {
+            if (!is_array($arguments)) {
+                $arguments = [$arguments];
+            }
+            $expression = new Expression($expression, $arguments);
+        }
+
+        $this->conditions[] = [null, $expression, null];
 
         return $this;
     }
 
     /**
-     * Get a raw SQL string
-     *
-     * @param string $raw
-     * @param mixed[] $arguments
-     *
-     * @return Statement
+     * Add an exists condition
      */
-    public function raw($statement, $arguments = [])
+    public function exists(SelectQuery $query)
     {
-        return new Statement($statement, $arguments);
+        $this->conditions[] = [null, $query, self::EXISTS];
+
+        return $this;
+    }
+
+    /**
+     * Add an exists condition
+     */
+    public function notExists(SelectQuery $query)
+    {
+        $this->conditions[] = [null, $query, self::NOT_EXISTS];
+
+        return $this;
     }
 
     /**
@@ -172,11 +226,14 @@ class Where
      *
      * @return $this
      */
-    public function open($operator = self::AND_STATEMENT)
+    public function open($operator = self::AND)
     {
         $this->reset();
 
-        return $this->conditions[] = (new Where($operator))->setParent($this);
+        $where = (new Where($operator))->setParent($this);
+        $this->conditions[] = [null, $where, null];
+
+        return $where;
     }
 
     /**
@@ -194,9 +251,7 @@ class Where
     }
 
     /**
-     * Get arguments
-     *
-     * @return ArgumentBag
+     * {@inheritdoc}
      */
     public function getArguments()
     {
@@ -207,38 +262,24 @@ class Where
         $arguments = new ArgumentBag();
 
         foreach ($this->conditions as $condition) {
-            // @todo This should not happen
-            if ($condition instanceof Where) {
-                if (!$condition->isEmpty()) {
-                    $arguments->append($condition->getArguments());
-                }
+            list(, $value, $operator) = $condition;
+
+            if ($value instanceof ArgumentHolderInterface) {
+                $arguments->append($value->getArguments());
             } else {
-                list($column, $value, $operator) = $condition;
+                switch ($operator) {
 
-                // @todo What??
-                if ($column instanceof Where) {
-                    $arguments->append($column->getArguments());
-                }
-                // Value can be a nested query, this is valid
-                if ($value instanceof Query) {
-                    $arguments->append($value->getArguments());
-                } else if ($value instanceof Statement) {
-                    $arguments->append($value->getArguments());
-                } else {
-                    switch ($operator) {
+                    case Where::IS_NULL:
+                    case Where::NOT_IS_NULL:
+                        break;
 
-                        case Where::IS_NULL:
-                        case Where::NOT_IS_NULL:
-                            break;
-
-                        default:
-                            if (is_array($value)) {
-                                $arguments->appendArray($value);
-                            } else {
-                                $arguments->add($value);
-                            }
-                            break;
-                    }
+                    default:
+                        if (is_array($value)) {
+                            $arguments->appendArray($value);
+                        } else {
+                            $arguments->add($value);
+                        }
+                        break;
                 }
             }
         }

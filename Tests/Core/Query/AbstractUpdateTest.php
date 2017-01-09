@@ -95,7 +95,7 @@ abstract class AbstractUpdateTest extends ConnectionAwareTest
         $query = $connection->update('some_table', 'trout');
         $query
             ->where()
-            ->open(Where::OR_STATEMENT)
+            ->open(Where::OR)
                 ->condition('trout.foo', 43)
                 ->condition('trout.foo', 666)
             ->close()

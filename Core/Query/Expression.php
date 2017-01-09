@@ -6,27 +6,31 @@ use Goat\Core\Client\ArgumentBag;
 use Goat\Core\Client\ArgumentHolderInterface;
 
 /**
- * Represents a raw SQL statement, for internal use only
+ * Represents a raw SQL statement
  */
-class Statement implements ArgumentHolderInterface
+class Expression implements ExpressionInterface, ArgumentHolderInterface
 {
-    private $statement;
+    private $expression;
     private $arguments;
 
     /**
      * Default constructor
      *
-     * @param string $statement
-     *   Raw SQL string
-     * @param array $parameters
+     * @param string $expression
+     *   Raw SQL expression string
+     * @param mixed|array $arguments
      *   Key/value pairs or argument list, anonymous and named parameters
      *   cannot be mixed up within the same query
      */
-    public function __construct($statement, array $parameters = [])
+    public function __construct($expression, $arguments = [])
     {
-        $this->statement = $statement;
+        if (!is_array($arguments)) {
+            $arguments = [$arguments];
+        }
+
+        $this->expression = $expression;
         $this->arguments = new ArgumentBag();
-        $this->arguments->appendArray($parameters);
+        $this->arguments->appendArray($arguments);
     }
 
     /**
@@ -34,19 +38,9 @@ class Statement implements ArgumentHolderInterface
      *
      * @return string
      */
-    public function getStatement()
+    public function getExpression()
     {
-        return $this->statement;
-    }
-
-    /**
-     * Get raw SQL string
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->statement;
+        return $this->expression;
     }
 
     /**

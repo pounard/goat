@@ -203,7 +203,7 @@ class Model extends ReadonlyModel
             ->connection
             ->update($this->structure->getRelation())
             ->sets($updates)
-            ->statement($where)
+            ->expression($where)
             ->execute()
             ->countRows()
         ;
@@ -220,7 +220,7 @@ class Model extends ReadonlyModel
             ->connection
             ->update($this->structure->getRelation())
             ->sets($updates)
-            ->statement($where)
+            ->expression($where)
             ->execute()
         ;
 

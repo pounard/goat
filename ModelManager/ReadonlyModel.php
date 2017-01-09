@@ -6,8 +6,10 @@ use Goat\Core\Client\ConnectionAwareInterface;
 use Goat\Core\Client\ConnectionAwareTrait;
 use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Client\PagerResultIterator;
+use Goat\Core\Query\Expression;
 use Goat\Core\Query\SelectQuery;
 use Goat\Core\Query\Where;
+use Goat\Core\Query\ExpressionColumn;
 
 class ReadonlyModel implements ConnectionAwareInterface
 {
@@ -40,6 +42,16 @@ class ReadonlyModel implements ConnectionAwareInterface
     }
 
     /**
+     * Get relation alias for queries
+     *
+     * @return string
+     */
+    protected function getRelationAlias()
+    {
+        return 'entity';
+    }
+
+    /**
      * Create select query that matches the entity structure
      *
      * @return SelectQuery
@@ -47,11 +59,11 @@ class ReadonlyModel implements ConnectionAwareInterface
     protected function createSelectQuery()
     {
         $relation = $this->structure->getRelation();
-        $alias    = 'entity';
-        $select   = $this->connection->select($relation, $alias);
+        $relationAlias = $this->getRelationAlias();
+        $select = $this->connection->select($relation, $relationAlias);
 
         foreach ($this->structure->getFieldNames() as $column) {
-            $select->column(sprintf("%s.%s", $alias, $column));
+            $select->column(new ExpressionColumn($column, $relationAlias));
         }
 
         return $select;
@@ -72,7 +84,7 @@ class ReadonlyModel implements ConnectionAwareInterface
         $select = $this->createSelectQuery();
 
         if ($where) {
-            $select->statement($where);
+            $select->expression($where);
         }
 
         return new EntityIterator($select->execute(), $this->structure);
@@ -127,15 +139,14 @@ class ReadonlyModel implements ConnectionAwareInterface
             if (1 < count($definition)) {
                 throw new \InvalidArgumentException(sprintf("primary key %d multiple columns, only 1 given", count($definition)));
             }
-
-            $where = new Where();
-            $where->isEqual(reset($definition), $primaryKey);
+            $primaryKey = [reset($definition) => $primaryKey];
         } else {
             $this->checkPrimaryKey($primaryKey);
+        }
 
-            foreach ($primaryKey as $column => $value) {
-                $where->isEqual($column, $value);
-            }
+        $relationAlias = $this->getRelationAlias();
+        foreach ($primaryKey as $column => $value) {
+            $where->isEqual(new ExpressionColumn($column, $relationAlias), $value);
         }
 
         return $where;
@@ -154,7 +165,7 @@ class ReadonlyModel implements ConnectionAwareInterface
     public function findByPK($primaryKey)
     {
         $select = $this->createSelectQuery();
-        $select->statement($this->getPrimaryKeyWhere($primaryKey));
+        $select->expression($this->getPrimaryKeyWhere($primaryKey));
 
         $result = new EntityIterator($select->execute(), $this->structure);
 
@@ -177,11 +188,11 @@ class ReadonlyModel implements ConnectionAwareInterface
         $select = $this->connection->select($relation, $alias);
 
         if ($where) {
-            $select->statement($where);
+            $select->expression($where);
         }
 
         return $select
-            ->column('count(*)', 'count')
+            ->column(new Expression('count(*)'), 'count')
             ->execute()
             ->fetchField('count')
         ;
@@ -201,11 +212,11 @@ class ReadonlyModel implements ConnectionAwareInterface
         $select = $this->connection->select($relation, $alias);
 
         if ($where) {
-            $select->statement($where);
+            $select->expression($where);
         }
 
         return (bool)$select
-            ->column('1', 'one')
+            ->column(new Expression('1'), 'one')
             ->range(1, 0)
             ->execute()
             ->fetchField()
@@ -225,7 +236,7 @@ class ReadonlyModel implements ConnectionAwareInterface
         $select = $this->createSelectQuery()->range($limit, $offset);
 
         if ($where) {
-            $select->statement($where);
+            $select->expression($where);
         }
 
         return new PagerResultIterator(

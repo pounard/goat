@@ -42,7 +42,7 @@ class UpdateQuery extends AbstractQuery
      * @param string $column
      *   Must be, as the SQL-92 standard states, a single column name without
      *   the table prefix or alias, it cannot be an expression
-     * @param string|Statement $statement
+     * @param string|Expression $statement
      *   The column value, if it's a string it can be a reference to any other
      *   field from the table or the FROM clause, as well as it can be raw
      *   SQL
@@ -54,7 +54,7 @@ class UpdateQuery extends AbstractQuery
         if (!is_string($column) || false !== strpos($column, '.')) {
             throw new QueryError("column names in the set part of an update query can only be a column name, without table prefix");
         }
-        if (!is_string($column) && !$column instanceof Statement) {
+        if (!is_string($column) && !$column instanceof Expression) {
             throw new QueryError("column values must be valid SQL statements");
         }
 
@@ -66,7 +66,7 @@ class UpdateQuery extends AbstractQuery
     /**
      * Set multiple column values to update
      *
-     * @param string[]|Statement[] $values
+     * @param string[]|Expression[] $values
      *   Keys are column names, as specified in the ::value() method, and values
      *   are statements as specified by the same method.
      *
@@ -84,8 +84,8 @@ class UpdateQuery extends AbstractQuery
     /**
      * Get all updated columns
      *
-     * @return string[]|Statement[]
-     *   Keys are column names, values are either strings or Statement instances
+     * @return string[]|Expression[]
+     *   Keys are column names, values are either strings or Expression instances
      */
     public function getUpdatedColumns()
     {
@@ -118,9 +118,9 @@ class UpdateQuery extends AbstractQuery
      *
      * @return $this
      */
-    public function statement($statement, $arguments = [])
+    public function expression($statement, $arguments = [])
     {
-        $this->where->statement($statement, $arguments);
+        $this->where->expression($statement, $arguments);
 
         return $this;
     }
@@ -143,7 +143,7 @@ class UpdateQuery extends AbstractQuery
         $arguments = new ArgumentBag();
 
         foreach ($this->columns as $statement) {
-            if ($statement instanceof Statement) {
+            if ($statement instanceof Expression) {
                 $arguments->append($statement->getArguments());
             } else {
                 $arguments->add($statement);

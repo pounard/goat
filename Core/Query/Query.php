@@ -10,6 +10,8 @@ interface Query extends ArgumentHolderInterface
     const JOIN_INNER = 4;
     const JOIN_LEFT = 2;
     const JOIN_LEFT_OUTER = 3;
+    const JOIN_RIGHT = 5;
+    const JOIN_RIGHT_OUTER = 6;
     const JOIN_NATURAL = 1;
 
     const NULL_FIRST = 2;

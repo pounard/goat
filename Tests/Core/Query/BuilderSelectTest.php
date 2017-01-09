@@ -2,8 +2,8 @@
 
 namespace Goat\Tests\Core\Query;
 
+use Goat\Core\Query\Expression;
 use Goat\Core\Query\Query;
-use Goat\Core\Query\Statement;
 use Goat\Core\Query\SelectQuery;
 use Goat\Core\Query\SqlFormatter;
 
@@ -17,34 +17,34 @@ class BuilderSelectTest extends \PHPUnit_Framework_TestCase
 
         $referenceArguments = [12, 3];
         $reference = <<<EOT
-select t.*, n.type as type, count(n.id) as comment_count
-from task t
-left outer join task_note n
+select "t".*, "n"."type", count(n.id) as "comment_count"
+from "task" as "t"
+left outer join "task_note" as "n"
     on (n.task_id = t.id)
 where
-    t.user_id = $*
-    and t.deadline < now()
+    "t"."user_id" = $*
+    and "t"."deadline" < now()
 group
-    by t.id, n.type
+    by "t"."id", "n"."type"
 order by
-    n.type asc,
+    "n"."type" asc,
     count(n.nid) desc
 limit 7 offset 42
 having
     count(n.nid) < $*
 EOT;
         $countReference = <<<EOT
-select count(*) as count
-from task t
-left outer join task_note n
+select count(*) as "count"
+from "task" as "t"
+left outer join "task_note" as "n"
     on (n.task_id = t.id)
 where
-    t.user_id = $*
-    and t.deadline < now()
+    "t"."user_id" = $*
+    and "t"."deadline" < now()
 group
-    by t.id, n.type
+    by "t"."id", "n"."type"
 order by
-    n.type asc,
+    "n"."type" asc,
     count(n.nid) desc
 having
     count(n.nid) < $*
@@ -54,20 +54,20 @@ EOT;
         $query = new SelectQuery('task', 't');
         $query->column('t.*');
         $query->column('n.type');
-        $query->column('count(n.id)', 'comment_count');
+        $query->column(new Expression('count(n.id)'), 'comment_count');
         // Add and remove a column for fun
         $query->column('some_field', 'some_alias')->removeColumn('some_alias');
         $query->leftJoin('task_note', 'n.task_id = t.id', 'n');
         $query->groupBy('t.id');
         $query->groupBy('n.type');
         $query->orderBy('n.type');
-        $query->orderBy('count(n.nid)', Query::ORDER_DESC);
+        $query->orderBy(new Expression('count(n.nid)'), Query::ORDER_DESC);
         $query->range(7, 42);
         $where = $query->where();
         $where->condition('t.user_id', 12);
-        $where->condition('t.deadline', $where->raw('now()'), '<');
+        $where->condition('t.deadline', new Expression('now()'), '<');
         $having = $query->having();
-        $having->statement('count(n.nid) < $*', 3);
+        $having->expression('count(n.nid) < $*', 3);
 
         $this->assertSameSql($reference, $formatter->format($query));
         $this->assertSame($referenceArguments, $query->getArguments()->getAll());
@@ -93,14 +93,14 @@ EOT;
         ;
         $query
             ->leftJoinWhere('task_note', 'n')
-            ->condition('n.task_id', new Statement('t.id'))
+            ->condition('n.task_id', new Expression('t.id'))
         ;
         $where = $query->where()
             ->condition('t.user_id', 12)
             ->condition('t.deadline', $where->raw('now()'), '<')
         ;
         $having = $query->having()
-            ->statement('count(n.nid) < $*', 3)
+            ->expression('count(n.nid) < $*', 3)
         ;
 
         $this->assertSameSql($reference, $formatter->format($query));
@@ -116,9 +116,9 @@ EOT;
 
         // Same without alias
         $reference = <<<EOT
-select task.*, task_note.type as type, count(task_note.id) as comment_count
-from task task
-left outer join task_note task_note
+select task.*, task_note.type, count(task_note.id) as comment_count
+from task
+left outer join task_note
     on (task_note.task_id = task.id)
 where
     task.user_id = $*
@@ -134,16 +134,16 @@ having
 EOT;
         $countReference = <<<EOT
 select count(*) as count
-from task task
-left outer join task_note task_note
+from "task"
+left outer join "task_note"
     on (task_note.task_id = task.id)
 where
-    task.user_id = $*
-    and task.deadline < now()
+    "task"."user_id" = $*
+    and "task"."deadline" < now()
 group
-    by task.id, task_note.type
+    by "task"."id", "task_note"."type"
 order by
-    task_note.type asc,
+    "task_note"."type" asc,
     count(task_note.nid) desc
 having
     count(task_note.nid) < $*
@@ -161,8 +161,8 @@ EOT;
             ->orderBy('count(task_note.nid)', Query::ORDER_DESC)
             ->range(7, 42)
             ->condition('task.user_id', 12)
-            ->statement('task.deadline < now()')
-            ->havingStatement('count(task_note.nid) < $*', 3)
+            ->expression('task.deadline < now()')
+            ->havingExpression('count(task_note.nid) < $*', 3)
         ;
 
         $this->assertSameSql($reference, $formatter->format($query));

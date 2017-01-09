@@ -2,6 +2,8 @@
 
 namespace Goat\Tests\Core\Query;
 
+use Goat\Core\Query\ExpressionColumn;
+use Goat\Core\Query\SelectQuery;
 use Goat\Core\Query\Where;
 
 class BuilderWhereTest extends \PHPUnit_Framework_TestCase
@@ -11,6 +13,10 @@ class BuilderWhereTest extends \PHPUnit_Framework_TestCase
     public function testWhere()
     {
         $formatter = $this->createStandardSQLFormatter();
+
+        $select = new SelectQuery('the_universe', 'u');
+        $select->column('id');
+        $select->condition('id', new ExpressionColumn('parent.id'));
 
         $where = (new Where())
             // Simple '<>' operator
@@ -25,15 +31,15 @@ class BuilderWhereTest extends \PHPUnit_Framework_TestCase
             // Expliciti 'not in' operator
             ->condition('baz', [4, 5, 6], Where::NOT_IN)
             // We will build something here
-            ->open(Where::OR_STATEMENT)
+            ->open(Where::OR)
                 // Arbitrary operator, should work too
                 ->condition('theWorld', 'enough', 'is not')
-                ->statement('count(theWorld) = $*::int4', [1])
+                ->expression('count(theWorld) = $*::int4', [1])
                 // Parenthesis inside parenthesis is recursive
-                // By the way, default is AND_STATEMENT
+                // By the way, default is AND
                 ->open()
-                    ->condition('1', 0)
-                    ->condition('2 * 2', 5)
+                    ->expression('1 = $*', 0)
+                    ->expression('2 * 2 = $*', 5)
                 ->close()
             // Close parenthesis
             ->close()
@@ -51,21 +57,23 @@ class BuilderWhereTest extends \PHPUnit_Framework_TestCase
             ->close()
             ->isNull('roger')
             ->condition('tabouret', 'cassoulet')
-            ->open(Where::OR_STATEMENT)
+            ->open(Where::OR)
                 ->condition('test', 1)
                 ->condition('other', ['this', 'is', 'an array'])
             ->close()
+            ->exists($select)
+            ->condition('universe_id', $select);
         ;
 
         $reference = <<<EOT
-foo <> $*
-and foo = $*
-and baz in ($*, $*, $*)
-and range_a between $* and $*
-and range_b not between $* and $*
-and baz not in ($*, $*, $*)
+"foo" <> $*
+and "foo" = $*
+and "baz" in ($*, $*, $*)
+and "range_a" between $* and $*
+and "range_b" not between $* and $*
+and "baz" not in ($*, $*, $*)
 and (
-    theWorld is not $*
+    "theWorld" is not $*
     or count(theWorld) = $*::int4
     or (
         1 = $*
@@ -73,24 +81,32 @@ and (
     )
 )
 and (
-    beta between $* and $*
-    and gamma not between $* and $*
+    "beta" between $* and $*
+    and "gamma" not between $* and $*
 )
 and (
-    a > $*
-    and b >= $*
-    and c < $*
-    and d <= $*
+    "a" > $*
+    and "b" >= $*
+    and "c" < $*
+    and "d" <= $*
 )
-and roger is null
-and tabouret = $*
+and "roger" is null
+and "tabouret" = $*
 and (
-    test = $*
-    or other in ($*, $*, $*)
+    "test" = $*
+    or "other" in ($*, $*, $*)
+)
+and exists (
+    select "id" from "the_universe" as "u"
+        where "id" = "parent"."id"
+)
+and "universe_id" in (
+    select "id" from "the_universe" as "u"
+        where "id" = "parent"."id"
 )
 EOT;
 
-        $this->assertSameSql($reference, $formatter->formatWhere($where));
+        $this->assertSameSql($reference, $formatter->format($where));
 
         // And now the exact same where, using convenience methods
         $where = (new Where())
@@ -100,21 +116,21 @@ EOT;
             ->isBetween('range_a', 12, 24)
             ->isNotBetween('range_b', 48, 96)
             ->isNotIn('baz', [4, 5, 6])
-            ->orStatement()
+            ->or()
                 // Custom operator cannot have a convenience method
                 ->condition('theWorld', 'enough', 'is not')
                 // Statement is statement, yield no surprises
-                ->statement('count(theWorld) = $*::int4', [1])
-                ->andStatement()
-                    ->isEqual('1', 0)
-                    ->isEqual('2 * 2', 5)
+                ->expression('count(theWorld) = $*::int4', [1])
+                ->and()
+                    ->expression('1 = $*', 0)
+                    ->expression('2 * 2 = $*', 5)
                 ->end()
             ->end()
-            ->andStatement()
+            ->and()
                 ->isBetween('beta', 37, 42)
                 ->isNotBetween('gamma', 123, 234)
             ->end()
-            ->andStatement()
+            ->and()
                 ->isGreater('a', -66)
                 ->isGreaterOrEqual('b', -67)
                 ->isLess('c', -68)
@@ -122,14 +138,16 @@ EOT;
             ->end()
             ->isNull('roger')
             ->isEqual('tabouret', 'cassoulet')
-            ->orStatement()
+            ->or()
                 ->isEqual('test', 1)
                 ->isIn('other', ['this', 'is', 'an array'])
             ->end()
+            ->exists($select)
+            ->condition('universe_id', $select);
         ;
 
         // Expected is the exact same
-        $this->assertSameSql($reference, $formatter->formatWhere($where));
+        $this->assertSameSql($reference, $formatter->format($where));
     }
 
     public function testWhereWhenEmpty()
@@ -140,19 +158,19 @@ EOT;
 
         // Where is empty
         $this->assertTrue($where->isEmpty());
-        $this->assertSameSql("1", $formatter->formatWhere($where));
+        $this->assertSameSql("1", $formatter->format($where));
 
         // Where is not empty anymore
         $where->isNotNull('a');
         $this->assertFalse($where->isEmpty());
-        $this->assertSameSql("a is not null", $formatter->formatWhere($where));
+        $this->assertSameSql("\"a\" is not null", $formatter->format($where));
 
         // Statement is empty
-        $statement = $where->andStatement();
+        $statement = $where->and();
         $this->assertTrue($statement->isEmpty());
-        $this->assertSameSql("1", $formatter->formatWhere($statement));
+        $this->assertSameSql("1", $formatter->format($statement));
 
         // Statement is ignored, because empty
-        $this->assertSameSql("a is not null", $formatter->formatWhere($where));
+        $this->assertSameSql("\"a\" is not null", $formatter->format($where));
     }
 }

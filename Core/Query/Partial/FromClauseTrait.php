@@ -3,8 +3,8 @@
 namespace Goat\Core\Query\Partial;
 
 use Goat\Core\Error\QueryError;
+use Goat\Core\Query\Expression;
 use Goat\Core\Query\Query;
-use Goat\Core\Query\Statement;
 use Goat\Core\Query\Where;
 
 /**
@@ -32,7 +32,7 @@ trait FromClauseTrait
      * Add join statement
      *
      * @param string $relation
-     * @param string|Where|Statement $condition
+     * @param string|Where|Expression $condition
      * @param string $alias
      * @param int $mode
      *
@@ -40,25 +40,19 @@ trait FromClauseTrait
      */
     final public function join($relation, $condition = null, $alias = null, $mode = Query::JOIN_INNER)
     {
-        if (null === $alias) {
-            $alias = $this->getAliasFor($relation);
-        } else {
-            if ($this->aliasExists($alias)) {
-                throw new QueryError(sprintf("%s alias is already registered for relation %s", $alias, $this->relations[$alias]));
-            }
-        }
+        $relation = $this->normalizeRelation($relation, $alias);
 
         if (null === $condition) {
             $condition = new Where();
-        } else if (is_string($condition) || $condition instanceof Statement) {
-            $condition = (new Where())->statement($condition);
+        } else if (is_string($condition) || $condition instanceof Expression) {
+            $condition = (new Where())->expression($condition);
         } else {
             if (!$condition instanceof Where) {
                 throw new QueryError(sprintf("condition must be either a string or an instance of %s", Where::class));
             }
         }
 
-        $this->joins[$alias] = [$relation, $condition, $mode];
+        $this->joins[] = [$relation, $condition, $mode];
 
         return $this;
     }
@@ -74,15 +68,9 @@ trait FromClauseTrait
      */
     final public function joinWhere($relation, $alias = null, $mode = Query::JOIN_INNER)
     {
-        if (null === $alias) {
-            $alias = $this->getAliasFor($relation);
-        } else {
-            if ($this->aliasExists($alias)) {
-                throw new QueryError(sprintf("%s alias is already registered for relation %s", $alias, $this->relations[$alias]));
-            }
-        }
+        $relation = $this->normalizeRelation($relation, $alias);
 
-        $this->joins[$alias] = [$relation, $condition = new Where(), $mode];
+        $this->joins[] = [$relation, $condition = new Where(), $mode];
 
         return $condition;
     }
@@ -151,6 +139,7 @@ trait FromClauseTrait
     protected function cloneJoins()
     {
         foreach ($this->joins as $index => $join) {
+            $this->joins[$index][0] = clone $join[0];
             $this->joins[$index][1] = clone $join[1];
         }
     }
