@@ -6,6 +6,7 @@ use Goat\Core\Query\Expression;
 use Goat\Core\Query\Query;
 use Goat\Core\Query\SelectQuery;
 use Goat\Core\Query\SqlFormatter;
+use Goat\Core\Query\ExpressionColumn;
 
 class BuilderSelectTest extends \PHPUnit_Framework_TestCase
 {
@@ -80,24 +81,61 @@ EOT;
         $this->assertSameSql($reference, $formatter->format($clonedQuery));
         $this->assertSame($referenceArguments, $clonedQuery->getArguments()->getAll());
 
+        // We have to reset the reference because using a more buildish way we
+        // do set precise where conditions on join conditions, and field names
+        // get escaped
+        $reference = <<<EOT
+select "t".*, "n"."type", count(n.id) as "comment_count"
+from "task" as "t"
+left outer join "task_note" as "n"
+    on ("n"."task_id" = "t"."id")
+where
+    "t"."user_id" = $*
+    and "t"."deadline" < now()
+group
+    by "t"."id", "n"."type"
+order by
+    "n"."type" asc,
+    count(n.nid) desc
+limit 7 offset 42
+having
+    count(n.nid) < $*
+EOT;
+        $countReference = <<<EOT
+select count(*) as "count"
+from "task" as "t"
+left outer join "task_note" as "n"
+    on ("n"."task_id" = "t"."id")
+where
+    "t"."user_id" = $*
+    and "t"."deadline" < now()
+group
+    by "t"."id", "n"."type"
+order by
+    "n"."type" asc,
+    count(n.nid) desc
+having
+    count(n.nid) < $*
+EOT;
+
         // Builder way
         $query = (new SelectQuery('task', 't'))
             ->column('t.*')
             ->column('n.type')
-            ->column('count(n.id)', 'comment_count')
+            ->columnExpression('count(n.id)', 'comment_count')
             ->groupBy('t.id')
             ->groupBy('n.type')
             ->orderBy('n.type')
-            ->orderBy('count(n.nid)', Query::ORDER_DESC)
+            ->orderByExpression('count(n.nid)', Query::ORDER_DESC)
             ->range(7, 42)
         ;
         $query
             ->leftJoinWhere('task_note', 'n')
-            ->condition('n.task_id', new Expression('t.id'))
+            ->condition('n.task_id', new ExpressionColumn('t.id'))
         ;
         $where = $query->where()
             ->condition('t.user_id', 12)
-            ->condition('t.deadline', $where->raw('now()'), '<')
+            ->condition('t.deadline', new Expression('now()'), '<')
         ;
         $having = $query->having()
             ->expression('count(n.nid) < $*', 3)
@@ -116,32 +154,32 @@ EOT;
 
         // Same without alias
         $reference = <<<EOT
-select task.*, task_note.type, count(task_note.id) as comment_count
-from task
-left outer join task_note
+select "task".*, "task_note"."type", count(task_note.id) as "comment_count"
+from "task"
+left outer join "task_note"
     on (task_note.task_id = task.id)
 where
-    task.user_id = $*
+    "task"."user_id" = $*
     and task.deadline < now()
-group
-    by task.id, task_note.type
+group by
+    "task"."id", "task_note"."type"
 order by
-    task_note.type asc,
+    "task_note"."type" asc,
     count(task_note.nid) desc
 limit 7 offset 42
 having
     count(task_note.nid) < $*
 EOT;
         $countReference = <<<EOT
-select count(*) as count
+select count(*) as "count"
 from "task"
 left outer join "task_note"
     on (task_note.task_id = task.id)
 where
     "task"."user_id" = $*
-    and "task"."deadline" < now()
-group
-    by "task"."id", "task_note"."type"
+    and task.deadline < now()
+group by
+    "task"."id", "task_note"."type"
 order by
     "task_note"."type" asc,
     count(task_note.nid) desc
@@ -153,12 +191,12 @@ EOT;
         $query = (new SelectQuery('task'))
             ->column('task.*')
             ->column('task_note.type')
-            ->column('count(task_note.id)', 'comment_count')
+            ->columnExpression('count(task_note.id)', 'comment_count')
             ->leftJoin('task_note', 'task_note.task_id = task.id', 'task_note')
             ->groupBy('task.id')
             ->groupBy('task_note.type')
             ->orderBy('task_note.type')
-            ->orderBy('count(task_note.nid)', Query::ORDER_DESC)
+            ->orderByExpression('count(task_note.nid)', Query::ORDER_DESC)
             ->range(7, 42)
             ->condition('task.user_id', 12)
             ->expression('task.deadline < now()')

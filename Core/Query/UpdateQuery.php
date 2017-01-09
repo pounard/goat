@@ -3,10 +3,11 @@
 namespace Goat\Core\Query;
 
 use Goat\Core\Client\ArgumentBag;
+use Goat\Core\Error\QueryError;
 use Goat\Core\Query\Partial\AbstractQuery;
 use Goat\Core\Query\Partial\FromClauseTrait;
 use Goat\Core\Query\Partial\ReturningClauseTrait;
-use Goat\Core\Error\QueryError;
+use Goat\Core\Client\ArgumentHolderInterface;
 
 /**
  * Represents an UPDATE query
@@ -42,23 +43,25 @@ class UpdateQuery extends AbstractQuery
      * @param string $column
      *   Must be, as the SQL-92 standard states, a single column name without
      *   the table prefix or alias, it cannot be an expression
-     * @param string|Expression $statement
+     * @param string|ExpressionValue|ExpressionColumn $expression
      *   The column value, if it's a string it can be a reference to any other
      *   field from the table or the FROM clause, as well as it can be raw
      *   SQL
      *
      * @return $this
      */
-    public function set($column, $statement)
+    public function set($column, $expression)
     {
-        if (!is_string($column) || false !== strpos($column, '.')) {
-            throw new QueryError("column names in the set part of an update query can only be a column name, without table prefix");
-        }
-        if (!is_string($column) && !$column instanceof Expression) {
-            throw new QueryError("column values must be valid SQL statements");
+        if (is_string($expression)) {
+            if (false !== strpos($column, '.')) {
+                throw new QueryError("column names in the set part of an update query can only be a column name, without table prefix");
+            }
+            $expression = new ExpressionValue($expression);
+        } else if (!$expression instanceof ExpressionValue && !$expression instanceof ExpressionColumn) {
+            $expression = new ExpressionValue($expression);
         }
 
-        $this->columns[$column] = $statement;
+        $this->columns[$column] = $expression;
 
         return $this;
     }
@@ -143,9 +146,9 @@ class UpdateQuery extends AbstractQuery
         $arguments = new ArgumentBag();
 
         foreach ($this->columns as $statement) {
-            if ($statement instanceof Expression) {
+            if ($statement instanceof ArgumentHolderInterface) {
                 $arguments->append($statement->getArguments());
-            } else {
+            } else if (!$statement instanceof ExpressionInterface) {
                 $arguments->add($statement);
             }
         }

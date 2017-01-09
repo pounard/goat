@@ -104,9 +104,9 @@ class SelectQuery extends AbstractQuery
     }
 
     /**
-     * Set or replace a column with a content.
+     * Add a selected column
      *
-     * If you need to pass arguments, use a Expression instance.
+     * If you need to pass arguments, use a Expression instance or columnExpression().
      *
      * @param string|Expression $expression
      *   SQL select column
@@ -119,6 +119,36 @@ class SelectQuery extends AbstractQuery
     {
         if (!$expression instanceof ExpressionInterface) {
             $expression = new ExpressionColumn($expression);
+        }
+
+        $this->columns[] = [$expression, $alias];
+
+        return $this;
+    }
+
+    /**
+     * Add a selected column as a raw SQL expression
+     *
+     * @param string|Expression $expression
+     *   SQL select column
+     * @param string
+     *   If alias to be different from the column
+     * @param mixed[] $arguments
+     *   Parameters for the arbitrary SQL
+     *
+     * @return $this
+     */
+    public function columnExpression($expression, $alias = null, $arguments = [])
+    {
+        if ($expression instanceof ExpressionInterface) {
+            if ($arguments) {
+                throw new QueryError("you cannot call %s::expression() and pass arguments if the given expression is not a string", $expression);
+            }
+        } else {
+            if (!is_array($arguments)) {
+                $arguments = [$arguments];
+            }
+            $expression = new Expression($expression, $arguments);
         }
 
         $this->columns[] = [$expression, $alias];
@@ -335,6 +365,30 @@ class SelectQuery extends AbstractQuery
     }
 
     /**
+     * Add an order by clause as a raw SQL expression
+     *
+     * @param string $column
+     *   Column identifier must contain the table alias, if might be a raw SQL
+     *   string if you wish, for example, to write a case when statement
+     * @param int $order
+     *   One of the Query::ORDER_* constants
+     * @param int $null
+     *   Null behavior, nulls first, nulls last, or leave the backend default
+     *
+     * @return $this
+     */
+    public function orderByExpression($column, $order = Query::ORDER_ASC, $null = Query::NULL_IGNORE)
+    {
+        if (!$column instanceof ExpressionInterface) {
+            $column = new Expression($column);
+        }
+
+        $this->orders[] = [$column, $order, $null];
+
+        return $this;
+    }
+
+    /**
      * Add a group by clause
      *
      * @param string $column
@@ -464,7 +518,7 @@ class SelectQuery extends AbstractQuery
         $this->cloneJoins();
 
         foreach ($this->columns as $index => $column) {
-            $this->columns[0] = clone $column[0];
+            $this->columns[$index][0] = clone $column[0];
         }
 
         foreach ($this->orders as $index => $order) {

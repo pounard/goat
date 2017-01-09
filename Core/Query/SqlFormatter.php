@@ -11,6 +11,11 @@ use Goat\Core\Error\QueryError;
 /**
  * Standard SQL query formatter: this implementation conforms as much as it
  * can to SQL-92 standard, and higher revisions for some functions.
+ *
+ * Here are a few differences with the SQL standard:
+ *
+ *  - per default, UPDATE queries allow FROM..JOIN statement, but first JOIN
+ *    must be INNER or NATURAL in order to substitute the JOIN per FROM.
  */
 class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
 {
@@ -311,6 +316,50 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
     }
 
     /**
+     * Format all update from statement
+     *
+     * @param array $relations
+     *   Each relation is an array that must contain:
+     *     - key must be the relation alias
+     *     - 0: ExpressionRelation relation name
+     *     - 1: Where or null condition
+     *     - 2: Query::JOIN_* constant
+     *
+     * @return string
+     */
+    protected function formatUpdateFrom(UpdateQuery $query, array $joins)
+    {
+        if (!$joins) {
+            return '';
+        }
+
+        $output = [];
+
+        $first = array_shift($joins);
+
+        // First join must be an inner join, there is no choice, and first join
+        // condition will become a where clause in the global query instead
+        if (!in_array($first[2], [Query::JOIN_INNER, Query::JOIN_NATURAL])) {
+            throw new QueryError("first join in an update query must be inner or natural, it will serve as the first from table");
+        }
+
+        $output[] = sprintf("from %s", $this->formatExpressionRelation($first[0]));
+        if ($first[1] && !$first[1]->isEmpty()) {
+            $query->where()->expression($first[1]);
+        }
+
+        // Format remaining joins normally, most database servers can do that
+        // at least PostgreSQL and SQLServer do
+        if ($joins) {
+            foreach ($joins as $join) {
+                $output[] = $this->formatJoinItem(...$join);
+            }
+        }
+
+        return implode("\n", $output);
+    }
+
+    /**
      * Format range statement
      *
      * @param int $limit
@@ -564,31 +613,12 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
 
         // From the SQL 92 standard (which PostgreSQL does support here) the
         // FROM and JOIN must be written AFTER the SET clause. MySQL does not.
-        $joins = $query->getAllJoin();
-
-        if ($joins) {
-            // FIXME: use a table in UPDATE then the same in the FROM actually
-            // does a self-join with a cartesian product, which will force the
-            // update of all rows, whatever are the other conditions
-            // @todo
-            //   - either all tables in join are inner join, then use a specific
-            //     function to set "from" to the first, then join for the others
-            //   - either there are all not inner join, then do a sub query with
-            //     and a where in
-            $output[] = sprintf(
-                "update %s\nset\n%s\nfrom %s as %s\n%s",
-                $this->escaper->escapeIdentifier($query->getRelation()->getRelation()),
-                $this->formatUpdateSet($columns),
-                $this->escaper->escapeIdentifier($query->getRelation()->getRelation()),
-                $this->formatJoin($joins)
-            );
-        } else {
-            $output[] = sprintf(
-                "update %s\nset\n%s",
-                $this->formatExpressionRelation($query->getRelation()),
-                $this->formatUpdateSet($columns)
-            );
-        }
+        $output[] = sprintf(
+            "update %s\nset\n%s\n%s",
+            $this->formatExpressionRelation($query->getRelation()),
+            $this->formatUpdateSet($columns),
+            $this->formatUpdateFrom($query, $query->getAllJoin())
+        );
 
         $where = $query->where();
         if (!$where->isEmpty()) {
@@ -600,7 +630,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
             $output[] = sprintf("returning %s", $this->formatReturning($return));
         }
 
-        return implode("\n", $output);
+        return implode("\n", array_filter($output));
     }
 
     /**
@@ -686,32 +716,37 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      */
     protected function formatExpressionRelation(ExpressionRelation $relation)
     {
+        $table  = $relation->getRelation();
         $schema = $relation->getSchema();
         $alias  = $relation->getAlias();
+
+        if ($alias === $table) {
+            $alias = null;
+        }
 
         if ($schema && $alias) {
             return sprintf(
                 "%s.%s as %s",
                 $this->escaper->escapeIdentifier($schema),
-                $this->escaper->escapeIdentifier($relation->getRelation()),
+                $this->escaper->escapeIdentifier($table),
                 $this->escaper->escapeIdentifier($alias)
             );
         } else if ($schema) {
             return sprintf(
                 "%s.%s",
                 $this->escaper->escapeIdentifier($schema),
-                $this->escaper->escapeIdentifier($relation->getRelation())
+                $this->escaper->escapeIdentifier($table)
             );
         } else if ($alias) {
             return sprintf(
                 "%s as %s",
-                $this->escaper->escapeIdentifier($relation->getRelation()),
+                $this->escaper->escapeIdentifier($table),
                 $this->escaper->escapeIdentifier($alias)
             );
         } else {
             return sprintf(
                 "%s",
-                $this->escaper->escapeIdentifier($relation->getRelation())
+                $this->escaper->escapeIdentifier($table)
             );
         }
     }

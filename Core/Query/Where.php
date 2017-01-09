@@ -274,10 +274,16 @@ class Where implements ArgumentHolderInterface
                         break;
 
                     default:
-                        if (is_array($value)) {
-                            $arguments->appendArray($value);
-                        } else {
-                            $arguments->add($value);
+                        // This is ugly as hell, fix me.
+                        if (!is_array($value)) {
+                            $value = [$value];
+                        }
+                        foreach ($value as $candidate) {
+                            if ($candidate instanceof ArgumentHolderInterface) {
+                                $arguments->append($candidate->getArguments());
+                            } else if (!!$arguments instanceof ExpressionInterface) {
+                                $arguments->add($candidate);
+                            }
                         }
                         break;
                 }

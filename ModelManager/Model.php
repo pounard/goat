@@ -201,7 +201,7 @@ class Model extends ReadonlyModel
     {
         return $this
             ->connection
-            ->update($this->structure->getRelation())
+            ->update($this->structure->getRelation(), $this->getRelationAlias())
             ->sets($updates)
             ->expression($where)
             ->execute()
@@ -218,7 +218,7 @@ class Model extends ReadonlyModel
 
         $this
             ->connection
-            ->update($this->structure->getRelation())
+            ->update($this->structure->getRelation(), $this->getRelationAlias())
             ->sets($updates)
             ->expression($where)
             ->execute()

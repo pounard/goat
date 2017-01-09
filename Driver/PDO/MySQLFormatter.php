@@ -14,7 +14,7 @@ class MySQLFormatter extends SqlFormatter
     /**
      * {@inheritdoc}
      */
-    protected function formatUpdate(UpdateQuery $query)
+    protected function formatQueryUpdate(UpdateQuery $query)
     {
         $output = [];
 
@@ -28,8 +28,8 @@ class MySQLFormatter extends SqlFormatter
         $output[] = sprintf(
             "update %s\n%s\nset\n%s",
             $this->formatExpressionRelation($query->getRelation()),
-            $this->formatJoinAll($query->getAllJoin()),
-            $this->formatSetClauseAll($columns)
+            $this->formatJoin($query->getAllJoin()),
+            $this->formatUpdateSet($columns)
         );
 
         $where = $query->where();
@@ -39,7 +39,7 @@ class MySQLFormatter extends SqlFormatter
 
         $return = $query->getAllReturn();
         if ($return) {
-            $output[] = sprintf("returning %s", $this->formatReturningAll($return));
+            $output[] = sprintf("returning %s", $this->formatReturning($return));
         }
 
         return implode("\n", $output);
