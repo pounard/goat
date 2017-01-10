@@ -4,6 +4,7 @@ namespace Goat\Tests;
 
 use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Client\Dsn;
+use Goat\Core\Client\Session;
 use Goat\Core\Converter\ConverterMap;
 use Goat\Core\Converter\Impl\BooleanConverter;
 use Goat\Core\Converter\Impl\DecimalConverter;
@@ -14,9 +15,8 @@ use Goat\Core\EventDispatcher\EventEmitterConnectionProxy;
 use Goat\Driver\PDO\MySQLConnection;
 use Goat\Driver\PDO\PgSQLConnection;
 
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Goat\Core\Client\Session;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 abstract class ConnectionAwareTest extends \PHPUnit_Framework_TestCase
 {

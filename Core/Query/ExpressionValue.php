@@ -9,6 +9,7 @@ use Goat\Core\Client\ArgumentBag;
  */
 class ExpressionValue implements Expression
 {
+    private $name;
     private $type;
     private $value;
 
@@ -19,6 +20,25 @@ class ExpressionValue implements Expression
      */
     public function __construct($value, $type = null)
     {
+        if (null === $type) {
+            if (is_string($value) && $value &&  ':' === $value[0]) {
+
+                // Attempt to find type by convention
+                if (false !== strpos($value, '::')) {
+                    list($name, $type) = explode('::', $value, 2);
+                } else {
+                    $name = $value;
+                }
+
+                $this->name = substr($name, 1);
+
+                // Value cannot exist from this point, really, since we just
+                // gave name and type information; query will need to be send
+                // with parameters along
+                $value = null;
+            }
+        }
+
         $this->value = $value;
         $this->type = $type;
     }
@@ -44,12 +64,22 @@ class ExpressionValue implements Expression
     }
 
     /**
+     * Get value name, if any
+     *
+     * @return null|string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getArguments()
     {
         $ret = new ArgumentBag();
-        $ret->add($this->value, $this->type);
+        $ret->add($this->value, $this->name, $this->type);
 
         return $ret;
     }

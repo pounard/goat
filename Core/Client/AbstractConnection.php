@@ -13,6 +13,19 @@ use Goat\Core\Query\SelectQuery;
 use Goat\Core\Query\UpdateQuery;
 use Goat\Core\Transaction\Transaction;
 
+/**
+ * Default implementation for connection, it handles for you:
+ *
+ *  - transaction handling, with security check for not creating a transaction
+ *    twice at the same time; it uses weak references if the PHP weakref
+ *    extension is enabled;
+ *
+ *  - query builders creation, you don't need to override any of this except for
+ *    very peculiar drivers;
+ *
+ *  - query parameters rewriting and conversion, this is a tricky one but it's
+ *    thoroughly tested: you should not rewrite this by yourself.
+ */
 abstract class AbstractConnection implements ConnectionInterface
 {
     use ConverterAwareTrait;
@@ -215,18 +228,20 @@ abstract class AbstractConnection implements ConnectionInterface
      *   Bare SQL
      * @param ArgumentBag $parameters
      *   Parameters array to be converted
+     * @param mixed[] $overrides
+     *   Parameters overrides
      *
      * @return array
      *   First value is the query string, second is the reworked array
      *   of parameters, if conversions were needed
      */
-    private function rewriteQueryAndParameters($rawSQL, ArgumentBag $arguments)
+    private function rewriteQueryAndParameters($rawSQL, ArgumentBag $arguments, array $overrides = [])
     {
         $index      = 0;
-        $parameters = $arguments->getAll();
+        $parameters = $arguments->getAll($overrides);
         $done       = [];
 
-        $rawSQL = preg_replace_callback('/\$(\*|\d+)(?:::([\w\."]+(?:\[\])?)|)?/', function ($matches) use (&$parameters, &$index, &$done) {
+        $rawSQL = preg_replace_callback('/\$(\*|\d+)(?:::([\w\."]+(?:\[\])?)|)?/', function ($matches) use (&$parameters, &$index, &$done, $arguments) {
 
             $placeholder = $this->getPlaceholder($index);
 
@@ -267,7 +282,12 @@ abstract class AbstractConnection implements ConnectionInterface
         // will fail.
         if (count($done) !== count($parameters)) {
             foreach (array_diff_key($parameters, $done) as $index => $value) {
-                $parameters[$index] = $this->converter->guess($value);
+                $type = $arguments->getTypeAt($index);
+                if ($type) {
+                    $parameters[$index] = $this->converter->extract($type, $value);
+                } else {
+                    $parameters[$index] = $this->converter->guess($value);
+                }
             }
         }
 
@@ -287,17 +307,14 @@ abstract class AbstractConnection implements ConnectionInterface
     final protected function getProperSql($input, $parameters = null)
     {
         $arguments = null;
+        $overrides = [];
 
         if (!is_string($input)) {
-
             if (!$input instanceof Query) {
                 throw new QueryError(sprintf("query must be a bare string or an instance of %s", Query::class));
             }
 
-            if (!$parameters) {
-                $arguments = $input->getArguments();
-            }
-
+            $arguments = $input->getArguments();
             $input = $this->getSqlFormatter()->format($input);
         }
 
@@ -306,13 +323,14 @@ abstract class AbstractConnection implements ConnectionInterface
                 $arguments = $parameters;
             } else {
                 $arguments = new ArgumentBag();
-
-                if ($parameters) {
-                    $arguments->appendArray($parameters);
+                if (is_array($parameters)) {
+                    $overrides = $parameters;
                 }
             }
+        } else if (is_array($parameters)) {
+            $overrides = $parameters;
         }
 
-        return $this->rewriteQueryAndParameters($input, $arguments);
+        return $this->rewriteQueryAndParameters($input, $arguments, $overrides);
     }
 }

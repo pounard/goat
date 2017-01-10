@@ -46,13 +46,56 @@ class ArgumentBag
     }
 
     /**
-     * Get all parameters
+     * Get parameters array
+     *
+     * @param mixed[] $overrides
+     *   If the current bag contains named parameters, this array should serve
+     *   to replace the current values with the given ones, using the internal
+     *   name map.
+     *   This is where the magic happens and allow both sequential and named
+     *   parameters to live altogether: per definition, parameters are always
+     *   sequential, and there is no way to go arround that, but because we
+     *   have an index map of names, we can proceed to replacements in the
+     *   returned array.
      *
      * @return $data
      */
-    public function getAll()
+    public function getAll(array $overrides = [])
     {
-        return $this->data;
+        if (!$overrides) {
+            return $this->data;
+        }
+
+        $ret = $this->data;
+
+        foreach ($overrides as $name => $value) {
+            if (is_int($name)) {
+                $index = $name;
+            } else {
+                if (!isset($this->nameMap[$name])) {
+                    throw new QueryError(sprintf("named argument %s does not exist in the current query", $name));
+                }
+                $index = $this->nameMap[$name];
+            }
+
+            $ret[$index] = $value;
+        }
+
+        return $ret;
+    }
+
+    /**
+     * Get datatype for given index
+     *
+     * @param int $index
+     *
+     * @return null|string
+     */
+    public function getTypeAt($index)
+    {
+        if (isset($this->types[$index])) {
+            return $this->types[$index];
+        }
     }
 
     /**
