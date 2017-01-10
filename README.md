@@ -53,27 +53,29 @@ different software design and approach:
 
 # Status
 
+ *  [x] expression vs statement: query builder improvements
+ *  [x] generic way to dissociate raw SQL string from raw values
+ *  [x] improve WHERE builder tests: raw statement / sub where
+ *  [x] RIGHT and FULL JOIN types
  *  [x] transaction support
  *  [x] untangle ArgumentBag
  *  [x] UPDATE queries
  *  allow named parameters
  *  better parameter handling in AbstractConnection
  *  DELETE queries
- *  document transaction: deffer helpers
- *  document transaction: immediate per default
- *  document transaction: isolation levels
- *  fallback when RETURNING is not supported
- *  generic way to dissociate raw SQL string from raw values
- *  improve WHERE builder tests: raw statement / sub where
- *  improve WHERE builder tests: subqueries tests
+ *  INSERT/UPDATE fallback when RETURNING is not supported
  *  MERGE queries
- *  MySQL autocommit disable in configuration
  *  MySQL default transaction level in configuration
  *  parametric testing for backends
- *  RIGHT and FULL JOIN types
  *  SELECT with sub-select at select level
+ *  transaction: document deffer helpers
+ *  transaction: document immediate per default
+ *  transaction: document isolation levels
+ *  transaction: FOR UPDATE / FOR SHARE query dissociation from SELECT
+ *  transaction: write-only/read-only connection support, fallback when transaction
  *  UNION queries
  *  UPDATE query testing
+ *  WHERE builder tests: subqueries tests
  *  WHERE with SELECT within
  *  WITH support
 
