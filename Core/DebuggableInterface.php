@@ -4,8 +4,18 @@ namespace Goat\Core;
 
 interface DebuggableInterface
 {
+    /**
+     * Is debug mode enabled
+     *
+     * @return boolean
+     */
     public function isDebugEnabled();
 
+    /**
+     * Enable or disable debug mode
+     *
+     * @param boolean $debug
+     */
     public function setDebug($debug = true);
 
     /**
