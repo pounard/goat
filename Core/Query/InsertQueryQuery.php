@@ -48,8 +48,8 @@ class InsertQueryQuery extends AbstractQuery
      */
     public function columns(array $columns)
     {
-        if ($this->valueCount) {
-            throw new QueryError("once you added value, you cannot change columns anymore");
+        if ($this->query) {
+            throw new QueryError("once you added your query, you cannot change columns anymore");
         }
 
         $this->columns = array_unique(array_merge($this->columns, $columns));

@@ -140,20 +140,20 @@ abstract class ConnectionAwareTest extends \PHPUnit_Framework_TestCase
         // be guessed if no type is specified, go from the more complex to the
         // lesser to ensure there is no data loss in such case.
         return (new ConverterMap())
-            ->register(['timestamp', 'timestamptz', 'datetime'], new TimestampConverter())
-            ->register(['date'], new TimestampConverter())
-            ->register(['time', 'timetz'], new TimestampConverter())
-            ->register(['varchar', 'character', 'char'], $default)
-            ->register(['bytea'], $default) // @todo
-            ->register(['boolean', 'bool'], new BooleanConverter())
-            ->register(['bigint', 'int8'], new IntegerConverter())
-            ->register(['bigserial', 'serial8'], new IntegerConverter())
-            ->register(['integer', 'int', 'int4'], new IntegerConverter())
-            ->register(['serial', 'serial4'], new IntegerConverter())
-            ->register(['smallint', 'int2', 'smallserial', 'serial2'], new IntegerConverter())
-            ->register(['double', 'float8'], new DecimalConverter())
-            ->register(['numeric', 'decimal'], new DecimalConverter())
-            ->register(['real', 'float4'], new DecimalConverter())
+            ->register('timestampz', new TimestampConverter(), ['timestamp', 'datetime'])
+            ->register('date', new TimestampConverter())
+            ->register('timez', new TimestampConverter(), ['time'])
+            ->register('varchar', $default, ['character', 'char'])
+            ->register('bytea', $default, ['blob']) // @todo
+            ->register('boolean', new BooleanConverter(), ['bool'])
+            ->register('bigint', new IntegerConverter(), ['int8'])
+            ->register('bigserial', new IntegerConverter(), ['serial8'])
+            ->register('integer', new IntegerConverter(), ['int', 'int4'])
+            ->register('serial', new IntegerConverter(), ['serial4'])
+            ->register('smallint', new IntegerConverter(), ['int2', 'smallserial', 'serial2'])
+            ->register('double', new DecimalConverter(), ['float8'])
+            ->register('numeric', new DecimalConverter(), ['decimal'])
+            ->register('real', new DecimalConverter(), ['float4'])
             ->setFallback($default)
         ;
     }

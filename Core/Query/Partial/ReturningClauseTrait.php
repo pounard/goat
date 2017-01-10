@@ -3,9 +3,8 @@
 namespace Goat\Core\Query\Partial;
 
 use Goat\Core\Error\QueryError;
-use Goat\Core\Query\ExpressionColumn;
-use Goat\Core\Query\ExpressionRaw;
 use Goat\Core\Query\Expression;
+use Goat\Core\Query\ExpressionColumn;
 
 /**
  * Represents the RETURNING part of any query.
