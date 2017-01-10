@@ -19,7 +19,7 @@ class DriverError extends GoatError
         $this->rawSQL = $rawSQL;
         $this->parameters = $parameters;
 
-        $message = sprintf("error while querying backend, query is: %s", $rawSQL);
+        $message = sprintf("error while querying backend, query is:\n%s", $rawSQL);
 
         parent::__construct($message, null, $previous);
     }

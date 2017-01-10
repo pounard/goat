@@ -791,7 +791,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
         } else if ($query instanceof Where) {
             return $this->formatWhere($query);
         }
-var_dump($query);
+
         throw new NotImplementedError();
     }
 }

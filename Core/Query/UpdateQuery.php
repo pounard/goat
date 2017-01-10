@@ -56,12 +56,11 @@ class UpdateQuery extends AbstractQuery
      */
     public function set($column, $expression)
     {
-        if (is_string($expression)) {
-            if (false !== strpos($column, '.')) {
-                throw new QueryError("column names in the set part of an update query can only be a column name, without table prefix");
-            }
-            $expression = new ExpressionValue($expression);
-        } else if (!$expression instanceof Expression && !$expression instanceof SelectQuery) {
+        if (!is_string($column) || false !== strpos($column, '.')) {
+            throw new QueryError("column names in the set part of an update query can only be a column name, without table prefix");
+        }
+
+        if (!$expression instanceof Expression && !$expression instanceof SelectQuery) {
             $expression = new ExpressionValue($expression);
         }
 

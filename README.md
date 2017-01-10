@@ -53,12 +53,21 @@ different software design and approach:
 
 # Status
 
+ *  [postponed] ext-pgsql driver
+ *  [postponed] MERGE queries
+ *  [postponed] parametric testing for backends
+ *  [postponed] SELECT with sub-select at select level
+ *  [postponed] UNION queries
+ *  [postponed] WITH support
  *  [x] expression vs statement: query builder improvements
  *  [x] generic way to dissociate raw SQL string from raw values
  *  [x] improve WHERE builder tests: raw statement / sub where
  *  [x] RIGHT and FULL JOIN types
  *  [x] session: add basic session support (dual connection handling)
  *  [x] transaction support
+ *  [x] transaction: test allow pending
+ *  [x] transaction: test savepoints
+ *  [x] transaction: test weak ref handling (only when extension is present)
  *  [x] untangle ArgumentBag
  *  [x] UPDATE queries
  *  [x] UPDATE query testing
@@ -71,21 +80,14 @@ different software design and approach:
  *  converters: type map per driver
  *  DELETE queries
  *  INSERT/UPDATE fallback when RETURNING is not supported
- *  MERGE queries
  *  MySQL default transaction level in configuration
- *  parametric testing for backends
- *  SELECT with sub-select at select level
  *  session: test with write and read connections
  *  transaction: document deffer helpers
  *  transaction: document immediate per default
  *  transaction: document isolation levels
  *  transaction: FOR UPDATE / FOR SHARE query dissociation from SELECT
- *  transaction: test allow pending
- *  transaction: test weak ref handling (only when extension is present)
  *  transaction: write-only/read-only connection support, fallback when transaction
- *  UNION queries
  *  WHERE builder tests: subqueries tests
- *  WITH support
 
 # Driver support
 

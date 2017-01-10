@@ -4,7 +4,9 @@ namespace Goat\Tests\Core\Transaction;
 
 use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Error\GoatError;
+use Goat\Core\Error\TransactionError;
 use Goat\Core\Error\TransactionFailedError;
+use Goat\Core\Transaction\Transaction;
 use Goat\Tests\ConnectionAwareTest;
 
 abstract class AbstractTransactionTest extends ConnectionAwareTest
@@ -248,18 +250,112 @@ abstract class AbstractTransactionTest extends ConnectionAwareTest
     }
 
     /**
+     * Test that fetching a pending transaction is disallowed
+     */
+    public function testPendingAllowed()
+    {
+        $connection = $this->getConnection();
+
+        $transaction = $connection->startTransaction();
+        $transaction->start();
+
+        // Fetch another transaction, it should fail
+        try {
+            $connection->startTransaction();
+            $this->fail();
+        } catch (TransactionError $e) {
+        }
+
+        // Fetch another transaction, it should NOT fail
+        $t3 = $connection->startTransaction(Transaction::REPEATABLE_READ, true);
+        $this->assertSame($t3, $transaction);
+        $this->assertTrue($t3->isStarted());
+
+        // Force rollback of the second, ensure previous is stopped too
+        $t3->rollback();
+        $this->assertFalse($transaction->isStarted());
+    }
+
+    /**
+     * Internal test for testWeakRefAllowFailOnScopeClose()
+     *
+     * @param ConnectionInterface $connection
+     */
+    protected function privateScopeForWeakRef(ConnectionInterface $connection)
+    {
+        $transaction = $connection->startTransaction();
+        $transaction->start();
+
+        // Force fail
+        unset($transaction);
+    }
+
+    /**
+     * Test that when a transaction goes out of scope, it dies and raise an
+     * exception if it was not closed: this can only work with the weakref
+     * extension enabled
+     */
+    public function testWeakRefAllowFailOnScopeClose()
+    {
+        if (!extension_loaded('weakref')) {
+            $this->markTestSkipped("this test can only work with the WeakRef extension");
+        }
+
+        try {
+            $this->privateScopeForWeakRef($this->getConnection());
+            $this->fail();
+        } catch (TransactionError $e) {
+            // Success
+        }
+    }
+
+    /**
      * Test the savepoint feature
      */
     public function testTransactionSavepoint()
     {
         $connection = $this->getConnection();
-    }
 
-    /**
-     * Test that left open transactions allways rollback and raise exceptions
-     */
-    public function testDestructRollbacks()
-    {
-        $connection = $this->getConnection();
+        $transaction = $connection->startTransaction();
+        $transaction->start();
+
+        $connection
+            ->update('transaction_test')
+            ->set('bar', 'z')
+            ->condition('foo', 1)
+            ->execute()
+        ;
+
+        $transaction->savepoint('bouyaya');
+
+        $connection
+            ->update('transaction_test')
+            ->set('bar', 'y')
+            ->condition('foo', 2)
+            ->execute()
+        ;
+
+        $transaction->rollbackToSavepoint('bouyaya');
+        $transaction->commit();
+
+        $oneBar = $connection
+            ->select('transaction_test')
+            ->column('bar')
+            ->condition('foo', 1)
+            ->execute()
+            ->fetchField()
+        ;
+        // This should have pass since it's before the savepoint
+        $this->assertSame('z', $oneBar);
+
+        $twoBar = $connection
+            ->select('transaction_test')
+            ->column('bar')
+            ->condition('foo', 2)
+            ->execute()
+            ->fetchField()
+        ;
+        // This should not have pass thanks to savepoint
+        $this->assertSame('b', $twoBar);
     }
 }

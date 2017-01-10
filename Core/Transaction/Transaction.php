@@ -254,6 +254,8 @@ abstract class Transaction implements ConnectionAwareInterface
 
         $this->doCreateSavepoint($name);
 
+        $this->savepoints[$name] = true;
+
         return $name;
     }
 
