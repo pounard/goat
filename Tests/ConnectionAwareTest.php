@@ -16,6 +16,7 @@ use Goat\Driver\PDO\PgSQLConnection;
 
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use Goat\Core\Client\Session;
 
 abstract class ConnectionAwareTest extends \PHPUnit_Framework_TestCase
 {
@@ -196,7 +197,7 @@ abstract class ConnectionAwareTest extends \PHPUnit_Framework_TestCase
 
         $connection->setConverter($this->converter = $this->createConverter($connection));
 
-        return new EventEmitterConnectionProxy($connection, $this->getEventDispatcher());
+        return new EventEmitterConnectionProxy(new Session($connection), $this->getEventDispatcher());
     }
 
     /**

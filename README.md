@@ -57,6 +57,7 @@ different software design and approach:
  *  [x] generic way to dissociate raw SQL string from raw values
  *  [x] improve WHERE builder tests: raw statement / sub where
  *  [x] RIGHT and FULL JOIN types
+ *  [x] session: add basic session support (dual connection handling)
  *  [x] transaction support
  *  [x] untangle ArgumentBag
  *  [x] UPDATE queries
@@ -74,11 +75,13 @@ different software design and approach:
  *  MySQL default transaction level in configuration
  *  parametric testing for backends
  *  SELECT with sub-select at select level
+ *  session: test with write and read connections
  *  transaction: document deffer helpers
  *  transaction: document immediate per default
  *  transaction: document isolation levels
  *  transaction: FOR UPDATE / FOR SHARE query dissociation from SELECT
- *  transaction: test weak ref handling
+ *  transaction: test allow pending
+ *  transaction: test weak ref handling (only when extension is present)
  *  transaction: write-only/read-only connection support, fallback when transaction
  *  UNION queries
  *  WHERE builder tests: subqueries tests
