@@ -5,7 +5,8 @@ namespace Goat\Core\Query;
 use Goat\Core\Client\ArgumentBag;
 
 /**
- * Represents a raw SQL statement
+ * Represents a raw SQL expression, remember that an expression must always
+ * return a single value, in opposition to statements.
  */
 class ExpressionRaw implements Expression
 {

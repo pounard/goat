@@ -43,10 +43,14 @@ class UpdateQuery extends AbstractQuery
      * @param string $column
      *   Must be, as the SQL-92 standard states, a single column name without
      *   the table prefix or alias, it cannot be an expression
-     * @param string|ExpressionValue|ExpressionColumn $expression
+     * @param string|Statement|SelectQuery $expression
      *   The column value, if it's a string it can be a reference to any other
      *   field from the table or the FROM clause, as well as it can be raw
-     *   SQL
+     *   SQL expression that returns only one row.
+     *   Warning if a SelectQuery is passed here, it must return only one row
+     *   else your database driver won't like it very much, and we cannot check
+     *   this for you, since you could restrict the row count using WHERE
+     *   conditions that matches the UPDATE table.
      *
      * @return $this
      */
@@ -57,7 +61,7 @@ class UpdateQuery extends AbstractQuery
                 throw new QueryError("column names in the set part of an update query can only be a column name, without table prefix");
             }
             $expression = new ExpressionValue($expression);
-        } else if (!$expression instanceof ExpressionValue && !$expression instanceof ExpressionColumn) {
+        } else if (!$expression instanceof Expression && !$expression instanceof SelectQuery) {
             $expression = new ExpressionValue($expression);
         }
 

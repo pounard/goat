@@ -6,9 +6,14 @@ use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Query\Query;
 use Goat\Core\Query\Where;
 use Goat\Tests\ConnectionAwareTest;
+use Goat\Core\Query\ExpressionColumn;
+use Goat\Core\Query\ExpressionRaw;
 
 abstract class AbstractUpdateTest extends ConnectionAwareTest
 {
+    private $idAdmin;
+    private $idJean;
+
     /**
      * {@inheritdoc}
      */
@@ -52,17 +57,17 @@ abstract class AbstractUpdateTest extends ConnectionAwareTest
             ->fetchColumn()
         ;
 
-        $idAdmin = $idList[0];
-        $idJean = $idList[1];
+        $this->idAdmin = $idList[0];
+        $this->idJean = $idList[1];
 
         $connection
             ->insertValues('some_table')
             ->columns(['foo', 'bar', 'id_user'])
-            ->values([42, 'a', $idAdmin])
-            ->values([666, 'b', $idAdmin])
-            ->values([37, 'c', $idJean])
-            ->values([11, 'd', $idJean])
-            ->values([27, 'e', $idAdmin])
+            ->values([42, 'a', $this->idAdmin])
+            ->values([666, 'b', $this->idAdmin])
+            ->values([37, 'c', $this->idJean])
+            ->values([11, 'd', $this->idJean])
+            ->values([27, 'e', $this->idAdmin])
             ->execute()
         ;
     }
@@ -126,6 +131,7 @@ abstract class AbstractUpdateTest extends ConnectionAwareTest
 
         $this->assertSame(3, $result->countRows());
 
+        // All code below is just consistency checks
         $result = $connection
             ->select('some_table', 'roger')
             ->join('users', 'john.id = roger.id_user', 'john')
@@ -152,15 +158,43 @@ abstract class AbstractUpdateTest extends ConnectionAwareTest
      */
     public function testUpdateWhereIn()
     {
-        $this->markTestIncomplete();
-    }
+        $connection = $this->getConnection();
 
-    /**
-     * Update by using SET column = 'VALUE'
-     */
-    public function testUpateSetValues()
-    {
-        $this->markTestIncomplete();
+        $selectInQuery = $connection
+            ->select('users')
+            ->column('id')
+            ->condition('name', 'admin')
+        ;
+
+        $result = $connection
+            ->update('some_table', 't')
+            ->set('foo', 127)
+            ->condition('t.id_user', $selectInQuery)
+            ->execute()
+        ;
+
+        $this->assertSame(3, $result->countRows());
+
+        // All code below is just consistency checks
+        $result = $connection
+            ->select('some_table', 'roger')
+            ->join('users', 'john.id = roger.id_user', 'john')
+            ->condition('john.name', 'admin')
+            ->execute()
+        ;
+
+        $this->assertSame(3, $result->countRows());
+        foreach ($result as $row) {
+            $this->assertSame(127, $row['foo']);
+        }
+
+        $result = $connection
+            ->select('some_table')
+            ->condition('foo', 127)
+            ->execute()
+        ;
+
+        $this->assertSame(3, $result->countRows());
     }
 
     /**
@@ -168,15 +202,90 @@ abstract class AbstractUpdateTest extends ConnectionAwareTest
      */
     public function testUpateReturning()
     {
-        $this->markTestIncomplete();
+        $connection = $this->getConnection();
+
+        if (!$connection->supportsReturning()) {
+            $this->markTestIncomplete("driver does not support RETURNING");
+        }
+
+        $result = $connection
+            ->update('some_table', 't')
+            ->set('foo', 127)
+            ->join('users', "u.id = t.id_user", 'u')
+            ->condition('u.name', 'admin')
+            ->returning(new ExpressionRaw('*'))
+            ->execute()
+        ;
+
+        $this->assertSame(3, $result->countRows());
+        foreach ($result as $row) {
+            $this->assertSame(127, $row['foo']);
+            $this->assertSame('admin', $row['name']);
+        }
     }
 
     /**
-     * Update by using SET column = other_table.column from JOIN
+     * Update by using SET column = other_table.column from FROM using ExpressionColumn
      */
-    public function testUpateSetReferenceStatement()
+    public function testUpateSetExpressionColumn()
     {
-        $this->markTestIncomplete();
+        $connection = $this->getConnection();
+
+        $result = $connection
+            ->update('some_table', 't')
+            ->set('foo', new ExpressionColumn('u.id'))
+            ->join('users', "u.id = t.id_user", 'u')
+            ->condition('u.name', 'admin')
+            ->execute()
+        ;
+
+        $this->assertSame(3, $result->countRows());
+
+        // All code below is just consistency checks
+        $result = $connection
+            ->select('some_table', 't')
+            ->columns(['t.foo', 't.id_user'])
+            ->join('users', 'u.id = t.id_user', 'u')
+            ->condition('u.name', 'admin')
+            ->execute()
+        ;
+
+        $this->assertSame(3, $result->countRows());
+        foreach ($result as $row) {
+            $this->assertSame($row['id_user'], $row['foo']);
+        }
+    }
+
+    /**
+     * Update by using SET column = other_table.column from FROM using ExpressionRaw
+     */
+    public function testUpateSetExpressionRaw()
+    {
+        $connection = $this->getConnection();
+
+        $result = $connection
+            ->update('some_table', 't')
+            ->set('foo', new ExpressionRaw('u.id'))
+            ->join('users', "u.id = t.id_user", 'u')
+            ->condition('u.name', 'admin')
+            ->execute()
+        ;
+
+        $this->assertSame(3, $result->countRows());
+
+        // All code below is just consistency checks
+        $result = $connection
+            ->select('some_table', 't')
+            ->columns(['t.foo', 't.id_user'])
+            ->join('users', 'u.id = t.id_user', 'u')
+            ->condition('u.name', 'admin')
+            ->execute()
+        ;
+
+        $this->assertSame(3, $result->countRows());
+        foreach ($result as $row) {
+            $this->assertSame($row['id_user'], $row['foo']);
+        }
     }
 
     /**
@@ -184,7 +293,40 @@ abstract class AbstractUpdateTest extends ConnectionAwareTest
      */
     public function testUpateSetSelectQuery()
     {
-        $this->markTestIncomplete();
+        $connection = $this->getConnection();
+
+        $selectValueQuery = $connection
+            ->select('users', 'z')
+            ->columnExpression('z.id + 7')
+            ->expression('z.id = id_user')
+        ;
+
+        $result = $connection
+            ->update('some_table')
+            ->set('foo', $selectValueQuery)
+            ->condition('id_user', $this->idJean)
+            ->execute()
+        ;
+
+        $this->assertSame(2, $result->countRows());
+
+        $result = $connection
+            ->select('some_table')
+            ->condition('id_user', $this->idJean)
+            ->execute()
+        ;
+        foreach ($result as $row) {
+            $this->assertSame($row['id_user'] + 7, $row['foo']);
+        }
+
+        $result = $connection
+            ->select('some_table')
+            ->condition('id_user', $this->idAdmin)
+            ->execute()
+        ;
+        foreach ($result as $row) {
+            $this->assertNotSame($row['id_user'] + 7, $row['foo']);
+        }
     }
 
     /**
@@ -192,6 +334,16 @@ abstract class AbstractUpdateTest extends ConnectionAwareTest
      */
     public function testUpateSetSqlStatement()
     {
-        $this->markTestIncomplete();
+        $connection = $this->getConnection();
+
+        $result = $connection
+            ->update('some_table')
+            ->set('foo', new ExpressionRaw('id_user * 2'))
+            ->join('users', 'u.id = id_user', 'u')
+            ->condition('id_user', $this->idJean)
+            ->execute()
+        ;
+
+        $this->assertSame(2, $result->countRows());
     }
 }

@@ -5,6 +5,7 @@ namespace Goat\Core\Query\Partial;
 use Goat\Core\Error\QueryError;
 use Goat\Core\Query\ExpressionColumn;
 use Goat\Core\Query\ExpressionRaw;
+use Goat\Core\Query\Expression;
 
 /**
  * Represents the RETURNING part of any query.
@@ -42,41 +43,41 @@ trait ReturningClauseTrait
     /**
      * Set or replace a column with a content.
      *
-     * @param string $statement
+     * @param string $expression
      *   SQL select column
      * @param string
      *   If alias to be different from the column
      *
      * @return $this
      */
-    public function returning($statement, $alias = null)
+    public function returning($expression, $alias = null)
     {
-        $noAlias = false;
-
         if (!$alias) {
-            if (!is_string($statement) && !$statement instanceof ExpressionRaw && !$statement instanceof ExpressionColumn) {
+            if (!is_string($expression) && !$expression instanceof Expression) {
                 throw new QueryError("RETURNING values can only be column names or expressions using them from the previous statement");
             }
-
-            // Match for RELATION.COLUMN for aliasing properly
-            if (false !==  strpos($statement, '.')) {
-                list(, $column) = explode('.', $statement);
-
-                if ('*' === $column) {
-                    $alias = $statement;
-                    $noAlias = true;
-                } else {
-                    $alias = $column;
-                }
-
-            } else {
-                $alias = $statement;
+            if (is_string($expression)) {
+                $expression = new ExpressionColumn($expression);
             }
         }
 
-        $this->return[$alias] = [$statement, ($noAlias ? null : $alias)];
+        $this->return[] = [$expression, $alias];
 
         return $this;
+    }
+
+    /**
+     * Find column index for given alias
+     *
+     * @param string $alias
+     */
+    private function findReturnIndex($alias)
+    {
+        foreach ($this->return as $index => $data) {
+            if ($data[1] === $alias) {
+                return $index;
+            }
+        }
     }
 
     /**
@@ -88,7 +89,11 @@ trait ReturningClauseTrait
      */
     public function removeReturn($alias)
     {
-        unset($this->return[$alias]);
+        $index = $this->findReturnIndex($alias);
+
+        if (null !== $index) {
+            unset($this->return[$index]);
+        }
 
         return $this;
     }
@@ -102,7 +107,7 @@ trait ReturningClauseTrait
      */
     public function hasReturn($alias)
     {
-        return isset($this->return[$alias]);
+        return (bool)$this->findReturnIndex($alias);
     }
 
     /**

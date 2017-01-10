@@ -9,8 +9,8 @@ use Goat\Core\Query\InsertValuesQuery;
 use Goat\Core\Query\Query;
 use Goat\Core\Query\SelectQuery;
 use Goat\Core\Query\SqlFormatterInterface;
-use Goat\Core\Transaction\Transaction;
 use Goat\Core\Query\UpdateQuery;
+use Goat\Core\Transaction\Transaction;
 
 interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface, DebuggableInterface
 {

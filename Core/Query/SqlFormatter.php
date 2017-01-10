@@ -41,11 +41,15 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      */
     protected function formatUpdateSetItem($column, $expression)
     {
-        return sprintf(
-            "%s = %s",
-            $this->escaper->escapeIdentifier($column),
-            $this->format($expression)
-        );
+        $columnString = $this->escaper->escapeIdentifier($column);
+
+        if ($expression instanceof Expression) {
+            return sprintf("%s = %s", $columnString, $this->format($expression));
+        } else if ($expression instanceof Statement) {
+            return sprintf("%s = (%s)", $columnString, $this->format($expression));
+        } else {
+            return sprintf("%s = %s", $columnString, $this->escaper->escapeLiteral($expression));
+        }
     }
 
     /**

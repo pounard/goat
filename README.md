@@ -60,6 +60,8 @@ different software design and approach:
  *  [x] transaction support
  *  [x] untangle ArgumentBag
  *  [x] UPDATE queries
+ *  [x] UPDATE query testing
+ *  [x] WHERE with SELECT within
  *  allow named parameters
  *  better parameter handling in AbstractConnection
  *  DELETE queries
@@ -74,9 +76,7 @@ different software design and approach:
  *  transaction: FOR UPDATE / FOR SHARE query dissociation from SELECT
  *  transaction: write-only/read-only connection support, fallback when transaction
  *  UNION queries
- *  UPDATE query testing
  *  WHERE builder tests: subqueries tests
- *  WHERE with SELECT within
  *  WITH support
 
 # Driver support
