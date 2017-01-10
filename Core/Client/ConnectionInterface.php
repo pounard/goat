@@ -2,8 +2,11 @@
 
 namespace Goat\Core\Client;
 
+use Goat\Core\Client\ArgumentBag;
+use Goat\Core\Client\ResultIteratorInterface;
 use Goat\Core\Converter\ConverterAwareInterface;
 use Goat\Core\DebuggableInterface;
+use Goat\Core\Error\TransactionError;
 use Goat\Core\Query\InsertQueryQuery;
 use Goat\Core\Query\InsertValuesQuery;
 use Goat\Core\Query\Query;
@@ -29,11 +32,34 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface,
     public function supportsDeferingConstraints();
 
     /**
-     * Creates a transaction
+     * Creates a new transaction
+     *
+     * If a transaction is pending, continue the same transaction by adding a
+     * new savepoint that will be transparently rollbacked in case of failure
+     * in between.
+     *
+     * @param int $isolationLevel
+     *   Default transaction isolation level, it is advised that you set it
+     *   directly at this point, since some drivers don't allow isolation
+     *   level changes while transaction is started
+     * @param boolean $allowPending = false
+     *   If set to true, explicitely allow to fetch the currently pending
+     *   transaction, else errors will be raised
+     *
+     * @throws TransactionError
+     *   If you asked a new transaction while another one is opened, or if the
+     *   transaction fails starting
      *
      * @return Transaction
      */
-    public function transaction($isolationLevel = Transaction::REPEATABLE_READ);
+    public function startTransaction($isolationLevel = Transaction::REPEATABLE_READ, $allowPending = false);
+
+    /**
+     * Is there a pending transaction
+     *
+     * @return boolean
+     */
+    public function isTransactionPending();
 
     /**
      * Send query
@@ -93,13 +119,6 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface,
     public function executePreparedQuery($identifier, $parameters = null, $enableConverters = true);
 
     /**
-     * Get last insert identifier
-     *
-     * @return scalar
-     */
-    // public function getLastInsertId();
-
-    /**
      * Create a select query builder
      *
      * @param string $relation
@@ -142,6 +161,13 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface,
      * @return InsertQueryQuery
      */
     public function insertQuery($relation);
+
+    /**
+     * Get last insert identifier
+     *
+     * @return scalar
+     */
+    // public function getLastInsertId();
 
     /**
      * Set connection encoding

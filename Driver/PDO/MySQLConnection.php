@@ -25,7 +25,7 @@ class MySQLConnection extends AbstractConnection
     /**
      * {@inheritdoc}
      */
-    public function transaction($isolationLevel = Transaction::REPEATABLE_READ)
+    public function doStartTransaction($isolationLevel = Transaction::REPEATABLE_READ)
     {
         $ret = new MySQLTransaction($isolationLevel);
         $ret->setConnection($this);

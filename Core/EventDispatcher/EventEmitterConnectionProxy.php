@@ -47,9 +47,17 @@ class EventEmitterConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function transaction($isolationLevel = Transaction::REPEATABLE_READ)
+    public function startTransaction($isolationLevel = Transaction::REPEATABLE_READ, $allowPending = false)
     {
-        return $this->connection->transaction($isolationLevel);
+        return $this->connection->startTransaction($isolationLevel, $allowPending);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isTransactionPending()
+    {
+        return $this->connection->isTransactionPending();
     }
 
     /**

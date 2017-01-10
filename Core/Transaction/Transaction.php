@@ -154,6 +154,16 @@ abstract class Transaction implements ConnectionAwareInterface
     }
 
     /**
+     * Is transaction started
+     *
+     * @return boolean
+     */
+    public function isStarted()
+    {
+        return $this->started;
+    }
+
+    /**
      * Start the transaction
      *
      * @return $this

@@ -55,7 +55,7 @@ abstract class AbstractTransactionTest extends ConnectionAwareTest
     {
         $connection = $this->getConnection();
 
-        $transaction = $connection->transaction();
+        $transaction = $connection->startTransaction();
         $transaction->start();
 
         $connection
@@ -88,7 +88,7 @@ abstract class AbstractTransactionTest extends ConnectionAwareTest
         $connection = $this->getConnection();
 
         $transaction = $connection
-            ->transaction()
+            ->startTransaction()
             ->start()
             ->deferred() // Defer all
             ->immediate('transaction_test_bar')
@@ -138,7 +138,7 @@ abstract class AbstractTransactionTest extends ConnectionAwareTest
         }
 
         $transaction = $connection
-            ->transaction()
+            ->startTransaction()
             ->start()
             ->immediate() // Immediate all
             ->deferred('transaction_test_foo')
@@ -185,7 +185,7 @@ abstract class AbstractTransactionTest extends ConnectionAwareTest
         }
 
         $transaction = $connection
-            ->transaction()
+            ->startTransaction()
             ->start()
             ->deferred()
         ;
@@ -227,7 +227,7 @@ abstract class AbstractTransactionTest extends ConnectionAwareTest
     {
         $connection = $this->getConnection();
 
-        $transaction = $connection->transaction();
+        $transaction = $connection->startTransaction();
         $transaction->start();
 
         $connection

@@ -5,18 +5,20 @@ namespace Goat\Core\Client;
 use Goat\Core\Converter\ConverterAwareTrait;
 use Goat\Core\DebuggableTrait;
 use Goat\Core\Error\QueryError;
+use Goat\Core\Error\TransactionError;
 use Goat\Core\Query\InsertQueryQuery;
 use Goat\Core\Query\InsertValuesQuery;
 use Goat\Core\Query\Query;
 use Goat\Core\Query\SelectQuery;
 use Goat\Core\Query\UpdateQuery;
+use Goat\Core\Transaction\Transaction;
 
 abstract class AbstractConnection implements ConnectionInterface
 {
     use ConverterAwareTrait;
     use DebuggableTrait;
 
-    private $eventDispatcher;
+    private $currentTransaction;
 
     /**
      * {@inheritdoc}
@@ -35,11 +37,71 @@ abstract class AbstractConnection implements ConnectionInterface
     }
 
     /**
+     * Create a new transaction object
+     *
+     * @param boolean $allowPending = false
+     *
+     * @return Transaction
+     */
+    abstract protected function doStartTransaction($isolationLevel = Transaction::REPEATABLE_READ);
+
+    /**
      * {@inheritdoc}
      */
-    public function getCastType($type)
+    final public function startTransaction($isolationLevel = Transaction::REPEATABLE_READ, $allowPending = false)
     {
-        return $type;
+        // Fetch transaction from the WeakRef if possible
+        if ($this->currentTransaction && $this->currentTransaction->valid()) {
+            $pending = $this->currentTransaction->get();
+
+            // We need to proceed to additional checks to ensure the pending
+            // transaction still exists and si started, using WeakRef the
+            // object could already have been garbage collected
+            if ($pending instanceof Transaction && $pending->isStarted()) {
+                if (!$allowPending) {
+                    throw new TransactionError("a transaction already been started, you cannot nest transactions");
+                }
+
+                return $pending;
+
+            } else {
+                unset($this->currentTransaction);
+            }
+        }
+
+        // Acquire a weak reference if possible, this will allow the transaction
+        // to fail upon __destruct() when the user leaves the transaction scope
+        // without closing it properly. Without the ext-weakref extension, the
+        // transaction will fail during PHP shutdown instead, errors will be
+        // less understandable for the developper, and code will fail much later
+        // and possibly run lots of things it should not. Since it's during a
+        // pending transaction it will not cause data consistency bugs, it will
+        // just make it harder to debug.
+        $transaction = $this->doStartTransaction($isolationLevel);
+        $this->currentTransaction = new \WeakRef($transaction);
+
+        return $transaction;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    final public function isTransactionPending()
+    {
+        if ($this->currentTransaction) {
+            if (!$this->currentTransaction->valid()) {
+                unset($this->currentTransaction);
+            } else {
+                $pending = $this->currentTransaction->get();
+                if (!$pending instanceof Transaction || !$pending->isStarted()) {
+                    unset($this->currentTransaction);
+                } else {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -84,6 +146,14 @@ abstract class AbstractConnection implements ConnectionInterface
         $insert->setConnection($this);
 
         return $insert;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCastType($type)
+    {
+        return $type;
     }
 
     /**

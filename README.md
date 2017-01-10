@@ -78,6 +78,7 @@ different software design and approach:
  *  transaction: document immediate per default
  *  transaction: document isolation levels
  *  transaction: FOR UPDATE / FOR SHARE query dissociation from SELECT
+ *  transaction: test weak ref handling
  *  transaction: write-only/read-only connection support, fallback when transaction
  *  UNION queries
  *  WHERE builder tests: subqueries tests
