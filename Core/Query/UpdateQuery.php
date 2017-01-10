@@ -3,11 +3,11 @@
 namespace Goat\Core\Query;
 
 use Goat\Core\Client\ArgumentBag;
+use Goat\Core\Client\ArgumentHolderInterface;
 use Goat\Core\Error\QueryError;
 use Goat\Core\Query\Partial\AbstractQuery;
 use Goat\Core\Query\Partial\FromClauseTrait;
 use Goat\Core\Query\Partial\ReturningClauseTrait;
-use Goat\Core\Client\ArgumentHolderInterface;
 
 /**
  * Represents an UPDATE query
@@ -148,7 +148,7 @@ class UpdateQuery extends AbstractQuery
         foreach ($this->columns as $statement) {
             if ($statement instanceof ArgumentHolderInterface) {
                 $arguments->append($statement->getArguments());
-            } else if (!$statement instanceof ExpressionInterface) {
+            } else {
                 $arguments->add($statement);
             }
         }

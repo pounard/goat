@@ -2,10 +2,9 @@
 
 namespace Goat\Core\Query;
 
-use Goat\Core\Client\ArgumentHolderInterface;
 use Goat\Core\Client\ResultIteratorInterface;
 
-interface Query extends ArgumentHolderInterface
+interface Query extends Statement
 {
     const JOIN_INNER = 4;
     const JOIN_LEFT = 2;

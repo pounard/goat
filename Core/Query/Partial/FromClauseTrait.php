@@ -3,7 +3,7 @@
 namespace Goat\Core\Query\Partial;
 
 use Goat\Core\Error\QueryError;
-use Goat\Core\Query\Expression;
+use Goat\Core\Query\ExpressionRaw;
 use Goat\Core\Query\Query;
 use Goat\Core\Query\Where;
 
@@ -32,7 +32,7 @@ trait FromClauseTrait
      * Add join statement
      *
      * @param string $relation
-     * @param string|Where|Expression $condition
+     * @param string|Where|ExpressionRaw $condition
      * @param string $alias
      * @param int $mode
      *
@@ -44,7 +44,7 @@ trait FromClauseTrait
 
         if (null === $condition) {
             $condition = new Where();
-        } else if (is_string($condition) || $condition instanceof Expression) {
+        } else if (is_string($condition) || $condition instanceof ExpressionRaw) {
             $condition = (new Where())->expression($condition);
         } else {
             if (!$condition instanceof Where) {

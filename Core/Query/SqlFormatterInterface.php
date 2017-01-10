@@ -10,7 +10,7 @@ interface SqlFormatterInterface
     /**
      * Format the query
      *
-     * @param Query|Where|ExpressionInterface|string $query
+     * @param string|Statement $query
      *
      * @return string
      */

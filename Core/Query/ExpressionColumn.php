@@ -2,10 +2,12 @@
 
 namespace Goat\Core\Query;
 
+use Goat\Core\Client\ArgumentBag;
+
 /**
  * Represents a raw value
  */
-class ExpressionColumn implements ExpressionInterface
+class ExpressionColumn implements Expression
 {
     private $column;
     private $relation;
@@ -46,5 +48,13 @@ class ExpressionColumn implements ExpressionInterface
     public function getRelation()
     {
         return $this->relation;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getArguments()
+    {
+        return new ArgumentBag();
     }
 }

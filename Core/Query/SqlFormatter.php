@@ -35,16 +35,16 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      * Format a single set clause (update queries)
      *
      * @param string $column
-     * @param string|Expression $statement
+     * @param string|Expression $expression
      *
      * @return string
      */
-    protected function formatUpdateSetItem($column, $statement)
+    protected function formatUpdateSetItem($column, $expression)
     {
         return sprintf(
             "%s = %s",
             $this->escaper->escapeIdentifier($column),
-            $this->format($statement)
+            $this->format($expression)
         );
     }
 
@@ -68,7 +68,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
     /**
      * Format projection for a single select column or statement
      *
-     * @param string|ExpressionInterface $statement
+     * @param string|Expression $statement
      * @param string $alias
      *
      * @return string
@@ -122,7 +122,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
     /**
      * Format projection for a single returning column or statement
      *
-     * @param string|ExpressionInterface $statement
+     * @param string|Expression $statement
      * @param string $alias
      *
      * @return string
@@ -150,7 +150,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
     /**
      * Format a single order by
      *
-     * @param string|ExpressionInterface $column
+     * @param string|Expression $column
      * @param int $order
      *   Query::ORDER_* constant
      * @param int $null
@@ -190,7 +190,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      *
      * @param $orders
      *   Each order is an array that must contain:
-     *     - 0: ExpressionInterface
+     *     - 0: Expression
      *     - 1: Query::ORDER_* constant
      *     - 2: Query::NULL_* constant
      *
@@ -215,7 +215,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
     /**
      * Format the whole group by clause
      *
-     * @param ExpressionInterface[] $groups
+     * @param Expression[] $groups
      *   Array of column names or aliases
      *
      * @return string
@@ -396,7 +396,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
             ', ',
             array_map(
                 function ($value) {
-                    if ($value instanceof ExpressionInterface || $value instanceof Query || $value instanceof Where) {
+                    if ($value instanceof Statement) {
                         return $this->format($value);
                     } else {
                         return '$*';
@@ -448,9 +448,9 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
                 $columnString = $this->format($column);
             }
 
-            if ($value instanceof ExpressionInterface) {
+            if ($value instanceof Expression) {
                 $valueString = $this->format($value);
-            } else if ($value instanceof SelectQuery || $value instanceof Where) {
+            } else if ($value instanceof Statement) {
                 $valueString = sprintf('(%s)', $this->format($value));
             } else if (is_array($value)) {
                 $valueString = sprintf("(%s)", $this->formatValueList($value));
@@ -674,7 +674,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      *
      * @return string
      */
-    protected function formatExpression(Expression $expression)
+    protected function formatExpressionRaw(ExpressionRaw $expression)
     {
         return $expression->getExpression();
     }
@@ -768,10 +768,10 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      */
     public function format($query)
     {
-        if ($query instanceof Expression) {
-            return $this->formatExpression($query);
-        } else if ($query instanceof ExpressionColumn) {
+        if ($query instanceof ExpressionColumn) {
             return $this->formatExpressionColumn($query);
+        } else if ($query instanceof ExpressionRaw) {
+            return $this->formatExpressionRaw($query);
         } else if ($query instanceof ExpressionRelation) {
             return $this->formatExpressionRelation($query);
         } else if ($query instanceof ExpressionValue) {

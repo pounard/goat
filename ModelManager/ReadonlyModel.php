@@ -6,7 +6,7 @@ use Goat\Core\Client\ConnectionAwareInterface;
 use Goat\Core\Client\ConnectionAwareTrait;
 use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Client\PagerResultIterator;
-use Goat\Core\Query\Expression;
+use Goat\Core\Query\ExpressionRaw;
 use Goat\Core\Query\SelectQuery;
 use Goat\Core\Query\Where;
 use Goat\Core\Query\ExpressionColumn;
@@ -192,7 +192,7 @@ class ReadonlyModel implements ConnectionAwareInterface
         }
 
         return $select
-            ->column(new Expression('count(*)'), 'count')
+            ->column(new ExpressionRaw('count(*)'), 'count')
             ->execute()
             ->fetchField('count')
         ;
@@ -216,7 +216,7 @@ class ReadonlyModel implements ConnectionAwareInterface
         }
 
         return (bool)$select
-            ->column(new Expression('1'), 'one')
+            ->column(new ExpressionRaw('1'), 'one')
             ->range(1, 0)
             ->execute()
             ->fetchField()

@@ -3,7 +3,8 @@
 namespace Goat\Core\Transaction;
 
 use Goat\Core\Client\ConnectionAwareInterface;
-use Goat\Core\Client\ConnectionAwareTrait;
+use Goat\Core\Client\ConnectionInterface;
+use Goat\Core\DebuggableTrait;
 use Goat\Core\Error\TransactionError;
 
 /**
@@ -20,8 +21,9 @@ abstract class Transaction implements ConnectionAwareInterface
     const REPEATABLE_READ = 3;
     const SERIALIZABLE = 4;
 
-    use ConnectionAwareTrait;
+    use DebuggableTrait;
 
+    protected $connection;
     private $isolationLevel = self::REPEATABLE_READ;
     private $savepoint = 0;
     private $savepoints = [];
@@ -33,9 +35,24 @@ abstract class Transaction implements ConnectionAwareInterface
      * @param int $isolationLevel
      *   One of the Transaction::* constants
      */
-    public function __construct($isolationLevel = self::REPEATABLE_READ)
+    final public function __construct($isolationLevel = self::REPEATABLE_READ)
     {
         $this->level($isolationLevel);
+    }
+
+    /**
+     * Set connection
+     *
+     * @param ConnectionInterface $connection
+     *
+     * @return $this
+     */
+    final public function setConnection(ConnectionInterface $connection)
+    {
+        $this->connection = $connection;
+        $this->setDebug($connection->isDebugEnabled());
+
+        return $this;
     }
 
     /**

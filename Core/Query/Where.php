@@ -9,7 +9,7 @@ use Goat\Core\Error\QueryError;
 /**
  * Where represents the selection of the SQL query
  */
-class Where implements ArgumentHolderInterface
+class Where implements Statement
 {
     use WhereTrait;
 
@@ -101,11 +101,11 @@ class Where implements ArgumentHolderInterface
      *
      * @param mixed $value
      *
-     * @return ExpressionInterface|Where|SelectQuery
+     * @return Statement
      */
     private function normalizeValue($value)
     {
-        if (!$value instanceof ExpressionInterface && !$value instanceof SelectQuery) {
+        if (!$value instanceof Statement) {
             return new ExpressionValue($value);
         }
 
@@ -134,7 +134,7 @@ class Where implements ArgumentHolderInterface
      * Add a condition
      *
      * @param ExpressionColumn $column
-     * @param ExpressionInterface|Where|SelectQuery $value
+     * @param Statement $value
      * @param string $operator
      *
      * @return $this
@@ -172,7 +172,7 @@ class Where implements ArgumentHolderInterface
     /**
      * Add an abitrary SQL expression
      *
-     * @param string|ExpressionInterface $expression
+     * @param string|Expression $expression
      *   SQL string, which may contain parameters
      * @param mixed|mixed[] $arguments
      *   Parameters for the arbitrary SQL
@@ -181,7 +181,7 @@ class Where implements ArgumentHolderInterface
      */
     public function expression($expression, $arguments = [])
     {
-        if ($expression instanceof Where || $expression instanceof ExpressionInterface) {
+        if ($expression instanceof Where || $expression instanceof Expression) {
             if ($arguments) {
                 throw new QueryError("you cannot call %s::expression() and pass arguments if the given expression is not a string", $expression);
             }
@@ -189,7 +189,7 @@ class Where implements ArgumentHolderInterface
             if (!is_array($arguments)) {
                 $arguments = [$arguments];
             }
-            $expression = new Expression($expression, $arguments);
+            $expression = new ExpressionRaw($expression, $arguments);
         }
 
         $this->conditions[] = [null, $expression, null];
@@ -281,7 +281,7 @@ class Where implements ArgumentHolderInterface
                         foreach ($value as $candidate) {
                             if ($candidate instanceof ArgumentHolderInterface) {
                                 $arguments->append($candidate->getArguments());
-                            } else if (!!$arguments instanceof ExpressionInterface) {
+                            } else {
                                 $arguments->add($candidate);
                             }
                         }

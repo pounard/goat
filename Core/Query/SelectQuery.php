@@ -117,7 +117,7 @@ class SelectQuery extends AbstractQuery
      */
     public function column($expression, $alias = null)
     {
-        if (!$expression instanceof ExpressionInterface) {
+        if (!$expression instanceof Expression) {
             $expression = new ExpressionColumn($expression);
         }
 
@@ -140,7 +140,7 @@ class SelectQuery extends AbstractQuery
      */
     public function columnExpression($expression, $alias = null, $arguments = [])
     {
-        if ($expression instanceof ExpressionInterface) {
+        if ($expression instanceof Expression) {
             if ($arguments) {
                 throw new QueryError("you cannot call %s::expression() and pass arguments if the given expression is not a string", $expression);
             }
@@ -148,7 +148,7 @@ class SelectQuery extends AbstractQuery
             if (!is_array($arguments)) {
                 $arguments = [$arguments];
             }
-            $expression = new Expression($expression, $arguments);
+            $expression = new ExpressionRaw($expression, $arguments);
         }
 
         $this->columns[] = [$expression, $alias];
@@ -355,7 +355,7 @@ class SelectQuery extends AbstractQuery
      */
     public function orderBy($column, $order = Query::ORDER_ASC, $null = Query::NULL_IGNORE)
     {
-        if (!$column instanceof ExpressionInterface) {
+        if (!$column instanceof Expression) {
             $column = new ExpressionColumn($column);
         }
 
@@ -379,8 +379,8 @@ class SelectQuery extends AbstractQuery
      */
     public function orderByExpression($column, $order = Query::ORDER_ASC, $null = Query::NULL_IGNORE)
     {
-        if (!$column instanceof ExpressionInterface) {
-            $column = new Expression($column);
+        if (!$column instanceof Expression) {
+            $column = new ExpressionRaw($column);
         }
 
         $this->orders[] = [$column, $order, $null];
@@ -498,7 +498,7 @@ class SelectQuery extends AbstractQuery
         return (clone $this)
             ->removeAllColumns()
             ->range(0, 0)
-            ->column(new Expression("count(*)"), $countAlias)
+            ->column(new ExpressionRaw("count(*)"), $countAlias)
         ;
     }
 

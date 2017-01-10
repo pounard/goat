@@ -3,7 +3,8 @@
 namespace Goat\Core\Query\Partial;
 
 use Goat\Core\Error\QueryError;
-use Goat\Core\Query\Expression;
+use Goat\Core\Query\ExpressionColumn;
+use Goat\Core\Query\ExpressionRaw;
 
 /**
  * Represents the RETURNING part of any query.
@@ -53,7 +54,7 @@ trait ReturningClauseTrait
         $noAlias = false;
 
         if (!$alias) {
-            if (!is_string($statement) && !$statement instanceof Expression) {
+            if (!is_string($statement) && !$statement instanceof ExpressionRaw && !$statement instanceof ExpressionColumn) {
                 throw new QueryError("RETURNING values can only be column names or expressions using them from the previous statement");
             }
 

@@ -2,13 +2,12 @@
 
 namespace Goat\Core\Query;
 
-use Goat\Core\Client\ArgumentHolderInterface;
 use Goat\Core\Client\ArgumentBag;
 
 /**
  * Represents a raw value
  */
-class ExpressionValue implements ExpressionInterface, ArgumentHolderInterface
+class ExpressionValue implements Expression
 {
     private $type;
     private $value;
