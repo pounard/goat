@@ -10,14 +10,19 @@ use Goat\Core\Converter\Impl\DecimalConverter;
 use Goat\Core\Converter\Impl\IntegerConverter;
 use Goat\Core\Converter\Impl\StringConverter;
 use Goat\Core\Converter\Impl\TimestampConverter;
+use Goat\Core\EventDispatcher\EventEmitterConnectionProxy;
 use Goat\Driver\PDO\MySQLConnection;
 use Goat\Driver\PDO\PgSQLConnection;
+
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 abstract class ConnectionAwareTest extends \PHPUnit_Framework_TestCase
 {
     private $connection;
     private $converter;
     private $encoding;
+    private $eventDispatcher;
 
     /**
      * Get driver name
@@ -60,6 +65,20 @@ abstract class ConnectionAwareTest extends \PHPUnit_Framework_TestCase
         $this->connection = null;
         $this->converter = null;
         $this->encoding = null;
+    }
+
+    /**
+     * Get event dispatcher
+     *
+     * @return EventDispatcherInterface
+     */
+    final protected function getEventDispatcher()
+    {
+        if (!$this->eventDispatcher) {
+            $this->eventDispatcher = new EventDispatcher();
+        }
+
+        return $this->eventDispatcher;
     }
 
     /**
@@ -177,7 +196,7 @@ abstract class ConnectionAwareTest extends \PHPUnit_Framework_TestCase
 
         $connection->setConverter($this->converter = $this->createConverter($connection));
 
-        return $connection;
+        return new EventEmitterConnectionProxy($connection, $this->getEventDispatcher());
     }
 
     /**

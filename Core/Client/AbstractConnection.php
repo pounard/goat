@@ -16,6 +16,8 @@ abstract class AbstractConnection implements ConnectionInterface
     use ConverterAwareTrait;
     use DebuggableTrait;
 
+    private $eventDispatcher;
+
     /**
      * {@inheritdoc}
      */

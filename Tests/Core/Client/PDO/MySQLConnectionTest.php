@@ -16,7 +16,6 @@ class MySQLConnectionTest extends ConnectionAwareTest
     public function testConnection()
     {
         $connection = $this->getConnection();
-        $this->assertInstanceOf(MySQLConnection::class, $connection);
 
         $result = $connection->query("select 1 as one");
         $this->assertInstanceOf(DefaultResultIterator::class, $result);

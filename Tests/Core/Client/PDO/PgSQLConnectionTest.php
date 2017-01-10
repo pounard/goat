@@ -16,7 +16,6 @@ class PgSQLConnectionTest extends ConnectionAwareTest
     public function testConnection()
     {
         $connection = $this->getConnection();
-        $this->assertInstanceOf(PgSQLConnection::class, $connection);
 
         $result = $connection->query("select 1 as one");
         $this->assertInstanceOf(DefaultResultIterator::class, $result);
