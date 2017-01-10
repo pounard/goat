@@ -64,6 +64,10 @@ different software design and approach:
  *  [x] WHERE with SELECT within
  *  allow named parameters
  *  better parameter handling in AbstractConnection
+ *  converters: per default better definition (session builder?)
+ *  converters: should carry a type and aliases (better auto detection)
+ *  converters: specific instances per driver
+ *  converters: type map per driver
  *  DELETE queries
  *  INSERT/UPDATE fallback when RETURNING is not supported
  *  MERGE queries
