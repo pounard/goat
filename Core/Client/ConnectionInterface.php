@@ -176,6 +176,18 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface,
     public function delete($relation, $alias = null);
 
     /**
+     * Truncate given tables (warning, it does it right away)
+     *
+     * @todo
+     *   - move this out into a ddl specific object
+     *   - SQL 92 standard is about one table at a time, PgSQL can do multiple at once
+     *
+     * @param string|string[] $relations
+     *   Either one or more table names
+     */
+    public function truncateTables($relations);
+
+    /**
      * Get last insert identifier
      *
      * @return scalar

@@ -13,6 +13,7 @@ use Goat\Core\Query\Query;
 use Goat\Core\Query\SelectQuery;
 use Goat\Core\Query\UpdateQuery;
 use Goat\Core\Transaction\Transaction;
+use Goat\Core\Error\GoatError;
 
 /**
  * Default implementation for connection, it handles for you:
@@ -176,9 +177,43 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
+    public function truncateTables($relations)
+    {
+        if (!$relations) {
+            throw new QueryError("cannot not truncate no tables");
+        }
+
+        // SQL-92 implementation - only one table at a time
+        if (!is_array($relations)) {
+            $relations = [$relations];
+        }
+
+        foreach ($relations as $relation) {
+            $this->perform(sprintf("truncate %s", $this->escapeIdentifier($relation)));
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getCastType($type)
     {
         return $type;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function escapeIdentifierList($strings)
+    {
+        if (!$strings) {
+            throw new GoatError("cannot not format an empty identifier list");
+        }
+        if (!is_array($strings)) {
+            $strings = [$strings];
+        }
+
+        return implode(', ', array_map([$this, 'escapeIdentifier'], $strings));
     }
 
     /**

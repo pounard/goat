@@ -132,6 +132,14 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
+    public function truncateTables($relations)
+    {
+        return $this->getInnerConnection()->truncateTables($relations);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function setClientEncoding($encoding)
     {
         return $this->getInnerConnection()->setClientEncoding($encoding);
@@ -167,6 +175,14 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     public function escapeIdentifier($string)
     {
         return $this->getInnerConnection()->escapeIdentifier($string);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function escapeIdentifierList($strings)
+    {
+        return $this->getInnerConnection()->escapeIdentifierList($strings);
     }
 
     /**

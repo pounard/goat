@@ -3,6 +3,7 @@
 namespace Goat\Driver\PDO;
 
 use Goat\Core\Transaction\Transaction;
+use Goat\Core\Error\QueryError;
 
 class PgSQLConnection extends AbstractConnection
 {
@@ -59,6 +60,18 @@ class PgSQLConnection extends AbstractConnection
         $ret->setConnection($this);
 
         return $ret;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function truncateTables($relations)
+    {
+        if (!$relations) {
+            throw new QueryError("cannot not truncate no tables");
+        }
+
+        $this->perform(sprintf("truncate %s", $this->escapeIdentifierList($relations)));
     }
 
     /**

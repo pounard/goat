@@ -59,6 +59,8 @@ As of now, the following API are available (but highly subject to change):
 # Todolist
 
  *  [pending] allow named parameters
+ *  [postponed] DDL ALTER TABLE? - not sure I want this right now
+ *  [postponed] DDL CREATE TABLE? - not sure I want this right now
  *  [postponed] ext-pgsql driver
  *  [postponed] INSERT/UPDATE fallback when RETURNING is not supported
  *  [postponed] MERGE queries
@@ -67,6 +69,8 @@ As of now, the following API are available (but highly subject to change):
  *  [postponed] UNION queries
  *  [postponed] WITH support
  *  [x] converters: should carry a type and aliases (better auto detection)
+ *  [x] DDL TRUNCATE
+ *  [x] DDL TRUNCATE testing
  *  [x] DELETE queries
  *  [x] DELETE queries testing
  *  [x] expression vs statement: query builder improvements
@@ -89,15 +93,14 @@ As of now, the following API are available (but highly subject to change):
  *  mapper: advanced object mapping
  *  mapper: basic object mapping
  *  MySQL default transaction level in configuration
+ *  Query cloning does not clone relation (object is immutable)
  *  session: test with write and read connections
  *  transaction: document deffer helpers
  *  transaction: document immediate per default
  *  transaction: document isolation levels
  *  transaction: FOR UPDATE / FOR SHARE query dissociation from SELECT
- *  transaction: write-only/read-only connection support, fallback when transaction
- *  TRUNCATE queries
+ *  session: write-only/read-only connection support, fallback when transaction
  *  WHERE builder tests: subqueries tests
- *  Query cloning does not clone relation (object is immutable)
 
 # Driver support
 
