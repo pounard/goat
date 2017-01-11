@@ -64,11 +64,11 @@ class GeneratedHydrator implements HydratorInterface
             $object = new $this->className;
         }
 
+        $this->hydrator->hydrate($values, $object);
+
         if (HydratorInterface::CONSTRUCTOR_LATE === $constructor && method_exists($object, '__construct')) {
             $object->__construct();
         }
-
-        $this->hydrator->hydrate($values, $object);
 
         return $object;
     }
