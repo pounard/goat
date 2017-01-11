@@ -7,7 +7,7 @@ use Goat\Core\Client\ArgumentBag;
 /**
  * Represents a raw value
  */
-class ExpressionValue implements Expression
+final class ExpressionValue implements Expression
 {
     private $name;
     private $type;

@@ -9,7 +9,7 @@ use Goat\Core\Error\QueryError;
 /**
  * Where represents the selection of the SQL query
  */
-class Where implements Statement
+final class Where implements Statement
 {
     use WhereTrait;
 

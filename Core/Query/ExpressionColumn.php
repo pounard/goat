@@ -7,7 +7,7 @@ use Goat\Core\Client\ArgumentBag;
 /**
  * Represents a raw value
  */
-class ExpressionColumn implements Expression
+final class ExpressionColumn implements Expression
 {
     private $column;
     private $relation;

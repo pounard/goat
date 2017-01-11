@@ -10,7 +10,7 @@ use Goat\Core\Query\Partial\ReturningClauseTrait;
 /**
  * Represents an DELETE query
  */
-class DeleteQuery extends AbstractQuery
+final class DeleteQuery extends AbstractQuery
 {
     use FromClauseTrait;
     use ReturningClauseTrait;

@@ -10,7 +10,7 @@ use Goat\Core\Query\Partial\ReturningClauseTrait;
 /**
  * Represents an INSERT VALUES query
  */
-class InsertValuesQuery extends AbstractQuery
+final class InsertValuesQuery extends AbstractQuery
 {
     use ReturningClauseTrait;
 

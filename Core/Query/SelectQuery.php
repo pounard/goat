@@ -15,7 +15,7 @@ use Goat\Core\Query\Partial\FromClauseTrait;
  *   - support a SelectQuery as FROM relation
  *   - implement __clone() once this done
  */
-class SelectQuery extends AbstractQuery
+final class SelectQuery extends AbstractQuery
 {
     use FromClauseTrait;
 

@@ -97,6 +97,7 @@ As of now, the following API are available (but highly subject to change):
  *  transaction: write-only/read-only connection support, fallback when transaction
  *  TRUNCATE queries
  *  WHERE builder tests: subqueries tests
+ *  Query cloning does not clone relation (object is immutable)
 
 # Driver support
 
