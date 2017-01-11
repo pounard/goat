@@ -19,33 +19,35 @@ interface Query extends Statement
     const ORDER_ASC = 1;
     const ORDER_DESC = 2;
 
-    const RET_ARRAY = 'array';
-    const RET_PROXY = null;
-    const RET_STDCLASS = '\stdClass';
-
     /**
      * Execute query with the given parameters and return the result iterator
      *
-     * @param string $class
-     *   Object class that the iterator should return
-     * @param array $parameters
-     *   Key/value pairs or argument list, anonymous and named parameters
-     *   cannot be mixed up within the same query
+     * @param mixed[] $parameters
+     *   Parameters or overrides for the query. When a Query instance is given
+     *   as query and it carries parameters, this array will serve as a set of
+     *   overrides for existing parameters.
+     * @param string|mixed[] $options
+     *   If a string is passed, map object on the given class, else parse
+     *   query options and set them onto the result iterator.
      *
      * @return ResultIteratorInterface
      */
-    public function execute($class = Query::RET_PROXY, array $parameters = []);
+    public function execute(array $parameters = [], $options = null);
 
     /**
      * Execute query with the given parameters and return the affected row count
      *
-     * @param array $parameters
-     *   Key/value pairs or argument list, anonymous and named parameters
-     *   cannot be mixed up within the same query
+     * @param mixed[] $parameters
+     *   Parameters or overrides for the query. When a Query instance is given
+     *   as query and it carries parameters, this array will serve as a set of
+     *   overrides for existing parameters.
+     * @param string|mixed[] $options
+     *   If a string is passed, map object on the given class, else parse
+     *   query options and set them onto the result iterator.
      *
      * @return int
      */
-    public function perform(array $parameters = []);
+    public function perform(array $parameters = [], $options = null);
 
     /**
      * Should this query return something

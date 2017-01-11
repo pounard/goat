@@ -3,6 +3,7 @@
 namespace Goat\Tests\Core\Query;
 
 use Goat\Core\Query\SqlFormatter;
+use Goat\Tests\Core\Query\Mock\NullEscaper;
 
 trait BuilderTestTrait
 {

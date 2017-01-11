@@ -4,6 +4,7 @@ namespace Goat\Core\Client;
 
 use Goat\Core\Converter\ConverterAwareTrait;
 use Goat\Core\Error\InvalidDataAccessError;
+use Goat\Core\Hydrator\HydratorAwareTrait;
 
 /**
  * Empty iterator for some edge cases results
@@ -11,6 +12,7 @@ use Goat\Core\Error\InvalidDataAccessError;
 final class EmptyResultIterator implements ResultIteratorInterface
 {
     use ConverterAwareTrait;
+    use HydratorAwareTrait;
 
     private $affectedRowCount = 0;
 

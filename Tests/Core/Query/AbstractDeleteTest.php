@@ -5,6 +5,7 @@ namespace Goat\Tests\Core\Query;
 use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Query\Query;
 use Goat\Tests\ConnectionAwareTest;
+use Goat\Tests\Core\Query\Mock\DeleteSomeTableWithUser;
 
 abstract class AbstractDeleteTest extends ConnectionAwareTest
 {
@@ -116,7 +117,7 @@ abstract class AbstractDeleteTest extends ConnectionAwareTest
         $result = $connection
             ->delete('some_table')
             ->condition('bar', ':bar::varchar')
-            ->execute(Query::RET_PROXY, [
+            ->execute([
                 'bar' => 'e',
             ])
         ;
@@ -219,6 +220,44 @@ abstract class AbstractDeleteTest extends ConnectionAwareTest
             $this->assertSame('jean', $row['name']);
             $this->assertInternalType('integer', $row['id']);
             $this->assertInternalType('string', $row['bar']);
+        }
+    }
+
+    /**
+     * Test simple DELETE FROM USING RETURNING
+     */
+    public function testDeleteUsingReturningAndHydrating()
+    {
+        $connection = $this->getConnection();
+
+        if (!$connection->supportsReturning()) {
+            $this->markTestIncomplete("driver does not support RETURNING");
+        }
+
+        $connection = $this->getConnection();
+        $this->assertSame(5, $connection->query("select count(*) from some_table")->fetchField());
+        $this->assertSame(3, $connection->query("select count(*) from some_table where id_user = $*::int", [$this->idAdmin])->fetchField());
+
+        $result = $connection
+            ->delete('some_table', 't')
+            ->join('users', 'u.id = t.id_user', 'u')
+            ->condition('u.id', $this->idJean)
+            ->returning('t.id')
+            ->returning('t.id_user', 'userId')
+            ->returning('u.name')
+            ->returning('t.bar')
+            ->execute([], DeleteSomeTableWithUser::class)
+        ;
+        $this->assertCount(2, $result);
+        $this->assertSame(3, $connection->query("select count(*) from some_table")->fetchField());
+        $this->assertSame(0, $connection->query("select count(*) from some_table where id_user = $*::int", [$this->idJean])->fetchField());
+
+        foreach ($result as $row) {
+            $this->assertTrue($row instanceof DeleteSomeTableWithUser);
+            $this->assertSame($this->idJean, $row->getUserId());
+            $this->assertSame('jean', $row->getUserName());
+            $this->assertInternalType('integer', $row->getId());
+            $this->assertInternalType('string', $row->getBar());
         }
     }
 

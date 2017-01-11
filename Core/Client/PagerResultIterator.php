@@ -3,6 +3,7 @@
 namespace Goat\Core\Client;
 
 use Goat\Core\Converter\ConverterMap;
+use Goat\Core\Hydrator\HydratorInterface;
 
 /**
  * Wraps a result iterator in order to paginate results
@@ -39,6 +40,14 @@ final class PagerResultIterator implements ResultIteratorInterface
     public function setConverter(ConverterMap $converter)
     {
         return $this->result->setConverter($converter);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setHydrator(HydratorInterface $hydrator)
+    {
+        return $this->result->setHydrator($hydrator);
     }
 
     /**

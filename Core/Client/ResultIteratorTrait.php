@@ -5,22 +5,31 @@ namespace Goat\Core\Client;
 use Goat\Core\Converter\ConverterAwareTrait;
 use Goat\Core\DebuggableTrait;
 use Goat\Core\Error\InvalidDataAccessError;
+use Goat\Core\Hydrator\HydratorAwareTrait;
 
 trait ResultIteratorTrait /* implements ResultIteratorInterface */
 {
     use DebuggableTrait;
     use ConverterAwareTrait;
+    use HydratorAwareTrait;
 
     /**
-     * Hydrate given array
+     * Convert values from SQL types to PHP native types
      *
-     * @param string $row
+     * @param string[] $row
+     *   SQL fetched raw values are always strings
      *
      * @return mixed[]
-     *   Same array, with values hydrated
+     *   Same array, with converted values
      */
-    protected function hydrate($row)
+    protected function convertValues(array $row) : array
     {
+        if (!$this->converter) {
+            trigger_error("result iterator has no converter set", E_USER_WARNING);
+
+            return $row;
+        }
+
         $ret = [];
 
         foreach ($row as $name => $value) {
@@ -34,6 +43,26 @@ trait ResultIteratorTrait /* implements ResultIteratorInterface */
         }
 
         return $ret;
+    }
+
+    /**
+     * Hydrate row using the iterator object hydrator
+     *
+     * @param mixed[] $row
+     *   PHP native types converted values
+     *
+     * @return array|object
+     *   Raw object, return depends on the hydrator
+     */
+    protected function hydrate(array $row)
+    {
+        $converted = $this->convertValues($row);
+
+        if ($this->hydrator) {
+            return $this->hydrator->createAndHydrateInstance($converted);
+        }
+
+        return $converted;
     }
 
     /**

@@ -2,11 +2,11 @@
 
 namespace Goat\Core\Client;
 
-use Goat\Core\Client\ArgumentBag;
 use Goat\Core\Client\ResultIteratorInterface;
 use Goat\Core\Converter\ConverterAwareInterface;
 use Goat\Core\DebuggableInterface;
 use Goat\Core\Error\TransactionError;
+use Goat\Core\Hydrator\HydratorMap;
 use Goat\Core\Query\DeleteQuery;
 use Goat\Core\Query\InsertQueryQuery;
 use Goat\Core\Query\InsertValuesQuery;
@@ -69,14 +69,17 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface,
      *   If a query is given here, and parameters is empty, it will use the
      *   Query instance parameters, but if you provide parameters, it will
      *   override them
-     * @param mixed[]|ArgumentBag $parameters
-     *   Query parameters
-     * @param boolean $enableConverters
-     *   If set to false, converters would be disabled
+     * @param mixed[] $parameters
+     *   Parameters or overrides for the query. When a Query instance is given
+     *   as query and it carries parameters, this array will serve as a set of
+     *   overrides for existing parameters.
+     * @param string|mixed[] $options
+     *   If a string is passed, map object on the given class, else parse
+     *   query options and set them onto the result iterator.
      *
      * @return ResultIteratorInterface
      */
-    public function query($query, $parameters = null, $enableConverters = true);
+    public function query($query, array $parameters = null, $options = null);
 
     /**
      * Perform only, do not return a result but affected row count instead
@@ -85,12 +88,17 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface,
      *   If a query is given here, and parameters is empty, it will use the
      *   Query instance parameters, but if you provide parameters, it will
      *   override them
-     * @param mixed[]|ArgumentBag $parameters
-     *   Query parameters
+     * @param mixed[] $parameters
+     *   Parameters or overrides for the query. When a Query instance is given
+     *   as query and it carries parameters, this array will serve as a set of
+     *   overrides for existing parameters.
+     * @param string|mixed[] $options
+     *   If a string is passed, map object on the given class, else parse
+     *   query options and set them onto the result iterator.
      *
      * @return int
      */
-    public function perform($query, $parameters = null);
+    public function perform($query, array $parameters = null, $options = null);
 
     /**
      * Prepare query
@@ -110,14 +118,17 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface,
      *
      * @param string $identifier
      *   Query unique identifier
-     * @param mixed[]|ArgumentBag $parameters
-     *   Query parameters
-     * @param boolean $enableConverters
-     *   If set to false, converters would be disabled
+     * @param mixed[] $parameters
+     *   Parameters or overrides for the query. When a Query instance is given
+     *   as query and it carries parameters, this array will serve as a set of
+     *   overrides for existing parameters.
+     * @param string|mixed[] $options
+     *   If a string is passed, map object on the given class, else parse
+     *   query options and set them onto the result iterator.
      *
      * @return ResultIteratorInterface
      */
-    public function executePreparedQuery($identifier, $parameters = null, $enableConverters = true);
+    public function executePreparedQuery($identifier, array $parameters = null, $options = null);
 
     /**
      * Create a select query builder
@@ -221,4 +232,11 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface,
      *   The real type the server will understand
      */
     public function getCastType($type);
+
+    /**
+     * Set hydrator map
+     *
+     * @param HydratorMap $hydratorMap
+     */
+    public function setHydratorMap(HydratorMap $hydratorMap);
 }

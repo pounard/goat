@@ -136,26 +136,21 @@ abstract class AbstractConnection extends BaseConnection
     }
 
     /**
-     * Create the result iterator instance
-     *
-     * @param \PDOStatement $statement
-     * @param string $enableConverters
-     *
-     * @return ResultIteratorInterface
+     * {@inheritdoc}
      */
-    protected function createResultIterator(\PDOStatement $statement, $enableConverters = true)
+    protected function doCreateResultIterator(...$constructorArgs) : ResultIteratorInterface
     {
-        return new DefaultResultIterator($statement, $this->converter, $enableConverters);
+        return new DefaultResultIterator(...$constructorArgs);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function query($query, $parameters = null, $enableConverters = true)
+    public function query($query, array $parameters = null, $options = null)
     {
         if ($query instanceof Query) {
             if (!$query->willReturnRows()) {
-                $affectedRowCount = $this->perform($query, $parameters);
+                $affectedRowCount = $this->perform($query, $parameters, $options);
 
                 return new EmptyResultIterator($affectedRowCount);
             }
@@ -169,7 +164,7 @@ abstract class AbstractConnection extends BaseConnection
             $statement = $this->getPdo()->prepare($rawSQL, [\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY]);
             $statement->execute($parameters);
 
-            $ret = $this->createResultIterator($statement, $enableConverters);
+            $ret = $this->createResultIterator($options, $statement);
             $ret->setConverter($this->converter);
 
             // echo $rawSQL, "\n\n";
@@ -188,7 +183,7 @@ abstract class AbstractConnection extends BaseConnection
     /**
      * {@inheritdoc}
      */
-    public function perform($query, $parameters = null, $enableConverters = true)
+    public function perform($query, array $parameters = null, $options = null)
     {
         $rawSQL = null;
 
@@ -234,13 +229,13 @@ abstract class AbstractConnection extends BaseConnection
     /**
      * {@inheritdoc}
      */
-    public function executePreparedQuery($identifier, $parameters = null, $enableConverters = true)
+    public function executePreparedQuery($identifier, array $parameters = null, $options = null)
     {
         if (!isset($this->prepared[$identifier])) {
             throw new QueryError(sprintf("'%s': query was not prepared", $identifier));
         }
 
-        return $this->query($this->prepared[$identifier], $parameters, $enableConverters);
+        return $this->query($this->prepared[$identifier], $parameters, $options);
     }
 
     /**

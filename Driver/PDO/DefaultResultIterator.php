@@ -4,7 +4,6 @@ namespace Goat\Driver\PDO;
 
 use Goat\Core\Client\ResultIteratorInterface;
 use Goat\Core\Client\ResultIteratorTrait;
-use Goat\Core\Converter\ConverterMap;
 use Goat\Core\Error\InvalidDataAccessError;
 
 class DefaultResultIterator implements ResultIteratorInterface
@@ -15,21 +14,16 @@ class DefaultResultIterator implements ResultIteratorInterface
     protected $columnCount = 0;
     protected $columnNameMap = [];
     protected $columnTypeMap = [];
-    protected $useConverter = false;
 
     /**
      * Default constructor
      *
      * @param \PDOStatement $statement
-     * @param boolean $useConverter
      */
-    public function __construct(\PDOStatement $statement, ConverterMap $converter, $useConverter = true)
+    public function __construct(\PDOStatement $statement)
     {
         $this->statement = $statement;
         $this->statement->setFetchMode(\PDO::FETCH_ASSOC);
-
-        $this->converter = $converter;
-        $this->useConverter = $useConverter;
 
         $this->collectMetaData();
     }
@@ -123,11 +117,7 @@ class DefaultResultIterator implements ResultIteratorInterface
     public function getIterator()
     {
         foreach ($this->statement as $row) {
-            if ($this->useConverter) {
-                yield $this->hydrate($row);
-            } else {
-                yield $row;
-            }
+            yield $this->hydrate($row);
         }
     }
 

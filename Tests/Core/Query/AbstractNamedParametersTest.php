@@ -86,21 +86,21 @@ abstract class AbstractNamedParametersTest extends ConnectionAwareTest
         ;
 
         // Both conditions matches the same line, result should be 1
-        $result = $query->execute(Query::RET_PROXY, [
+        $result = $query->execute([
             'some_foo' => 42,
             'barbar' => 'a',
         ]);
         $this->assertCount(1, $result);
 
         // Both conditions matches different lines, result should be 2
-        $result = $query->execute(Query::RET_PROXY, [
+        $result = $query->execute([
             'some_foo' => 666,
             'barbar' => 'a',
         ]);
         $this->assertCount(2, $result);
 
         // Reverse order, and it should still work
-        $result = $query->execute(Query::RET_PROXY, [
+        $result = $query->execute([
             'barbar' => 'b',
             'some_foo' => 37,
         ]);
@@ -108,7 +108,7 @@ abstract class AbstractNamedParametersTest extends ConnectionAwareTest
 
         // Those parameters don't exist, this should fail
         try {
-            $result = $query->execute(Query::RET_PROXY, [
+            $result = $query->execute([
                 'fouque' => 'b',
                 'yoo' => 37,
             ]);

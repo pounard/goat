@@ -5,6 +5,7 @@ namespace Goat\Tests\Core\Query;
 use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Query\Query;
 use Goat\Tests\ConnectionAwareTest;
+use Goat\Tests\Core\Query\Mock\InsertAndTheCatSays;
 
 abstract class AbstractInsertTest extends ConnectionAwareTest
 {
@@ -178,6 +179,36 @@ abstract class AbstractInsertTest extends ConnectionAwareTest
         $this->assertNotContains('baz', $row3);
         $this->assertNotContains('bar', $row3);
         $this->assertSame('bee', $row3['miaw']);
+    }
+
+    /**
+     * Test value insert with a RETURNING clause and object hydration
+     */
+    public function testBulkValueInsertWithReturningAndHydration()
+    {
+        $connection = $this->getConnection();
+
+        if (!$connection->supportsReturning()) {
+            $this->markTestIncomplete("driver does not support RETURNING");
+        }
+
+        // Add one value, so there is data in the table, it will ensure that
+        // the returning count is the right one
+        $result = $connection
+            ->insertValues('some_table')
+            ->columns(['foo', 'bar'])
+            ->values([1, 'a'])
+            ->values([2, 'b'])
+            ->returning('id')
+            ->returning('bar', 'miaw')
+            ->execute([], InsertAndTheCatSays::class);
+        ;
+
+        foreach ($result as $row) {
+            $this->assertTrue($row instanceof InsertAndTheCatSays);
+            $this->assertInternalType('string', $row->miaw());
+            $this->assertInternalType('integer', $row->getId());
+        }
     }
 
     /**

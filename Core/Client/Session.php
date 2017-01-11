@@ -66,25 +66,25 @@ class Session extends AbstractConnectionProxy
     /**
      * {@inheritdoc}
      */
-    public function query($query, $parameters = null, $enableConverters = true)
+    public function query($query, array $parameters = [], $options = null)
     {
         if ($this->readonlyConnection && !$this->isTransactionPending()) {
-            return $this->readonlyConnection->query($query, $parameters, $enableConverters);
+            return $this->readonlyConnection->query($query, $parameters, $options);
         }
 
-        return $this->writeConnection->query($query, $parameters, $enableConverters);
+        return $this->writeConnection->query($query, $parameters, $options);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function perform($query, $parameters = null)
+    public function perform($query, array $parameters = [], $options = null)
     {
         if ($this->readonlyConnection && !$this->isTransactionPending()) {
-            return $this->readonlyConnection->query($query, $parameters);
+            return $this->readonlyConnection->query($query, $parameters, $options);
         }
 
-        return $this->writeConnection->perform($query, $parameters);
+        return $this->writeConnection->perform($query, $parameters, $options);
     }
 
     /**
@@ -102,13 +102,13 @@ class Session extends AbstractConnectionProxy
     /**
      * {@inheritdoc}
      */
-    public function executePreparedQuery($identifier, $parameters = null, $enableConverters = true)
+    public function executePreparedQuery($identifier, array $parameters = [], $options = null)
     {
         if ($this->readonlyConnection && !$this->isTransactionPending()) {
-            return $this->readonlyConnection->query($identifier, $parameters, $enableConverters);
+            return $this->readonlyConnection->query($identifier, $parameters, $options);
         }
 
-        return $this->writeConnection->executePreparedQuery($identifier, $parameters, $enableConverters);
+        return $this->writeConnection->executePreparedQuery($identifier, $parameters, $options);
     }
 
     /**

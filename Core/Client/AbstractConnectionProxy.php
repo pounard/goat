@@ -3,6 +3,7 @@
 namespace Goat\Core\Client;
 
 use Goat\Core\Converter\ConverterMap;
+use Goat\Core\Hydrator\HydratorMap;
 use Goat\Core\Transaction\Transaction;
 
 /**
@@ -52,17 +53,17 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function query($query, $parameters = null, $enableConverters = true)
+    public function query($query, array $parameters = [], $options = null)
     {
-        return $this->getInnerConnection()->query($query, $parameters, $enableConverters);
+        return $this->getInnerConnection()->query($query, $parameters, $options);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function perform($query, $parameters = null)
+    public function perform($query, array $parameters = [], $options = null)
     {
-        return $this->getInnerConnection()->perform($query, $parameters);
+        return $this->getInnerConnection()->perform($query, $parameters, $options);
     }
 
     /**
@@ -76,9 +77,9 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function executePreparedQuery($identifier, $parameters = null, $enableConverters = true)
+    public function executePreparedQuery($identifier, array $parameters = [], $options = null)
     {
-        return $this->getInnerConnection()->executePreparedQuery($identifier, $parameters, $enableConverters);
+        return $this->getInnerConnection()->executePreparedQuery($identifier, $parameters, $options);
     }
 
     /**
@@ -167,6 +168,14 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     public function setConverter(ConverterMap $converter)
     {
         return $this->getInnerConnection()->setConverter($converter);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setHydratorMap(HydratorMap $hydratorMap)
+    {
+        return $this->getInnerConnection()->setHydratorMap($hydratorMap);
     }
 
     /**

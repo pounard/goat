@@ -20,7 +20,8 @@
         }
     },
     "require" : {
-        "php" : ">=5.5",
+        "ocramius/generated-hydrator": "^2.0",
+        "php" : ">=7.0",
         "symfony/event-dispatcher": "^3.2"
     },
     "require-dev" : {
@@ -29,6 +30,7 @@
     },
     "suggest" : {
         "ext-weakref" : "for a better transaction handling",
+        "ocramius/generated-hydrator": "^2.0",
         "symfony/event-dispatcher" : "^3.2"
     }
 }

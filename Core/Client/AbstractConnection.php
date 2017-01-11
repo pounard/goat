@@ -4,8 +4,10 @@ namespace Goat\Core\Client;
 
 use Goat\Core\Converter\ConverterAwareTrait;
 use Goat\Core\DebuggableTrait;
+use Goat\Core\Error\GoatError;
 use Goat\Core\Error\QueryError;
 use Goat\Core\Error\TransactionError;
+use Goat\Core\Hydrator\HydratorMap;
 use Goat\Core\Query\DeleteQuery;
 use Goat\Core\Query\InsertQueryQuery;
 use Goat\Core\Query\InsertValuesQuery;
@@ -13,7 +15,6 @@ use Goat\Core\Query\Query;
 use Goat\Core\Query\SelectQuery;
 use Goat\Core\Query\UpdateQuery;
 use Goat\Core\Transaction\Transaction;
-use Goat\Core\Error\GoatError;
 
 /**
  * Default implementation for connection, it handles for you:
@@ -34,6 +35,7 @@ abstract class AbstractConnection implements ConnectionInterface
     use DebuggableTrait;
 
     private $currentTransaction;
+    protected $hydratorMap;
 
     /**
      * {@inheritdoc}
@@ -99,6 +101,46 @@ abstract class AbstractConnection implements ConnectionInterface
     }
 
     /**
+     * Do create iterator
+     *
+     * @param ...$constructorArgs
+     *   Driver specific parameters
+     */
+    abstract protected function doCreateResultIterator(...$constructorArgs) : ResultIteratorInterface;
+
+    /**
+     * Create the result iterator instance
+     *
+     * @param $options = null
+     *   Query options
+     * @param ...$constructorArgs
+     *   Driver specific parameters
+     *
+     * @return ResultIteratorInterface
+     */
+    final protected function createResultIterator($options = null, ...$constructorArgs)
+    {
+        $result = $this->doCreateResultIterator(...$constructorArgs);
+        $result->setConverter($this->converter);
+
+        if ($options) {
+            if (is_string($options)) {
+                $options = ['class' => $options];
+            } else if (!is_array($options)) {
+                throw new QueryError("options must be a valid class name or an array of options");
+            }
+        }
+
+        if (isset($options['class'])) {
+            // Class can be either an alias or a valid class name, the hydrator
+            // will proceed with all runtime checks to ensure that.
+            $result->setHydrator($this->hydratorMap->get($options['class']));
+        }
+
+        return $result;
+    }
+
+    /**
      * {@inheritdoc}
      */
     final public function isTransactionPending()
@@ -122,7 +164,7 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function select($relation, $alias = null)
+    final public function select($relation, $alias = null)
     {
         $select = new SelectQuery($relation, $alias);
         $select->setConnection($this);
@@ -133,7 +175,7 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function update($relation, $alias = null)
+    final public function update($relation, $alias = null)
     {
         $update = new UpdateQuery($relation, $alias);
         $update->setConnection($this);
@@ -144,7 +186,7 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function insertQuery($relation)
+    final public function insertQuery($relation)
     {
         $insert = new InsertQueryQuery($relation);
         $insert->setConnection($this);
@@ -155,7 +197,7 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function insertValues($relation)
+    final public function insertValues($relation)
     {
         $insert = new InsertValuesQuery($relation);
         $insert->setConnection($this);
@@ -166,7 +208,7 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function delete($relation, $alias = null)
+    final public function delete($relation, $alias = null)
     {
         $insert = new DeleteQuery($relation, $alias);
         $insert->setConnection($this);
@@ -204,7 +246,7 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function escapeIdentifierList($strings)
+    final public function escapeIdentifierList($strings)
     {
         if (!$strings) {
             throw new GoatError("cannot not format an empty identifier list");
@@ -214,6 +256,14 @@ abstract class AbstractConnection implements ConnectionInterface
         }
 
         return implode(', ', array_map([$this, 'escapeIdentifier'], $strings));
+    }
+
+    /**
+    * {@inheritdoc}
+     */
+    final public function setHydratorMap(HydratorMap $hydratorMap)
+    {
+        $this->hydratorMap = $hydratorMap;
     }
 
     /**

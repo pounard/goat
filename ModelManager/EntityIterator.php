@@ -3,13 +3,17 @@
 namespace Goat\ModelManager;
 
 use Goat\Core\Client\ResultIteratorInterface;
-use Goat\Core\Converter\ConverterMap;
+use Goat\Core\Converter\ConverterAwareTrait;
+use Goat\Core\Hydrator\HydratorAwareTrait;
 
 /**
  * Basic entity generator implementation, no cache.
  */
 class EntityIterator implements \IteratorAggregate, ResultIteratorInterface
 {
+    use ConverterAwareTrait;
+    use HydratorAwareTrait;
+
     private $result;
     private $structure;
     private $cache;
@@ -24,14 +28,6 @@ class EntityIterator implements \IteratorAggregate, ResultIteratorInterface
     {
         $this->result = $result;
         $this->structure = $structure;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setConverter(ConverterMap $converter)
-    {
-        throw new \LogicException("you cannot change entity iterator converter");
     }
 
     /**

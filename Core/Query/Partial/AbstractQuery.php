@@ -44,24 +44,24 @@ abstract class AbstractQuery implements Query, ConnectionAwareInterface
     /**
      * {@inheritdoc}
      */
-    final public function execute($class = Query::RET_PROXY, array $parameters = [])
+    final public function execute(array $parameters = [], $options = null)
     {
         if (!$this->connection) {
             throw new GoatError("this query has no reference to any connection, therefore cannot execute itself");
         }
 
-        return $this->connection->query($this, $parameters);
+        return $this->connection->query($this, $parameters, $options);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function perform(array $parameters = [])
+    public function perform(array $parameters = [], $options = null)
     {
         if (!$this->connection) {
             throw new GoatError("this query has no reference to any connection, therefore cannot execute itself");
         }
 
-        return $this->connection->perform($this, $parameters);
+        return $this->connection->perform($this, $parameters, $options);
     }
 }

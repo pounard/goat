@@ -3,11 +3,12 @@
 namespace Goat\Core\Client;
 
 use Goat\Core\Converter\ConverterAwareInterface;
+use Goat\Core\Hydrator\HydratorAwareInterface;
 
 /**
  * When in use using the iterator, default behavior is to return associative arrays
  */
-interface ResultIteratorInterface extends \IteratorAggregate, \Countable, ConverterAwareInterface
+interface ResultIteratorInterface extends \IteratorAggregate, \Countable, ConverterAwareInterface, HydratorAwareInterface
 {
     /**
      * Get the column count

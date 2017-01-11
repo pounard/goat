@@ -12,11 +12,13 @@ use Goat\Core\Converter\Impl\IntegerConverter;
 use Goat\Core\Converter\Impl\StringConverter;
 use Goat\Core\Converter\Impl\TimestampConverter;
 use Goat\Core\EventDispatcher\EventEmitterConnectionProxy;
+use Goat\Core\Hydrator\HydratorMap;
 use Goat\Driver\PDO\MySQLConnection;
 use Goat\Driver\PDO\PgSQLConnection;
 
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+
 
 abstract class ConnectionAwareTest extends \PHPUnit_Framework_TestCase
 {
@@ -24,6 +26,7 @@ abstract class ConnectionAwareTest extends \PHPUnit_Framework_TestCase
     private $converter;
     private $encoding;
     private $eventDispatcher;
+    private $hydratorMap;
 
     /**
      * Get driver name
@@ -159,6 +162,14 @@ abstract class ConnectionAwareTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Create object hydrator
+     */
+    final protected function createHydrator()
+    {
+        return new HydratorMap(__DIR__ . '/../cache/hydrator');
+    }
+
+    /**
      * Create the connection object
      *
      * @param Dsn $dsn
@@ -196,6 +207,7 @@ abstract class ConnectionAwareTest extends \PHPUnit_Framework_TestCase
         }
 
         $connection->setConverter($this->converter = $this->createConverter($connection));
+        $connection->setHydratorMap($this->hydratorMap = $this->createHydrator());
 
         return new EventEmitterConnectionProxy(new Session($connection), $this->getEventDispatcher());
     }
