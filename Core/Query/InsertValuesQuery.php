@@ -16,7 +16,6 @@ class InsertValuesQuery extends AbstractQuery
 
     private $arguments;
     private $columns = [];
-    private $relation;
     private $valueCount = 0;
 
     /**

@@ -4,7 +4,7 @@ namespace Goat\Tests\Core\Query;
 
 use Goat\Core\Query\Query;
 
-class MySQLInsertValuesTest extends AbstractInsertValuesTest
+class MySQLDeleteTest extends AbstractDeleteTest
 {
     protected function getDriver()
     {

@@ -7,6 +7,7 @@ use Goat\Core\Client\ResultIteratorInterface;
 use Goat\Core\Converter\ConverterAwareInterface;
 use Goat\Core\DebuggableInterface;
 use Goat\Core\Error\TransactionError;
+use Goat\Core\Query\DeleteQuery;
 use Goat\Core\Query\InsertQueryQuery;
 use Goat\Core\Query\InsertValuesQuery;
 use Goat\Core\Query\Query;
@@ -161,6 +162,18 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface,
      * @return InsertQueryQuery
      */
     public function insertQuery($relation);
+
+    /**
+     * Create a delete query builder
+     *
+     * @param string $relation
+     *   SQL from statement relation name
+     * @param string $alias
+     *   Alias for from clause relation
+     *
+     * @return DeleteQuery
+     */
+    public function delete($relation, $alias = null);
 
     /**
      * Get last insert identifier

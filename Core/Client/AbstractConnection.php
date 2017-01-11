@@ -6,6 +6,7 @@ use Goat\Core\Converter\ConverterAwareTrait;
 use Goat\Core\DebuggableTrait;
 use Goat\Core\Error\QueryError;
 use Goat\Core\Error\TransactionError;
+use Goat\Core\Query\DeleteQuery;
 use Goat\Core\Query\InsertQueryQuery;
 use Goat\Core\Query\InsertValuesQuery;
 use Goat\Core\Query\Query;
@@ -156,6 +157,17 @@ abstract class AbstractConnection implements ConnectionInterface
     public function insertValues($relation)
     {
         $insert = new InsertValuesQuery($relation);
+        $insert->setConnection($this);
+
+        return $insert;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function delete($relation, $alias = null)
+    {
+        $insert = new DeleteQuery($relation, $alias);
         $insert->setConnection($this);
 
         return $insert;

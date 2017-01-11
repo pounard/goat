@@ -6,7 +6,7 @@ use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Query\Query;
 use Goat\Tests\ConnectionAwareTest;
 
-abstract class AbstractInsertValuesTest extends ConnectionAwareTest
+abstract class AbstractInsertTest extends ConnectionAwareTest
 {
     /**
      * {@inheritdoc}
@@ -181,10 +181,10 @@ abstract class AbstractInsertValuesTest extends ConnectionAwareTest
     }
 
     /**
-     * Tests that exceptions are raised when necessery
+     * Test a bulk insert from SELECT
      */
-    public function testQueryBuilderLogicErrors()
+    public function testBulkInsertFromQuery()
     {
-
+        $this->markTestIncomplete("not implemented yet");
     }
 }

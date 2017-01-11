@@ -15,7 +15,10 @@ use Goat\Core\Error\QueryError;
  * Here are a few differences with the SQL standard:
  *
  *  - per default, UPDATE queries allow FROM..JOIN statement, but first JOIN
- *    must be INNER or NATURAL in order to substitute the JOIN per FROM.
+ *    must be INNER or NATURAL in order to substitute the JOIN per FROM;
+ *
+ *  - per default, DELETE queries allow USING..JOIN statement, but first JOIN
+ *    must be INNER or NATURAL in order to substitute the JOIN per USING.
  */
 class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
 {
@@ -322,6 +325,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
     /**
      * Format all update from statement
      *
+     * @param UpdateQuery $query
      * @param array $relations
      *   Each relation is an array that must contain:
      *     - key must be the relation alias
@@ -348,6 +352,51 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
         }
 
         $output[] = sprintf("from %s", $this->formatExpressionRelation($first[0]));
+        if ($first[1] && !$first[1]->isEmpty()) {
+            $query->where()->expression($first[1]);
+        }
+
+        // Format remaining joins normally, most database servers can do that
+        // at least PostgreSQL and SQLServer do
+        if ($joins) {
+            foreach ($joins as $join) {
+                $output[] = $this->formatJoinItem(...$join);
+            }
+        }
+
+        return implode("\n", $output);
+    }
+
+    /**
+     * Format all delete using statement
+     *
+     * @param DeleteQuery $query
+     * @param array $relations
+     *   Each relation is an array that must contain:
+     *     - key must be the relation alias
+     *     - 0: ExpressionRelation relation name
+     *     - 1: Where or null condition
+     *     - 2: Query::JOIN_* constant
+     *
+     * @return string
+     */
+    protected function formatDeleteUsing(DeleteQuery $query, array $joins)
+    {
+        if (!$joins) {
+            return '';
+        }
+
+        $output = [];
+
+        $first = array_shift($joins);
+
+        // First join must be an inner join, there is no choice, and first join
+        // condition will become a where clause in the global query instead
+        if (!in_array($first[2], [Query::JOIN_INNER, Query::JOIN_NATURAL])) {
+            throw new QueryError("first join in an delete query must be inner or natural, it will serve as the first using table");
+        }
+
+        $output[] = sprintf("using %s", $this->formatExpressionRelation($first[0]));
         if ($first[1] && !$first[1]->isEmpty()) {
             $query->where()->expression($first[1]);
         }
@@ -600,6 +649,42 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
     }
 
     /**
+     * Format given delete query
+     *
+     * @param DeleteQuery $query
+     *
+     * @return string
+     */
+    protected function formatQueryDelete(DeleteQuery $query)
+    {
+        $output = [];
+
+        // This is not SQL-92 compatible, we are using USING..JOIN clause to
+        // do joins in the DELETE query, which is not accepted by the standard.
+        $output[] = sprintf(
+            "delete from %s",
+            $this->formatExpressionRelation($query->getRelation())
+        );
+
+        $joins = $query->getAllJoin();
+        if ($joins) {
+            $output[] = $this->formatDeleteUsing($query, $joins);
+        }
+
+        $where = $query->where();
+        if (!$where->isEmpty()) {
+            $output[] = sprintf('where %s', $this->formatWhere($where));
+        }
+
+        $return = $query->getAllReturn();
+        if ($return) {
+            $output[] = sprintf("returning %s", $this->formatReturning($return));
+        }
+
+        return implode("\n", array_filter($output));
+    }
+
+    /**
      * Format given update query
      *
      * @param UpdateQuery $query
@@ -618,11 +703,15 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
         // From the SQL 92 standard (which PostgreSQL does support here) the
         // FROM and JOIN must be written AFTER the SET clause. MySQL does not.
         $output[] = sprintf(
-            "update %s\nset\n%s\n%s",
+            "update %s\nset\n%s",
             $this->formatExpressionRelation($query->getRelation()),
-            $this->formatUpdateSet($columns),
-            $this->formatUpdateFrom($query, $query->getAllJoin())
+            $this->formatUpdateSet($columns)
         );
+
+        $joins = $query->getAllJoin();
+        if ($joins) {
+            $output[] = $this->formatUpdateFrom($query, $joins);
+        }
 
         $where = $query->where();
         if (!$where->isEmpty()) {
@@ -780,6 +869,8 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
             return $this->formatExpressionRelation($query);
         } else if ($query instanceof ExpressionValue) {
             return $this->formatExpressionValue($query);
+        } else if ($query instanceof DeleteQuery) {
+            return $this->formatQueryDelete($query);
         } else if ($query instanceof SelectQuery) {
             return $this->formatQuerySelect($query);
         } else if ($query instanceof InsertQueryQuery) {

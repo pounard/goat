@@ -11,6 +11,9 @@ use Goat\Core\Query\Where;
  * Represents the FROM part of a DELETE, SELECT or UPDATE query.
  *
  * It gathers all the FROM and JOIN statements altogether.
+ *
+ * For UPDATE queries, it is used for the FROM clause.
+ * For DELETE queries, it is used for the USING clause.
  */
 trait FromClauseTrait
 {

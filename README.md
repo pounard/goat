@@ -52,16 +52,23 @@ As of now, the following API are available (but highly subject to change):
 # Documentation
 
  *  Get started, installation and configuration guide (@todo)
- *  Converters and
+ *  Write SQL (@todo)
+ *  Query builders (@todo)
+ *  Transactions (@todo)
 
 # Todolist
 
+ *  [pending] allow named parameters
  *  [postponed] ext-pgsql driver
+ *  [postponed] INSERT/UPDATE fallback when RETURNING is not supported
  *  [postponed] MERGE queries
  *  [postponed] parametric testing for backends
  *  [postponed] SELECT with sub-select at select level
  *  [postponed] UNION queries
  *  [postponed] WITH support
+ *  [x] converters: should carry a type and aliases (better auto detection)
+ *  [x] DELETE queries
+ *  [x] DELETE queries testing
  *  [x] expression vs statement: query builder improvements
  *  [x] generic way to dissociate raw SQL string from raw values
  *  [x] improve WHERE builder tests: raw statement / sub where
@@ -75,14 +82,10 @@ As of now, the following API are available (but highly subject to change):
  *  [x] UPDATE queries
  *  [x] UPDATE query testing
  *  [x] WHERE with SELECT within
- *  allow named parameters
  *  better parameter handling in AbstractConnection
  *  converters: per default better definition (session builder?)
- *  converters: should carry a type and aliases (better auto detection)
  *  converters: specific instances per driver
  *  converters: type map per driver
- *  DELETE queries
- *  INSERT/UPDATE fallback when RETURNING is not supported
  *  mapper: advanced object mapping
  *  mapper: basic object mapping
  *  MySQL default transaction level in configuration
@@ -92,6 +95,7 @@ As of now, the following API are available (but highly subject to change):
  *  transaction: document isolation levels
  *  transaction: FOR UPDATE / FOR SHARE query dissociation from SELECT
  *  transaction: write-only/read-only connection support, fallback when transaction
+ *  TRUNCATE queries
  *  WHERE builder tests: subqueries tests
 
 # Driver support

@@ -18,8 +18,6 @@ class UpdateQuery extends AbstractQuery
     use ReturningClauseTrait;
 
     private $columns = [];
-    private $relation;
-    private $relationAlias;
     private $where;
 
     /**
