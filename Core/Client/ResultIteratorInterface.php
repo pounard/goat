@@ -15,14 +15,14 @@ interface ResultIteratorInterface extends \IteratorAggregate, \Countable, Conver
      *
      * @return int
      */
-    public function countColumns();
+    public function countColumns() : int;
 
     /**
      * Get the total row count
      *
      * @return int
      */
-    public function countRows();
+    public function countRows() : int;
 
     /**
      * Does this column exists
@@ -31,14 +31,14 @@ interface ResultIteratorInterface extends \IteratorAggregate, \Countable, Conver
      *
      * @return bool
      */
-    public function columnExists($name);
+    public function columnExists(string $name) : bool;
 
     /**
      * Get all column names, in select order
      *
      * @return string[]
      */
-    public function getColumnNames();
+    public function getColumnNames() : array;
 
     /**
      * Get column type
@@ -47,7 +47,7 @@ interface ResultIteratorInterface extends \IteratorAggregate, \Countable, Conver
      *
      * @return string
      */
-    public function getColumnType($name);
+    public function getColumnType(string $name) : string;
 
     /**
      * Get column name
@@ -56,12 +56,12 @@ interface ResultIteratorInterface extends \IteratorAggregate, \Countable, Conver
      *
      * @return string
      */
-    public function getColumnName($index);
+    public function getColumnName(int $index) : string;
 
     /**
      * Fetch given column in the first or current row
      *
-     * @param string $name
+     * @param int|string $name
      *   If none given, just take the first one
      *
      * @return mixed[]
@@ -71,7 +71,7 @@ interface ResultIteratorInterface extends \IteratorAggregate, \Countable, Conver
     /**
      * Fetch column
      *
-     * @param string $name = null
+     * @param int|string $name = null
      *   If none given, just take the first one
      *
      * @return mixed[]

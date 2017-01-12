@@ -57,7 +57,7 @@ class EntityIterator implements \IteratorAggregate, ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function countColumns()
+    public function countColumns() : int
     {
         return $this->result->countColumns();
     }
@@ -65,7 +65,7 @@ class EntityIterator implements \IteratorAggregate, ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function countRows()
+    public function countRows() : int
     {
         return $this->result->countRows();
     }
@@ -73,7 +73,7 @@ class EntityIterator implements \IteratorAggregate, ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function columnExists($name)
+    public function columnExists(string $name) : bool
     {
         return $this->result->columnExists($name);
     }
@@ -81,7 +81,7 @@ class EntityIterator implements \IteratorAggregate, ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function getColumnNames()
+    public function getColumnNames() : array
     {
         return $this->result->getColumnNames();
     }
@@ -89,7 +89,7 @@ class EntityIterator implements \IteratorAggregate, ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function getColumnType($name)
+    public function getColumnType(string $name) : string
     {
         return $this->result->getColumnType($name);
     }
@@ -97,7 +97,7 @@ class EntityIterator implements \IteratorAggregate, ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function getColumnName($index)
+    public function getColumnName(int $index) : string
     {
         return $this->result->getColumnName($index);
     }

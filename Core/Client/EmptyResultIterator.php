@@ -21,7 +21,7 @@ final class EmptyResultIterator implements ResultIteratorInterface
      *
      * @param number $affectedRows
      */
-    public function __construct($affectedRowCount = 0)
+    public function __construct(int $affectedRowCount = 0)
     {
         $this->affectedRowCount = $affectedRowCount;
     }
@@ -45,7 +45,7 @@ final class EmptyResultIterator implements ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function countColumns()
+    public function countColumns() : int
     {
         return 0;
     }
@@ -53,7 +53,7 @@ final class EmptyResultIterator implements ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function countRows()
+    public function countRows() : int
     {
         return $this->affectedRowCount;
     }
@@ -61,7 +61,7 @@ final class EmptyResultIterator implements ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function columnExists($name)
+    public function columnExists(string $name) : bool
     {
         return false;
     }
@@ -69,7 +69,7 @@ final class EmptyResultIterator implements ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function getColumnNames()
+    public function getColumnNames() : array
     {
         return [];
     }
@@ -77,7 +77,7 @@ final class EmptyResultIterator implements ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function getColumnType($name)
+    public function getColumnType(string $name) : string
     {
         throw new InvalidDataAccessError("empty result cannot yield columns");
     }
@@ -85,7 +85,7 @@ final class EmptyResultIterator implements ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function getColumnName($index)
+    public function getColumnName(int $index) : string
     {
         throw new InvalidDataAccessError("empty result cannot yield columns");
     }

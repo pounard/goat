@@ -11,9 +11,9 @@ use Goat\Core\Hydrator\HydratorInterface;
 final class PagerResultIterator implements ResultIteratorInterface
 {
     private $result;
-    private $count;
-    private $limit;
-    private $page;
+    private $count = 0;
+    private $limit = 0;
+    private $page = 0;
 
     /**
      * Default constructor
@@ -26,7 +26,7 @@ final class PagerResultIterator implements ResultIteratorInterface
      * @param int $page
      *   Current page number (starts at 1)
      */
-    public function __construct(ResultIteratorInterface $result, $count, $limit, $page)
+    public function __construct(ResultIteratorInterface $result, int $count, int $limit, int $page)
     {
         $this->result = $result;
         $this->count  = $count;
@@ -71,7 +71,7 @@ final class PagerResultIterator implements ResultIteratorInterface
      *
      * @return ResultIteratorInterface
      */
-    public function getResult()
+    public function getResult() : ResultIteratorInterface
     {
         return $this->result;
     }
@@ -81,7 +81,7 @@ final class PagerResultIterator implements ResultIteratorInterface
      *
      * @return int
      */
-    public function getCurrentCount()
+    public function getCurrentCount() : int
     {
         return $this->result->countRows();
     }
@@ -91,7 +91,7 @@ final class PagerResultIterator implements ResultIteratorInterface
      *
      * @return int
      */
-    public function getStartOffset()
+    public function getStartOffset() : int
     {
         return ($this->page - 1) * $this->limit;
     }
@@ -101,7 +101,7 @@ final class PagerResultIterator implements ResultIteratorInterface
      *
      * @return int
      */
-    public function getStopOffset()
+    public function getStopOffset() : int
     {
         return $this->getStartOffset() + $this->getCurrentCount();
     }
@@ -111,7 +111,7 @@ final class PagerResultIterator implements ResultIteratorInterface
      *
      * @return int
      */
-    public function getLastPage()
+    public function getLastPage() : int
     {
         return (int)max(1, ceil($this->count / $this->limit));
     }
@@ -121,7 +121,7 @@ final class PagerResultIterator implements ResultIteratorInterface
      *
      * @return int
      */
-    public function getCurrentPage()
+    public function getCurrentPage() : int
     {
         return $this->page;
     }
@@ -131,9 +131,9 @@ final class PagerResultIterator implements ResultIteratorInterface
      *
      * @return bool
      */
-    public function hasNextPage()
+    public function hasNextPage() : bool
     {
-        return (bool)($this->page < $this->getLastPage());
+        return $this->page < $this->getLastPage();
     }
 
     /**
@@ -141,9 +141,9 @@ final class PagerResultIterator implements ResultIteratorInterface
      *
      * @return bool
      */
-    public function hasPreviousPage()
+    public function hasPreviousPage() : bool
     {
-        return (bool)(1 < $this->page);
+        return 1 < $this->page;
     }
 
     /**
@@ -151,7 +151,7 @@ final class PagerResultIterator implements ResultIteratorInterface
      *
      * @return int
      */
-    public function getTotalCount()
+    public function getTotalCount() : int
     {
         return $this->count;
     }
@@ -161,7 +161,7 @@ final class PagerResultIterator implements ResultIteratorInterface
      *
      * @return int
      */
-    public function getLimit()
+    public function getLimit() : int
     {
         return $this->limit;
     }
@@ -169,7 +169,7 @@ final class PagerResultIterator implements ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function countColumns()
+    public function countColumns() : int
     {
         return $this->result->countColumns();
     }
@@ -177,7 +177,7 @@ final class PagerResultIterator implements ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function countRows()
+    public function countRows() : int
     {
         return $this->result->countRows();
     }
@@ -185,7 +185,7 @@ final class PagerResultIterator implements ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function columnExists($name)
+    public function columnExists(string $name) : bool
     {
         return $this->result->columnExists($name);
     }
@@ -193,7 +193,7 @@ final class PagerResultIterator implements ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function getColumnNames()
+    public function getColumnNames() : array
     {
         return $this->result->getColumnNames();
     }
@@ -201,7 +201,7 @@ final class PagerResultIterator implements ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function getColumnType($name)
+    public function getColumnType(string $name) : string
     {
         return $this->result->getColumnType($name);
     }
@@ -209,7 +209,7 @@ final class PagerResultIterator implements ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function getColumnName($index)
+    public function getColumnName(int $index) : string
     {
         return $this->result->getColumnName($index);
     }
@@ -217,7 +217,7 @@ final class PagerResultIterator implements ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function fetchField($name = null)
+    public function fetchField($name = null) : string
     {
         return $this->result->fetchField($name);
     }

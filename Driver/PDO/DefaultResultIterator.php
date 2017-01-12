@@ -35,7 +35,7 @@ class DefaultResultIterator implements ResultIteratorInterface
      *
      * @return string
      */
-    protected function parseType($nativeType)
+    protected function parseType($nativeType) : string
     {
         $nativeType = strtolower($nativeType);
 
@@ -124,7 +124,7 @@ class DefaultResultIterator implements ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function countColumns()
+    public function countColumns() : int
     {
         return $this->columnCount;
     }
@@ -132,7 +132,7 @@ class DefaultResultIterator implements ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function countRows()
+    public function countRows() : int
     {
         return $this->statement->rowCount();
     }
@@ -140,7 +140,7 @@ class DefaultResultIterator implements ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function columnExists($name)
+    public function columnExists(string $name) : bool
     {
         return isset($this->columnNameMap[$name]);
     }
@@ -148,7 +148,7 @@ class DefaultResultIterator implements ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function getColumnNames()
+    public function getColumnNames() : array
     {
         return array_flip($this->columnNameMap);
     }
@@ -156,7 +156,7 @@ class DefaultResultIterator implements ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function getColumnType($name)
+    public function getColumnType(string $name) : string
     {
         if (isset($this->columnTypeMap[$name])) {
             return $this->columnTypeMap[$name];
@@ -168,7 +168,7 @@ class DefaultResultIterator implements ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function getColumnName($index)
+    public function getColumnName(int $index) : string
     {
         if (!is_int($index)) {
             throw new InvalidDataAccessError(sprintf("'%s' is not an integer.\n", $index));
@@ -185,7 +185,7 @@ class DefaultResultIterator implements ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    protected function getColumnNumber($name)
+    protected function getColumnNumber(string $name) : int
     {
         if (isset($this->columnNameMap[$name])) {
             return $this->columnNameMap[$name];
