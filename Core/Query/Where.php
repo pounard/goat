@@ -67,7 +67,7 @@ final class Where implements Statement
     /**
      * Is this statement empty
      *
-     * @return boolean
+     * @return bool
      */
     public function isEmpty()
     {
@@ -253,7 +253,7 @@ final class Where implements Statement
     /**
      * {@inheritdoc}
      */
-    public function getArguments()
+    public function getArguments() : ArgumentBag
     {
         if (null !== $this->arguments) {
             return $this->arguments;

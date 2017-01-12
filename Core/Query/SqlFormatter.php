@@ -480,7 +480,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
     protected function formatWhere(Where $where)
     {
         if ($where->isEmpty()) {
-            // Definitely legit (except for pgsql which awaits a boolean)
+            // Definitely legit (except for pgsql which awaits a bool)
             return '1';
         }
 

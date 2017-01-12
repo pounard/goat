@@ -19,7 +19,7 @@ class EntityStructure
      * with null values for object hydratation
      *
      * @param mixed[] $fields
-     * @param boolean $allowInvalid
+     * @param bool $allowInvalid
      *
      * @return mixed[]
      */
@@ -268,7 +268,7 @@ class EntityStructure
      *
      * @param string $name
      *
-     * @return boolean
+     * @return bool
      */
     public function hasColumn($name)
     {
@@ -321,7 +321,7 @@ class EntityStructure
     /**
      * Does this project have a primary key
      *
-     * @return boolean
+     * @return bool
      */
     public function hasPrimaryKey()
     {

@@ -156,7 +156,7 @@ abstract class Transaction implements ConnectionAwareInterface
     /**
      * Is transaction started
      *
-     * @return boolean
+     * @return bool
      */
     public function isStarted()
     {

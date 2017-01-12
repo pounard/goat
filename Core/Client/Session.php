@@ -3,6 +3,7 @@
 namespace Goat\Core\Client;
 
 use Goat\Core\Error\ConfigurationError;
+use Goat\Core\Query\SelectQuery;
 
 /**
  * Facade connection that handles read and write connection for you.
@@ -36,7 +37,7 @@ class Session extends AbstractConnectionProxy
      *
      * @return ConnectionInterface
      */
-    public function getReadonlyConnection()
+    public function getReadonlyConnection() : ConnectionInterface
     {
         if ($this->readonlyConnection) {
             return $this->readonlyConnection;
@@ -50,7 +51,7 @@ class Session extends AbstractConnectionProxy
      *
      * @return ConnectionInterface
      */
-    public function getWriteConnection()
+    public function getWriteConnection() : ConnectionInterface
     {
         return $this->writeConnection;
     }
@@ -58,7 +59,7 @@ class Session extends AbstractConnectionProxy
     /**
      * {@inheritdoc}
      */
-    protected function getInnerConnection()
+    protected function getInnerConnection() : ConnectionInterface
     {
         return $this->writeConnection;
     }
@@ -66,7 +67,7 @@ class Session extends AbstractConnectionProxy
     /**
      * {@inheritdoc}
      */
-    public function query($query, array $parameters = [], $options = null)
+    public function query($query, array $parameters = [], $options = null) : ResultIteratorInterface
     {
         if ($this->readonlyConnection && !$this->isTransactionPending()) {
             return $this->readonlyConnection->query($query, $parameters, $options);
@@ -78,7 +79,7 @@ class Session extends AbstractConnectionProxy
     /**
      * {@inheritdoc}
      */
-    public function perform($query, array $parameters = [], $options = null)
+    public function perform($query, array $parameters = [], $options = null) : int
     {
         if ($this->readonlyConnection && !$this->isTransactionPending()) {
             return $this->readonlyConnection->query($query, $parameters, $options);
@@ -90,7 +91,7 @@ class Session extends AbstractConnectionProxy
     /**
      * {@inheritdoc}
      */
-    public function prepareQuery($query, $identifier = null)
+    public function prepareQuery($query, string $identifier = null) : string
     {
         if ($this->readonlyConnection && !$this->isTransactionPending()) {
             return $this->readonlyConnection->query($query, $identifier);
@@ -102,7 +103,7 @@ class Session extends AbstractConnectionProxy
     /**
      * {@inheritdoc}
      */
-    public function executePreparedQuery($identifier, array $parameters = [], $options = null)
+    public function executePreparedQuery(string $identifier, array $parameters = [], $options = null) : ResultIteratorInterface
     {
         if ($this->readonlyConnection && !$this->isTransactionPending()) {
             return $this->readonlyConnection->query($identifier, $parameters, $options);
@@ -122,7 +123,7 @@ class Session extends AbstractConnectionProxy
     /**
      * {@inheritdoc}
      */
-    public function select($relation, $alias = null)
+    public function select(string $relation, string $alias = null) : SelectQuery
     {
         if ($this->readonlyConnection && !$this->isTransactionPending()) {
             return $this->readonlyConnection->query($relation, $alias);

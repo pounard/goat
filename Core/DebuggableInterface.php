@@ -2,21 +2,24 @@
 
 namespace Goat\Core;
 
+/**
+ * Components that can be debugged.
+ */
 interface DebuggableInterface
 {
     /**
      * Is debug mode enabled
      *
-     * @return boolean
+     * @return bool
      */
-    public function isDebugEnabled();
+    public function isDebugEnabled() : bool;
 
     /**
      * Enable or disable debug mode
      *
-     * @param boolean $debug
+     * @param bool $debug
      */
-    public function setDebug($debug = true);
+    public function setDebug(bool $debug = true);
 
     /**
      * Send error if debug mode is enabled
@@ -24,7 +27,7 @@ interface DebuggableInterface
      * @param string $message
      * @param string $level
      */
-    public function debugMessage($message, $level = E_USER_WARNING);
+    public function debugMessage(string $message, int $level = E_USER_WARNING);
 
     /**
      * Send exception if debug mode is enabled
@@ -33,5 +36,5 @@ interface DebuggableInterface
      * @param int $code
      * @param \Throwable $previous
      */
-    public function debugRaiseException($message = null, $code = null, $previous = null);
+    public function debugRaiseException(string $message = null, int $code = null, \Throwable $previous = null);
 }

@@ -103,7 +103,7 @@ final class InsertValuesQuery extends AbstractQuery
     /**
      * {@inheritdoc}
      */
-    public function getArguments()
+    public function getArguments() : ArgumentBag
     {
         return $this->arguments;
     }

@@ -76,7 +76,7 @@ final class ExpressionValue implements Expression
     /**
      * {@inheritdoc}
      */
-    public function getArguments()
+    public function getArguments() : ArgumentBag
     {
         $ret = new ArgumentBag();
         $ret->add($this->value, $this->name, $this->type);

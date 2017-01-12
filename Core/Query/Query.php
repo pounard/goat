@@ -61,7 +61,7 @@ interface Query extends Statement
      * This may trigger some optimizations, for example with PDO this will
      * force the RETURN_AFFECTED behavior.
      *
-     * @return boolean
+     * @return bool
      */
     public function willReturnRows();
 }

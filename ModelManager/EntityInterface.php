@@ -11,14 +11,14 @@ interface EntityInterface
     /**
      * Is entity new
      *
-     * @return boolean
+     * @return bool
      */
     public function isNew();
 
     /**
      * Is entity modified
      *
-     * @return boolean
+     * @return bool
      */
     public function isModified();
 
@@ -36,7 +36,7 @@ interface EntityInterface
      *
      * @param string $name
      *
-     * @return boolean
+     * @return bool
      *
      * @throws \InvalidArgumentException
      *   If property is not defined
@@ -48,7 +48,7 @@ interface EntityInterface
      *
      * @param string $name
      *
-     * @return boolean
+     * @return bool
      */
     public function exists($name);
 

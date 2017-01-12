@@ -21,16 +21,16 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface,
     /**
      * Does the backend supports RETURNING clauses
      *
-     * @return boolean
+     * @return bool
      */
-    public function supportsReturning();
+    public function supportsReturning() : bool;
 
     /**
      * Does the backend supports defering constraints
      *
-     * @return boolean
+     * @return bool
      */
-    public function supportsDeferingConstraints();
+    public function supportsDeferingConstraints() : bool;
 
     /**
      * Creates a new transaction
@@ -43,7 +43,7 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface,
      *   Default transaction isolation level, it is advised that you set it
      *   directly at this point, since some drivers don't allow isolation
      *   level changes while transaction is started
-     * @param boolean $allowPending = false
+     * @param bool $allowPending = false
      *   If set to true, explicitely allow to fetch the currently pending
      *   transaction, else errors will be raised
      *
@@ -53,14 +53,14 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface,
      *
      * @return Transaction
      */
-    public function startTransaction($isolationLevel = Transaction::REPEATABLE_READ, $allowPending = false);
+    public function startTransaction(int $isolationLevel = Transaction::REPEATABLE_READ, bool $allowPending = false) : Transaction;
 
     /**
      * Is there a pending transaction
      *
-     * @return boolean
+     * @return bool
      */
-    public function isTransactionPending();
+    public function isTransactionPending() : bool;
 
     /**
      * Send query
@@ -79,7 +79,7 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface,
      *
      * @return ResultIteratorInterface
      */
-    public function query($query, array $parameters = null, $options = null);
+    public function query($query, array $parameters = null, $options = null) : ResultIteratorInterface;
 
     /**
      * Perform only, do not return a result but affected row count instead
@@ -98,7 +98,7 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface,
      *
      * @return int
      */
-    public function perform($query, array $parameters = null, $options = null);
+    public function perform($query, array $parameters = null, $options = null) : int;
 
     /**
      * Prepare query
@@ -111,7 +111,7 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface,
      * @return string
      *   The given or generated identifier
      */
-    public function prepareQuery($query, $identifier = null);
+    public function prepareQuery($query, string $identifier = null) : string;
 
     /**
      * Prepare query
@@ -128,7 +128,7 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface,
      *
      * @return ResultIteratorInterface
      */
-    public function executePreparedQuery($identifier, array $parameters = null, $options = null);
+    public function executePreparedQuery(string $identifier, array $parameters = null, $options = null) : ResultIteratorInterface;
 
     /**
      * Create a select query builder
@@ -140,7 +140,7 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface,
      *
      * @return SelectQuery
      */
-    public function select($relation, $alias = null);
+    public function select(string $relation, string $alias = null) : SelectQuery;
 
     /**
      * Create an update query builder
@@ -152,7 +152,7 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface,
      *
      * @return UpdateQuery
      */
-    public function update($relation, $alias = null);
+    public function update(string $relation, string $alias = null) : UpdateQuery;
 
     /**
      * Create an insert query builder
@@ -162,7 +162,7 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface,
      *
      * @return InsertValuesQuery
      */
-    public function insertValues($relation);
+    public function insertValues(string $relation) : InsertValuesQuery;
 
     /**
      * Create an insert with query builder
@@ -172,7 +172,7 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface,
      *
      * @return InsertQueryQuery
      */
-    public function insertQuery($relation);
+    public function insertQuery(string $relation) : InsertQueryQuery;
 
     /**
      * Create a delete query builder
@@ -184,7 +184,7 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface,
      *
      * @return DeleteQuery
      */
-    public function delete($relation, $alias = null);
+    public function delete(string $relation, string $alias = null) : DeleteQuery;
 
     /**
      * Truncate given tables (warning, it does it right away)
@@ -210,14 +210,14 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface,
      *
      * @param string $encoding
      */
-    public function setClientEncoding($encoding);
+    public function setClientEncoding(string $encoding);
 
     /**
      * Get SQL formatter
      *
      * @return SqlFormatterInterface
      */
-    public function getSqlFormatter();
+    public function getSqlFormatter() : SqlFormatterInterface;
 
     /**
      * Allows the driver to proceed to different type cast
@@ -231,7 +231,7 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface,
      * @return string
      *   The real type the server will understand
      */
-    public function getCastType($type);
+    public function getCastType(string $type) : string;
 
     /**
      * Set hydrator map

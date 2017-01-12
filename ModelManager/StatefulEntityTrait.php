@@ -9,7 +9,7 @@ trait StatefulEntityTrait
     /**
      * Is entity new
      *
-     * @return boolean
+     * @return bool
      */
     public function isNew()
     {
@@ -19,7 +19,7 @@ trait StatefulEntityTrait
     /**
      * Is entity modified
      *
-     * @return boolean
+     * @return bool
      */
     public function isModified()
     {

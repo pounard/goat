@@ -53,7 +53,7 @@ final class ExpressionColumn implements Expression
     /**
      * {@inheritdoc}
      */
-    public function getArguments()
+    public function getArguments() : ArgumentBag
     {
         return new ArgumentBag();
     }

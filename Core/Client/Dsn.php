@@ -153,7 +153,7 @@ final class Dsn
     /**
      * Is the current dsn a unix socket path
      *
-     * @return boolean
+     * @return bool
      */
     public function isUnixSocket()
     {

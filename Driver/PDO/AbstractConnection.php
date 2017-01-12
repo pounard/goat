@@ -68,7 +68,7 @@ abstract class AbstractConnection extends BaseConnection
      *
      * @return SqlFormatterInterface
      */
-    protected function createFormatter()
+    protected function createFormatter() : SqlFormatterInterface
     {
         return new SqlFormatter($this);
     }
@@ -102,7 +102,7 @@ abstract class AbstractConnection extends BaseConnection
         }
     }
 
-    protected function getPdo()
+    protected function getPdo() : \PDO
     {
         if (!$this->pdo) {
             $this->connect();
@@ -122,7 +122,7 @@ abstract class AbstractConnection extends BaseConnection
     /**
      * {@inheritdoc}
      */
-    public function escapeLiteral($string)
+    public function escapeLiteral(string $string) : string
     {
         return $this->getPdo()->quote($string, \PDO::PARAM_STR);
     }
@@ -130,7 +130,7 @@ abstract class AbstractConnection extends BaseConnection
     /**
      * {@inheritdoc}
      */
-    public function escapeBlob($word)
+    public function escapeBlob(string $word) : string
     {
         return $this->getPdo()->quote($word, \PDO::PARAM_LOB);
     }
@@ -146,7 +146,7 @@ abstract class AbstractConnection extends BaseConnection
     /**
      * {@inheritdoc}
      */
-    public function query($query, array $parameters = null, $options = null)
+    public function query($query, array $parameters = null, $options = null) : ResultIteratorInterface
     {
         if ($query instanceof Query) {
             if (!$query->willReturnRows()) {
@@ -183,7 +183,7 @@ abstract class AbstractConnection extends BaseConnection
     /**
      * {@inheritdoc}
      */
-    public function perform($query, array $parameters = null, $options = null)
+    public function perform($query, array $parameters = null, $options = null) : int
     {
         $rawSQL = null;
 
@@ -210,7 +210,7 @@ abstract class AbstractConnection extends BaseConnection
     /**
      * {@inheritdoc}
      */
-    public function prepareQuery($query, $identifier = null)
+    public function prepareQuery($query, string $identifier = null) : string
     {
         list($rawSQL) = $this->getProperSql($query);
 
@@ -229,7 +229,7 @@ abstract class AbstractConnection extends BaseConnection
     /**
      * {@inheritdoc}
      */
-    public function executePreparedQuery($identifier, array $parameters = null, $options = null)
+    public function executePreparedQuery(string $identifier, array $parameters = null, $options = null) : ResultIteratorInterface
     {
         if (!isset($this->prepared[$identifier])) {
             throw new QueryError(sprintf("'%s': query was not prepared", $identifier));
@@ -241,7 +241,7 @@ abstract class AbstractConnection extends BaseConnection
     /**
      * {@inheritdoc}
      */
-    public function getSqlFormatter()
+    public function getSqlFormatter() : SqlFormatterInterface
     {
         return $this->formatter;
     }
@@ -249,7 +249,7 @@ abstract class AbstractConnection extends BaseConnection
     /**
      * {@inheritdoc}
      */
-    public function setClientEncoding($encoding)
+    public function setClientEncoding(string $encoding)
     {
         // SQL standard SET NAMES command.
         $this->getPdo()->query("SET NAMES ?", [$encoding]);

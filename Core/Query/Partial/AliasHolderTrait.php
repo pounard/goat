@@ -106,7 +106,7 @@ trait AliasHolderTrait
      *
      * @param string $alias
      *
-     * @return boolean
+     * @return bool
      */
     protected function aliasExists($alias)
     {

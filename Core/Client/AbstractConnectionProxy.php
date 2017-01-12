@@ -5,6 +5,12 @@ namespace Goat\Core\Client;
 use Goat\Core\Converter\ConverterMap;
 use Goat\Core\Hydrator\HydratorMap;
 use Goat\Core\Transaction\Transaction;
+use Goat\Core\Query\SelectQuery;
+use Goat\Core\Query\InsertValuesQuery;
+use Goat\Core\Query\DeleteQuery;
+use Goat\Core\Query\InsertQueryQuery;
+use Goat\Core\Query\SqlFormatterInterface;
+use Goat\Core\Query\UpdateQuery;
 
 /**
  * Connection proxy that emits events via Symfony's EventDispatcher
@@ -16,12 +22,12 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
      *
      * @return ConnectionInterface
      */
-    abstract protected function getInnerConnection();
+    abstract protected function getInnerConnection() : ConnectionInterface;
 
     /**
      * {@inheritdoc}
      */
-    public function supportsReturning()
+    public function supportsReturning() : bool
     {
         return $this->getInnerConnection()->supportsReturning();
     }
@@ -29,7 +35,7 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function supportsDeferingConstraints()
+    public function supportsDeferingConstraints() : bool
     {
         return $this->getInnerConnection()->supportsDeferingConstraints();
     }
@@ -37,7 +43,7 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function startTransaction($isolationLevel = Transaction::REPEATABLE_READ, $allowPending = false)
+    public function startTransaction(int $isolationLevel = Transaction::REPEATABLE_READ, bool $allowPending = false) : Transaction
     {
         return $this->getInnerConnection()->startTransaction($isolationLevel, $allowPending);
     }
@@ -45,7 +51,7 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function isTransactionPending()
+    public function isTransactionPending() : bool
     {
         return $this->getInnerConnection()->isTransactionPending();
     }
@@ -53,7 +59,7 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function query($query, array $parameters = [], $options = null)
+    public function query($query, array $parameters = [], $options = null) : ResultIteratorInterface
     {
         return $this->getInnerConnection()->query($query, $parameters, $options);
     }
@@ -61,7 +67,7 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function perform($query, array $parameters = [], $options = null)
+    public function perform($query, array $parameters = [], $options = null) : int
     {
         return $this->getInnerConnection()->perform($query, $parameters, $options);
     }
@@ -69,7 +75,7 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function prepareQuery($query, $identifier = null)
+    public function prepareQuery($query, string $identifier = null) : string
     {
         return $this->getInnerConnection()->prepareQuery($query, $identifier);
     }
@@ -77,7 +83,7 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function executePreparedQuery($identifier, array $parameters = [], $options = null)
+    public function executePreparedQuery(string $identifier, array $parameters = [], $options = null) : ResultIteratorInterface
     {
         return $this->getInnerConnection()->executePreparedQuery($identifier, $parameters, $options);
     }
@@ -93,7 +99,7 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function select($relation, $alias = null)
+    public function select(string $relation, string $alias = null) : SelectQuery
     {
         return $this->getInnerConnection()->select($relation, $alias);
     }
@@ -101,7 +107,7 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function update($relation, $alias = null)
+    public function update(string $relation, string $alias = null) : UpdateQuery
     {
         return $this->getInnerConnection()->update($relation, $alias);
     }
@@ -109,7 +115,7 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function insertValues($relation)
+    public function insertValues(string $relation) : InsertValuesQuery
     {
         return $this->getInnerConnection()->insertValues($relation);
     }
@@ -117,7 +123,7 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function delete($relation, $alias = null)
+    public function delete(string $relation, string $alias = null) : DeleteQuery
     {
         return $this->getInnerConnection()->delete($relation, $alias);
     }
@@ -125,7 +131,7 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function insertQuery($relation)
+    public function insertQuery(string $relation) : InsertQueryQuery
     {
         return $this->getInnerConnection()->insertQuery($relation);
     }
@@ -141,7 +147,7 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function setClientEncoding($encoding)
+    public function setClientEncoding(string $encoding)
     {
         return $this->getInnerConnection()->setClientEncoding($encoding);
     }
@@ -149,7 +155,7 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function getSqlFormatter()
+    public function getSqlFormatter() : SqlFormatterInterface
     {
         return $this->getInnerConnection()->getSqlFormatter();
     }
@@ -157,7 +163,7 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function getCastType($type)
+    public function getCastType(string $type) : string
     {
         return $this->getInnerConnection()->getCastType($type);
     }
@@ -181,7 +187,7 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function escapeIdentifier($string)
+    public function escapeIdentifier(string $string) : string
     {
         return $this->getInnerConnection()->escapeIdentifier($string);
     }
@@ -189,7 +195,7 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function escapeIdentifierList($strings)
+    public function escapeIdentifierList($strings) : string
     {
         return $this->getInnerConnection()->escapeIdentifierList($strings);
     }
@@ -197,7 +203,7 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function escapeLiteral($string)
+    public function escapeLiteral(string $string) : string
     {
         return $this->getInnerConnection()->escapeLiteral($string);
     }
@@ -205,7 +211,7 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function escapeBlob($word)
+    public function escapeBlob(string $word) : string
     {
         return $this->getInnerConnection()->escapeBlob($word);
     }
@@ -213,7 +219,7 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function isDebugEnabled()
+    public function isDebugEnabled() : bool
     {
         return $this->getInnerConnection()->isDebugEnabled();
     }
@@ -221,7 +227,7 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function setDebug($debug = true)
+    public function setDebug(bool $debug = true)
     {
         return $this->getInnerConnection()->setDebug($debug);
     }
@@ -229,7 +235,7 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function debugMessage($message, $level = E_USER_WARNING)
+    public function debugMessage(string $message, int $level = E_USER_WARNING)
     {
         return $this->getInnerConnection()->debugMessage($message, $level);
     }
@@ -237,7 +243,7 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function debugRaiseException($message = null, $code = null, $previous = null)
+    public function debugRaiseException(string $message = null, int $code = null, \Throwable $previous = null)
     {
         return $this->getInnerConnection()->debugRaiseException($message, $code, $previous);
     }

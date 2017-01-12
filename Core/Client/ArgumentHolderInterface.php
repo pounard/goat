@@ -13,5 +13,5 @@ interface ArgumentHolderInterface
      *
      * @return ArgumentBag
      */
-    public function getArguments();
+    public function getArguments() : ArgumentBag;
 }

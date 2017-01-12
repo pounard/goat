@@ -28,7 +28,7 @@ class PgSQLConnection extends AbstractConnection
     /**
      * {@inheritdoc}
      */
-    protected function writeCast($placeholder, $type)
+    protected function writeCast(string $placeholder, string $type) : string
     {
         // No surprises there, PostgreSQL is very straight-forward and just
         // uses the datatypes as it handles it. Very stable and robust.
@@ -38,7 +38,7 @@ class PgSQLConnection extends AbstractConnection
     /**
      * {@inheritdoc}
      */
-    public function supportsReturning()
+    public function supportsReturning() : bool
     {
         return true;
     }
@@ -46,7 +46,7 @@ class PgSQLConnection extends AbstractConnection
     /**
      * {@inheritdoc}
      */
-    public function supportsDeferingConstraints()
+    public function supportsDeferingConstraints() : bool
     {
         return true;
     }
@@ -54,7 +54,7 @@ class PgSQLConnection extends AbstractConnection
     /**
      * {@inheritdoc}
      */
-    public function doStartTransaction($isolationLevel = Transaction::REPEATABLE_READ)
+    public function doStartTransaction(int $isolationLevel = Transaction::REPEATABLE_READ) : Transaction
     {
         $ret = new PgSQLTransaction($isolationLevel);
         $ret->setConnection($this);
@@ -77,7 +77,7 @@ class PgSQLConnection extends AbstractConnection
     /**
      * {@inheritdoc}
      */
-    public function escapeIdentifier($string)
+    public function escapeIdentifier(string $string) : string
     {
         return '"' . str_replace('"', '\\"', $string) . '"';
     }
@@ -85,7 +85,7 @@ class PgSQLConnection extends AbstractConnection
     /**
      * {@inheritdoc}
      */
-    public function setClientEncoding($encoding)
+    public function setClientEncoding(string $encoding)
     {
         // https://www.postgresql.org/docs/9.3/static/multibyte.html#AEN34087
         // @todo investigate differences between versions

@@ -15,7 +15,7 @@ interface EscaperInterface
      *
      * @return $string
      */
-    public function escapeIdentifier($string);
+    public function escapeIdentifier(string $string) : string;
 
     /**
      * Escape identifier list (ie. table name, variable name, ...)
@@ -25,7 +25,7 @@ interface EscaperInterface
      * @return $string
      *   Comma-separated list
      */
-    public function escapeIdentifierList($strings);
+    public function escapeIdentifierList($strings) : string;
 
     /**
      * Escape literal (string)
@@ -34,7 +34,7 @@ interface EscaperInterface
      *
      * @return $string
      */
-    public function escapeLiteral($string);
+    public function escapeLiteral(string $string) : string;
 
     /**
      * Escape blob
@@ -43,5 +43,5 @@ interface EscaperInterface
      *
      * @return $string
      */
-    public function escapeBlob($word);
+    public function escapeBlob(string $word) : string;
 }

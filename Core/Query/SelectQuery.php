@@ -62,7 +62,7 @@ final class SelectQuery extends AbstractQuery
     /**
      * Is this a SELECT ... FOR UPDATE
      *
-     * @return boolean
+     * @return bool
      */
     public function isForUpdate()
     {
@@ -216,7 +216,7 @@ final class SelectQuery extends AbstractQuery
      *
      * @param string $name
      *
-     * @return boolean
+     * @return bool
      */
     public function hasColumn($alias)
     {
@@ -440,7 +440,7 @@ final class SelectQuery extends AbstractQuery
     /**
      * {@inheritdoc}
      */
-    public function getArguments()
+    public function getArguments() : ArgumentBag
     {
         $arguments = new ArgumentBag();
 

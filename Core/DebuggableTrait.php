@@ -8,24 +8,24 @@ trait DebuggableTrait /* implements DebuggableInterface */
 {
     protected $debug = false;
 
-    public function isDebugEnabled()
+    public function isDebugEnabled() : bool
     {
         return $this->debug;
     }
 
-    public function setDebug($debug = true)
+    public function setDebug(bool $debug = true)
     {
-        $this->debug = (bool)$debug;
+        $this->debug = $debug;
     }
 
-    public function debugMessage($message, $level = E_USER_WARNING)
+    public function debugMessage(string $message, int $level = E_USER_WARNING)
     {
         if ($this->debug) {
             trigger_error($message, $level);
         }
     }
 
-    public function debugRaiseException($message = null, $code = null, $previous = null)
+    public function debugRaiseException(string $message = null, int $code = null, \Throwable $previous = null)
     {
         if ($this->debug) {
             throw new GoatError($message, $code, $previous);

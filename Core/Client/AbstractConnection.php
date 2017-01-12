@@ -40,7 +40,7 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function supportsReturning()
+    public function supportsReturning() : bool
     {
         return true;
     }
@@ -48,7 +48,7 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function supportsDeferingConstraints()
+    public function supportsDeferingConstraints() : bool
     {
         return true;
     }
@@ -56,16 +56,16 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * Create a new transaction object
      *
-     * @param boolean $allowPending = false
+     * @param bool $allowPending = false
      *
      * @return Transaction
      */
-    abstract protected function doStartTransaction($isolationLevel = Transaction::REPEATABLE_READ);
+    abstract protected function doStartTransaction(int $isolationLevel = Transaction::REPEATABLE_READ) : Transaction;
 
     /**
      * {@inheritdoc}
      */
-    final public function startTransaction($isolationLevel = Transaction::REPEATABLE_READ, $allowPending = false)
+    final public function startTransaction(int $isolationLevel = Transaction::REPEATABLE_READ, bool $allowPending = false) : Transaction
     {
         // Fetch transaction from the WeakRef if possible
         if ($this->currentTransaction && $this->currentTransaction->valid()) {
@@ -118,7 +118,7 @@ abstract class AbstractConnection implements ConnectionInterface
      *
      * @return ResultIteratorInterface
      */
-    final protected function createResultIterator($options = null, ...$constructorArgs)
+    final protected function createResultIterator($options = null, ...$constructorArgs) : ResultIteratorInterface
     {
         $result = $this->doCreateResultIterator(...$constructorArgs);
         $result->setConverter($this->converter);
@@ -143,7 +143,7 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    final public function isTransactionPending()
+    final public function isTransactionPending() : bool
     {
         if ($this->currentTransaction) {
             if (!$this->currentTransaction->valid()) {
@@ -164,7 +164,7 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    final public function select($relation, $alias = null)
+    final public function select(string $relation, string $alias = null) : SelectQuery
     {
         $select = new SelectQuery($relation, $alias);
         $select->setConnection($this);
@@ -175,7 +175,7 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    final public function update($relation, $alias = null)
+    final public function update(string $relation, string $alias = null) : UpdateQuery
     {
         $update = new UpdateQuery($relation, $alias);
         $update->setConnection($this);
@@ -186,7 +186,7 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    final public function insertQuery($relation)
+    final public function insertQuery(string $relation) : InsertQueryQuery
     {
         $insert = new InsertQueryQuery($relation);
         $insert->setConnection($this);
@@ -197,7 +197,7 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    final public function insertValues($relation)
+    final public function insertValues(string $relation) : InsertValuesQuery
     {
         $insert = new InsertValuesQuery($relation);
         $insert->setConnection($this);
@@ -208,7 +208,7 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    final public function delete($relation, $alias = null)
+    final public function delete(string $relation, string $alias = null) : DeleteQuery
     {
         $insert = new DeleteQuery($relation, $alias);
         $insert->setConnection($this);
@@ -238,7 +238,7 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function getCastType($type)
+    public function getCastType(string $type) : string
     {
         return $type;
     }
@@ -246,7 +246,7 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    final public function escapeIdentifierList($strings)
+    final public function escapeIdentifierList($strings) : string
     {
         if (!$strings) {
             throw new GoatError("cannot not format an empty identifier list");
@@ -276,7 +276,7 @@ abstract class AbstractConnection implements ConnectionInterface
      *
      * @return string
      */
-    protected function writeCast($placeholder, $type)
+    protected function writeCast(string $placeholder, string $type) : string
     {
         // This is supposedly SQL-92 standard compliant
         return sprintf("cast(%s as %s)", $placeholder, $type);
@@ -288,7 +288,7 @@ abstract class AbstractConnection implements ConnectionInterface
      * @param int $index
      *   The numerical index position of the placeholder value
      */
-    protected function getPlaceholder($index)
+    protected function getPlaceholder(string $index) : string
     {
         return '?'; // This works for PDO, for example
     }
@@ -332,7 +332,7 @@ abstract class AbstractConnection implements ConnectionInterface
      *   First value is the query string, second is the reworked array
      *   of parameters, if conversions were needed
      */
-    private function rewriteQueryAndParameters($rawSQL, ArgumentBag $arguments, array $overrides = [])
+    private function rewriteQueryAndParameters(string $rawSQL, ArgumentBag $arguments, array $overrides = []) : array
     {
         $index      = 0;
         $parameters = $arguments->getAll($overrides);
@@ -401,7 +401,7 @@ abstract class AbstractConnection implements ConnectionInterface
      *   First value is the query string, second is the reworked array
      *   of parameters, if conversions were needed
      */
-    final protected function getProperSql($input, $parameters = null)
+    final protected function getProperSql($input, $parameters = null) : array
     {
         $arguments = null;
         $overrides = [];

@@ -102,7 +102,7 @@ trait ReturningClauseTrait
      *
      * @param string $name
      *
-     * @return boolean
+     * @return bool
      */
     public function hasReturn($alias)
     {

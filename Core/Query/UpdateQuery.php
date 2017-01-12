@@ -142,7 +142,7 @@ final class UpdateQuery extends AbstractQuery
     /**
      * {@inheritdoc}
      */
-    public function getArguments()
+    public function getArguments() : ArgumentBag
     {
         $arguments = new ArgumentBag();
 

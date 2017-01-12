@@ -129,7 +129,7 @@ final class PagerResultIterator implements ResultIteratorInterface
     /**
      * Is there a next page
      *
-     * @return boolean
+     * @return bool
      */
     public function hasNextPage()
     {
@@ -139,7 +139,7 @@ final class PagerResultIterator implements ResultIteratorInterface
     /**
      * Is there a previous page
      *
-     * @return boolean
+     * @return bool
      */
     public function hasPreviousPage()
     {

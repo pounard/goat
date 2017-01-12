@@ -13,7 +13,7 @@ class NullEscaper implements EscaperInterface
     /**
      * {@inheritdoc}
      */
-    public function escapeIdentifier($string)
+    public function escapeIdentifier(string $string) : string
     {
         return '"' . $string . '"';
     }
@@ -21,7 +21,7 @@ class NullEscaper implements EscaperInterface
     /**
      * {@inheritdoc}
      */
-    public function escapeIdentifierList($strings)
+    public function escapeIdentifierList($strings) : string
     {
         if (!$strings) {
             throw new GoatError("cannot not format an empty identifier list");
@@ -36,7 +36,7 @@ class NullEscaper implements EscaperInterface
     /**
      * {@inheritdoc}
      */
-    public function escapeLiteral($string)
+    public function escapeLiteral(string $string) : string
     {
         return "'" . $string . "'";
     }
@@ -44,7 +44,7 @@ class NullEscaper implements EscaperInterface
     /**
      * {@inheritdoc}
      */
-    public function escapeBlob($word)
+    public function escapeBlob(string $word) : string
     {
         return '#' . $word . '#';
     }

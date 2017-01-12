@@ -3,13 +3,14 @@
 namespace Goat\Driver\PDO;
 
 use Goat\Core\Transaction\Transaction;
+use Goat\Core\Query\SqlFormatterInterface;
 
 class MySQLConnection extends AbstractConnection
 {
     /**
      * {@inheritdoc}
      */
-    public function supportsReturning()
+    public function supportsReturning() : bool
     {
         return false;
     }
@@ -17,7 +18,7 @@ class MySQLConnection extends AbstractConnection
     /**
      * {@inheritdoc}
      */
-    public function supportsDeferingConstraints()
+    public function supportsDeferingConstraints() : bool
     {
         return false;
     }
@@ -25,7 +26,7 @@ class MySQLConnection extends AbstractConnection
     /**
      * {@inheritdoc}
      */
-    public function doStartTransaction($isolationLevel = Transaction::REPEATABLE_READ)
+    public function doStartTransaction(int $isolationLevel = Transaction::REPEATABLE_READ) : Transaction
     {
         $ret = new MySQLTransaction($isolationLevel);
         $ret->setConnection($this);
@@ -36,7 +37,7 @@ class MySQLConnection extends AbstractConnection
     /**
      * {@inheritdoc}
      */
-    public function getCastType($type)
+    public function getCastType(string $type) : string
     {
         // Specific type conversion for MySQL because its CAST() function
         // does not accepts the same datatypes as the one it handles.
@@ -54,7 +55,7 @@ class MySQLConnection extends AbstractConnection
     /**
      * {@inheritdoc}
      */
-    public function escapeIdentifier($string)
+    public function escapeIdentifier(string $string) : string
     {
         return '`' . str_replace('`', '\\`', $string) . '`';
     }
@@ -62,7 +63,7 @@ class MySQLConnection extends AbstractConnection
     /**
      * {@inheritdoc}
      */
-    public function setClientEncoding($encoding)
+    public function setClientEncoding(string $encoding)
     {
         // Keeping the MySQL-specific client encoding directive to ensure it
         // will work with older MySQL versions. It seems while browsing
@@ -83,7 +84,7 @@ class MySQLConnection extends AbstractConnection
     /**
      * {@inheritdoc}
      */
-    protected function createFormatter()
+    protected function createFormatter() : SqlFormatterInterface
     {
         return new MySQLFormatter($this);
     }

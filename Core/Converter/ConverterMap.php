@@ -149,9 +149,9 @@ class ConverterMap
      * Is there a type registered with this name
      *
      * @param string $type
-     * @param boolean $allowAliases
+     * @param bool $allowAliases
      *
-     * @return boolean
+     * @return bool
      */
     public function typeExists($type, $allowAliases = true)
     {
@@ -163,7 +163,7 @@ class ConverterMap
      *
      * @param string $type
      *
-     * @return boolean
+     * @return bool
      */
     public function isTypeAlias($type)
     {

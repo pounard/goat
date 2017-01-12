@@ -46,7 +46,7 @@ final class ExpressionRaw implements Expression
     /**
      * {@inheritdoc}
      */
-    public function getArguments()
+    public function getArguments() : ArgumentBag
     {
         return $this->arguments;
     }

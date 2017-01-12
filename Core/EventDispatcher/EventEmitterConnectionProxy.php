@@ -30,7 +30,7 @@ class EventEmitterConnectionProxy extends AbstractConnectionProxy
     /**
      * {@inheritdoc}
      */
-    protected function getInnerConnection()
+    protected function getInnerConnection() : ConnectionInterface
     {
         return $this->connection;
     }

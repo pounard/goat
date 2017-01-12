@@ -29,7 +29,7 @@ interface ConverterInterface
      *
      * @param string $type
      *
-     * @return boolean
+     * @return bool
      */
     public function needsCast($type);
 
@@ -49,7 +49,7 @@ interface ConverterInterface
      *
      * @param mixed $value
      *
-     * @return boolean
+     * @return bool
      */
     public function canProcess($value);
 }

@@ -46,7 +46,7 @@ trait EntityTrait
      *
      * @param string $name
      *
-     * @return boolean
+     * @return bool
      */
     public function has($name)
     {
@@ -58,7 +58,7 @@ trait EntityTrait
      *
      * @param string $name
      *
-     * @return boolean
+     * @return bool
      */
     public function exists($name)
     {
