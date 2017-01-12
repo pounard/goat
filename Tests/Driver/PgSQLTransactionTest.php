@@ -1,6 +1,6 @@
 <?php
 
-namespace Goat\Tests\Core\Transaction;
+namespace Goat\Tests\Driver;
 
 use Goat\Core\Client\ConnectionInterface;
 
