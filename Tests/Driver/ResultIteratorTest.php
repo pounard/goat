@@ -2,25 +2,25 @@
 
 namespace Goat\Tests\Core\Client;
 
-use Goat\Tests\ConnectionAwareTest;
+use Goat\Tests\DriverTestCase;
 
-class MySQLResultIteratorTest extends ConnectionAwareTest
+class ResultIteratorTest extends DriverTestCase
 {
-    protected function getDriver()
+    /**
+     * Test basic result iterator usage
+     *
+     * @dataProvider driverDataSource
+     */
+    public function testBasicUsage($driver, $class)
     {
-        return 'PDO_MYSQL';
-    }
-
-    public function testConnection()
-    {
-        $connection = $this->getConnection();
+        $connection = $this->createConnection($driver, $class);
 
         $connection->query("
             create temporary table type_test (
-                foo integer unsigned,
+                foo integer,
                 bar varchar(255),
-                baz datetime,
-                some_ts datetime,
+                baz timestamp,
+                some_ts timestamp,
                 some_time time default null,
                 some_date date default null
             )

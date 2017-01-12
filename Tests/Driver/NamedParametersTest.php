@@ -5,9 +5,9 @@ namespace Goat\Tests\Driver;
 use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Error\GoatError;
 use Goat\Core\Query\Query;
-use Goat\Tests\ConnectionAwareTest;
+use Goat\Tests\DriverTestCase;
 
-abstract class AbstractNamedParametersTest extends ConnectionAwareTest
+class NamedParametersTest extends DriverTestCase
 {
     private $idAdmin;
     private $idJean;
@@ -72,10 +72,12 @@ abstract class AbstractNamedParametersTest extends ConnectionAwareTest
 
     /**
      * Test select query with named parameters
+     *
+     * @dataProvider driverDataSource
      */
-    public function testNamedParameterSelect()
+    public function testNamedParameterSelect($driver, $class)
     {
-        $connection = $this->getConnection();
+        $connection = $this->createConnection($driver, $class);
 
         $query = $connection->select('some_table');
         $query
@@ -120,17 +122,25 @@ abstract class AbstractNamedParametersTest extends ConnectionAwareTest
 
     /**
      * Test a raw SQL query with named parameters
+     *
+     * @dataProvider driverDataSource
      */
-    public function testNamedParameterRawQuery()
+    public function testNamedParameterRawQuery($driver, $class)
     {
+        $connection = $this->createConnection($driver, $class);
+
         $this->markTestIncomplete("not implemented yet");
     }
 
     /**
      * Test insert query with named parameters
+     *
+     * @dataProvider driverDataSource
      */
-    public function testNamedParameterInsert()
+    public function testNamedParameterInsert($driver, $class)
     {
+        $connection = $this->createConnection($driver, $class);
+
         $this->markTestIncomplete("not implemented yet");
     }
 }

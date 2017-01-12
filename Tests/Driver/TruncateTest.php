@@ -4,13 +4,10 @@ namespace Goat\Tests\Driver;
 
 use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Query\Query;
-use Goat\Tests\ConnectionAwareTest;
+use Goat\Tests\DriverTestCase;
 
-abstract class AbstractTruncateTest extends ConnectionAwareTest
+class TruncateTest extends DriverTestCase
 {
-    private $idAdmin;
-    private $idJean;
-
     /**
      * {@inheritdoc}
      */
@@ -60,36 +57,39 @@ abstract class AbstractTruncateTest extends ConnectionAwareTest
             ->fetchColumn()
         ;
 
-        $this->idAdmin = $idList[0];
-        $this->idJean = $idList[1];
+        $idAdmin = $idList[0];
+        $idJean = $idList[1];
 
         $connection
             ->insertValues('users_status')
             ->columns(['id_user', 'status'])
-            ->values([$this->idAdmin, 7])
-            ->values([$this->idJean, 11])
-            ->values([$this->idJean, 17])
+            ->values([$idAdmin, 7])
+            ->values([$idJean, 11])
+            ->values([$idJean, 17])
             ->execute()
         ;
 
         $connection
             ->insertValues('some_table')
             ->columns(['foo', 'bar', 'id_user'])
-            ->values([42, 'a', $this->idAdmin])
-            ->values([666, 'b', $this->idAdmin])
-            ->values([37, 'c', $this->idJean])
-            ->values([11, 'd', $this->idJean])
-            ->values([27, 'e', $this->idAdmin])
+            ->values([42, 'a', $idAdmin])
+            ->values([666, 'b', $idAdmin])
+            ->values([37, 'c', $idJean])
+            ->values([11, 'd', $idJean])
+            ->values([27, 'e', $idAdmin])
             ->execute()
         ;
     }
 
     /**
      * Test single TRUNCATE
+     *
+     * @dataProvider driverDataSource
      */
-    public function testTruncateSingle()
+    public function testTruncateSingle($driver, $class)
     {
-        $connection = $this->getConnection();
+        $connection = $this->createConnection($driver, $class);
+
         $this->assertSame(5, $connection->query("select count(*) from some_table")->fetchField());
         $this->assertSame(2, $connection->query("select count(*) from users")->fetchField());
         $this->assertSame(3, $connection->query("select count(*) from users_status")->fetchField());
@@ -102,10 +102,13 @@ abstract class AbstractTruncateTest extends ConnectionAwareTest
 
     /**
      * Test multiple TRUNCATE at once
+     *
+     * @dataProvider driverDataSource
      */
-    public function testTrunateMutltiple()
+    public function testTruncateMutltiple($driver, $class)
     {
-        $connection = $this->getConnection();
+        $connection = $this->createConnection($driver, $class);
+
         $this->assertSame(5, $connection->query("select count(*) from some_table")->fetchField());
         $this->assertSame(2, $connection->query("select count(*) from users")->fetchField());
         $this->assertSame(3, $connection->query("select count(*) from users_status")->fetchField());

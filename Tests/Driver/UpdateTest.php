@@ -7,9 +7,9 @@ use Goat\Core\Query\ExpressionColumn;
 use Goat\Core\Query\ExpressionRaw;
 use Goat\Core\Query\Query;
 use Goat\Core\Query\Where;
-use Goat\Tests\ConnectionAwareTest;
+use Goat\Tests\DriverTestCase;
 
-abstract class AbstractUpdateTest extends ConnectionAwareTest
+class UpdateTest extends DriverTestCase
 {
     private $idAdmin;
     private $idJean;
@@ -74,10 +74,12 @@ abstract class AbstractUpdateTest extends ConnectionAwareTest
 
     /**
      * Update using simple WHERE conditions
+     *
+     * @dataProvider driverDataSource
      */
-    public function testUpdateWhere()
+    public function testUpdateWhere($driver, $class)
     {
-        $connection = $this->getConnection();
+        $connection = $this->createConnection($driver, $class);
 
         $result = $connection
             ->update('some_table')
@@ -116,10 +118,12 @@ abstract class AbstractUpdateTest extends ConnectionAwareTest
 
     /**
      * Update using FROM ... JOIN statements
+     *
+     * @dataProvider driverDataSource
      */
-    public function testUpdateJoin()
+    public function testUpdateJoin($driver, $class)
     {
-        $connection = $this->getConnection();
+        $connection = $this->createConnection($driver, $class);
 
         $result = $connection
             ->update('some_table', 't')
@@ -155,10 +159,12 @@ abstract class AbstractUpdateTest extends ConnectionAwareTest
 
     /**
      * Update using a IN (SELECT ...)
+     *
+     * @dataProvider driverDataSource
      */
-    public function testUpdateWhereIn()
+    public function testUpdateWhereIn($driver, $class)
     {
-        $connection = $this->getConnection();
+        $connection = $this->createConnection($driver, $class);
 
         $selectInQuery = $connection
             ->select('users')
@@ -199,10 +205,12 @@ abstract class AbstractUpdateTest extends ConnectionAwareTest
 
     /**
      * Update RETURNING
+     *
+     * @dataProvider driverDataSource
      */
-    public function testUpateReturning()
+    public function testUpateReturning($driver, $class)
     {
-        $connection = $this->getConnection();
+        $connection = $this->createConnection($driver, $class);
 
         if (!$connection->supportsReturning()) {
             $this->markTestIncomplete("driver does not support RETURNING");
@@ -226,10 +234,12 @@ abstract class AbstractUpdateTest extends ConnectionAwareTest
 
     /**
      * Update by using SET column = other_table.column from FROM using ExpressionColumn
+     *
+     * @dataProvider driverDataSource
      */
-    public function testUpateSetExpressionColumn()
+    public function testUpateSetExpressionColumn($driver, $class)
     {
-        $connection = $this->getConnection();
+        $connection = $this->createConnection($driver, $class);
 
         $result = $connection
             ->update('some_table', 't')
@@ -258,10 +268,12 @@ abstract class AbstractUpdateTest extends ConnectionAwareTest
 
     /**
      * Update by using SET column = other_table.column from FROM using ExpressionRaw
+     *
+     * @dataProvider driverDataSource
      */
-    public function testUpateSetExpressionRaw()
+    public function testUpateSetExpressionRaw($driver, $class)
     {
-        $connection = $this->getConnection();
+        $connection = $this->createConnection($driver, $class);
 
         $result = $connection
             ->update('some_table', 't')
@@ -290,10 +302,12 @@ abstract class AbstractUpdateTest extends ConnectionAwareTest
 
     /**
      * Update by using SET column = (SELECT ...)
+     *
+     * @dataProvider driverDataSource
      */
-    public function testUpateSetSelectQuery()
+    public function testUpateSetSelectQuery($driver, $class)
     {
-        $connection = $this->getConnection();
+        $connection = $this->createConnection($driver, $class);
 
         $selectValueQuery = $connection
             ->select('users', 'z')
@@ -331,10 +345,12 @@ abstract class AbstractUpdateTest extends ConnectionAwareTest
 
     /**
      * Update by using SET column = some_statement()
+     *
+     * @dataProvider driverDataSource
      */
-    public function testUpateSetSqlStatement()
+    public function testUpateSetSqlStatement($driver, $class)
     {
-        $connection = $this->getConnection();
+        $connection = $this->createConnection($driver, $class);
 
         $result = $connection
             ->update('some_table')

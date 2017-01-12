@@ -7,9 +7,9 @@ use Goat\Core\Error\GoatError;
 use Goat\Core\Error\TransactionError;
 use Goat\Core\Error\TransactionFailedError;
 use Goat\Core\Transaction\Transaction;
-use Goat\Tests\ConnectionAwareTest;
+use Goat\Tests\DriverTestCase;
 
-abstract class AbstractTransactionTest extends ConnectionAwareTest
+class TransactionTest extends DriverTestCase
 {
     /**
      * {@inheritdoc}
@@ -23,16 +23,33 @@ abstract class AbstractTransactionTest extends ConnectionAwareTest
                 bar varchar(255)
             )
         ");
-        $connection->query("
-            alter table transaction_test
-                add constraint transaction_test_foo
-                unique (foo)
-        ");
-        $connection->query("
-            alter table transaction_test
-                add constraint transaction_test_bar
-                unique (bar)
-        ");
+
+
+        if ($connection->supportsDeferingConstraints()) {
+            $connection->query("
+                alter table transaction_test
+                    add constraint transaction_test_foo
+                    unique (foo)
+                    deferrable
+            ");
+            $connection->query("
+                alter table transaction_test
+                    add constraint transaction_test_bar
+                    unique (bar)
+                    deferrable
+            ");
+        } else {
+            $connection->query("
+                alter table transaction_test
+                    add constraint transaction_test_foo
+                    unique (foo)
+            ");
+            $connection->query("
+                alter table transaction_test
+                    add constraint transaction_test_bar
+                    unique (bar)
+            ");
+        }
     }
 
     /**
@@ -52,10 +69,12 @@ abstract class AbstractTransactionTest extends ConnectionAwareTest
 
     /**
      * Normal working transaction
+     *
+     * @dataProvider driverDataSource
      */
-    public function testTransaction()
+    public function testTransaction($driver, $class)
     {
-        $connection = $this->getConnection();
+        $connection = $this->createConnection($driver, $class);
 
         $transaction = $connection->startTransaction();
         $transaction->start();
@@ -84,10 +103,12 @@ abstract class AbstractTransactionTest extends ConnectionAwareTest
 
     /**
      * Fail with immediate constraints (not deferred)
+     *
+     * @dataProvider driverDataSource
      */
-    public function testImmediateTransactionFail()
+    public function testImmediateTransactionFail($driver, $class)
     {
-        $connection = $this->getConnection();
+        $connection = $this->createConnection($driver, $class);
 
         $transaction = $connection
             ->startTransaction()
@@ -130,10 +151,12 @@ abstract class AbstractTransactionTest extends ConnectionAwareTest
 
     /**
      * Fail with deferred constraints
+     *
+     * @dataProvider driverDataSource
      */
-    public function testDeferredTransactionFail()
+    public function testDeferredTransactionFail($driver, $class)
     {
-        $connection = $this->getConnection();
+        $connection = $this->createConnection($driver, $class);
 
         if (!$connection->supportsDeferingConstraints()) {
             $this->markTestSkipped("driver does not support defering constraints");
@@ -177,10 +200,12 @@ abstract class AbstractTransactionTest extends ConnectionAwareTest
 
     /**
      * Fail with ALL constraints deferred
+     *
+     * @dataProvider driverDataSource
      */
-    public function testDeferredAllTransactionFail()
+    public function testDeferredAllTransactionFail($driver, $class)
     {
-        $connection = $this->getConnection();
+        $connection = $this->createConnection($driver, $class);
 
         if (!$connection->supportsDeferingConstraints()) {
             $this->markTestSkipped("driver does not support defering constraints");
@@ -224,10 +249,12 @@ abstract class AbstractTransactionTest extends ConnectionAwareTest
 
     /**
      * Tests that rollback works
+     *
+     * @dataProvider driverDataSource
      */
-    public function testTransactionRollback()
+    public function testTransactionRollback($driver, $class)
     {
-        $connection = $this->getConnection();
+        $connection = $this->createConnection($driver, $class);
 
         $transaction = $connection->startTransaction();
         $transaction->start();
@@ -251,10 +278,12 @@ abstract class AbstractTransactionTest extends ConnectionAwareTest
 
     /**
      * Test that fetching a pending transaction is disallowed
+     *
+     * @dataProvider driverDataSource
      */
-    public function testPendingAllowed()
+    public function testPendingAllowed($driver, $class)
     {
-        $connection = $this->getConnection();
+        $connection = $this->createConnection($driver, $class);
 
         $transaction = $connection->startTransaction();
         $transaction->start();
@@ -294,15 +323,19 @@ abstract class AbstractTransactionTest extends ConnectionAwareTest
      * Test that when a transaction goes out of scope, it dies and raise an
      * exception if it was not closed: this can only work with the weakref
      * extension enabled
+     *
+     * @dataProvider driverDataSource
      */
-    public function testWeakRefAllowFailOnScopeClose()
+    public function testWeakRefAllowFailOnScopeClose($driver, $class)
     {
+        $connection = $this->createConnection($driver, $class);
+
         if (!extension_loaded('weakref')) {
             $this->markTestSkipped("this test can only work with the WeakRef extension");
         }
 
         try {
-            $this->privateScopeForWeakRef($this->getConnection());
+            $this->privateScopeForWeakRef($connection);
             $this->fail();
         } catch (TransactionError $e) {
             // Success
@@ -311,10 +344,12 @@ abstract class AbstractTransactionTest extends ConnectionAwareTest
 
     /**
      * Test the savepoint feature
+     *
+     * @dataProvider driverDataSource
      */
-    public function testTransactionSavepoint()
+    public function testTransactionSavepoint($driver, $class)
     {
-        $connection = $this->getConnection();
+        $connection = $this->createConnection($driver, $class);
 
         $transaction = $connection->startTransaction();
         $transaction->start();

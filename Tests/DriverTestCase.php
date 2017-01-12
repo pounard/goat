@@ -19,23 +19,28 @@ use Goat\Driver\PDO\PgSQLConnection;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-abstract class ConnectionAwareTest extends \PHPUnit_Framework_TestCase
+/**
+ * Single driver test case
+ */
+abstract class DriverTestCase extends \PHPUnit_Framework_TestCase
 {
-    private $connection;
-    private $converter;
-    private $encoding;
-    private $eventDispatcher;
-    private $hydratorMap;
+    /**
+     * Get known drivers
+     *
+     * @return array
+     */
+    static public function getKnownDrivers() : array
+    {
+        return [
+            'pdo_mysql' => MySQLConnection::class,
+            'pdo_pgsql' => PgSQLConnection::class,
+        ];
+    }
 
     /**
-     * Get driver name
-     *
-     * @return string
+     * @var EventDispatcherInterface
      */
-    protected function getDriver()
-    {
-        return 'PDO_PGSQL';
-    }
+    private $eventDispatcher;
 
     /**
      * Create test case schema
@@ -52,22 +57,27 @@ abstract class ConnectionAwareTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * {@inheritdoc}
+     * Create drivers for testing
+     *
+     * @return array
      */
-    protected function setUp()
+    public function driverDataSource() : array
     {
-        parent::setUp();
+        $ret = [];
 
-        $connection = $this->getConnection();
-        $this->createTestSchema($connection);
-        $this->createTestData($connection);
+        foreach (self::getKnownDrivers() as $driver => $class) {
+            $ret[] = [$driver, $class];
+        }
+
+        return $ret;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function tearDown()
     {
-        $this->connection = null;
-        $this->converter = null;
-        $this->encoding = null;
+        $this->eventDispatcher = null;
     }
 
     /**
@@ -87,9 +97,11 @@ abstract class ConnectionAwareTest extends \PHPUnit_Framework_TestCase
     /**
      * Create converter
      *
-     * @return Converter
+     * @param ConnectionInterface $connection
+     *
+     * @return ConverterMap
      */
-    final protected function createConverter(ConnectionInterface $connection)
+    final protected function createConverter(ConnectionInterface $connection) : ConverterMap
     {
         $default = new StringConverter();
 
@@ -161,8 +173,12 @@ abstract class ConnectionAwareTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Create object hydrator
+     *
+     * @param ConnectionInterface $connection
+     *
+     * @return HydratorMap
      */
-    final protected function createHydrator()
+    final protected function createHydrator(ConnectionInterface $connection) : HydratorMap
     {
         return new HydratorMap(__DIR__ . '/../cache/hydrator');
     }
@@ -170,63 +186,39 @@ abstract class ConnectionAwareTest extends \PHPUnit_Framework_TestCase
     /**
      * Create the connection object
      *
-     * @param Dsn $dsn
-     * @param string $username
-     * @param string $password
-     * @param string $encoding
+     * @param string $driver
+     * @param string $class
+     *
+     * @return ConnectionInterface
      */
-    final protected function createConnection($encoding = 'utf8')
+    final protected function createConnection(string $driver, string $class) : ConnectionInterface
     {
-        $driver = $this->getDriver();
-
         $variable = strtoupper($driver) . '_DSN';
         $hostname = getenv($variable);
         $username = getenv(strtoupper($driver) . '_USERNAME');
         $password = getenv(strtoupper($driver) . '_PASSWORD');
 
         if (!$hostname) {
-            $this->markTestSkipped(sprintf("missing %s variable", $variable));
+            throw new \InvalidArgumentException(sprintf("Parameter '%s' for driver '%s' is not configured", $variable, $driver));
         }
 
-        $dsn = new Dsn($hostname, $username, $password, $encoding);
-
-        switch ($dsn->getDriver()) {
-
-            case 'mysql':
-                $connection = new MySQLConnection($dsn);
-                break;
-
-            case 'pgsql':
-                $connection = new PgSQLConnection($dsn);
-                break;
-
-            default:
-                throw new \InvalidArgumentException("%s driver is not supported yet", $dsn->getDriver());
+        if (!class_exists($class)) {
+            throw new \InvalidArgumentException(sprintf("Class '%s' for driver '%s' does not exists", $class, $driver));
+        }
+        if (!is_subclass_of($class, ConnectionInterface::class)) {
+            throw new \InvalidArgumentException(sprintf("Class '%s' for driver '%s' does not implement '%s'", $class, $driver, ConnectionInterface::class));
         }
 
-        $connection->setConverter($this->converter = $this->createConverter($connection));
-        $connection->setHydratorMap($this->hydratorMap = $this->createHydrator());
+        $dsn = new Dsn($hostname, $username, $password);
+
+        /** @var \Goat\Core\Client\ConnectionInterface $connection */
+        $connection = new $class($dsn);
+        $connection->setConverter($this->createConverter($connection));
+        $connection->setHydratorMap($this->createHydrator($connection));
+
+        $this->createTestSchema($connection);
+        $this->createTestData($connection);
 
         return new EventEmitterConnectionProxy(new Session($connection), $this->getEventDispatcher());
-    }
-
-    /**
-     * Get connection
-     *
-     * @return \Goat\Driver\PDO\PgSQLConnection
-     */
-    final protected function getConnection($encoding = 'utf8')
-    {
-        if (null === $this->connection) {
-            $this->connection = $this->createConnection($encoding);
-            $this->encoding = $encoding;
-        }
-
-        if ($encoding !== $this->encoding) {
-            $this->connection->setClientEncoding($encoding);
-            $this->encoding = $encoding;
-        }
-
-        return $this->connection;
     }
 }

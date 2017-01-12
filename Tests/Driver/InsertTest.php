@@ -4,10 +4,10 @@ namespace Goat\Tests\Driver;
 
 use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Query\Query;
-use Goat\Tests\ConnectionAwareTest;
 use Goat\Tests\Driver\Mock\InsertAndTheCatSays;
+use Goat\Tests\DriverTestCase;
 
-abstract class AbstractInsertTest extends ConnectionAwareTest
+class InsertTest extends DriverTestCase
 {
     /**
      * {@inheritdoc}
@@ -40,10 +40,13 @@ abstract class AbstractInsertTest extends ConnectionAwareTest
 
     /**
      * Very simple test
+     *
+     * @dataProvider driverDataSource
      */
-    public function testSingleValueInsert()
+    public function testSingleValueInsert($driver, $class)
     {
-        $connection = $this->getConnection();
+        $connection = $this->createConnection($driver, $class);
+
         $referenceDate = new \DateTime();
 
         $connection
@@ -70,10 +73,12 @@ abstract class AbstractInsertTest extends ConnectionAwareTest
 
     /**
      * Okay, let's bulk!
+     *
+     * @dataProvider driverDataSource
      */
-    public function testBulkValueInsert()
+    public function testBulkValueInsert($driver, $class)
     {
-        $connection = $this->getConnection();
+        $connection = $this->createConnection($driver, $class);
 
         $insert = $connection
             ->insertValues('some_table')
@@ -109,10 +114,12 @@ abstract class AbstractInsertTest extends ConnectionAwareTest
 
     /**
      * Test value insert with a RETURNING clause
+     *
+     * @dataProvider driverDataSource
      */
-    public function testBulkValueInsertWithReturning()
+    public function testBulkValueInsertWithReturning($driver, $class)
     {
-        $connection = $this->getConnection();
+        $connection = $this->createConnection($driver, $class);
 
         // Add one value, so there is data in the table, it will ensure that
         // the returning count is the right one
@@ -183,10 +190,12 @@ abstract class AbstractInsertTest extends ConnectionAwareTest
 
     /**
      * Test value insert with a RETURNING clause and object hydration
+     *
+     * @dataProvider driverDataSource
      */
-    public function testBulkValueInsertWithReturningAndHydration()
+    public function testBulkValueInsertWithReturningAndHydration($driver, $class)
     {
-        $connection = $this->getConnection();
+        $connection = $this->createConnection($driver, $class);
 
         if (!$connection->supportsReturning()) {
             $this->markTestIncomplete("driver does not support RETURNING");
@@ -213,9 +222,13 @@ abstract class AbstractInsertTest extends ConnectionAwareTest
 
     /**
      * Test a bulk insert from SELECT
+     *
+     * @dataProvider driverDataSource
      */
-    public function testBulkInsertFromQuery()
+    public function testBulkInsertFromQuery($driver, $class)
     {
+        $connection = $this->createConnection($driver, $class);
+
         $this->markTestIncomplete("not implemented yet");
     }
 }

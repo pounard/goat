@@ -4,10 +4,10 @@ namespace Goat\Tests\Driver;
 
 use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Query\Query;
-use Goat\Tests\ConnectionAwareTest;
+use Goat\Tests\DriverTestCase;
 use Goat\Tests\Driver\Mock\DeleteSomeTableWithUser;
 
-abstract class AbstractDeleteTest extends ConnectionAwareTest
+class DeleteTest extends DriverTestCase
 {
     private $idAdmin;
     private $idJean;
@@ -87,10 +87,13 @@ abstract class AbstractDeleteTest extends ConnectionAwareTest
 
     /**
      * Test simple DELETE FROM WHERE
+     *
+     * @dataProvider driverDataSource
      */
-    public function testDeleteWhere()
+    public function testDeleteWhere($driver, $class)
     {
-        $connection = $this->getConnection();
+        $connection = $this->createConnection($driver, $class);
+
         $this->assertSame(5, $connection->query("select count(*) from some_table")->fetchField());
         $this->assertSame(3, $connection->query("select count(*) from some_table where id_user = $*::int", [$this->idAdmin])->fetchField());
 
@@ -129,10 +132,13 @@ abstract class AbstractDeleteTest extends ConnectionAwareTest
 
     /**
      * Test simple DELETE FROM
+     *
+     * @dataProvider driverDataSource
      */
-    public function testDeleteAll()
+    public function testDeleteAll($driver, $class)
     {
-        $connection = $this->getConnection();
+        $connection = $this->createConnection($driver, $class);
+
         $this->assertSame(5, $connection->query("select count(*) from some_table")->fetchField());
         $this->assertSame(3, $connection->query("select count(*) from some_table where id_user = $*::int", [$this->idAdmin])->fetchField());
 
@@ -143,10 +149,13 @@ abstract class AbstractDeleteTest extends ConnectionAwareTest
 
     /**
      * Test DELETE FROM WHERE IN (SELECT ... )
+     *
+     * @dataProvider driverDataSource
      */
-    public function testDeleteWhereIn()
+    public function testDeleteWhereIn($driver, $class)
     {
-        $connection = $this->getConnection();
+        $connection = $this->createConnection($driver, $class);
+
         $this->assertSame(5, $connection->query("select count(*) from some_table")->fetchField());
         $this->assertSame(3, $connection->query("select count(*) from some_table where id_user = $*::int", [$this->idAdmin])->fetchField());
 
@@ -168,10 +177,13 @@ abstract class AbstractDeleteTest extends ConnectionAwareTest
 
     /**
      * Test DELETE FROM USING WHERE
+     *
+     * @dataProvider driverDataSource
      */
-    public function testDeleteUsing()
+    public function testDeleteUsing($driver, $class)
     {
-        $connection = $this->getConnection();
+        $connection = $this->createConnection($driver, $class);
+
         $this->assertSame(5, $connection->query("select count(*) from some_table")->fetchField());
         $this->assertSame(3, $connection->query("select count(*) from some_table where id_user = $*::int", [$this->idAdmin])->fetchField());
 
@@ -188,16 +200,17 @@ abstract class AbstractDeleteTest extends ConnectionAwareTest
 
     /**
      * Test simple DELETE FROM USING RETURNING
+     *
+     * @dataProvider driverDataSource
      */
-    public function testDeleteUsingReturning()
+    public function testDeleteUsingReturning($driver, $class)
     {
-        $connection = $this->getConnection();
+        $connection = $this->createConnection($driver, $class);
 
         if (!$connection->supportsReturning()) {
             $this->markTestIncomplete("driver does not support RETURNING");
         }
 
-        $connection = $this->getConnection();
         $this->assertSame(5, $connection->query("select count(*) from some_table")->fetchField());
         $this->assertSame(3, $connection->query("select count(*) from some_table where id_user = $*::int", [$this->idAdmin])->fetchField());
 
@@ -225,16 +238,16 @@ abstract class AbstractDeleteTest extends ConnectionAwareTest
 
     /**
      * Test simple DELETE FROM USING RETURNING
+     *
+     * @dataProvider driverDataSource
      */
-    public function testDeleteUsingReturningAndHydrating()
+    public function testDeleteUsingReturningAndHydrating($driver, $class)
     {
-        $connection = $this->getConnection();
-
+        $connection = $this->createConnection($driver, $class);
         if (!$connection->supportsReturning()) {
             $this->markTestIncomplete("driver does not support RETURNING");
         }
 
-        $connection = $this->getConnection();
         $this->assertSame(5, $connection->query("select count(*) from some_table")->fetchField());
         $this->assertSame(3, $connection->query("select count(*) from some_table where id_user = $*::int", [$this->idAdmin])->fetchField());
 
@@ -263,10 +276,13 @@ abstract class AbstractDeleteTest extends ConnectionAwareTest
 
     /**
      * Test DELETE FROM USING JOIN WHERE
+     *
+     * @dataProvider driverDataSource
      */
-    public function testDeleteUsingJoin()
+    public function testDeleteUsingJoin($driver, $class)
     {
-        $connection = $this->getConnection();
+        $connection = $this->createConnection($driver, $class);
+
         $this->assertSame(5, $connection->query("select count(*) from some_table")->fetchField());
         $this->assertSame(3, $connection->query("select count(*) from some_table where id_user = $*::int", [$this->idAdmin])->fetchField());
 

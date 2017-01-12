@@ -6,22 +6,15 @@ use Goat\Core\Client\AbstractConnection as BaseConnection;
 use Goat\Core\Client\Dsn;
 use Goat\Core\Client\EmptyResultIterator;
 use Goat\Core\Client\ResultIteratorInterface;
-use Goat\Core\Converter\ConverterMap;
 use Goat\Core\Error\ConfigurationError;
 use Goat\Core\Error\DriverError;
 use Goat\Core\Error\GoatError;
 use Goat\Core\Error\QueryError;
 use Goat\Core\Query\Query;
-use Goat\Core\Query\SqlFormatter;
 use Goat\Core\Query\SqlFormatterInterface;
 
 abstract class AbstractConnection extends BaseConnection
 {
-    /**
-     * @var Dsn
-     */
-    private $dsn;
-
     /**
      * @var \PDO
      */
@@ -30,48 +23,7 @@ abstract class AbstractConnection extends BaseConnection
     /**
      * @var string[]
      */
-    private $configuration = [];
-
-    /**
-     * @var string[]
-     */
     private $prepared = [];
-
-    /**
-     * @var SqlFormatterInterface
-     */
-    private $formatter;
-
-    /**
-     * Constructor
-     *
-     * @param string|Dsn $dsn
-     * @param string[] $configuration
-     */
-    public function __construct($dsn, $username = null, $password = null, array $configuration = [])
-    {
-        if ($dsn instanceof Dsn) {
-            $this->dsn = $dsn;
-        } else {
-            $this->dsn = new Dsn($dsn, $username, $password);
-        }
-
-        $this->configuration = $configuration;
-        $this->formatter = $this->createFormatter();
-
-        // Register an empty instance for the converter, in case.
-        $this->converter = new ConverterMap();
-    }
-
-    /**
-     * Create SQL formatter
-     *
-     * @return SqlFormatterInterface
-     */
-    protected function createFormatter() : SqlFormatterInterface
-    {
-        return new SqlFormatter($this);
-    }
 
     /**
      * Connect to database

@@ -3,6 +3,7 @@
 namespace Goat\Core\Client;
 
 use Goat\Core\Converter\ConverterAwareTrait;
+use Goat\Core\Converter\ConverterMap;
 use Goat\Core\DebuggableTrait;
 use Goat\Core\Error\GoatError;
 use Goat\Core\Error\QueryError;
@@ -13,6 +14,8 @@ use Goat\Core\Query\InsertQueryQuery;
 use Goat\Core\Query\InsertValuesQuery;
 use Goat\Core\Query\Query;
 use Goat\Core\Query\SelectQuery;
+use Goat\Core\Query\SqlFormatter;
+use Goat\Core\Query\SqlFormatterInterface;
 use Goat\Core\Query\UpdateQuery;
 use Goat\Core\Transaction\Transaction;
 
@@ -35,7 +38,36 @@ abstract class AbstractConnection implements ConnectionInterface
     use DebuggableTrait;
 
     private $currentTransaction;
+    protected $configuration = [];
+    protected $dsn;
+    protected $formatter;
     protected $hydratorMap;
+
+    /**
+     * Constructor
+     *
+     * @param Dsn $dsn
+     * @param string[] $configuration
+     */
+    public function __construct(Dsn $dsn, array $configuration = [])
+    {
+        $this->dsn = $dsn;
+        $this->configuration = $configuration;
+        $this->formatter = $this->createFormatter();
+
+        // Register an empty instance for the converter, in case.
+        $this->converter = new ConverterMap();
+    }
+
+    /**
+     * Create SQL formatter
+     *
+     * @return SqlFormatterInterface
+     */
+    protected function createFormatter() : SqlFormatterInterface
+    {
+        return new SqlFormatter($this);
+    }
 
     /**
      * {@inheritdoc}
