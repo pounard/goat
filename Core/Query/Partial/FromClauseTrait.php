@@ -26,7 +26,7 @@ trait FromClauseTrait
      *
      * @return array
      */
-    final public function getAllJoin()
+    final public function getAllJoin() : array
     {
         return $this->joins;
     }
@@ -41,7 +41,7 @@ trait FromClauseTrait
      *
      * @return $this
      */
-    final public function join($relation, $condition = null, $alias = null, $mode = Query::JOIN_INNER)
+    final public function join($relation, $condition = null, string $alias = null, string $mode = Query::JOIN_INNER)
     {
         $relation = $this->normalizeRelation($relation, $alias);
 
@@ -69,7 +69,7 @@ trait FromClauseTrait
      *
      * @return Where
      */
-    final public function joinWhere($relation, $alias = null, $mode = Query::JOIN_INNER)
+    final public function joinWhere($relation, string $alias = null, string $mode = Query::JOIN_INNER) : Where
     {
         $relation = $this->normalizeRelation($relation, $alias);
 
@@ -82,12 +82,12 @@ trait FromClauseTrait
      * Add inner statement
      *
      * @param string $relation
-     * @param string|Where $condition
+     * @param string|Where|ExpressionRaw $condition
      * @param string $alias
      *
      * @return $this
      */
-    final public function innerJoin($relation, $condition = null, $alias = null)
+    final public function innerJoin($relation, $condition = null, string $alias = null)
     {
         $this->join($relation, $condition, $alias, Query::JOIN_INNER);
 
@@ -98,12 +98,12 @@ trait FromClauseTrait
      * Add left outer join statement
      *
      * @param string $relation
-     * @param string|Where $condition
+     * @param string|Where|ExpressionRaw $condition
      * @param string $alias
      *
      * @return $this
      */
-    final public function leftJoin($relation, $condition = null, $alias = null)
+    final public function leftJoin($relation, $condition = null, string $alias = null)
     {
         $this->join($relation, $condition, $alias, Query::JOIN_LEFT_OUTER);
 
@@ -116,9 +116,9 @@ trait FromClauseTrait
      * @param string $relation
      * @param string $alias
      *
-     * @return $this
+     * @return Where
      */
-    final public function innerJoinWhere($relation, $alias = null)
+    final public function innerJoinWhere($relation, string $alias = null) : Where
     {
         return $this->joinWhere($relation, $alias, Query::JOIN_INNER);
     }
@@ -129,9 +129,9 @@ trait FromClauseTrait
      * @param string $relation
      * @param string $alias
      *
-     * @return $this
+     * @return Where
      */
-    final public function leftJoinWhere($relation, $alias = null)
+    final public function leftJoinWhere($relation, string $alias = null) : Where
     {
         return $this->joinWhere($relation, $alias, Query::JOIN_LEFT_OUTER);
     }

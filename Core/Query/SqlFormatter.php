@@ -42,7 +42,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      *
      * @return string
      */
-    protected function formatUpdateSetItem($column, $expression)
+    protected function formatUpdateSetItem(string $column, $expression) : string
     {
         $columnString = $this->escaper->escapeIdentifier($column);
 
@@ -61,7 +61,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      * @param string[]|Expression[] $columns
      *   Keys are column names, values are strings or Expression instances
      */
-    protected function formatUpdateSet(array $columns)
+    protected function formatUpdateSet(array $columns) : string
     {
         $output = [];
 
@@ -80,7 +80,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      *
      * @return string
      */
-    protected function formatSelectItem($expression, $alias = null)
+    protected function formatSelectItem($expression, $alias = null) : string
     {
         if (is_string($expression)) {
             $expression = new ExpressionColumn($expression);
@@ -111,7 +111,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      *
      * @return string
      */
-    protected function formatSelect(array $columns)
+    protected function formatSelect(array $columns) : string
     {
         if (!$columns) {
             return '*';
@@ -134,7 +134,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      *
      * @return string
      */
-    protected function formatReturningItem($expression, $alias = null)
+    protected function formatReturningItem($expression, $alias = null) : string
     {
         return $this->formatSelectItem($expression, $alias);
     }
@@ -149,7 +149,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      *
      * @return string
      */
-    protected function formatReturning(array $return)
+    protected function formatReturning(array $return) : string
     {
         return $this->formatSelect($return);
     }
@@ -163,7 +163,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      * @param int $null
      *   Query::NULL_* constant
      */
-    protected function formatOrderByItem($column, $order, $null)
+    protected function formatOrderByItem($column, int $order, int $null) : string
     {
         $column = $this->format($column);
 
@@ -203,7 +203,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      *
      * @return string
      */
-    protected function formatOrderBy(array $orders)
+    protected function formatOrderBy(array $orders) : string
     {
         if (!$orders) {
             return '';
@@ -227,7 +227,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      *
      * @return string
      */
-    protected function formatGroupBy(array $groups)
+    protected function formatGroupBy(array $groups) : string
     {
         if (!$groups) {
             return '';
@@ -255,7 +255,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      *
      * @return string
      */
-    protected function formatJoinItem(ExpressionRelation $relation, Where $condition, $mode)
+    protected function formatJoinItem(ExpressionRelation $relation, Where $condition, string $mode) : string
     {
         switch ($mode) {
 
@@ -307,7 +307,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      *
      * @return string
      */
-    protected function formatJoin(array $joins)
+    protected function formatJoin(array $joins) : string
     {
         if (!$joins) {
             return '';
@@ -335,7 +335,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      *
      * @return string
      */
-    protected function formatUpdateFrom(UpdateQuery $query, array $joins)
+    protected function formatUpdateFrom(UpdateQuery $query, array $joins) : string
     {
         if (!$joins) {
             return '';
@@ -380,7 +380,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      *
      * @return string
      */
-    protected function formatDeleteUsing(DeleteQuery $query, array $joins)
+    protected function formatDeleteUsing(DeleteQuery $query, array $joins) : string
     {
         if (!$joins) {
             return '';
@@ -422,7 +422,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      *
      * @return string
      */
-    protected function formatRange($limit = 0, $offset = 0)
+    protected function formatRange(int $limit = 0, int $offset = 0) : string
     {
         if ($limit) {
             return sprintf('limit %d offset %d', $limit, $offset);
@@ -443,7 +443,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      *
      * @return string
      */
-    protected function formatValueList($arguments)
+    protected function formatValueList(array $arguments) : string
     {
         return implode(
             ', ',
@@ -463,9 +463,11 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
     /**
      * Format placeholder for a single value
      *
-     * @param string $argument
+     * @param mixed $argument
+     *
+     * @return string
      */
-    protected function formatPlaceholder($argument)
+    protected function formatPlaceholder($argument) : string
     {
         return '$*';
     }
@@ -477,7 +479,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      *
      * @return string
      */
-    protected function formatWhere(Where $where)
+    protected function formatWhere(Where $where) : string
     {
         if ($where->isEmpty()) {
             // Definitely legit (except for pgsql which awaits a bool)
@@ -563,7 +565,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      *
      * @return string
      */
-    protected function formatQueryInsertValues(InsertValuesQuery $query)
+    protected function formatQueryInsertValues(InsertValuesQuery $query) : string
     {
         $output = [];
 
@@ -615,7 +617,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      *
      * @return string
      */
-    protected function formatQueryInsertFrom(InsertQueryQuery $query)
+    protected function formatQueryInsertFrom(InsertQueryQuery $query) : string
     {
         $output = [];
 
@@ -655,7 +657,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      *
      * @return string
      */
-    protected function formatQueryDelete(DeleteQuery $query)
+    protected function formatQueryDelete(DeleteQuery $query) : string
     {
         $output = [];
 
@@ -691,7 +693,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      *
      * @return string
      */
-    protected function formatQueryUpdate(UpdateQuery $query)
+    protected function formatQueryUpdate(UpdateQuery $query) : string
     {
         $output = [];
 
@@ -733,7 +735,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      *
      * @return string
      */
-    protected function formatQuerySelect(SelectQuery $query)
+    protected function formatQuerySelect(SelectQuery $query) : string
     {
         $output = [];
         $output[] = sprintf(
@@ -767,7 +769,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      *
      * @return string
      */
-    protected function formatExpressionRaw(ExpressionRaw $expression)
+    protected function formatExpressionRaw(ExpressionRaw $expression) : string
     {
         return $expression->getExpression();
     }
@@ -779,7 +781,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      *
      * @return string
      */
-    protected function formatExpressionColumn(ExpressionColumn $column)
+    protected function formatExpressionColumn(ExpressionColumn $column) : string
     {
         $relation = $column->getRelation();
 
@@ -807,7 +809,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      *
      * @return string
      */
-    protected function formatExpressionRelation(ExpressionRelation $relation)
+    protected function formatExpressionRelation(ExpressionRelation $relation) : string
     {
         $table  = $relation->getRelation();
         $schema = $relation->getSchema();
@@ -851,7 +853,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      *
      * @return string
      */
-    protected function formatExpressionValue(ExpressionValue $value)
+    protected function formatExpressionValue(ExpressionValue $value) : string
     {
         return $this->formatPlaceholder($value->getValue());
     }
@@ -859,7 +861,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
     /**
      * {@inheritdoc}
      */
-    public function format($query)
+    public function format(Statement $query) : string
     {
         if ($query instanceof ExpressionColumn) {
             return $this->formatExpressionColumn($query);

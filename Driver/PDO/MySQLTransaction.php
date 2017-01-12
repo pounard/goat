@@ -16,7 +16,7 @@ class MySQLTransaction extends Transaction
      *
      * @return string
      */
-    private function getIsolationLevelString($isolationLevel)
+    private function getIsolationLevelString(int $isolationLevel)
     {
         switch ($isolationLevel) {
 
@@ -40,7 +40,7 @@ class MySQLTransaction extends Transaction
     /**
      * {@inheritdoc}
      */
-    protected function doTransactionStart($isolationLevel)
+    protected function doTransactionStart(int $isolationLevel)
     {
         try {
             // Transaction level cannot be changed while in the transaction,
@@ -75,7 +75,7 @@ class MySQLTransaction extends Transaction
     /**
      * {@inheritdoc}
      */
-    protected function doChangeLevel($isolationLevel)
+    protected function doChangeLevel(int $isolationLevel)
     {
         $this->connection->debugMessage("MySQL does not support transaction level change during transaction", E_USER_NOTICE);
     }
@@ -83,7 +83,7 @@ class MySQLTransaction extends Transaction
     /**
      * {@inheritdoc}
      */
-    protected function doCreateSavepoint($name)
+    protected function doCreateSavepoint(string $name)
     {
         try {
             $this->connection->perform(sprintf(
@@ -98,7 +98,7 @@ class MySQLTransaction extends Transaction
     /**
      * {@inheritdoc}
      */
-    protected function doRollbackToSavepoint($name)
+    protected function doRollbackToSavepoint(string $name)
     {
         try {
             $this->connection->perform(sprintf(

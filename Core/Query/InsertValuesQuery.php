@@ -24,7 +24,7 @@ final class InsertValuesQuery extends AbstractQuery
      * @param string $relation
      *   SQL from statement relation name
      */
-    public function __construct($relation)
+    public function __construct(string $relation)
     {
         // INSERT queries main relation cannot be aliased
         parent::__construct($relation);
@@ -35,9 +35,9 @@ final class InsertValuesQuery extends AbstractQuery
     /**
      * Get select columns array
      *
-     * @return string
+     * @return string[]
      */
-    public function getAllColumns()
+    public function getAllColumns() : array
     {
         return $this->columns;
     }
@@ -64,9 +64,9 @@ final class InsertValuesQuery extends AbstractQuery
     /**
      * Get all values
      *
-     * @return mixed[][]
+     * @return int
      */
-    public function getValueCount()
+    public function getValueCount() : int
     {
         return $this->valueCount;
     }

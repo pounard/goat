@@ -103,7 +103,7 @@ final class Where implements Statement
      *
      * @return Statement
      */
-    private function normalizeValue($value)
+    private function normalizeValue($value) : Statement
     {
         if (!$value instanceof Statement) {
             return new ExpressionValue($value);
@@ -119,7 +119,7 @@ final class Where implements Statement
      *
      * @return ExpressionColumn
      */
-    private function normalizeColumn($column)
+    private function normalizeColumn($column) : ExpressionColumn
     {
         if ($column instanceof ExpressionColumn) {
             return $column;
@@ -133,13 +133,13 @@ final class Where implements Statement
     /**
      * Add a condition
      *
-     * @param ExpressionColumn $column
+     * @param string|ExpressionColumn $column
      * @param Statement $value
      * @param string $operator
      *
      * @return $this
      */
-    public function condition($column, $value, $operator = self::EQUAL)
+    public function condition($column, $value, string $operator = self::EQUAL)
     {
         $column = $this->normalizeColumn($column);
 
@@ -224,9 +224,9 @@ final class Where implements Statement
      *   Where::OP_AND or Where::OP_OR, determine which will be the operator
      *   inside this where statement
      *
-     * @return $this
+     * @return Where
      */
-    public function open($operator = self::AND)
+    public function open(string $operator = self::AND) : Where
     {
         $this->reset();
 
@@ -239,9 +239,9 @@ final class Where implements Statement
     /**
      * End a previously started statement
      *
-     * @return $this
+     * @return Where
      */
-    public function close()
+    public function close() : Where
     {
         if (!$this->parent) {
             throw new QueryError("cannot end a statement without a parent");
@@ -298,7 +298,7 @@ final class Where implements Statement
      *
      * @return string
      */
-    public function getOperator()
+    public function getOperator() : string
     {
         return $this->operator;
     }
@@ -308,7 +308,7 @@ final class Where implements Statement
      *
      * @return mixed[]
      */
-    public function getConditions()
+    public function getConditions() : array
     {
         return $this->conditions;
     }

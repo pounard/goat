@@ -14,9 +14,9 @@ trait WhereTrait
      * @param mixed $value
      * @param string $operator
      *
-     * @return $this
+     * @return Where
      */
-    abstract public function condition($column, $value, $operator = Where::EQUAL);
+    abstract public function condition($column, $value, string $operator = Where::EQUAL);
 
     /**
      * Start a new parenthesis statement
@@ -25,23 +25,23 @@ trait WhereTrait
      *   Where::AND or Where::OR, determine which will be the operator
      *   inside this where statement
      *
-     * @return $this
+     * @return Where
      */
-    abstract public function open($operator = Where::AND);
+    abstract public function open(string $operator = Where::AND) : Where;
 
     /**
      * End a previously started statement
      *
-     * @return $this
+     * @return Where
      */
-    abstract public function close();
+    abstract public function close() : Where;
 
     /**
      * '=' condition
      *
      * If value is an array, this will be converted to a 'in' condition
      *
-     * @param string $column
+     * @param string|ExpressionColumn $column
      * @param mixed $value
      *
      * @return $this
@@ -56,7 +56,7 @@ trait WhereTrait
      *
      * If value is an array, this will be converted to a 'not in' condition
      *
-     * @param string $column
+     * @param string|ExpressionColumn $column
      * @param mixed $value
      *
      * @return $this
@@ -69,7 +69,7 @@ trait WhereTrait
     /**
      * 'in' condition
      *
-     * @param string $column
+     * @param string|ExpressionColumn $column
      * @param mixed[] $values
      *
      * @return $this
@@ -82,7 +82,7 @@ trait WhereTrait
     /**
      * 'not in' condition
      *
-     * @param string $column
+     * @param string|ExpressionColumn $column
      * @param mixed[] $values
      *
      * @return $this
@@ -95,7 +95,7 @@ trait WhereTrait
     /**
      * '>' condition
      *
-     * @param string $column
+     * @param string|ExpressionColumn $column
      * @param mixed $value
      *
      * @return $this
@@ -108,7 +108,7 @@ trait WhereTrait
     /**
      * '<' condition
      *
-     * @param string $column
+     * @param string|ExpressionColumn $column
      * @param mixed $value
      *
      * @return $this
@@ -121,7 +121,7 @@ trait WhereTrait
     /**
      * '>=' condition
      *
-     * @param string $column
+     * @param string|ExpressionColumn $column
      * @param mixed $value
      *
      * @return $this
@@ -134,7 +134,7 @@ trait WhereTrait
     /**
      * '<=' condition
      *
-     * @param string $column
+     * @param string|ExpressionColumn $column
      * @param mixed $value
      *
      * @return $this
@@ -147,7 +147,7 @@ trait WhereTrait
     /**
      * 'between' condition
      *
-     * @param string $column
+     * @param string|ExpressionColumn $column
      * @param mixed $from
      * @param mixed $to
      *
@@ -161,7 +161,7 @@ trait WhereTrait
     /**
      * 'not between' condition
      *
-     * @param string $column
+     * @param string|ExpressionColumn $column
      * @param mixed $from
      * @param mixed $to
      *
@@ -175,7 +175,7 @@ trait WhereTrait
     /**
      * Add an is null condition
      *
-     * @param string $column
+     * @param string|ExpressionColumn $column
      *
      * @return $this
      */
@@ -187,7 +187,7 @@ trait WhereTrait
     /**
      * Add an is not null condition
      *
-     * @param string $column
+     * @param string|ExpressionColumn $column
      *
      * @return $this
      */
@@ -198,24 +198,30 @@ trait WhereTrait
 
     /**
      * Open an and clause
+     *
+     * @return Where
      */
-    public function and()
+    public function and() : Where
     {
         return $this->open(Where::AND);
     }
 
     /**
      * Open an or clause
+     *
+     * @return Where
      */
-    public function or()
+    public function or() : Where
     {
         return $this->open(Where::OR);
     }
 
     /**
      * Alias of ::close()
+     *
+     * @return Where
      */
-    public function end()
+    public function end() : Where
     {
         return $this->close();
     }

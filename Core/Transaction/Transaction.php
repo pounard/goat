@@ -35,7 +35,7 @@ abstract class Transaction implements ConnectionAwareInterface
      * @param int $isolationLevel
      *   One of the Transaction::* constants
      */
-    final public function __construct($isolationLevel = self::REPEATABLE_READ)
+    final public function __construct(int $isolationLevel = self::REPEATABLE_READ)
     {
         $this->level($isolationLevel);
     }
@@ -45,9 +45,9 @@ abstract class Transaction implements ConnectionAwareInterface
      *
      * @param ConnectionInterface $connection
      *
-     * @return $this
+     * @return Transaction
      */
-    final public function setConnection(ConnectionInterface $connection)
+    final public function setConnection(ConnectionInterface $connection) : Transaction
     {
         $this->connection = $connection;
         $this->setDebug($connection->isDebugEnabled());
@@ -76,7 +76,7 @@ abstract class Transaction implements ConnectionAwareInterface
      * @param int $isolationLevel
      *   One of the Transaction::* constants
      */
-    abstract protected function doTransactionStart($isolationLevel);
+    abstract protected function doTransactionStart(int $isolationLevel);
 
     /**
      * Change transaction level
@@ -84,17 +84,17 @@ abstract class Transaction implements ConnectionAwareInterface
      * @param int $isolationLevel
      *   One of the Transaction::* constants
      */
-    abstract protected function doChangeLevel($isolationLevel);
+    abstract protected function doChangeLevel(int $isolationLevel);
 
     /**
      * Create savepoint
      */
-    abstract protected function doCreateSavepoint($name);
+    abstract protected function doCreateSavepoint(string $name);
 
     /**
      * Rollback to savepoint
      */
-    abstract protected function doRollbackToSavepoint($name);
+    abstract protected function doRollbackToSavepoint(string $name);
 
     /**
      * Rollback
@@ -138,9 +138,9 @@ abstract class Transaction implements ConnectionAwareInterface
      * @param int $isolationLevel
      *   One of the Transaction::* constants
      *
-     * @return $this
+     * @return Transaction
      */
-    public function level($isolationLevel)
+    public function level(int $isolationLevel) : Transaction
     {
         if ($isolationLevel === $this->isolationLevel) {
             return $this; // Nothing to be done
@@ -158,7 +158,7 @@ abstract class Transaction implements ConnectionAwareInterface
      *
      * @return bool
      */
-    public function isStarted()
+    public function isStarted() : bool
     {
         return $this->started;
     }
@@ -166,9 +166,9 @@ abstract class Transaction implements ConnectionAwareInterface
     /**
      * Start the transaction
      *
-     * @return $this
+     * @return Transaction
      */
-    public function start()
+    public function start() : Transaction
     {
         $this->doTransactionStart($this->isolationLevel);
 
@@ -185,9 +185,9 @@ abstract class Transaction implements ConnectionAwareInterface
      *   If a string or a string array, only the given constraint
      *   names are set as immediate
      *
-     * @return $this
+     * @return Transaction
      */
-    public function immediate($constraint = null)
+    public function immediate($constraint = null) : Transaction
     {
         if ($constraint) {
             if (!is_array($constraint)) {
@@ -209,9 +209,9 @@ abstract class Transaction implements ConnectionAwareInterface
      *   If a string or a string array, only the given constraint
      *   names are set as immediate
      *
-     * @return $this
+     * @return Transaction
      */
-    public function deferred($constraint = null)
+    public function deferred($constraint = null) : Transaction
     {
         if ($constraint) {
             if (!is_array($constraint)) {
@@ -238,7 +238,7 @@ abstract class Transaction implements ConnectionAwareInterface
      * @return string
      *   The savepoint realname
      */
-    public function savepoint($name = null)
+    public function savepoint(string $name = null) : string
     {
         if (!$this->started) {
             throw new TransactionError(sprintf("can not commit a non-running transaction"));
@@ -261,8 +261,10 @@ abstract class Transaction implements ConnectionAwareInterface
 
     /**
      * Explicit transaction commit
+     *
+     * @return Transaction
      */
-    public function commit()
+    public function commit() : Transaction
     {
         if (!$this->started) {
             throw new TransactionError(sprintf("can not commit a non-running transaction"));
@@ -280,8 +282,10 @@ abstract class Transaction implements ConnectionAwareInterface
 
     /**
      * Explicit transaction rollback
+     *
+     * @return Transaction
      */
-    public function rollback()
+    public function rollback() : Transaction
     {
         if (!$this->started) {
             throw new TransactionError(sprintf("can not rollback a non-running transaction"));
@@ -302,9 +306,9 @@ abstract class Transaction implements ConnectionAwareInterface
      * @param string $name
      *   Savepoint name
      *
-     * @return $this
+     * @return Transaction
      */
-    public function rollbackToSavepoint($name)
+    public function rollbackToSavepoint(string $name) : Transaction
     {
         if (!$this->started) {
             throw new TransactionError(sprintf("can not rollback to savepoint in a non-running transaction"));

@@ -39,7 +39,7 @@ final class SelectQuery extends AbstractQuery
      * @param string $alias
      *   Alias for from clause relation
      */
-    public function __construct($relation, $alias = null)
+    public function __construct(string $relation, string $alias = null)
     {
         parent::__construct($relation, $alias);
 
@@ -64,7 +64,7 @@ final class SelectQuery extends AbstractQuery
      *
      * @return bool
      */
-    public function isForUpdate()
+    public function isForUpdate() : bool
     {
         return $this->forUpdate;
     }
@@ -86,7 +86,7 @@ final class SelectQuery extends AbstractQuery
      *
      * @return array
      */
-    public function getAllColumns()
+    public function getAllColumns() : array
     {
         return $this->columns;
     }
@@ -115,7 +115,7 @@ final class SelectQuery extends AbstractQuery
      *
      * @return $this
      */
-    public function column($expression, $alias = null)
+    public function column($expression, string $alias = null)
     {
         if (!$expression instanceof Expression) {
             $expression = new ExpressionColumn($expression);
@@ -138,7 +138,7 @@ final class SelectQuery extends AbstractQuery
      *
      * @return $this
      */
-    public function columnExpression($expression, $alias = null, $arguments = [])
+    public function columnExpression($expression, string $alias = null, $arguments = [])
     {
         if ($expression instanceof Expression) {
             if ($arguments) {
@@ -183,8 +183,10 @@ final class SelectQuery extends AbstractQuery
      * Find column index for given alias
      *
      * @param string $alias
+     *
+     * @return string
      */
-    private function findColumnIndex($alias)
+    private function findColumnIndex($alias) : string
     {
         foreach ($this->columns as $index => $data) {
             if ($data[1] === $alias) {
@@ -200,7 +202,7 @@ final class SelectQuery extends AbstractQuery
      *
      * @return $this
      */
-    public function removeColumn($alias)
+    public function removeColumn(string $alias)
     {
         $index = $this->findColumnIndex($alias);
 
@@ -218,7 +220,7 @@ final class SelectQuery extends AbstractQuery
      *
      * @return bool
      */
-    public function hasColumn($alias)
+    public function hasColumn(string $alias) : bool
     {
         return (bool)$this->findColumnIndex($alias);
     }
@@ -228,7 +230,7 @@ final class SelectQuery extends AbstractQuery
      *
      * @return array
      */
-    public function getAllGroupBy()
+    public function getAllGroupBy() : array
     {
         return $this->groups;
     }
@@ -238,7 +240,7 @@ final class SelectQuery extends AbstractQuery
      *
      * @return array
      */
-    public function getAllOrderBy()
+    public function getAllOrderBy() : array
     {
         return $this->orders;
     }
@@ -249,7 +251,7 @@ final class SelectQuery extends AbstractQuery
      * @return int[]
      *   First value is limit second is offset
      */
-    public function getRange()
+    public function getRange() : array
     {
         return [$this->limit, $this->offset];
     }
@@ -257,13 +259,13 @@ final class SelectQuery extends AbstractQuery
     /**
      * Add a condition in the where clause
      *
-     * @param string $column
+     * @param string|ExpressionColumn $column
      * @param mixed $value
      * @param string $operator
      *
      * @return $this
      */
-    public function condition($column, $value, $operator = Where::EQUAL)
+    public function condition($column, $value, string $operator = Where::EQUAL)
     {
         $this->where->condition($column, $value, $operator);
 
@@ -273,7 +275,7 @@ final class SelectQuery extends AbstractQuery
     /**
      * Add an abitrary statement to the where clause
      *
-     * @param string $statement
+     * @param string|Expression $statement
      *   SQL string, which may contain parameters
      * @param mixed[] $arguments
      *   Parameters for the arbitrary SQL
@@ -290,13 +292,13 @@ final class SelectQuery extends AbstractQuery
     /**
      * Add a condition in the having clause
      *
-     * @param string $column
+     * @param string|ExpressionColumn $column
      * @param mixed $value
      * @param string $operator
      *
      * @return $this
      */
-    public function havingCondition($column, $value, $operator = Where::EQUAL)
+    public function havingCondition($column, $value, string $operator = Where::EQUAL)
     {
         $this->having->condition($column, $value, $operator);
 
@@ -306,7 +308,7 @@ final class SelectQuery extends AbstractQuery
     /**
      * Add an abitrary statement to the having clause
      *
-     * @param string $statement
+     * @param string|Expression $statement
      *   SQL string, which may contain parameters
      * @param mixed[] $arguments
      *   Parameters for the arbitrary SQL
@@ -325,7 +327,7 @@ final class SelectQuery extends AbstractQuery
      *
      * @return Where
      */
-    public function where()
+    public function where() : Where
     {
         return $this->where;
     }
@@ -335,7 +337,7 @@ final class SelectQuery extends AbstractQuery
      *
      * @return Where
      */
-    public function having()
+    public function having() : Where
     {
         return $this->having;
     }
@@ -343,7 +345,7 @@ final class SelectQuery extends AbstractQuery
     /**
      * Add an order by clause
      *
-     * @param string $column
+     * @param string|Expression $column
      *   Column identifier must contain the table alias, if might be a raw SQL
      *   string if you wish, for example, to write a case when statement
      * @param int $order
@@ -353,7 +355,7 @@ final class SelectQuery extends AbstractQuery
      *
      * @return $this
      */
-    public function orderBy($column, $order = Query::ORDER_ASC, $null = Query::NULL_IGNORE)
+    public function orderBy($column, int $order = Query::ORDER_ASC, int $null = Query::NULL_IGNORE)
     {
         if (!$column instanceof Expression) {
             $column = new ExpressionColumn($column);
@@ -367,7 +369,7 @@ final class SelectQuery extends AbstractQuery
     /**
      * Add an order by clause as a raw SQL expression
      *
-     * @param string $column
+     * @param string|Expression $column
      *   Column identifier must contain the table alias, if might be a raw SQL
      *   string if you wish, for example, to write a case when statement
      * @param int $order
@@ -377,7 +379,7 @@ final class SelectQuery extends AbstractQuery
      *
      * @return $this
      */
-    public function orderByExpression($column, $order = Query::ORDER_ASC, $null = Query::NULL_IGNORE)
+    public function orderByExpression($column, int $order = Query::ORDER_ASC, int $null = Query::NULL_IGNORE)
     {
         if (!$column instanceof Expression) {
             $column = new ExpressionRaw($column);
@@ -391,7 +393,7 @@ final class SelectQuery extends AbstractQuery
     /**
      * Add a group by clause
      *
-     * @param string $column
+     * @param string|ExpressionColumn $column
      *   Column identifier must contain the table alias, if might be a raw SQL
      *   string if you wish, for example, to write a case when statement
      *
@@ -422,7 +424,7 @@ final class SelectQuery extends AbstractQuery
      *
      * @return $this
      */
-    public function range($limit, $offset = 0)
+    public function range(int $limit = 0, int $offset = 0)
     {
         if (!is_int($limit) || $limit < 0) {
             throw new QueryError(sprintf("limit must be a positive integer: '%s' given", $limit));
@@ -491,7 +493,7 @@ final class SelectQuery extends AbstractQuery
      *   Returned query will be a clone, the count row will be aliased with the
      *   given alias
      */
-    public function getCountQuery($countAlias = 'count')
+    public function getCountQuery(string $countAlias = 'count') : SelectQuery
     {
         // @todo do not remove necessary fields for group by and other
         //   aggregates functions (SQL standard)
@@ -505,7 +507,7 @@ final class SelectQuery extends AbstractQuery
     /**
      * {@inheritdoc}
      */
-    public function willReturnRows()
+    public function willReturnRows() : bool
     {
         return !$this->performOnly;
     }

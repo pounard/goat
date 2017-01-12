@@ -15,7 +15,7 @@ class MySQLFormatter extends SqlFormatter
     /**
      * {@inheritdoc}
      */
-    protected function formatQueryDelete(DeleteQuery $query)
+    protected function formatQueryDelete(DeleteQuery $query) : string
     {
         $output = [];
 
@@ -59,7 +59,7 @@ class MySQLFormatter extends SqlFormatter
     /**
      * {@inheritdoc}
      */
-    protected function formatQueryUpdate(UpdateQuery $query)
+    protected function formatQueryUpdate(UpdateQuery $query) : string
     {
         $output = [];
 

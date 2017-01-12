@@ -19,7 +19,7 @@ final class ExpressionRelation implements Expression
      * @param string $column
      * @param string $relation
      */
-    public function __construct($relation, $alias = null, $schema = null)
+    public function __construct(string $relation, string $alias = null, string $schema = null)
     {
         if (null === $schema) {
             if (false !== strpos($relation, '.')) {
@@ -37,7 +37,7 @@ final class ExpressionRelation implements Expression
      *
      * @return string
      */
-    public function getRelation()
+    public function getRelation() : string
     {
         return $this->relation;
     }

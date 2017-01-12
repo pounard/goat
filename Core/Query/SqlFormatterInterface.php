@@ -10,9 +10,9 @@ interface SqlFormatterInterface
     /**
      * Format the query
      *
-     * @param string|Statement $query
+     * @param Statement $query
      *
      * @return string
      */
-    public function format($query);
+    public function format(Statement $query) : string;
 }

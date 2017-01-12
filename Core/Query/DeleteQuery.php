@@ -25,7 +25,7 @@ final class DeleteQuery extends AbstractQuery
      * @param string $alias
      *   Alias for from clause relation
      */
-    public function __construct($relation, $alias = null)
+    public function __construct(string $relation, string $alias = null)
     {
         parent::__construct($relation, $alias);
 
@@ -41,7 +41,7 @@ final class DeleteQuery extends AbstractQuery
      *
      * @return $this
      */
-    public function condition($column, $value, $operator = Where::EQUAL)
+    public function condition($column, $value, string $operator = Where::EQUAL)
     {
         $this->where->condition($column, $value, $operator);
 
@@ -70,7 +70,7 @@ final class DeleteQuery extends AbstractQuery
      *
      * @return Where
      */
-    public function where()
+    public function where() : Where
     {
         return $this->where;
     }

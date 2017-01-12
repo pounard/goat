@@ -201,7 +201,7 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface,
     /**
      * Get last insert identifier
      *
-     * @return scalar
+     * @return int|string
      */
     // public function getLastInsertId();
 

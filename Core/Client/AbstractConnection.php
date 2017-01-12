@@ -288,7 +288,7 @@ abstract class AbstractConnection implements ConnectionInterface
      * @param int $index
      *   The numerical index position of the placeholder value
      */
-    protected function getPlaceholder(string $index) : string
+    protected function getPlaceholder(int $index) : string
     {
         return '?'; // This works for PDO, for example
     }

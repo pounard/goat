@@ -22,7 +22,7 @@ final class ExpressionRaw implements Expression
      *   Key/value pairs or argument list, anonymous and named parameters
      *   cannot be mixed up within the same query
      */
-    public function __construct($expression, $arguments = [])
+    public function __construct(string $expression, $arguments = [])
     {
         if (!is_array($arguments)) {
             $arguments = [$arguments];
@@ -38,7 +38,7 @@ final class ExpressionRaw implements Expression
      *
      * @return string
      */
-    public function getExpression()
+    public function getExpression() : string
     {
         return $this->expression;
     }

@@ -20,8 +20,10 @@ trait AliasHolderTrait
      * @param string $alias
      *
      * @throws QueryError
+     *
+     * @return ExpressionRelation
      */
-    protected function normalizeRelation($relation, $alias)
+    protected function normalizeRelation($relation, string $alias = null) : ExpressionRelation
     {
         if ($relation instanceof ExpressionRelation) {
             if ($relation->getAlias() && $alias) {
@@ -59,7 +61,7 @@ trait AliasHolderTrait
      *
      * @return string
      */
-    protected function getAliasFor($relation, $userAlias = null)
+    protected function getAliasFor(string $relation, string $userAlias = null) : string
     {
         if ($userAlias) {
             if (isset($this->relations[$userAlias])) {
@@ -96,7 +98,7 @@ trait AliasHolderTrait
      *
      * @param string $alias
      */
-    protected function removeAlias($alias)
+    protected function removeAlias(string $alias)
     {
         unset($this->relations[$alias]);
     }
@@ -108,7 +110,7 @@ trait AliasHolderTrait
      *
      * @return bool
      */
-    protected function aliasExists($alias)
+    protected function aliasExists(string $alias) : bool
     {
         return isset($this->relations[$alias]);
     }

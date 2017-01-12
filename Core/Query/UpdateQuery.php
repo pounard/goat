@@ -28,7 +28,7 @@ final class UpdateQuery extends AbstractQuery
      * @param string $alias
      *   Alias for from clause relation
      */
-    public function __construct($relation, $alias = null)
+    public function __construct(string $relation, string $alias = null)
     {
         parent::__construct($relation, $alias);
 
@@ -52,7 +52,7 @@ final class UpdateQuery extends AbstractQuery
      *
      * @return $this
      */
-    public function set($column, $expression)
+    public function set(string $column, $expression)
     {
         if (!is_string($column) || false !== strpos($column, '.')) {
             throw new QueryError("column names in the set part of an update query can only be a column name, without table prefix");
@@ -91,7 +91,7 @@ final class UpdateQuery extends AbstractQuery
      * @return string[]|Expression[]
      *   Keys are column names, values are either strings or Expression instances
      */
-    public function getUpdatedColumns()
+    public function getUpdatedColumns() : array
     {
         return $this->columns;
     }
@@ -99,13 +99,13 @@ final class UpdateQuery extends AbstractQuery
     /**
      * Add a condition in the where clause
      *
-     * @param string $column
+     * @param string|ExpressionColumn $column
      * @param mixed $value
      * @param string $operator
      *
      * @return $this
      */
-    public function condition($column, $value, $operator = Where::EQUAL)
+    public function condition($column, $value, string $operator = Where::EQUAL)
     {
         $this->where->condition($column, $value, $operator);
 
@@ -115,7 +115,7 @@ final class UpdateQuery extends AbstractQuery
     /**
      * Add an abitrary statement to the where clause
      *
-     * @param string $statement
+     * @param string|Expression $statement
      *   SQL string, which may contain parameters
      * @param mixed[] $arguments
      *   Parameters for the arbitrary SQL
@@ -134,7 +134,7 @@ final class UpdateQuery extends AbstractQuery
      *
      * @return Where
      */
-    public function where()
+    public function where() : Where
     {
         return $this->where;
     }

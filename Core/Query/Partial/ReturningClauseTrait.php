@@ -22,7 +22,7 @@ trait ReturningClauseTrait
      *       or name with dot notation)
      *     - second value: the alias if any, or null
      */
-    public function getAllReturn()
+    public function getAllReturn() : array
     {
         return $this->return;
     }
@@ -32,7 +32,7 @@ trait ReturningClauseTrait
      *
      * @return $this
      */
-    public function removeAllReturn()
+    public function removeAllReturn() : array
     {
         $this->return = [];
 
@@ -42,14 +42,14 @@ trait ReturningClauseTrait
     /**
      * Set or replace a column with a content.
      *
-     * @param string $expression
+     * @param string|Expression $expression
      *   SQL select column
-     * @param string
+     * @param string $alias
      *   If alias to be different from the column
      *
      * @return $this
      */
-    public function returning($expression, $alias = null)
+    public function returning($expression, string $alias = null)
     {
         if (!$alias) {
             if (!is_string($expression) && !$expression instanceof Expression) {
@@ -69,8 +69,10 @@ trait ReturningClauseTrait
      * Find column index for given alias
      *
      * @param string $alias
+     *
+     * @return null|string
      */
-    private function findReturnIndex($alias)
+    private function findReturnIndex(string $alias) : string
     {
         foreach ($this->return as $index => $data) {
             if ($data[1] === $alias) {
@@ -86,7 +88,7 @@ trait ReturningClauseTrait
      *
      * @return $this
      */
-    public function removeReturn($alias)
+    public function removeReturn(string $alias)
     {
         $index = $this->findReturnIndex($alias);
 
@@ -104,7 +106,7 @@ trait ReturningClauseTrait
      *
      * @return bool
      */
-    public function hasReturn($alias)
+    public function hasReturn(string $alias) : bool
     {
         return (bool)$this->findReturnIndex($alias);
     }
@@ -112,7 +114,7 @@ trait ReturningClauseTrait
     /**
      * {@inheritdoc}
      */
-    public function willReturnRows()
+    public function willReturnRows() : bool
     {
         return !empty($this->return);
     }

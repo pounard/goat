@@ -32,7 +32,7 @@ interface Query extends Statement
      *
      * @return ResultIteratorInterface
      */
-    public function execute(array $parameters = [], $options = null);
+    public function execute(array $parameters = [], $options = null) : ResultIteratorInterface;
 
     /**
      * Execute query with the given parameters and return the affected row count
@@ -47,7 +47,7 @@ interface Query extends Statement
      *
      * @return int
      */
-    public function perform(array $parameters = [], $options = null);
+    public function perform(array $parameters = [], $options = null) : int;
 
     /**
      * Should this query return something
@@ -63,5 +63,5 @@ interface Query extends Statement
      *
      * @return bool
      */
-    public function willReturnRows();
+    public function willReturnRows() : bool;
 }

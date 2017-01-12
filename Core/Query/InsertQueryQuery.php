@@ -2,6 +2,7 @@
 
 namespace Goat\Core\Query;
 
+use Goat\Core\Client\ArgumentBag;
 use Goat\Core\Error\QueryError;
 use Goat\Core\Query\Partial\AbstractQuery;
 use Goat\Core\Query\Partial\ReturningClauseTrait;
@@ -22,7 +23,7 @@ final class InsertQueryQuery extends AbstractQuery
      * @param string $relation
      *   SQL from statement relation name
      */
-    public function __construct($relation)
+    public function __construct(string $relation)
     {
         // INSERT queries main relation cannot be aliased
         parent::__construct($relation);
@@ -31,9 +32,9 @@ final class InsertQueryQuery extends AbstractQuery
     /**
      * Get select columns array
      *
-     * @return string
+     * @return string[]
      */
-    public function getAllColumns()
+    public function getAllColumns() : array
     {
         return $this->columns;
     }
@@ -62,7 +63,7 @@ final class InsertQueryQuery extends AbstractQuery
      *
      * @return Query
      */
-    public function getQuery()
+    public function getQuery() : Query
     {
         if (!$this->query) {
             throw new QueryError("query has not been set yet");

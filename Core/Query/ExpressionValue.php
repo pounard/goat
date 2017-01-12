@@ -17,8 +17,9 @@ final class ExpressionValue implements Expression
      * Default constructor
      *
      * @param mixed $value
+     * @param string $type
      */
-    public function __construct($value, $type = null)
+    public function __construct($value, string $type = null)
     {
         if (null === $type) {
             if (is_string($value) && $value &&  ':' === $value[0]) {
@@ -46,7 +47,7 @@ final class ExpressionValue implements Expression
     /**
      * Get value
      *
-     * @return string
+     * @return mixed
      */
     public function getValue()
     {

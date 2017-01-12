@@ -16,7 +16,7 @@ class PgSQLTransaction extends Transaction
      *
      * @return string
      */
-    private function getIsolationLevelString($isolationLevel)
+    private function getIsolationLevelString(int $isolationLevel)
     {
         switch ($isolationLevel) {
 
@@ -62,7 +62,7 @@ class PgSQLTransaction extends Transaction
     /**
      * {@inheritdoc}
      */
-    protected function doTransactionStart($isolationLevel)
+    protected function doTransactionStart(int $isolationLevel)
     {
         try {
             // Set immediate constraint fail per default to be ISO with
@@ -80,7 +80,7 @@ class PgSQLTransaction extends Transaction
     /**
      * {@inheritdoc}
      */
-    protected function doChangeLevel($isolationLevel)
+    protected function doChangeLevel(int $isolationLevel)
     {
         try {
             // Set immediate constraint fail per default to be ISO with
@@ -98,7 +98,7 @@ class PgSQLTransaction extends Transaction
     /**
      * {@inheritdoc}
      */
-    protected function doCreateSavepoint($name)
+    protected function doCreateSavepoint(string $name)
     {
         try {
             $this->connection->perform(sprintf(
@@ -113,7 +113,7 @@ class PgSQLTransaction extends Transaction
     /**
      * {@inheritdoc}
      */
-    protected function doRollbackToSavepoint($name)
+    protected function doRollbackToSavepoint(string $name)
     {
         try {
             $this->connection->perform(sprintf(
