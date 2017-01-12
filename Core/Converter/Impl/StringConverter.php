@@ -14,15 +14,15 @@ class StringConverter implements ConverterInterface, EscaperAwareInterface
     /**
      * {@inheritdoc}
      */
-    public function hydrate($type, $value)
+    public function hydrate(string $type, string $value)
     {
-        return (string)$value;
+        return $value;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function extract($type, $value)
+    public function extract(string $type, $value) : string
     {
         if (!$this->escaper) {
             throw new ConfigurationError(sprintf("I won't let you escape any string without any viable API to escape it, this is a serious security issue."));
@@ -36,7 +36,7 @@ class StringConverter implements ConverterInterface, EscaperAwareInterface
     /**
      * {@inheritdoc}
      */
-    public function needsCast($type)
+    public function needsCast(string $type) : bool
     {
         return false;
     }
@@ -44,14 +44,14 @@ class StringConverter implements ConverterInterface, EscaperAwareInterface
     /**
      * {@inheritdoc}
      */
-    public function cast($type)
+    public function cast(string $type) : string
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function canProcess($value)
+    public function canProcess($value) : bool
     {
         return is_string($value);
     }

@@ -2,9 +2,19 @@
 
 namespace Goat\Core\Error;
 
+/**
+ * Non implemented feature
+ */
 class NotImplementedError extends GoatError
 {
-    public function __construct($message = null, $code = null, $previous = null)
+    /**
+     * Default constructor
+     *
+     * @param string $message
+     * @param int $code
+     * @param \Throwable $previous
+     */
+    public function __construct(string $message = null, int $code = null, \Throwable $previous = null)
     {
         if (!$message) {
             $message = sprintf("this method is not implemented");

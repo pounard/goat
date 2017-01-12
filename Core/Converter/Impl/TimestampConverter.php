@@ -46,7 +46,7 @@ class TimestampConverter implements ConverterInterface
     /**
      * {@inheritdoc}
      */
-    public function hydrate($type, $value)
+    public function hydrate(string $type, string $value)
     {
         $data = trim($value);
 
@@ -57,7 +57,7 @@ class TimestampConverter implements ConverterInterface
     /**
      * {@inheritdoc}
      */
-    public function extract($type, $value)
+    public function extract(string $type, $value) : string
     {
         if (null === $value) {
             return sprintf("null", $type);
@@ -82,7 +82,7 @@ class TimestampConverter implements ConverterInterface
     /**
      * {@inheritdoc}
      */
-    public function needsCast($type)
+    public function needsCast(string $type) : bool
     {
         return true;
     }
@@ -90,7 +90,7 @@ class TimestampConverter implements ConverterInterface
     /**
      * {@inheritdoc}
      */
-    public function cast($type)
+    public function cast(string $type) : string
     {
         switch ($type) {
 
@@ -108,7 +108,7 @@ class TimestampConverter implements ConverterInterface
     /**
      * {@inheritdoc}
      */
-    public function canProcess($value)
+    public function canProcess($value) : bool
     {
         return $value instanceof \DateTimeInterface;
     }

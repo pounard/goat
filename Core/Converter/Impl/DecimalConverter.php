@@ -9,7 +9,7 @@ class DecimalConverter implements ConverterInterface
     /**
      * {@inheritdoc}
      */
-    public function hydrate($type, $value)
+    public function hydrate(string $type, string $value)
     {
         return (float)$value;
     }
@@ -17,7 +17,7 @@ class DecimalConverter implements ConverterInterface
     /**
      * {@inheritdoc}
      */
-    public function extract($type, $value)
+    public function extract(string $type, $value) : string
     {
         return (float)$value;
     }
@@ -25,7 +25,7 @@ class DecimalConverter implements ConverterInterface
     /**
      * {@inheritdoc}
      */
-    public function needsCast($type)
+    public function needsCast(string $type) : bool
     {
         return true;
     }
@@ -33,14 +33,14 @@ class DecimalConverter implements ConverterInterface
     /**
      * {@inheritdoc}
      */
-    public function cast($type)
+    public function cast(string $type) : string
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function canProcess($value)
+    public function canProcess($value) : bool
     {
         return is_numeric($value);
     }

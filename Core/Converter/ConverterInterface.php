@@ -12,7 +12,7 @@ interface ConverterInterface
      *
      * @return mixed
      */
-    public function hydrate($type, $value);
+    public function hydrate(string $type, string $value);
 
     /**
      * From the given PHP value, get the raw SQL string
@@ -22,7 +22,7 @@ interface ConverterInterface
      *
      * @return string
      */
-    public function extract($type, $value);
+    public function extract(string $type, $value) : string;
 
     /**
      * Should this converter needs to cast the value to the server
@@ -31,7 +31,7 @@ interface ConverterInterface
      *
      * @return bool
      */
-    public function needsCast($type);
+    public function needsCast(string $type) : bool;
 
     /**
      * Get SQL type name to cast to
@@ -42,7 +42,7 @@ interface ConverterInterface
      *   You may return null if you consider that the given type is valid
      *   for cast, and let the server handle it as-is
      */
-    public function cast($type);
+    public function cast(string $type) : string;
 
     /**
      * Can this value be processed
@@ -51,5 +51,5 @@ interface ConverterInterface
      *
      * @return bool
      */
-    public function canProcess($value);
+    public function canProcess($value) : bool;
 }

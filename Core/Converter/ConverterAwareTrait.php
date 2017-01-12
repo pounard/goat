@@ -13,13 +13,9 @@ trait ConverterAwareTrait
      * Set connection
      *
      * @param ConverterMap $connection
-     *
-     * @return $this
      */
     public function setConverter(ConverterMap $converter)
     {
         $this->converter = $converter;
-
-        return $this;
     }
 }

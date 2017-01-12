@@ -45,7 +45,7 @@ class ConverterMap
      *
      * @return $this
      */
-    public function register($type, ConverterInterface $instance, array $aliases = [])
+    public function register(string $type, ConverterInterface $instance, array $aliases = [])
     {
         if (is_array($type)) {
             trigger_error(sprintf("registering type as array is outdate and will be removed, while registering %s", implode(', ', $type)), E_USER_DEPRECATED);
@@ -116,7 +116,7 @@ class ConverterMap
     /**
      * {@inheritdoc}
      */
-    public function hydrate($type, $value)
+    public function hydrate(string $type, string $value)
     {
         return $this->get($type)->hydrate($type, $value);
     }
@@ -124,7 +124,7 @@ class ConverterMap
     /**
      * {@inheritdoc}
      */
-    public function extract($type, $value)
+    public function extract(string $type, $value) : string
     {
         return $this->get($type)->extract($type, $value);
     }
@@ -132,7 +132,7 @@ class ConverterMap
     /**
      * {@inheritdoc}
      */
-    public function needsCast($type)
+    public function needsCast(string $type) : bool
     {
         return $this->get($type)->needsCast($type);
     }
@@ -140,7 +140,7 @@ class ConverterMap
     /**
      * {@inheritdoc}
      */
-    public function cast($type)
+    public function cast(string $type) : string
     {
         return $this->get($type)->cast($type);
     }
@@ -153,7 +153,7 @@ class ConverterMap
      *
      * @return bool
      */
-    public function typeExists($type, $allowAliases = true)
+    public function typeExists(string $type, bool $allowAliases = true) : bool
     {
         return isset($this->converters[$type]) || ($allowAliases && isset($this->aliasMap[$type]));
     }
@@ -165,7 +165,7 @@ class ConverterMap
      *
      * @return bool
      */
-    public function isTypeAlias($type)
+    public function isTypeAlias(string $type) : bool
     {
         return isset($this->aliasMap[$type]);
     }

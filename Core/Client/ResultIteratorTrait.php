@@ -33,13 +33,19 @@ trait ResultIteratorTrait /* implements ResultIteratorInterface */
         $ret = [];
 
         foreach ($row as $name => $value) {
-            $ret[$name] = $this
-                ->converter
-                ->hydrate(
-                    $this->getColumnType($name),
-                    $value
-                )
-            ;
+            // @todo find a better way to deal with null values, maybe
+            //    something like:
+            //      - add a getNullValue() on ConverterInterface?
+            //      - or just return null and let fail?
+            if (null !== $value) {
+                $ret[$name] = $this
+                    ->converter
+                    ->hydrate(
+                        $this->getColumnType($name),
+                        $value
+                    )
+                ;
+            }
         }
 
         return $ret;

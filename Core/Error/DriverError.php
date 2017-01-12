@@ -2,6 +2,9 @@
 
 namespace Goat\Core\Error;
 
+/**
+ * Driver specific error while running a query
+ */
 class DriverError extends GoatError
 {
     private $rawSQL;
@@ -12,9 +15,9 @@ class DriverError extends GoatError
      *
      * @param string $rawSQL
      * @param array $parameters
-     * @param \Exception|\Error $previous
+     * @param \Throwable $previous
      */
-    public function __construct($rawSQL, $parameters, $previous)
+    public function __construct(string $rawSQL, array $parameters, \Throwable $previous)
     {
         $this->rawSQL = $rawSQL;
         $this->parameters = $parameters;
