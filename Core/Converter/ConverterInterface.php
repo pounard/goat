@@ -42,7 +42,7 @@ interface ConverterInterface
      *   You may return null if you consider that the given type is valid
      *   for cast, and let the server handle it as-is
      */
-    public function cast(string $type) : string;
+    public function cast(string $type);
 
     /**
      * Can this value be processed

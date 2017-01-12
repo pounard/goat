@@ -90,7 +90,7 @@ class TimestampConverter implements ConverterInterface
     /**
      * {@inheritdoc}
      */
-    public function cast(string $type) : string
+    public function cast(string $type)
     {
         switch ($type) {
 

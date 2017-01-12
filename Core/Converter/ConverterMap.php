@@ -6,7 +6,7 @@ use Goat\Core\Converter\Impl\StringConverter;
 use Goat\Core\DebuggableTrait;
 use Goat\Core\Error\ConfigurationError;
 
-class ConverterMap
+class ConverterMap implements ConverterInterface
 {
     use DebuggableTrait;
 
@@ -140,9 +140,27 @@ class ConverterMap
     /**
      * {@inheritdoc}
      */
-    public function cast(string $type) : string
+    public function cast(string $type)
     {
         return $this->get($type)->cast($type);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function canProcess($value) : bool
+    {
+        if (null === $value) {
+            return false;
+        }
+
+        foreach ($this->converters as $converter) {
+            if ($converter->canProcess($value)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

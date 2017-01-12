@@ -19,7 +19,7 @@ class BooleanConverter implements ConverterInterface
      */
     public function extract(string $type, $value) : string
     {
-        return (int)(bool)$value;
+        return $value ? '1' : '0';
     }
 
     /**
@@ -33,7 +33,7 @@ class BooleanConverter implements ConverterInterface
     /**
      * {@inheritdoc}
      */
-    public function cast(string $type) : string
+    public function cast(string $type)
     {
     }
 

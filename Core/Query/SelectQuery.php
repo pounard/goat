@@ -142,7 +142,7 @@ final class SelectQuery extends AbstractQuery
     {
         if ($expression instanceof Expression) {
             if ($arguments) {
-                throw new QueryError("you cannot call %s::expression() and pass arguments if the given expression is not a string", $expression);
+                throw new QueryError(sprintf("you cannot call %s::columnExpression() and pass arguments if the given expression is not a string", __CLASS__));
             }
         } else {
             if (!is_array($arguments)) {

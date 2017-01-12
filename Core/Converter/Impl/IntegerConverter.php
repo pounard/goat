@@ -19,7 +19,7 @@ class IntegerConverter implements ConverterInterface
      */
     public function extract(string $type, $value) : string
     {
-        return (int)$value;
+        return (string)(int)$value;
     }
 
     /**
@@ -33,7 +33,7 @@ class IntegerConverter implements ConverterInterface
     /**
      * {@inheritdoc}
      */
-    public function cast(string $type) : string
+    public function cast(string $type)
     {
     }
 

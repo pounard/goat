@@ -82,7 +82,7 @@ class Session extends AbstractConnectionProxy
     public function perform($query, array $parameters = [], $options = null) : int
     {
         if ($this->readonlyConnection && !$this->isTransactionPending()) {
-            return $this->readonlyConnection->query($query, $parameters, $options);
+            return $this->readonlyConnection->perform($query, $parameters, $options);
         }
 
         return $this->writeConnection->perform($query, $parameters, $options);
@@ -94,7 +94,7 @@ class Session extends AbstractConnectionProxy
     public function prepareQuery($query, string $identifier = null) : string
     {
         if ($this->readonlyConnection && !$this->isTransactionPending()) {
-            return $this->readonlyConnection->query($query, $identifier);
+            return $this->readonlyConnection->prepareQuery($query, $identifier);
         }
 
         return $this->writeConnection->prepareQuery($query, $identifier);
@@ -106,7 +106,7 @@ class Session extends AbstractConnectionProxy
     public function executePreparedQuery(string $identifier, array $parameters = [], $options = null) : ResultIteratorInterface
     {
         if ($this->readonlyConnection && !$this->isTransactionPending()) {
-            return $this->readonlyConnection->query($identifier, $parameters, $options);
+            return $this->readonlyConnection->executePreparedQuery($identifier, $parameters, $options);
         }
 
         return $this->writeConnection->executePreparedQuery($identifier, $parameters, $options);
@@ -126,7 +126,7 @@ class Session extends AbstractConnectionProxy
     public function select(string $relation, string $alias = null) : SelectQuery
     {
         if ($this->readonlyConnection && !$this->isTransactionPending()) {
-            return $this->readonlyConnection->query($relation, $alias);
+            return $this->readonlyConnection->select($relation, $alias);
         }
 
         return $this->writeConnection->select($relation, $alias);

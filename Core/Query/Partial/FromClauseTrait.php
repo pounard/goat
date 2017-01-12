@@ -41,7 +41,7 @@ trait FromClauseTrait
      *
      * @return $this
      */
-    final public function join($relation, $condition = null, string $alias = null, string $mode = Query::JOIN_INNER)
+    final public function join($relation, $condition = null, string $alias = null, int $mode = Query::JOIN_INNER)
     {
         $relation = $this->normalizeRelation($relation, $alias);
 
@@ -69,7 +69,7 @@ trait FromClauseTrait
      *
      * @return Where
      */
-    final public function joinWhere($relation, string $alias = null, string $mode = Query::JOIN_INNER) : Where
+    final public function joinWhere($relation, string $alias = null, int $mode = Query::JOIN_INNER) : Where
     {
         $relation = $this->normalizeRelation($relation, $alias);
 

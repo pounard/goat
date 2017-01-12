@@ -7,7 +7,7 @@ use Goat\Core\DebuggableTrait;
 use Goat\Core\Error\InvalidDataAccessError;
 use Goat\Core\Hydrator\HydratorAwareTrait;
 
-trait ResultIteratorTrait /* implements ResultIteratorInterface */
+abstract class AbstractResultIterator implements ResultIteratorInterface
 {
     use DebuggableTrait;
     use ConverterAwareTrait;
@@ -72,12 +72,7 @@ trait ResultIteratorTrait /* implements ResultIteratorInterface */
     }
 
     /**
-     * Fetch given field in the first or current row
-     *
-     * @param string $name
-     *   If none given, just take the first one
-     *
-     * @return mixed[]
+     * {@inheritdoc}
      */
     public function fetchField($name = null)
     {
@@ -93,9 +88,7 @@ trait ResultIteratorTrait /* implements ResultIteratorInterface */
     }
 
     /**
-     * Count rows
-     *
-     * @return int
+     * {@inheritdoc}
      */
     public function count()
     {

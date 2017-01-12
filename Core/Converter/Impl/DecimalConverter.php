@@ -19,7 +19,7 @@ class DecimalConverter implements ConverterInterface
      */
     public function extract(string $type, $value) : string
     {
-        return (float)$value;
+        return (string)(float)$value;
     }
 
     /**
@@ -33,7 +33,7 @@ class DecimalConverter implements ConverterInterface
     /**
      * {@inheritdoc}
      */
-    public function cast(string $type) : string
+    public function cast(string $type)
     {
     }
 

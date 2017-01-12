@@ -93,6 +93,8 @@ final class Where implements Statement
      */
     protected function reset()
     {
+        // Never use unset() this will unassign the class property and make
+        // PHP raise notices on further accesses.
         $this->arguments = null;
     }
 
@@ -183,7 +185,7 @@ final class Where implements Statement
     {
         if ($expression instanceof Where || $expression instanceof Expression) {
             if ($arguments) {
-                throw new QueryError("you cannot call %s::expression() and pass arguments if the given expression is not a string", $expression);
+                throw new QueryError(sprintf("you cannot call %s::expression() and pass arguments if the given expression is not a string", __CLASS__));
             }
         } else {
             if (!is_array($arguments)) {
@@ -318,7 +320,7 @@ final class Where implements Statement
      */
     public function __clone()
     {
-        $this->arguments = null;
+        $this->reset();
 
         foreach ($this->conditions as $index => $condition) {
             if (is_object($condition)) {

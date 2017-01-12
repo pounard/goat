@@ -2,14 +2,11 @@
 
 namespace Goat\Driver\PDO;
 
-use Goat\Core\Client\ResultIteratorInterface;
-use Goat\Core\Client\ResultIteratorTrait;
+use Goat\Core\Client\AbstractResultIterator;
 use Goat\Core\Error\InvalidDataAccessError;
 
-class DefaultResultIterator implements ResultIteratorInterface
+class DefaultResultIterator extends AbstractResultIterator
 {
-    use ResultIteratorTrait;
-
     protected $statement;
     protected $columnCount = 0;
     protected $columnNameMap = [];

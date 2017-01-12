@@ -30,7 +30,7 @@ class MySQLTransaction extends Transaction
                 return 'REPEATABLE READ';
 
             case Transaction::SERIALIZABLE:
-                return SERIALIZABLE;
+                return 'SERIALIZABLE';
 
             default:
                 throw new TransactionError(sprintf("%s: unknown transaction level", $isolationLevel));
@@ -57,9 +57,7 @@ class MySQLTransaction extends Transaction
             // than they asked for, and data consistency is not ensured anymore
             // that's the downside of using MySQL.
             if (1568 == $e->getCode()) {
-                if ($this->c) {
-                    $this->connection->debugMessage("transaction is nested into another, MySQL can't change the isolation level", E_USER_NOTICE);
-                }
+                $this->connection->debugMessage("transaction is nested into another, MySQL can't change the isolation level", E_USER_NOTICE);
             } else {
                 throw new TransactionError("transaction start failed", null, $e);
             }

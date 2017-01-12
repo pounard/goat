@@ -30,7 +30,7 @@ class PgSQLTransaction extends Transaction
                 return 'REPEATABLE READ';
 
             case Transaction::SERIALIZABLE:
-                return SERIALIZABLE;
+                return 'SERIALIZABLE';
 
             default:
                 throw new TransactionError(sprintf("%s: unknown transaction level", $isolationLevel));

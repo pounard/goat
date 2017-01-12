@@ -217,7 +217,7 @@ final class PagerResultIterator implements ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function fetchField($name = null) : string
+    public function fetchField($name = null)
     {
         return $this->result->fetchField($name);
     }

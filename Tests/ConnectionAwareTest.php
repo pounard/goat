@@ -93,7 +93,6 @@ abstract class ConnectionAwareTest extends \PHPUnit_Framework_TestCase
     final protected function createConverter(ConnectionInterface $connection)
     {
         $default = new StringConverter();
-        $default->setEscaper($connection);
 
         /*
          * Mapping from PostgreSQL 9.2
