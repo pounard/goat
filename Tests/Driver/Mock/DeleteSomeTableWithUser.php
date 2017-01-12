@@ -1,6 +1,6 @@
 <?php
 
-namespace Goat\Tests\Core\Query\Mock;
+namespace Goat\Tests\Driver\Mock;
 
 class DeleteSomeTableWithUser
 {

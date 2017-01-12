@@ -1,11 +1,11 @@
 <?php
 
-namespace Goat\Tests\Core\Query;
+namespace Goat\Tests\Driver;
 
 use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Query\Query;
 use Goat\Tests\ConnectionAwareTest;
-use Goat\Tests\Core\Query\Mock\DeleteSomeTableWithUser;
+use Goat\Tests\Driver\Mock\DeleteSomeTableWithUser;
 
 abstract class AbstractDeleteTest extends ConnectionAwareTest
 {

@@ -1,13 +1,13 @@
 <?php
 
-namespace Goat\Tests\Core\Query;
+namespace Goat\Tests\Driver;
 
 use Goat\Core\Client\ConnectionInterface;
+use Goat\Core\Query\ExpressionColumn;
+use Goat\Core\Query\ExpressionRaw;
 use Goat\Core\Query\Query;
 use Goat\Core\Query\Where;
 use Goat\Tests\ConnectionAwareTest;
-use Goat\Core\Query\ExpressionColumn;
-use Goat\Core\Query\ExpressionRaw;
 
 abstract class AbstractUpdateTest extends ConnectionAwareTest
 {

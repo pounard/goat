@@ -1,8 +1,6 @@
 <?php
 
-namespace Goat\Tests\Core\Query;
-
-use Goat\Core\Query\Query;
+namespace Goat\Tests\Driver;
 
 class PgSQLUpdateTest extends AbstractUpdateTest
 {

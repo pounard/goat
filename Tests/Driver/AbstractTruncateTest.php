@@ -1,6 +1,6 @@
 <?php
 
-namespace Goat\Tests\Core\Client;
+namespace Goat\Tests\Driver;
 
 use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Query\Query;

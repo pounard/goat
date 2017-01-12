@@ -7,7 +7,6 @@ use Goat\Core\Query\Query;
 use Goat\Core\Query\SelectQuery;
 use Goat\Core\Query\SqlFormatter;
 use Goat\Core\Query\ExpressionColumn;
-use Goat\Tests\Core\Query\Mock\NullEscaper;
 
 class BuilderSelectTest extends \PHPUnit_Framework_TestCase
 {

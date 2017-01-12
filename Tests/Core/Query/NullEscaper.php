@@ -1,6 +1,6 @@
 <?php
 
-namespace Goat\Tests\Core\Query\Mock;
+namespace Goat\Tests\Core\Query;
 
 use Goat\Core\Client\EscaperInterface;
 use Goat\Core\Error\GoatError;
