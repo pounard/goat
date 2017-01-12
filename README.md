@@ -64,7 +64,6 @@ As of now, the following API are available (but highly subject to change):
  *  [postponed] ext-pgsql driver
  *  [postponed] INSERT/UPDATE fallback when RETURNING is not supported
  *  [postponed] MERGE queries
- *  [postponed] parametric testing for backends
  *  [postponed] SELECT with sub-select at select level
  *  [postponed] UNION queries
  *  [postponed] WITH support
@@ -77,6 +76,7 @@ As of now, the following API are available (but highly subject to change):
  *  [x] generic way to dissociate raw SQL string from raw values
  *  [x] improve WHERE builder tests: raw statement / sub where
  *  [x] mapper: object hydration mechanism
+ *  [x] parametric testing for backends
  *  [x] RIGHT and FULL JOIN types
  *  [x] session: add basic session support (dual connection handling)
  *  [x] transaction support
