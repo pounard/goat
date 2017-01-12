@@ -20,7 +20,7 @@ class DsnTest extends \PHPUnit_Framework_TestCase
             $this->assertSame('unix', $dsn->getScheme());
             $this->assertSame('coucou@robert_69', $dsn->getDatabase());
             $this->assertSame('/var/run/pg.sock', $dsn->getHost());
-            $this->assertNull($dsn->getPort());
+            $this->assertEmpty($dsn->getPort());
             $this->assertTrue($dsn->isUnixSocket());
 
             $this->assertSame('unix://pgsql:///var/run/pg.sock:coucou@robert_69', $dsn->formatFull());

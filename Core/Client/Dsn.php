@@ -36,7 +36,7 @@ final class Dsn
     private $driver;
     private $scheme;
     private $host;
-    private $port;
+    private $port = 0;
     private $charset = self::DEFAULT_CHARSET;
     private $database;
     private $username;
@@ -53,7 +53,7 @@ final class Dsn
      * @throws \InvalidArgumentException
      *   On invalid dsn given
      */
-    public function __construct($string, $username = null, $password = null, $charset = self::DEFAULT_CHARSET)
+    public function __construct(string $string, string $username = null, string $password = null, string $charset = self::DEFAULT_CHARSET)
     {
         $matches = [];
 
@@ -110,42 +110,82 @@ final class Dsn
         }
     }
 
-    public function getUsername()
+    /**
+     * Get username if any
+     *
+     * @return null|string
+     */
+    public function getUsername() : string
     {
         return $this->username;
     }
 
-    public function getPassword()
+    /**
+     * Get password if any
+     *
+     * @return null|string
+     */
+    public function getPassword() : string
     {
         return $this->password;
     }
 
-    public function getDriver()
+    /**
+     * Get driver identifier
+     *
+     * @return string
+     */
+    public function getDriver() : string
     {
         return $this->driver;
     }
 
-    public function getScheme()
+    /**
+     * Get scheme (tcp or unix)
+     *
+     * @return string
+     */
+    public function getScheme() : string
     {
         return $this->scheme;
     }
 
-    public function getHost()
+    /**
+     * Get hostname
+     *
+     * @return string
+     */
+    public function getHost() : string
     {
         return $this->host;
     }
 
-    public function getPort()
+    /**
+     * Get port if any
+     *
+     * @return null|int
+     */
+    public function getPort() : int
     {
         return $this->port;
     }
 
-    public function getSocketPath()
+    /**
+     * Get socket path if any
+     *
+     * @return null|string
+     */
+    public function getSocketPath() : string
     {
         return $this->host;
     }
 
-    public function getDatabase()
+    /**
+     * Get database
+     *
+     * @return string
+     */
+    public function getDatabase() : string
     {
         return $this->database;
     }
@@ -155,7 +195,7 @@ final class Dsn
      *
      * @return bool
      */
-    public function isUnixSocket()
+    public function isUnixSocket() : bool
     {
         return 'unix' === $this->scheme;
     }
@@ -165,7 +205,7 @@ final class Dsn
      *
      * @return string
      */
-    public function formatFull()
+    public function formatFull() : string
     {
         if ($this->isUnixSocket()) {
             return $this->formatWithoutDatabase() . ':' . $this->database;
@@ -179,7 +219,7 @@ final class Dsn
      *
      * @return string
      */
-    public function formatPdo()
+    public function formatPdo() : string
     {
         $map = ['port' => $this->port, 'dbname' => $this->database];
 
@@ -217,7 +257,7 @@ final class Dsn
      *
      * @return string
      */
-    public function formatWithoutDatabase()
+    public function formatWithoutDatabase() : string
     {
         if ($this->isUnixSocket()) {
             return 'unix://' . $this->driver . '://' . $this->host;
