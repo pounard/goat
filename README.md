@@ -76,6 +76,7 @@ As of now, the following API are available (but highly subject to change):
  *  [x] expression vs statement: query builder improvements
  *  [x] generic way to dissociate raw SQL string from raw values
  *  [x] improve WHERE builder tests: raw statement / sub where
+ *  [x] mapper: object hydration mechanism
  *  [x] RIGHT and FULL JOIN types
  *  [x] session: add basic session support (dual connection handling)
  *  [x] transaction support
@@ -95,11 +96,11 @@ As of now, the following API are available (but highly subject to change):
  *  MySQL default transaction level in configuration
  *  Query cloning does not clone relation (object is immutable)
  *  session: test with write and read connections
+ *  session: write-only/read-only connection support, fallback when transaction
  *  transaction: document deffer helpers
  *  transaction: document immediate per default
  *  transaction: document isolation levels
  *  transaction: FOR UPDATE / FOR SHARE query dissociation from SELECT
- *  session: write-only/read-only connection support, fallback when transaction
  *  WHERE builder tests: subqueries tests
 
 # Driver support

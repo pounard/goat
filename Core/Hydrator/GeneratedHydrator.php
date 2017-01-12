@@ -67,6 +67,7 @@ class GeneratedHydrator implements HydratorInterface
         $this->hydrator->hydrate($values, $object);
 
         if (HydratorInterface::CONSTRUCTOR_LATE === $constructor && method_exists($object, '__construct')) {
+            // @todo How about constructor arguments?
             $object->__construct();
         }
 
