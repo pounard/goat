@@ -45,9 +45,11 @@ class MySQLTransaction extends Transaction
         try {
             // Transaction level cannot be changed while in the transaction,
             // so it must set before starting the transaction
-            $this->connection->perform(sprintf(
-                "SET TRANSACTION ISOLATION LEVEL %s",
-                $this->getIsolationLevelString($isolationLevel))
+            $this->connection->perform(
+                sprintf(
+                    "SET TRANSACTION ISOLATION LEVEL %s",
+                    $this->getIsolationLevelString($isolationLevel)
+                )
             );
 
         } catch (DriverError $e) {

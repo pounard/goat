@@ -67,9 +67,11 @@ class PgSQLTransaction extends Transaction
         try {
             // Set immediate constraint fail per default to be ISO with
             // backends that don't support deferable constraints
-            $this->connection->perform(sprintf(
-                "START TRANSACTION ISOLATION LEVEL %s READ WRITE",
-                $this->getIsolationLevelString($isolationLevel))
+            $this->connection->perform(
+                sprintf(
+                    "START TRANSACTION ISOLATION LEVEL %s READ WRITE",
+                    $this->getIsolationLevelString($isolationLevel)
+                )
             );
 
         } catch (DriverError $e) {
@@ -85,9 +87,11 @@ class PgSQLTransaction extends Transaction
         try {
             // Set immediate constraint fail per default to be ISO with
             // backends that don't support deferable constraints
-            $this->connection->perform(sprintf(
-                "SET TRANSACTION ISOLATION LEVEL %s",
-                $this->getIsolationLevelString($isolationLevel))
+            $this->connection->perform(
+                sprintf(
+                    "SET TRANSACTION ISOLATION LEVEL %s",
+                    $this->getIsolationLevelString($isolationLevel)
+                )
             );
 
         } catch (DriverError $e) {
@@ -101,10 +105,12 @@ class PgSQLTransaction extends Transaction
     protected function doCreateSavepoint(string $name)
     {
         try {
-            $this->connection->perform(sprintf(
-                "SAVEPOINT %s",
-                $this->connection->escapeIdentifier($name)
-            ));
+            $this->connection->perform(
+                sprintf(
+                    "SAVEPOINT %s",
+                    $this->connection->escapeIdentifier($name)
+                )
+            );
         } catch (DriverError $e) {
             throw new TransactionError(sprintf("%s: create savepoint failed", $name), null, $e);
         }
@@ -116,10 +122,12 @@ class PgSQLTransaction extends Transaction
     protected function doRollbackToSavepoint(string $name)
     {
         try {
-            $this->connection->perform(sprintf(
-                "ROLLBACK TO SAVEPOINT %s",
-                $this->connection->escapeIdentifier($name)
-            ));
+            $this->connection->perform(
+                sprintf(
+                    "ROLLBACK TO SAVEPOINT %s",
+                    $this->connection->escapeIdentifier($name)
+                )
+            );
         } catch (DriverError $e) {
             throw new TransactionError(sprintf("%s: rollback to savepoint failed", $name), null, $e);
         }

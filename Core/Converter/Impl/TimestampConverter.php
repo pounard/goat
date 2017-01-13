@@ -72,7 +72,7 @@ class TimestampConverter implements ConverterInterface
             case 'timestampz':
                 return $this->formatTimestamp($value);
 
-            case 'time';
+            case 'time':
                 return $this->formatTime($value);
         }
 
@@ -94,14 +94,14 @@ class TimestampConverter implements ConverterInterface
     {
         switch ($type) {
 
-          case 'date':
-              return 'date';
+            case 'date':
+                return 'date';
 
-          case 'time':
-              return 'time';
+            case 'time':
+                return 'time';
 
-          default:
-              return 'timestamp';
+            default:
+                return 'timestamp';
         }
     }
 

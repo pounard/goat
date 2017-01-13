@@ -527,8 +527,8 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
                         break;
 
                     default:
-                       $output[] = $valueString;
-                       break;
+                        $output[] = $valueString;
+                        break;
                 }
             } else {
                 switch ($operator) {

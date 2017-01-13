@@ -39,13 +39,13 @@ class EntityStructureTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($entity->has('bar'));
         $this->assertTrue($entity->exists('baz'));
         $this->assertFalse($entity->has('bar'));
-            foreach (['status', 'cassoulet', 'other'] as $property) {
-             try {
-                  $entity->get($property);
-                  $this->fail("An exception should have been raised");
-             } catch (\InvalidArgumentException $e) {
-                  $this->assertTrue(true);
-             }
+        foreach (['status', 'cassoulet', 'other'] as $property) {
+            try {
+                $entity->get($property);
+                $this->fail("An exception should have been raised");
+            } catch (\InvalidArgumentException $e) {
+                $this->assertTrue(true);
+            }
         }
 
         // Now ensures that added custom field don't cause exceptions, but

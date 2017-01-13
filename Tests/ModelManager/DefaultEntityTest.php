@@ -29,12 +29,12 @@ class DefaultEntityTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(845, $entity->get('bar'));
         $this->assertSame(null, $entity->get('baz'));
         foreach (['status', 'cassoulet', 'other'] as $property) {
-             try {
-                  $entity->get($property);
-                  $this->fail("An exception should have been raised");
-             } catch (\InvalidArgumentException $e) {
-                  $this->assertTrue(true);
-             }
+            try {
+                 $entity->get($property);
+                 $this->fail("An exception should have been raised");
+            } catch (\InvalidArgumentException $e) {
+                 $this->assertTrue(true);
+            }
         }
 
         // Test has()

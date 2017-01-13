@@ -401,7 +401,6 @@ abstract class AbstractConnection implements ConnectionInterface
             ++$index;
 
             return $placeholder;
-
         }, $rawSQL);
 
         // Some parameters might remain untouched, case in which we do need to

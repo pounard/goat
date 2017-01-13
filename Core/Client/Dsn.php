@@ -67,10 +67,12 @@ final class Dsn
 
             if (empty($this->port)) {
                 switch ($this->driver) {
+
                     case 'mysql':
                         $this->port = self::DEFAULT_PORT_MYSQL;
                         break;
-                      case 'pgsql':
+
+                    case 'pgsql':
                         $this->port = self::DEFAULT_PORT_PGSQL;
                         break;
                 }

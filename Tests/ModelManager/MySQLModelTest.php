@@ -101,7 +101,7 @@ class MySQLModelTest extends ConnectionAwareTest
             )
         ");
 
-      $model = new Model($connection, (new SomeStructure())->setRelation('some_entity_delete'));
+        $model = new Model($connection, (new SomeStructure())->setRelation('some_entity_delete'));
 
 //         $reference = [
 //             ['foo' => -12,  'bar' => 'what',                              'baz' => new \DateTime('2012-05-22 08:30:00')],

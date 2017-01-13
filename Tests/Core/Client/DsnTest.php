@@ -13,8 +13,8 @@ class DsnTest extends \PHPUnit_Framework_TestCase
             // Stupid database names are valid
             'pgsql:///var/run/pg.sock:coucou@robert_69',
             'unix://pgsql:///var/run/pg.sock:coucou@robert_69',
-        ] as $string)
-        {
+        ] as $string) {
+
             $dsn = new Dsn($string);
             $this->assertSame('pgsql', $dsn->getDriver());
             $this->assertSame('unix', $dsn->getScheme());
@@ -32,8 +32,8 @@ class DsnTest extends \PHPUnit_Framework_TestCase
             // Stupid database names are valid
             'pgsql://1.2.3.4:1234/`{[@}e#',
             'tcp://pgsql://1.2.3.4:1234/`{[@}e#',
-        ] as $string)
-        {
+        ] as $string) {
+
             $dsn = new Dsn($string);
             $this->assertSame(1234, $dsn->getPort());
             $this->assertSame('1.2.3.4', $dsn->getHost());
@@ -50,8 +50,8 @@ class DsnTest extends \PHPUnit_Framework_TestCase
         foreach ([
             'mysql://robert:666/my_base',
             'tcp://mysql://robert:666/my_base',
-        ] as $string)
-        {
+        ] as $string) {
+
             $dsn = new Dsn($string);
             $this->assertSame(666, $dsn->getPort());
             $this->assertSame('robert', $dsn->getHost());
@@ -68,8 +68,8 @@ class DsnTest extends \PHPUnit_Framework_TestCase
         foreach ([
             'mysql:///oupsy_no_host',
             'tcp://mysql:///oupsy_no_host',
-        ] as $string)
-        {
+        ] as $string) {
+
             $dsn = new Dsn($string);
             $this->assertSame(Dsn::DEFAULT_PORT_MYSQL, $dsn->getPort());
             $this->assertSame(Dsn::DEFAULT_HOST, $dsn->getHost());
@@ -86,8 +86,8 @@ class DsnTest extends \PHPUnit_Framework_TestCase
         foreach ([
             'pgsql:///oupsy_no_host',
             'tcp://pgsql:///oupsy_no_host',
-        ] as $string)
-        {
+        ] as $string) {
+
             $dsn = new Dsn($string);
             $this->assertSame(Dsn::DEFAULT_PORT_PGSQL, $dsn->getPort());
             $this->assertSame(Dsn::DEFAULT_HOST, $dsn->getHost());
@@ -124,6 +124,7 @@ class DsnTest extends \PHPUnit_Framework_TestCase
             'locahost:1234/12',
             '/var/run/mysql.sock',
         ];
+
         foreach ($invalid as $string) {
             try {
                 new Dsn($string);
