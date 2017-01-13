@@ -101,7 +101,7 @@ class UpdateTest extends DriverTestCase
 
         $query = $connection->update('some_table', 'trout');
         $query
-            ->where()
+            ->getWhere()
             ->open(Where::OR)
                 ->condition('trout.foo', 43)
                 ->condition('trout.foo', 666)

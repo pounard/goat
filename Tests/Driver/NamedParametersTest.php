@@ -81,7 +81,7 @@ class NamedParametersTest extends DriverTestCase
 
         $query = $connection->select('some_table');
         $query
-            ->where()
+            ->getWhere()
             ->or()
             ->condition('foo', ':some_foo::integer')
             ->condition('bar', ':barbar')

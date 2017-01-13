@@ -4,6 +4,7 @@ namespace Goat\Core\Query\Partial;
 
 use Goat\Core\Error\QueryError;
 use Goat\Core\Query\ExpressionRaw;
+use Goat\Core\Query\ExpressionRelation;
 use Goat\Core\Query\Query;
 use Goat\Core\Query\Where;
 
@@ -34,7 +35,7 @@ trait FromClauseTrait
     /**
      * Add join statement
      *
-     * @param string $relation
+     * @param string|ExpressionRelation $relation
      * @param string|Where|ExpressionRaw $condition
      * @param string $alias
      * @param int $mode
@@ -63,7 +64,7 @@ trait FromClauseTrait
     /**
      * Add join statement and return the associated Where
      *
-     * @param string $relation
+     * @param string|ExpressionRelation $relation
      * @param string $alias
      * @param int $mode
      *
@@ -81,7 +82,7 @@ trait FromClauseTrait
     /**
      * Add inner statement
      *
-     * @param string $relation
+     * @param string|ExpressionRelation $relation
      * @param string|Where|ExpressionRaw $condition
      * @param string $alias
      *
@@ -97,7 +98,7 @@ trait FromClauseTrait
     /**
      * Add left outer join statement
      *
-     * @param string $relation
+     * @param string|ExpressionRelation $relation
      * @param string|Where|ExpressionRaw $condition
      * @param string $alias
      *
@@ -113,7 +114,7 @@ trait FromClauseTrait
     /**
      * Add inner statement and return the associated Where
      *
-     * @param string $relation
+     * @param string|ExpressionRelation $relation
      * @param string $alias
      *
      * @return Where
@@ -126,7 +127,7 @@ trait FromClauseTrait
     /**
      * Add left outer join statement and return the associated Where
      *
-     * @param string $relation
+     * @param string|ExpressionRelation $relation
      * @param string $alias
      *
      * @return Where

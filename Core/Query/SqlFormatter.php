@@ -37,14 +37,14 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
     /**
      * Format a single set clause (update queries)
      *
-     * @param string $column
+     * @param string $columnName
      * @param string|Expression $expression
      *
      * @return string
      */
-    protected function formatUpdateSetItem(string $column, $expression) : string
+    protected function formatUpdateSetItem(string $columnName, $expression) : string
     {
-        $columnString = $this->escaper->escapeIdentifier($column);
+        $columnString = $this->escaper->escapeIdentifier($columnName);
 
         if ($expression instanceof Expression) {
             return sprintf("%s = %s", $columnString, $this->format($expression));
@@ -326,7 +326,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      * Format all update from statement
      *
      * @param UpdateQuery $query
-     * @param array $relations
+     * @param array $joins
      *   Each relation is an array that must contain:
      *     - key must be the relation alias
      *     - 0: ExpressionRelation relation name
@@ -353,7 +353,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
 
         $output[] = sprintf("from %s", $this->formatExpressionRelation($first[0]));
         if ($first[1] && !$first[1]->isEmpty()) {
-            $query->where()->expression($first[1]);
+            $query->getWhere()->expression($first[1]);
         }
 
         // Format remaining joins normally, most database servers can do that
@@ -371,7 +371,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      * Format all delete using statement
      *
      * @param DeleteQuery $query
-     * @param array $relations
+     * @param array $joins
      *   Each relation is an array that must contain:
      *     - key must be the relation alias
      *     - 0: ExpressionRelation relation name
@@ -398,7 +398,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
 
         $output[] = sprintf("using %s", $this->formatExpressionRelation($first[0]));
         if ($first[1] && !$first[1]->isEmpty()) {
-            $query->where()->expression($first[1]);
+            $query->getWhere()->expression($first[1]);
         }
 
         // Format remaining joins normally, most database servers can do that
@@ -580,7 +580,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
         $output[] = sprintf(
             "insert into %s",
             // From SQL 92 standard, INSERT queries don't have table alias
-            $this->escaper->escapeIdentifier($query->getRelation()->getRelation())
+            $this->escaper->escapeIdentifier($query->getRelation()->getName())
         );
 
         if ($columns) {
@@ -628,7 +628,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
         $output[] = sprintf(
             "insert into %s",
             // From SQL 92 standard, INSERT queries don't have table alias
-            $this->escaper->escapeIdentifier($query->getRelation()->getRelation())
+            $this->escaper->escapeIdentifier($query->getRelation()->getName())
         );
 
         if ($columns) {
@@ -673,7 +673,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
             $output[] = $this->formatDeleteUsing($query, $joins);
         }
 
-        $where = $query->where();
+        $where = $query->getWhere();
         if (!$where->isEmpty()) {
             $output[] = sprintf('where %s', $this->formatWhere($where));
         }
@@ -715,7 +715,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
             $output[] = $this->formatUpdateFrom($query, $joins);
         }
 
-        $where = $query->where();
+        $where = $query->getWhere();
         if (!$where->isEmpty()) {
             $output[] = sprintf('where %s', $this->formatWhere($where));
         }
@@ -745,7 +745,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
             $this->formatJoin($query->getAllJoin())
         );
 
-        $where = $query->where();
+        $where = $query->getWhere();
         if (!$where->isEmpty()) {
             $output[] = sprintf('where %s', $this->formatWhere($where));
         }
@@ -754,7 +754,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
         $output[] = $this->formatOrderBy($query->getAllOrderBy());
         $output[] = $this->formatRange(...$query->getRange());
 
-        $having = $query->having();
+        $having = $query->getHaving();
         if (!$having->isEmpty()) {
             $output[] = sprintf('having %s', $this->formatWhere($having));
         }
@@ -771,7 +771,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      */
     protected function formatExpressionRaw(ExpressionRaw $expression) : string
     {
-        return $expression->getExpression();
+        return $expression->getString();
     }
 
     /**
@@ -783,9 +783,9 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      */
     protected function formatExpressionColumn(ExpressionColumn $column) : string
     {
-        $relation = $column->getRelation();
+        $relation = $column->getRelationAlias();
 
-        $target = $column->getColumn();
+        $target = $column->getName();
         // Allow selection such as "table".*
         if ('*' !== $target) {
             $target = $this->escaper->escapeIdentifier($target);
@@ -811,7 +811,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      */
     protected function formatExpressionRelation(ExpressionRelation $relation) : string
     {
-        $table  = $relation->getRelation();
+        $table  = $relation->getName();
         $schema = $relation->getSchema();
         $alias  = $relation->getAlias();
 

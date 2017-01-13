@@ -99,49 +99,49 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function select(string $relation, string $alias = null) : SelectQuery
+    public function select(string $relationName, string $alias = null) : SelectQuery
     {
-        return $this->getInnerConnection()->select($relation, $alias);
+        return $this->getInnerConnection()->select($relationName, $alias);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function update(string $relation, string $alias = null) : UpdateQuery
+    public function update(string $relationName, string $alias = null) : UpdateQuery
     {
-        return $this->getInnerConnection()->update($relation, $alias);
+        return $this->getInnerConnection()->update($relationName, $alias);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function insertValues(string $relation) : InsertValuesQuery
+    public function insertValues(string $relationName) : InsertValuesQuery
     {
-        return $this->getInnerConnection()->insertValues($relation);
+        return $this->getInnerConnection()->insertValues($relationName);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function delete(string $relation, string $alias = null) : DeleteQuery
+    public function delete(string $relationName, string $alias = null) : DeleteQuery
     {
-        return $this->getInnerConnection()->delete($relation, $alias);
+        return $this->getInnerConnection()->delete($relationName, $alias);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function insertQuery(string $relation) : InsertQueryQuery
+    public function insertQuery(string $relationName) : InsertQueryQuery
     {
-        return $this->getInnerConnection()->insertQuery($relation);
+        return $this->getInnerConnection()->insertQuery($relationName);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function truncateTables($relations)
+    public function truncateTables($relationNames)
     {
-        return $this->getInnerConnection()->truncateTables($relations);
+        return $this->getInnerConnection()->truncateTables($relationNames);
     }
 
     /**

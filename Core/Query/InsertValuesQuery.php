@@ -21,13 +21,13 @@ final class InsertValuesQuery extends AbstractQuery
     /**
      * Build a new query
      *
-     * @param string $relation
+     * @param string $relationName
      *   SQL from statement relation name
      */
-    public function __construct(string $relation)
+    public function __construct(string $relationName)
     {
         // INSERT queries main relation cannot be aliased
-        parent::__construct($relation);
+        parent::__construct($relationName);
 
         $this->arguments = new ArgumentBag();
     }

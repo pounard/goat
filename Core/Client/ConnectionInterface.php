@@ -133,58 +133,58 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface,
     /**
      * Create a select query builder
      *
-     * @param string $relation
+     * @param string $relationName
      *   SQL from statement relation name
      * @param string $alias
      *   Alias for from clause relation
      *
      * @return SelectQuery
      */
-    public function select(string $relation, string $alias = null) : SelectQuery;
+    public function select(string $relationName, string $alias = null) : SelectQuery;
 
     /**
      * Create an update query builder
      *
-     * @param string $relation
+     * @param string $relationName
      *   SQL from statement relation name
      * @param string $alias
      *   Alias for from clause relation
      *
      * @return UpdateQuery
      */
-    public function update(string $relation, string $alias = null) : UpdateQuery;
+    public function update(string $relationName, string $alias = null) : UpdateQuery;
 
     /**
      * Create an insert query builder
      *
-     * @param string $relation
+     * @param string $relationName
      *   SQL from statement relation name
      *
      * @return InsertValuesQuery
      */
-    public function insertValues(string $relation) : InsertValuesQuery;
+    public function insertValues(string $relationName) : InsertValuesQuery;
 
     /**
      * Create an insert with query builder
      *
-     * @param string $relation
+     * @param string $relationName
      *   SQL from statement relation name
      *
      * @return InsertQueryQuery
      */
-    public function insertQuery(string $relation) : InsertQueryQuery;
+    public function insertQuery(string $relationName) : InsertQueryQuery;
 
     /**
      * Create a delete query builder
      *
-     * @param string $relation
+     * @param string $relationName
      *   SQL from statement relation name
      * @param string $alias
      *   Alias for from clause relation
      *
      * @return DeleteQuery
      */
-    public function delete(string $relation, string $alias = null) : DeleteQuery;
+    public function delete(string $relationName, string $alias = null) : DeleteQuery;
 
     /**
      * Truncate given tables (warning, it does it right away)
@@ -193,10 +193,10 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface,
      *   - move this out into a ddl specific object
      *   - SQL 92 standard is about one table at a time, PgSQL can do multiple at once
      *
-     * @param string|string[] $relations
+     * @param string|string[] $relationNames
      *   Either one or more table names
      */
-    public function truncateTables($relations);
+    public function truncateTables($relationNames);
 
     /**
      * Get last insert identifier

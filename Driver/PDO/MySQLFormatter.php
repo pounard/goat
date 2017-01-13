@@ -26,7 +26,7 @@ class MySQLFormatter extends SqlFormatter
         $relation = $query->getRelation();
         $relationAlias = $relation->getAlias();
         if (!$relationAlias) {
-            $relationAlias = $relation->getRelation();
+            $relationAlias = $relation->getName();
         }
 
         $output[] = sprintf(
@@ -43,7 +43,7 @@ class MySQLFormatter extends SqlFormatter
             $output[] = $this->formatJoin($joins);
         }
 
-        $where = $query->where();
+        $where = $query->getWhere();
         if (!$where->isEmpty()) {
             $output[] = sprintf('where %s', $this->formatWhere($where));
         }
@@ -82,7 +82,7 @@ class MySQLFormatter extends SqlFormatter
         // SET clause.
         $output[] = sprintf("set\n%s", $this->formatUpdateSet($columns));
 
-        $where = $query->where();
+        $where = $query->getWhere();
         if (!$where->isEmpty()) {
             $output[] = sprintf('where %s', $this->formatWhere($where));
         }

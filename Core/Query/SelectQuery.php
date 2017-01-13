@@ -34,14 +34,14 @@ final class SelectQuery extends AbstractQuery
     /**
      * Build a new query
      *
-     * @param string $relation
+     * @param string $relationName
      *   SQL from statement relation name
      * @param string $alias
      *   Alias for from clause relation
      */
-    public function __construct(string $relation, string $alias = null)
+    public function __construct(string $relationName, string $alias = null)
     {
-        parent::__construct($relation, $alias);
+        parent::__construct($relationName, $alias);
 
         $this->having = new Where();
         $this->where = new Where();
@@ -327,7 +327,7 @@ final class SelectQuery extends AbstractQuery
      *
      * @return Where
      */
-    public function where() : Where
+    public function getWhere() : Where
     {
         return $this->where;
     }
@@ -337,7 +337,7 @@ final class SelectQuery extends AbstractQuery
      *
      * @return Where
      */
-    public function having() : Where
+    public function getHaving() : Where
     {
         return $this->having;
     }

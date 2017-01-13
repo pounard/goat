@@ -65,13 +65,13 @@ class PgSQLConnection extends AbstractConnection
     /**
      * {@inheritdoc}
      */
-    public function truncateTables($relations)
+    public function truncateTables($relationNames)
     {
-        if (!$relations) {
+        if (!$relationNames) {
             throw new QueryError("cannot not truncate no tables");
         }
 
-        $this->perform(sprintf("truncate %s", $this->escapeIdentifierList($relations)));
+        $this->perform(sprintf("truncate %s", $this->escapeIdentifierList($relationNames)));
     }
 
     /**

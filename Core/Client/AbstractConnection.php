@@ -196,9 +196,9 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    final public function select(string $relation, string $alias = null) : SelectQuery
+    final public function select(string $relationName, string $alias = null) : SelectQuery
     {
-        $select = new SelectQuery($relation, $alias);
+        $select = new SelectQuery($relationName, $alias);
         $select->setConnection($this);
 
         return $select;
@@ -207,9 +207,9 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    final public function update(string $relation, string $alias = null) : UpdateQuery
+    final public function update(string $relationName, string $alias = null) : UpdateQuery
     {
-        $update = new UpdateQuery($relation, $alias);
+        $update = new UpdateQuery($relationName, $alias);
         $update->setConnection($this);
 
         return $update;
@@ -218,9 +218,9 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    final public function insertQuery(string $relation) : InsertQueryQuery
+    final public function insertQuery(string $relationName) : InsertQueryQuery
     {
-        $insert = new InsertQueryQuery($relation);
+        $insert = new InsertQueryQuery($relationName);
         $insert->setConnection($this);
 
         return $insert;
@@ -229,9 +229,9 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    final public function insertValues(string $relation) : InsertValuesQuery
+    final public function insertValues(string $relationName) : InsertValuesQuery
     {
-        $insert = new InsertValuesQuery($relation);
+        $insert = new InsertValuesQuery($relationName);
         $insert->setConnection($this);
 
         return $insert;
@@ -240,9 +240,9 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    final public function delete(string $relation, string $alias = null) : DeleteQuery
+    final public function delete(string $relationName, string $alias = null) : DeleteQuery
     {
-        $insert = new DeleteQuery($relation, $alias);
+        $insert = new DeleteQuery($relationName, $alias);
         $insert->setConnection($this);
 
         return $insert;
@@ -251,18 +251,18 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function truncateTables($relations)
+    public function truncateTables($relationNames)
     {
-        if (!$relations) {
+        if (!$relationNames) {
             throw new QueryError("cannot not truncate no tables");
         }
 
         // SQL-92 implementation - only one table at a time
-        if (!is_array($relations)) {
-            $relations = [$relations];
+        if (!is_array($relationNames)) {
+            $relationNames = [$relationNames];
         }
 
-        foreach ($relations as $relation) {
+        foreach ($relationNames as $relation) {
             $this->perform(sprintf("truncate %s", $this->escapeIdentifier($relation)));
         }
     }

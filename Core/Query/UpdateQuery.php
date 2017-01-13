@@ -23,14 +23,14 @@ final class UpdateQuery extends AbstractQuery
     /**
      * Build a new query
      *
-     * @param string $relation
+     * @param string $relationName
      *   SQL from statement relation name
      * @param string $alias
      *   Alias for from clause relation
      */
-    public function __construct(string $relation, string $alias = null)
+    public function __construct(string $relationName, string $alias = null)
     {
-        parent::__construct($relation, $alias);
+        parent::__construct($relationName, $alias);
 
         $this->where = new Where();
     }
@@ -38,7 +38,7 @@ final class UpdateQuery extends AbstractQuery
     /**
      * Set a column value to update
      *
-     * @param string $column
+     * @param string $columnName
      *   Must be, as the SQL-92 standard states, a single column name without
      *   the table prefix or alias, it cannot be an expression
      * @param string|Statement|SelectQuery $expression
@@ -52,9 +52,9 @@ final class UpdateQuery extends AbstractQuery
      *
      * @return $this
      */
-    public function set(string $column, $expression)
+    public function set(string $columnName, $expression)
     {
-        if (!is_string($column) || false !== strpos($column, '.')) {
+        if (!is_string($columnName) || false !== strpos($columnName, '.')) {
             throw new QueryError("column names in the set part of an update query can only be a column name, without table prefix");
         }
 
@@ -62,7 +62,7 @@ final class UpdateQuery extends AbstractQuery
             $expression = new ExpressionValue($expression);
         }
 
-        $this->columns[$column] = $expression;
+        $this->columns[$columnName] = $expression;
 
         return $this;
     }
@@ -134,7 +134,7 @@ final class UpdateQuery extends AbstractQuery
      *
      * @return Where
      */
-    public function where() : Where
+    public function getWhere() : Where
     {
         return $this->where;
     }

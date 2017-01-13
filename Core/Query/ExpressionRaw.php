@@ -10,25 +10,25 @@ use Goat\Core\Client\ArgumentBag;
  */
 final class ExpressionRaw implements Expression
 {
-    private $expression;
+    private $expressionString;
     private $arguments;
 
     /**
      * Default constructor
      *
-     * @param string $expression
+     * @param string $expressionString
      *   Raw SQL expression string
      * @param mixed|array $arguments
      *   Key/value pairs or argument list, anonymous and named parameters
      *   cannot be mixed up within the same query
      */
-    public function __construct(string $expression, $arguments = [])
+    public function __construct(string $expressionString, $arguments = [])
     {
         if (!is_array($arguments)) {
             $arguments = [$arguments];
         }
 
-        $this->expression = $expression;
+        $this->expressionString = $expressionString;
         $this->arguments = new ArgumentBag();
         $this->arguments->appendArray($arguments);
     }
@@ -38,9 +38,9 @@ final class ExpressionRaw implements Expression
      *
      * @return string
      */
-    public function getExpression() : string
+    public function getString() : string
     {
-        return $this->expression;
+        return $this->expressionString;
     }
 
     /**

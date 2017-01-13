@@ -64,10 +64,10 @@ EOT;
         $query->orderBy('n.type');
         $query->orderBy(new ExpressionRaw('count(n.nid)'), Query::ORDER_DESC);
         $query->range(7, 42);
-        $where = $query->where();
+        $where = $query->getWhere();
         $where->condition('t.user_id', 12);
         $where->condition('t.deadline', new ExpressionRaw('now()'), '<');
-        $having = $query->having();
+        $having = $query->getHaving();
         $having->expression('count(n.nid) < $*', 3);
 
         $this->assertSameSql($reference, $formatter->format($query));
@@ -133,11 +133,11 @@ EOT;
             ->leftJoinWhere('task_note', 'n')
             ->condition('n.task_id', new ExpressionColumn('t.id'))
         ;
-        $where = $query->where()
+        $where = $query->getWhere()
             ->condition('t.user_id', 12)
             ->condition('t.deadline', new ExpressionRaw('now()'), '<')
         ;
-        $having = $query->having()
+        $having = $query->getHaving()
             ->expression('count(n.nid) < $*', 3)
         ;
 

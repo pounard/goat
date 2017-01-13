@@ -10,24 +10,25 @@ use Goat\Core\Client\ArgumentBag;
 final class ExpressionRelation implements Expression
 {
     private $alias;
-    private $relation;
+    private $relationName;
     private $schema;
 
     /**
      * Default constructor
      *
-     * @param string $column
-     * @param string $relation
+     * @param string $relationName
+     * @param string $alias
+     * @param string $schema
      */
-    public function __construct(string $relation, string $alias = null, string $schema = null)
+    public function __construct(string $relationName, string $alias = null, string $schema = null)
     {
         if (null === $schema) {
-            if (false !== strpos($relation, '.')) {
-                list($schema, $relation) = explode('.', $relation, 2);
+            if (false !== strpos($relationName, '.')) {
+                list($schema, $relationName) = explode('.', $relationName, 2);
             }
         }
 
-        $this->relation = $relation;
+        $this->relationName = $relationName;
         $this->alias = $alias;
         $this->schema = $schema;
     }
@@ -37,9 +38,9 @@ final class ExpressionRelation implements Expression
      *
      * @return string
      */
-    public function getRelation() : string
+    public function getName() : string
     {
-        return $this->relation;
+        return $this->relationName;
     }
 
     /**

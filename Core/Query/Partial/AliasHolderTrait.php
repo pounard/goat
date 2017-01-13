@@ -11,7 +11,7 @@ use Goat\Core\Query\ExpressionRelation;
 trait AliasHolderTrait
 {
     private $aliasIndex = 0;
-    private $relations = [];
+    private $relationIndex = [];
 
     /**
      * Normalize relation reference
@@ -29,7 +29,7 @@ trait AliasHolderTrait
             if ($relation->getAlias() && $alias) {
                 throw new QueryError(sprintf(
                     "relation %s is already prefixed by %s, conflicts with %s",
-                    $relation->getRelation(),
+                    $relation->getName(),
                     $relation->getAlias(),
                     $alias
                 ));
@@ -52,7 +52,7 @@ trait AliasHolderTrait
     /**
      * Get alias for relation, if none registered add a new one
      *
-     * @param string $relation
+     * @param string $relationName
      * @param string $userAlias
      *   Existing alias if any
      *
@@ -61,34 +61,34 @@ trait AliasHolderTrait
      *
      * @return string
      */
-    protected function getAliasFor(string $relation, string $userAlias = null) : string
+    protected function getAliasFor(string $relationName, string $userAlias = null) : string
     {
         if ($userAlias) {
-            if (isset($this->relations[$userAlias])) {
+            if (isset($this->relationIndex[$userAlias])) {
                 throw new QueryError(
                     sprintf(
                         "cannot use alias %s for relation %s, already in use for table %s",
                         $userAlias,
-                        $relation,
-                        $this->relations[$userAlias]
+                        $relationName,
+                        $this->relationIndex[$userAlias]
                     )
                 );
             } else {
-                $this->relations[$userAlias] = $relation;
+                $this->relationIndex[$userAlias] = $relationName;
 
                 return $userAlias;
             }
         }
 
-        $index = array_search($relation, $this->relations);
+        $index = array_search($relationName, $this->relationIndex);
 
         if (false !== $index) {
             $alias = 'goat_' . ++$this->aliasIndex;
         } else {
-            $alias = $relation;
+            $alias = $relationName;
         }
 
-        $this->relations[$alias] = $relation;
+        $this->relationIndex[$alias] = $relationName;
 
         return $alias;
     }
@@ -100,7 +100,7 @@ trait AliasHolderTrait
      */
     protected function removeAlias(string $alias)
     {
-        unset($this->relations[$alias]);
+        unset($this->relationIndex[$alias]);
     }
 
     /**
@@ -112,6 +112,6 @@ trait AliasHolderTrait
      */
     protected function aliasExists(string $alias) : bool
     {
-        return isset($this->relations[$alias]);
+        return isset($this->relationIndex[$alias]);
     }
 }

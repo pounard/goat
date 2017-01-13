@@ -9,25 +9,25 @@ use Goat\Core\Client\ArgumentBag;
  */
 final class ExpressionColumn implements Expression
 {
-    private $column;
-    private $relation;
+    private $columnName;
+    private $relationAlias;
 
     /**
      * Default constructor
      *
-     * @param string $column
-     * @param string $relation
+     * @param string $columnName
+     * @param string $relationAlias
      */
-    public function __construct(string $column, string $relation = null)
+    public function __construct(string $columnName, string $relationAlias = null)
     {
-        if (null === $relation) {
-            if (false !== strpos($column, '.')) {
-                list($relation, $column) = explode('.', $column, 2);
+        if (null === $relationAlias) {
+            if (false !== strpos($columnName, '.')) {
+                list($relationAlias, $columnName) = explode('.', $columnName, 2);
             }
         }
 
-        $this->column = $column;
-        $this->relation = $relation;
+        $this->columnName = $columnName;
+        $this->relationAlias = $relationAlias;
     }
 
     /**
@@ -35,9 +35,9 @@ final class ExpressionColumn implements Expression
      *
      * @return string
      */
-    public function getColumn() : string
+    public function getName() : string
     {
-        return $this->column;
+        return $this->columnName;
     }
 
     /**
@@ -45,9 +45,9 @@ final class ExpressionColumn implements Expression
      *
      * @return null|string
      */
-    public function getRelation()
+    public function getRelationAlias()
     {
-        return $this->relation;
+        return $this->relationAlias;
     }
 
     /**
