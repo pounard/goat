@@ -32,7 +32,8 @@
     "require-dev" : {
         "phpunit/phpunit" : "5.*",
         "phpbench/phpbench": "^0.13.0",
-        "symfony/http-foundation" : "^3.2"
+        "symfony/http-foundation" : "^3.2",
+        "squizlabs/php_codesniffer": "^2.7"
     },
     "suggest" : {
         "ext-weakref" : "for a better transaction handling",
