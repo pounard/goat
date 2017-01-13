@@ -19,6 +19,11 @@
             "Goat\\" : "."
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Goat\\Benchmark\\": "benchmarks"
+        }
+    },
     "require" : {
         "ocramius/generated-hydrator": "^2.0",
         "php" : ">=7.0",
@@ -26,6 +31,7 @@
     },
     "require-dev" : {
         "phpunit/phpunit" : "5.*",
+        "phpbench/phpbench": "^0.13.0",
         "symfony/http-foundation" : "^3.2"
     },
     "suggest" : {
