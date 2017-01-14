@@ -1,7 +1,7 @@
 {
     "name" : "makinacorpus/php-goat",
     "type": "library",
-    "description": "Experimental database connector",
+    "description": "Yet another database connector",
     "keywords": ["orm", "postgresql", "mysql", "database", "symfony", "pdo"],
     "homepage": "http://github.com/makinacorpus/php-goat",
     "license": "GPL-2",

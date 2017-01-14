@@ -64,9 +64,11 @@ As of now, the following API are available (but highly subject to change):
  *  [postponed] ext-pgsql driver
  *  [postponed] INSERT/UPDATE fallback when RETURNING is not supported
  *  [postponed] MERGE queries
+ *  [postponed] performance: reduce functions calls for converters
  *  [postponed] SELECT with sub-select at select level
  *  [postponed] UNION queries
  *  [postponed] WITH support
+ *  [x] <strike>performance: improve get column metadata for PDO</strike>: impossible due to native calls
  *  [x] converters: change method names to avoid confusion with hydrator
  *  [x] converters: should carry a type and aliases (better auto detection)
  *  [x] DDL TRUNCATE
@@ -77,6 +79,7 @@ As of now, the following API are available (but highly subject to change):
  *  [x] ext_pgsql: basic implementation
  *  [x] generic way to dissociate raw SQL string from raw values
  *  [x] improve WHERE builder tests: raw statement / sub where
+ *  [x] mapper: basic object mapping (using hydrator)
  *  [x] mapper: object hydration mechanism
  *  [x] parametric testing for backends
  *  [x] RIGHT and FULL JOIN types
@@ -89,6 +92,7 @@ As of now, the following API are available (but highly subject to change):
  *  [x] UPDATE queries
  *  [x] UPDATE query testing
  *  [x] WHERE with SELECT within
+ *  all: switch to strict types
  *  better parameter handling in AbstractConnection
  *  converters: per default better definition (session builder?)
  *  converters: specific instances per driver
@@ -96,10 +100,8 @@ As of now, the following API are available (but highly subject to change):
  *  ext_pgsql: document it is both faster and more secure
  *  ext_pgsql: improve error handling
  *  mapper: advanced object mapping
- *  mapper: basic object mapping
+ *  mapper:: table proxy interface
  *  MySQL default transaction level in configuration
- *  performance: improve get column metadata for PDO
- *  performance: reduce functions calls for converters
  *  Query cloning does not clone relation (object is immutable)
  *  session: test with write and read connections
  *  session: write-only/read-only connection support, fallback when transaction
