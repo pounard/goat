@@ -12,7 +12,7 @@ interface ConverterInterface
      *
      * @return mixed
      */
-    public function hydrate(string $type, string $value);
+    public function fromSQL(string $type, string $value);
 
     /**
      * From the given PHP value, get the raw SQL string
@@ -22,7 +22,7 @@ interface ConverterInterface
      *
      * @return string
      */
-    public function extract(string $type, $value) : string;
+    public function toSQL(string $type, $value) : string;
 
     /**
      * Should this converter needs to cast the value to the server

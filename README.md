@@ -67,6 +67,7 @@ As of now, the following API are available (but highly subject to change):
  *  [postponed] SELECT with sub-select at select level
  *  [postponed] UNION queries
  *  [postponed] WITH support
+ *  [x] converters: change method names to avoid confusion with hydrator
  *  [x] converters: should carry a type and aliases (better auto detection)
  *  [x] DDL TRUNCATE
  *  [x] DDL TRUNCATE testing
@@ -89,7 +90,6 @@ As of now, the following API are available (but highly subject to change):
  *  [x] UPDATE query testing
  *  [x] WHERE with SELECT within
  *  better parameter handling in AbstractConnection
- *  converters: change method signature ('hydrate' is wrong)
  *  converters: per default better definition (session builder?)
  *  converters: specific instances per driver
  *  converters: type map per driver

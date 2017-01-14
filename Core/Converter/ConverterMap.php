@@ -116,17 +116,17 @@ class ConverterMap implements ConverterInterface
     /**
      * {@inheritdoc}
      */
-    public function hydrate(string $type, string $value)
+    public function fromSQL(string $type, string $value)
     {
-        return $this->get($type)->hydrate($type, $value);
+        return $this->get($type)->fromSQL($type, $value);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function extract(string $type, $value) : string
+    public function toSQL(string $type, $value) : string
     {
-        return $this->get($type)->extract($type, $value);
+        return $this->get($type)->toSQL($type, $value);
     }
 
     /**
@@ -204,7 +204,7 @@ class ConverterMap implements ConverterInterface
 
         foreach ($this->converters as $type => $converter) {
             if ($converter->canProcess($value)) {
-                return $converter->extract($type, $value);
+                return $converter->toSQL($type, $value);
             }
         }
 

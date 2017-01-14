@@ -9,7 +9,7 @@ class DecimalConverter implements ConverterInterface
     /**
      * {@inheritdoc}
      */
-    public function hydrate(string $type, string $value)
+    public function fromSQL(string $type, string $value)
     {
         return (float)$value;
     }
@@ -17,7 +17,7 @@ class DecimalConverter implements ConverterInterface
     /**
      * {@inheritdoc}
      */
-    public function extract(string $type, $value) : string
+    public function toSQL(string $type, $value) : string
     {
         return (string)(float)$value;
     }

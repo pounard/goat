@@ -23,7 +23,7 @@ abstract class AbstractResultIterator implements ResultIteratorInterface
      */
     protected function convertValue($name, $value)
     {
-        return $this->converter->hydrate($this->getColumnType($name), $value);
+        return $this->converter->fromSQL($this->getColumnType($name), $value);
     }
 
     /**

@@ -46,7 +46,7 @@ class TimestampConverter implements ConverterInterface
     /**
      * {@inheritdoc}
      */
-    public function hydrate(string $type, string $value)
+    public function fromSQL(string $type, string $value)
     {
         $data = trim($value);
 
@@ -57,7 +57,7 @@ class TimestampConverter implements ConverterInterface
     /**
      * {@inheritdoc}
      */
-    public function extract(string $type, $value) : string
+    public function toSQL(string $type, $value) : string
     {
         if (null === $value) {
             return sprintf("null", $type);

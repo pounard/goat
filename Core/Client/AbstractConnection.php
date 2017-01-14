@@ -382,7 +382,7 @@ abstract class AbstractConnection implements ConnectionInterface
                 $type = $matches[2];
 
                 $replacement = $parameters[$index];
-                $replacement = $this->converter->extract($type, $replacement);
+                $replacement = $this->converter->toSQL($type, $replacement);
 
                 if ($this->converter->needsCast($type)) {
 
@@ -412,7 +412,7 @@ abstract class AbstractConnection implements ConnectionInterface
             foreach (array_diff_key($parameters, $done) as $index => $value) {
                 $type = $arguments->getTypeAt($index);
                 if ($type) {
-                    $parameters[$index] = $this->converter->extract($type, $value);
+                    $parameters[$index] = $this->converter->toSQL($type, $value);
                 } else {
                     $parameters[$index] = $this->converter->guess($value);
                 }
