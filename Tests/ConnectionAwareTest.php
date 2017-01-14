@@ -192,11 +192,11 @@ abstract class ConnectionAwareTest extends \PHPUnit_Framework_TestCase
 
         switch ($dsn->getDriver()) {
 
-            case 'mysql':
+            case 'pdo_mysql':
                 $connection = new MySQLConnection($dsn);
                 break;
 
-            case 'pgsql':
+            case 'pdo_pgsql':
                 $connection = new PgSQLConnection($dsn);
                 break;
 

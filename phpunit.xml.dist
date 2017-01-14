@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.1/phpunit.xsd"
+    backupGlobals="false"
+    colors="true"
+    bootstrap="vendor/autoload.php"
+>
+    <php>
+        <ini name="error_reporting" value="-1" />
+    </php>
+
+    <testsuites>
+        <testsuite name="Goat tests">
+            <directory>./Tests/</directory>
+        </testsuite>
+    </testsuites>
+
+    <filter>
+        <whitelist>
+            <directory>./</directory>
+            <exclude>
+                <directory>./vendor</directory>
+            </exclude>
+        </whitelist>
+    </filter>
+
+    <php>
+        <env name="PDO_MYSQL_DSN" value="pdo_mysql://192.168.57.102/some_database" />
+        <env name="PDO_MYSQL_USERNAME" value="some_user" />
+        <env name="PDO_MYSQL_PASSWORD" value="some_password" />
+        <env name="PDO_PGSQL_DSN" value="pdo_pgsql://192.168.57.102/some_database" />
+        <env name="PDO_PGSQL_USERNAME" value="some_user" />
+        <env name="PDO_PGSQL_PASSWORD" value="some_password" />
+        <env name="EXT_PGSQL_DSN" value="ext_pgsql://192.168.57.102/some_database" />
+        <env name="EXT_PGSQL_USERNAME" value="some_user" />
+        <env name="EXT_PGSQL_PASSWORD" value="some_password" />
+    </php>
+</phpunit>

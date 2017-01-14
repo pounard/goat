@@ -68,11 +68,12 @@ final class Dsn
             if (empty($this->port)) {
                 switch ($this->driver) {
 
-                    case 'mysql':
+                    case 'pdo_mysql':
                         $this->port = self::DEFAULT_PORT_MYSQL;
                         break;
 
-                    case 'pgsql':
+                    case 'ext_pgsql':
+                    case 'pdo_pgsql':
                         $this->port = self::DEFAULT_PORT_PGSQL;
                         break;
                 }
@@ -97,8 +98,10 @@ final class Dsn
             throw new ConfigurationError(sprintf("%s: invalid dsn", $string));
         }
 
-        if ('pgsql' !== $this->driver && 'mysql' !== $this->driver) {
-            throw new ConfigurationError(sprintf("%s: only supports 'pgsql', 'mysql' drivers, '%s' given", $string, $this->driver));
+        // @todo make this dynamic
+        $supportedDrivers = ['ext_pgsql', 'pdo_mysql', 'pdo_pgsql'];
+        if (!in_array($this->driver, $supportedDrivers)) {
+            throw new ConfigurationError(sprintf("%s: only supports '%s', '%s' given", implode("', '", $supportedDrivers), $string, $this->driver));
         }
 
         if (empty($this->database)) {
@@ -250,19 +253,22 @@ final class Dsn
         //   even using the same driver
         switch ($this->driver) {
 
-            case 'mysql':
+            case 'pdo_mysql':
                 $map['charset'] = $this->charset;
+                $PDODriver = 'mysql';
                 break;
 
-            case 'pgsql':
+            case 'ext_pgsql':
+            case 'pdo_pgsql':
                 $map['client_encoding'] = $this->charset;
+                $PDODriver = 'pgsql';
                 break;
         }
 
         if ($this->isUnixSocket()) {
-            $dsn = $this->driver . ':unix_socket=' . $this->host;
+            $dsn = $PDODriver . ':unix_socket=' . $this->host;
         } else {
-            $dsn = $this->driver . ':host=' . $this->host;
+            $dsn = $PDODriver . ':host=' . $this->host;
         }
 
         foreach ($map as $key => $value) {
