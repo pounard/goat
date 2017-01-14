@@ -1,6 +1,34 @@
 # Goat
 
-Database connector, selection immutability, project mapping.
+Database connector, selection immutability, data mapping.
+
+# Driver support
+
+ *  Complete MySQL 5.5 and higher (via `PDO`);
+ *  Complete PostgreSQL 9.1 and higher (via `ext_pgsql` or `PDO`);
+ *  Partial MySQL 5.1 support (via `PDO`);
+ *  Partial PostgreSQL 7.4 support (via `ext_pgsql` or `PDO`);
+
+
+# Status
+
+The following API are available:
+
+ *  connection and session API, allows you to handle dual-connection mode with
+    one readonly connection and a write connection;
+
+ *  converter map, allowing native SQL to native PHP type conversion in both
+    ways;
+
+ *  complete transaction handling, with isolation level, savepoint and
+    constraint deferring support;
+
+ *  raw SQL quering, prepared statements management;
+
+ *  query builder API, supporting select, insert, update and delete.
+
+**This API is highly experimental and subject to change!**
+
 
 # Concept
 
@@ -32,22 +60,6 @@ different software design and approach:
  *  CRUD is too much of a standard now, but there are so many cases where you
     don't need it.
 
-# Status
-
-As of now, the following API are available (but highly subject to change):
-
- *  connection and session API, allows you to handle dual-connection mode with
-    one readonly connection and a write connection;
-
- *  converter map, allowing native SQL to native PHP type conversion in both
-    ways;
-
- *  complete transaction handling, with isolation level, savepoint and
-    constraint deferring support;
-
- *  raw SQL quering, prepared statements management;
-
- *  query builder API.
 
 # Documentation
 
@@ -55,6 +67,7 @@ As of now, the following API are available (but highly subject to change):
  *  Write SQL (@todo)
  *  Query builders (@todo)
  *  Transactions (@todo)
+
 
 # Todolist
 
@@ -110,39 +123,3 @@ As of now, the following API are available (but highly subject to change):
  *  transaction: document isolation levels
  *  transaction: FOR UPDATE / FOR SHARE query dissociation from SELECT
  *  WHERE builder tests: subqueries tests
-
-# Driver support
-
- *  Complete MySQL 5.5 and higher (via PDO);
- *  Complete PostgreSQL 9.1 and higher (via ext_pgsql or PDO);
- *  Partial MySQL 5.1 support (via PDO);
- *  Partial PostgreSQL 7.4 support (via ext_pgsql or PDO);
-
-# Documentation
-
-## Writing SQL
-
-### Parameters handling
-
-This API doesn't support named parameters. You may use either ordered or
-anonymous parameters:
-
- *  ordered parameters must all be of the form ``$N`` where N is a positive
-    integer, if you use identified parameters, you need to identify all of them
-    without any exception, count must start with 1 and there must be NO holes
-    in the numbering; this allows you to re-use the same parameter more than
-    once, the numbering matches the ``index - 1`` in the ``$parameters``
-    array sent to the ``query()`` or ``perform()`` method;
-
- *  anonymous parameters are all written using ``$*``, parameters sent to the
-    database will be the same than the one in the ``$parameters`` array sent to
-    the ``query()`` or ``perform()`` method.
-
-**You cannot mix ordered and anonymous parameters**
-
-It's also important to notice that you cannot use ordered parameters when using
-a query builder, the query builder will manage its parameters by itself.
-
-#### Anonymous parameters usage example
-
-#### Ordered parameters usage example
