@@ -37,8 +37,6 @@ abstract class AbstractPDOConnection extends AbstractConnection
 
     /**
      * Connect to database
-     *
-     * @return \PDO
      */
     protected function connect()
     {
@@ -64,6 +62,11 @@ abstract class AbstractPDOConnection extends AbstractConnection
         }
     }
 
+    /**
+     * Get PDO instance, connect if not connected
+     *
+     * @return \PDO
+     */
     protected function getPdo() : \PDO
     {
         if (!$this->pdo) {

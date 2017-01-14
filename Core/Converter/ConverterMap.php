@@ -10,8 +10,19 @@ class ConverterMap implements ConverterInterface
 {
     use DebuggableTrait;
 
+    /**
+     * @var string[]
+     */
     private $aliasMap = [];
+
+    /**
+     * @var ConverterInterface[]
+     */
     private $converters = [];
+
+    /**
+     * @var ConverterInterface
+     */
     private $fallback;
 
     /**

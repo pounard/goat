@@ -9,6 +9,7 @@ use Goat\Core\Client\ResultIteratorInterface;
 use Goat\Core\Error\ConfigurationError;
 use Goat\Core\Error\DriverError;
 use Goat\Core\Error\GoatError;
+use Goat\Core\Error\NotImplementedError;
 use Goat\Core\Error\QueryError;
 use Goat\Core\Query\Query;
 use Goat\Core\Query\SqlFormatterInterface;
@@ -247,6 +248,10 @@ class PgSQLConnection extends AbstractConnection
     {
         // https://www.postgresql.org/docs/9.3/static/multibyte.html#AEN34087
         // @todo investigate differences between versions
+
+        throw new NotImplementedError();
+
+        // @todo this cannot work
         $this
             ->getConn()
             ->query(
