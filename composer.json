@@ -1,9 +1,9 @@
 {
-    "name" : "makinacorpus/php-goat",
+    "name" : "makinacorpus/goat",
     "type": "library",
     "description": "Yet another database connector",
     "keywords": ["orm", "postgresql", "mysql", "database", "symfony", "pdo"],
-    "homepage": "http://github.com/makinacorpus/php-goat",
+    "homepage": "http://github.com/pounard/goat",
     "license": "GPL-2",
     "authors": [
         {
