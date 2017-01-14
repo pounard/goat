@@ -2,12 +2,18 @@
 
 Database connector, selection immutability, data mapping.
 
+
 # Driver support
 
  *  Complete MySQL 5.5 and higher (via `PDO`);
  *  Complete PostgreSQL 9.1 and higher (via `ext_pgsql` or `PDO`);
  *  Partial MySQL 5.1 support (via `PDO`);
  *  Partial PostgreSQL 7.4 support (via `ext_pgsql` or `PDO`);
+
+
+# Integration
+
+ *  [Experimental Symfony 3.2 bundle](https://github.com/pounard/goat-bundle)
 
 
 # Status
