@@ -83,7 +83,7 @@ class DefaultResultIterator extends AbstractResultIterator
                 }
 
                 trigger_error(sprintf("'%s': unknown type", $nativeType));
-                return 'unknown';
+                return 'string';
         }
     }
 

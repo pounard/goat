@@ -5,7 +5,7 @@ namespace Goat\Driver\PDO;
 use Goat\Core\Transaction\Transaction;
 use Goat\Core\Query\SqlFormatterInterface;
 
-class MySQLConnection extends AbstractConnection
+class MySQLConnection extends AbstractPDOConnection
 {
     /**
      * {@inheritdoc}

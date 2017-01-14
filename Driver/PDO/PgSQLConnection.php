@@ -5,7 +5,7 @@ namespace Goat\Driver\PDO;
 use Goat\Core\Transaction\Transaction;
 use Goat\Core\Error\QueryError;
 
-class PgSQLConnection extends AbstractConnection
+class PgSQLConnection extends AbstractPDOConnection
 {
     /**
      * Send PDO configuration

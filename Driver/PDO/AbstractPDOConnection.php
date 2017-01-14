@@ -2,7 +2,7 @@
 
 namespace Goat\Driver\PDO;
 
-use Goat\Core\Client\AbstractConnection as BaseConnection;
+use Goat\Core\Client\AbstractConnection;
 use Goat\Core\Client\Dsn;
 use Goat\Core\Client\EmptyResultIterator;
 use Goat\Core\Client\ResultIteratorInterface;
@@ -13,7 +13,7 @@ use Goat\Core\Error\QueryError;
 use Goat\Core\Query\Query;
 use Goat\Core\Query\SqlFormatterInterface;
 
-abstract class AbstractConnection extends BaseConnection
+abstract class AbstractPDOConnection extends AbstractConnection
 {
     /**
      * @var \PDO
