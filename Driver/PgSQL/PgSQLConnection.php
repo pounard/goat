@@ -29,6 +29,32 @@ class PgSQLConnection extends AbstractConnection
     private $prepared = [];
 
     /**
+     * {@inheritdoc}
+     */
+    public function supportsReturning() : bool
+    {
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supportsDeferingConstraints() : bool
+    {
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function close()
+    {
+        if ($this->conn) {
+            pg_close($this->conn);
+        }
+    }
+
+    /**
      * Connect to database
      *
      * @return \PDO
@@ -58,22 +84,6 @@ class PgSQLConnection extends AbstractConnection
         }
 
         return $this->conn;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function supportsReturning() : bool
-    {
-        return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function supportsDeferingConstraints() : bool
-    {
-        return true;
     }
 
     /**

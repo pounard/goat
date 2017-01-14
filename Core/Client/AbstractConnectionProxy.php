@@ -43,6 +43,14 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
+    public function close()
+    {
+        return $this->getInnerConnection()->close();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function startTransaction(int $isolationLevel = Transaction::REPEATABLE_READ, bool $allowPending = false) : Transaction
     {
         return $this->getInnerConnection()->startTransaction($isolationLevel, $allowPending);

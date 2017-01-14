@@ -67,6 +67,17 @@ class Session extends AbstractConnectionProxy
     /**
      * {@inheritdoc}
      */
+    public function close()
+    {
+        if ($this->readonlyConnection) {
+            $this->readonlyConnection->close();
+        }
+        $this->writeConnection->close();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function query($query, array $parameters = [], $options = null) : ResultIteratorInterface
     {
         if ($this->readonlyConnection && !$this->isTransactionPending()) {

@@ -33,6 +33,11 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface,
     public function supportsDeferingConstraints() : bool;
 
     /**
+     * Close connection
+     */
+    public function close();
+
+    /**
      * Creates a new transaction
      *
      * If a transaction is pending, continue the same transaction by adding a

@@ -60,6 +60,14 @@ abstract class AbstractConnection implements ConnectionInterface
     }
 
     /**
+     * Destructor, enforces connection close on dispose
+     */
+    public function __destruct()
+    {
+        $this->close();
+    }
+
+    /**
      * Create SQL formatter
      *
      * @return SqlFormatterInterface

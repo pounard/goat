@@ -26,6 +26,16 @@ abstract class AbstractPDOConnection extends AbstractConnection
     private $prepared = [];
 
     /**
+     * {@inheritdoc}
+     */
+    public function close()
+    {
+        if ($this->pdo) {
+            $this->pdo = null;
+        }
+    }
+
+    /**
      * Connect to database
      *
      * @return \PDO
