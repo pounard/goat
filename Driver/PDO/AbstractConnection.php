@@ -98,6 +98,14 @@ abstract class AbstractConnection extends BaseConnection
     /**
      * {@inheritdoc}
      */
+    protected function getPlaceholder(int $index) : string
+    {
+        return '?'; // This works for PDO, for example
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function query($query, array $parameters = null, $options = null) : ResultIteratorInterface
     {
         if ($query instanceof Query) {

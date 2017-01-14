@@ -13,8 +13,6 @@ use Goat\Core\Converter\Impl\StringConverter;
 use Goat\Core\Converter\Impl\TimestampConverter;
 use Goat\Core\EventDispatcher\EventEmitterConnectionProxy;
 use Goat\Core\Hydrator\HydratorMap;
-use Goat\Driver\PDO\MySQLConnection;
-use Goat\Driver\PDO\PgSQLConnection;
 
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -32,8 +30,9 @@ abstract class DriverTestCase extends \PHPUnit_Framework_TestCase
     static public function getKnownDrivers() : array
     {
         return [
-            'pdo_mysql' => MySQLConnection::class,
-            'pdo_pgsql' => PgSQLConnection::class,
+            'pdo_mysql' => \Goat\Driver\PDO\MySQLConnection::class,
+            'pdo_pgsql' => \Goat\Driver\PDO\PgSQLConnection::class,
+            'ext_pgsql' => \Goat\Driver\PgSQL\PgSQLConnection::class
         ];
     }
 

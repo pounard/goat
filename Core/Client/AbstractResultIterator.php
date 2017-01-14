@@ -14,6 +14,19 @@ abstract class AbstractResultIterator implements ResultIteratorInterface
     use HydratorAwareTrait;
 
     /**
+     * Convert a single value
+     *
+     * @param string $name
+     * @param mixed $value
+     *
+     * @return mixed
+     */
+    protected function convertValue($name, $value)
+    {
+        return $this->converter->hydrate($this->getColumnType($name), $value);
+    }
+
+    /**
      * Convert values from SQL types to PHP native types
      *
      * @param string[] $row
@@ -33,18 +46,10 @@ abstract class AbstractResultIterator implements ResultIteratorInterface
         $ret = [];
 
         foreach ($row as $name => $value) {
-            // @todo find a better way to deal with null values, maybe
-            //    something like:
-            //      - add a getNullValue() on ConverterInterface?
-            //      - or just return null and let fail?
             if (null !== $value) {
-                $ret[$name] = $this
-                    ->converter
-                    ->hydrate(
-                        $this->getColumnType($name),
-                        $value
-                    )
-                ;
+                $ret[$name] = $this->convertValue($name, $value);
+            } else {
+                $ret[$name] = null;
             }
         }
 

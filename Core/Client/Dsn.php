@@ -217,7 +217,27 @@ final class Dsn
     }
 
     /**
-     * phpredis drops the scheme and database information
+     * Format as ext_pgsql connection string
+     */
+    public function formatPgSQL()
+    {
+        $map = ['port' => $this->port, 'dbname' => $this->database, 'user' => $this->username, 'password' => $this->password];
+
+        // If 'host' is an absolute path, the library will lookup for the
+        // socket by itself, no need to specify it.
+        $dsn = 'host=' . $this->host;
+
+        foreach ($map as $key => $value) {
+            if ($value) {
+                $dsn .= ' ' . $key . '=' . $value;
+            }
+        }
+
+        return $dsn;
+    }
+
+    /**
+     * Format as PDO connection string
      *
      * @return string
      */

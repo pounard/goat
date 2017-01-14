@@ -596,7 +596,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
         for ($i = 0; $i < $valueCount; ++$i) {
             $values[] = sprintf(
                 "(%s)",
-                implode(', ', array_fill(0, count($columns), '?'))
+                implode(', ', array_fill(0, count($columns), '$*'))
             );
         }
         $output[] = implode(', ', $values);

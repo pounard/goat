@@ -54,7 +54,7 @@ class PgSQLConnection extends AbstractConnection
     /**
      * {@inheritdoc}
      */
-    public function doStartTransaction(int $isolationLevel = Transaction::REPEATABLE_READ) : Transaction
+    protected function doStartTransaction(int $isolationLevel = Transaction::REPEATABLE_READ) : Transaction
     {
         $ret = new PgSQLTransaction($isolationLevel);
         $ret->setConnection($this);

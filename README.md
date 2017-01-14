@@ -73,6 +73,7 @@ As of now, the following API are available (but highly subject to change):
  *  [x] DELETE queries
  *  [x] DELETE queries testing
  *  [x] expression vs statement: query builder improvements
+ *  [x] ext_pgsql: basic implementation
  *  [x] generic way to dissociate raw SQL string from raw values
  *  [x] improve WHERE builder tests: raw statement / sub where
  *  [x] mapper: object hydration mechanism
@@ -88,12 +89,17 @@ As of now, the following API are available (but highly subject to change):
  *  [x] UPDATE query testing
  *  [x] WHERE with SELECT within
  *  better parameter handling in AbstractConnection
+ *  converters: change method signature ('hydrate' is wrong)
  *  converters: per default better definition (session builder?)
  *  converters: specific instances per driver
  *  converters: type map per driver
+ *  ext_pgsql: document it is both faster and more secure
+ *  ext_pgsql: improve error handling
  *  mapper: advanced object mapping
  *  mapper: basic object mapping
  *  MySQL default transaction level in configuration
+ *  performance: improve get column metadata for PDO
+ *  performance: reduce functions calls for converters
  *  Query cloning does not clone relation (object is immutable)
  *  session: test with write and read connections
  *  session: write-only/read-only connection support, fallback when transaction
@@ -106,9 +112,9 @@ As of now, the following API are available (but highly subject to change):
 # Driver support
 
  *  Complete MySQL 5.5 and higher (via PDO);
- *  Complete PostgreSQL 9.1 and higher (via PDO);
+ *  Complete PostgreSQL 9.1 and higher (via ext_pgsql or PDO);
  *  Partial MySQL 5.1 support (via PDO);
- *  Partial PostgreSQL 7.4 support (via PDO);
+ *  Partial PostgreSQL 7.4 support (via ext_pgsql or PDO);
 
 # Documentation
 
