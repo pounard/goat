@@ -96,6 +96,7 @@ different software design and approach:
  *  [x] DELETE queries testing
  *  [x] expression vs statement: query builder improvements
  *  [x] ext_pgsql: basic implementation
+ *  [x] ext_pgsql: document it is both faster and more secure
  *  [x] generic way to dissociate raw SQL string from raw values
  *  [x] improve WHERE builder tests: raw statement / sub where
  *  [x] mapper: basic object mapping (using hydrator)
@@ -116,12 +117,13 @@ different software design and approach:
  *  converters: per default better definition (session builder?)
  *  converters: specific instances per driver
  *  converters: type map per driver
- *  ext_pgsql: document it is both faster and more secure
  *  ext_pgsql: improve error handling
  *  mapper: advanced object mapping
- *  mapper:: table proxy interface
+ *  mapper: table proxy interface
+ *  model manager: get rid of it
  *  MySQL default transaction level in configuration
  *  Query cloning does not clone relation (object is immutable)
+ *  session, connection: add logger and notifications
  *  session: test with write and read connections
  *  session: write-only/read-only connection support, fallback when transaction
  *  transaction: document deffer helpers
