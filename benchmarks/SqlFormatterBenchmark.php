@@ -12,6 +12,8 @@ use Goat\Tests\Core\Query\NullEscaper;
 /**
  * Benchmark SQL formatter, sprinf()/implode vs string concat.
  *
+ * Please read Resources/docs/performance.md
+ *
  * @BeforeMethods({"setUp"})
  */
 class SqlFormatterBenchmark

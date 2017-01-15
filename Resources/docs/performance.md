@@ -6,7 +6,7 @@
 
 Benchmarks have carefully written, extending the standard SQL formatter in order
 to rewrite it to use PHP string concatenation instead of ``sprintf()`` +
-``implode()``` calls.
+``implode()`` calls.
 
 You can look at the ``\Goat\Benchmark\SqlFormatterBenchmark`` class.
 
