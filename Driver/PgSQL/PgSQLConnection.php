@@ -15,6 +15,9 @@ use Goat\Core\Query\Query;
 use Goat\Core\Query\SqlFormatterInterface;
 use Goat\Core\Transaction\Transaction;
 
+/**
+ * ext_pgsql connection implementation
+ */
 class PgSQLConnection extends AbstractConnection
 {
     use PgSQLErrorTrait;
@@ -148,11 +151,10 @@ class PgSQLConnection extends AbstractConnection
 
         try {
             list($rawSQL, $parameters) = $this->getProperSql($query, $parameters);
-            $resource = pg_query_params($conn, $rawSQL, $parameters);
+            $resource = @pg_query_params($conn, $rawSQL, $parameters);
 
             if (false === $resource) {
-                // Better sql error handlings
-                throw new DriverError($rawSQL, $parameters);
+                $this->connectionError($conn);
             }
 
             $ret = $this->createResultIterator($options, $resource);
@@ -162,8 +164,6 @@ class PgSQLConnection extends AbstractConnection
 
         } catch (GoatError $e) {
             throw $e;
-        } catch (\PDOException $e) {
-            throw new DriverError($rawSQL, $parameters, $e);
         } catch (\Exception $e) {
             throw new DriverError($rawSQL, $parameters, $e);
         }
@@ -179,24 +179,21 @@ class PgSQLConnection extends AbstractConnection
 
         try {
             list($rawSQL, $parameters) = $this->getProperSql($query, $parameters);
-            $resource = pg_query_params($conn, $rawSQL, $parameters);
+            $resource = @pg_query_params($conn, $rawSQL, $parameters);
 
             if (false === $resource) {
-                // Better sql error handlings
-                throw new DriverError($rawSQL, $parameters);
+                $this->connectionError($conn);
             }
 
             $rowCount = pg_affected_rows($resource);
             if (false === $rowCount) {
-                $this->throwIfError(pg_result_status($resource));
+                $this->resultError($resource);
             }
 
             return $rowCount;
 
         } catch (GoatError $e) {
             throw $e;
-        } catch (\PDOException $e) {
-            throw new DriverError($rawSQL, $parameters, $e);
         } catch (\Exception $e) {
             throw new DriverError($rawSQL, $parameters, $e);
         }

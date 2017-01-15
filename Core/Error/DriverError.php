@@ -17,7 +17,7 @@ class DriverError extends GoatError
      * @param array $parameters
      * @param \Throwable $previous
      */
-    public function __construct($rawSQL, array $parameters, \Throwable $previous)
+    public function __construct($rawSQL, array $parameters, \Throwable $previous = null)
     {
         $this->rawSQL = $rawSQL;
         $this->parameters = $parameters;

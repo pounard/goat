@@ -35,19 +35,19 @@ class PgSQLResultIterator extends AbstractResultIterator
     {
         $this->columnCount = pg_num_fields($this->resource);
         if (false === $this->columnCount) {
-            $this->throwIfError(pg_result_status($this->resource));
+            $this->resultError($this->resource);
         }
 
         for ($i = 0; $i < $this->columnCount; ++$i) {
 
             $type = pg_field_type($this->resource, $i);
             if (false === $type) {
-                $this->throwIfError(pg_result_status($this->resource));
+                $this->resultError($this->resource);
             }
 
             $key = pg_field_name($this->resource, $i);
             if (false === $type) {
-                $this->throwIfError(pg_result_status($this->resource));
+                $this->resultError($this->resource);
             }
 
             if (is_numeric($key)) {
@@ -69,7 +69,7 @@ class PgSQLResultIterator extends AbstractResultIterator
         }
 
         if (false === $row) {
-            $this->throwIfError(pg_result_status($this->resource));
+            $this->resultError($this->resource);
         }
     }
 
@@ -89,7 +89,7 @@ class PgSQLResultIterator extends AbstractResultIterator
         $ret = pg_num_rows($this->resource);
 
         if (-1 === $ret) {
-            $this->throwIfError(pg_result_status($this->resource));
+            $this->resultError($this->resource);
         }
 
         return $ret;
@@ -186,7 +186,7 @@ class PgSQLResultIterator extends AbstractResultIterator
         $row = pg_fetch_assoc($this->resource);
 
         if (false === $row) {
-            $this->throwIfError(pg_result_status($this->resource));
+            $this->resultError($this->resource);
         }
 
         if ($row) {

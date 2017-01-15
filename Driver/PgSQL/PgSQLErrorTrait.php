@@ -2,19 +2,39 @@
 
 namespace Goat\Driver\PgSQL;
 
-use Goat\Core\Error\GoatError;
-
 trait PgSQLErrorTrait
 {
     /**
      * Throw an exception if the given status is an error
      *
-     * @param int $status
+     * @param resource $result
      */
-    private function throwIfError(int $status)
+    private function resultError($result)
     {
+        $status = pg_result_status($this->resource);
+
         if (PGSQL_BAD_RESPONSE === $status ||  PGSQL_FATAL_ERROR === $status) {
-            throw new GoatError();
+            $errorString = pg_result_error($result);
+            if (false === $errorString) {
+                throw new PgSQLDriverError("unknown error: could not fetch status code");
+            } else {
+                throw new PgSQLDriverError($errorString, $status);
+            }
+        }
+    }
+
+    /**
+     * Throw an exception if the given status is an error
+     *
+     * @param resource $resource
+     */
+    private function connectionError($resource = null)
+    {
+        $errorString = pg_last_error($resource);
+        if (false === $errorString) {
+            throw new PgSQLDriverError("unknown error: could not fetch status code");
+        } else {
+            throw new PgSQLDriverError($errorString);
         }
     }
 }
