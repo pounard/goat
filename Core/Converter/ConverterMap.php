@@ -7,6 +7,7 @@ use Goat\Core\Converter\Impl\DecimalConverter;
 use Goat\Core\Converter\Impl\IntegerConverter;
 use Goat\Core\Converter\Impl\StringConverter;
 use Goat\Core\Converter\Impl\TimestampConverter;
+use Goat\Core\DebuggableInterface;
 use Goat\Core\DebuggableTrait;
 use Goat\Core\Error\ConfigurationError;
 
@@ -14,12 +15,16 @@ use Goat\Core\Error\ConfigurationError;
  * Converter map contains references to all existing converters and is the
  * central point of all native to SQL or SQL to native type conversion.
  */
-class ConverterMap implements ConverterInterface
+class ConverterMap implements ConverterInterface, DebuggableInterface
 {
     use DebuggableTrait;
 
     /**
      * Get default converter map
+     *
+     * Please note that definition order is significant, some converters
+     * canProcess() method may short-circuit some others, the current
+     * definition order is kept during converters registration.
      *
      * @return array
      *   Keys are type identifiers, values are arrays containing:
