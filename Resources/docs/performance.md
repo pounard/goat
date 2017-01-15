@@ -5,7 +5,8 @@
 ### implode() + sprintf() VS string concatenation
 
 Benchmarks have carefully written, extending the standard SQL formatter in order
-to rewrite it to use string concatenation instead of sprintf() and implode.
+to rewrite it to use PHP string concatenation instead of ``sprintf()`` +
+``implode()``` calls.
 
 You can look at the ``\Goat\Benchmark\SqlFormatterBenchmark`` class.
 
@@ -20,10 +21,9 @@ You should take a few things into consideration:
 
  *  only methods linked to the select query formatting have been rewritten
     since it's the only benchmarked query building, it's also the most complex
-    one;
+    one so I guess that's fair to test only this one;
 
- *  where query building has *not* been rewritten, due to complexity because
-    of the operator handling.
+ *  where statement formatting has *not* been rewritten, due to complexity.
 
 
 ### Results
@@ -60,7 +60,7 @@ This one of the many runs, and one with the most significant difference.
 
 Regarding the test results and notes we can conclude that:
 
- *  5% difference over the most significant test run is not enough to do a
+ *  5% difference over the most significant test run is not enough to trigger a
     full rewrite of the SQL formatter;
 
  *  we may gain more by rewriting the most complex part: the where statement
@@ -69,11 +69,11 @@ Regarding the test results and notes we can conclude that:
  *  **by looking at the code, the string concatenation version is much less**
     **readable and maintainable, since it's a critical part to maintain, 5%**
     **gain on this very specific code path is not enough to sacrifice code**
-    **maintainability**;
+    **readability over performance**;
 
  *  you may also consider that in various profiling traces, relative time of
     query formatting represents only a few percent of the whole query time
-    which reduces this performance gain from 5% to 5% of a few percent.
+    which reduces this performance gain to only *5% of a few percent*.
 
 **We will NOT try to improve the SQL formatter by changing implode()**
-**+sprintf() calls to string concatenation.**
+**+ sprintf() calls to string concatenation.**
