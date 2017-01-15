@@ -1,25 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.1/phpunit.xsd"
+    xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/5.0/phpunit.xsd"
     backupGlobals="false"
     colors="true"
     bootstrap="vendor/autoload.php"
+    convertErrorsToExceptions="false"
+    convertNoticesToExceptions="true"
+    convertWarningsToExceptions="true"
 >
     <php>
         <ini name="error_reporting" value="-1" />
     </php>
 
     <testsuites>
-        <testsuite name="Goat tests">
-            <directory>./Tests/</directory>
+        <testsuite name="Goat core">
+            <directory>./Tests/Core</directory>
+        </testsuite>
+        <testsuite name="Goat drivers">
+            <directory>./Tests/Driver</directory>
+        </testsuite>
+        <testsuite name="Goat model manager">
+            <directory>./Tests/ModelManager</directory>
         </testsuite>
     </testsuites>
 
     <filter>
-        <whitelist>
+        <whitelist processUncoveredFilesFromWhitelist="true">
             <directory>./</directory>
             <exclude>
+                <directory>./benchmarks</directory>
+                <directory>./cache</directory>
+                <directory>./compat</directory>
+                <directory>./Resources</directory>
+                <directory>./Tests</directory>
                 <directory>./vendor</directory>
             </exclude>
         </whitelist>
