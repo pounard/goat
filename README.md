@@ -78,6 +78,7 @@ different software design and approach:
 # Todolist
 
  *  [pending] allow named parameters
+ *  [postponed] better parameter handling in AbstractConnection
  *  [postponed] DDL ALTER TABLE? - not sure I want this right now
  *  [postponed] DDL CREATE TABLE? - not sure I want this right now
  *  [postponed] ext-pgsql driver
@@ -89,6 +90,7 @@ different software design and approach:
  *  [postponed] WITH support
  *  [x] <strike>performance: improve get column metadata for PDO</strike>: impossible due to native calls
  *  [x] converters: change method names to avoid confusion with hydrator
+ *  [x] converters: per default better definition
  *  [x] converters: should carry a type and aliases (better auto detection)
  *  [x] DDL TRUNCATE
  *  [x] DDL TRUNCATE testing
@@ -97,6 +99,7 @@ different software design and approach:
  *  [x] expression vs statement: query builder improvements
  *  [x] ext_pgsql: basic implementation
  *  [x] ext_pgsql: document it is both faster and more secure
+ *  [x] ext_pgsql: improve error handling
  *  [x] generic way to dissociate raw SQL string from raw values
  *  [x] improve WHERE builder tests: raw statement / sub where
  *  [x] mapper: basic object mapping (using hydrator)
@@ -113,21 +116,22 @@ different software design and approach:
  *  [x] UPDATE query testing
  *  [x] WHERE with SELECT within
  *  all: switch to strict types
- *  better parameter handling in AbstractConnection
- *  converters: per default better definition (session builder?)
  *  converters: specific instances per driver
  *  converters: type map per driver
- *  ext_pgsql: improve error handling
  *  mapper: advanced object mapping
  *  mapper: table proxy interface
  *  model manager: get rid of it
  *  MySQL default transaction level in configuration
  *  Query cloning does not clone relation (object is immutable)
- *  session, connection: add logger and notifications
+ *  security: test using https://github.com/minimaxir/big-list-of-naughty-strings
+ *  session: connection: add logger and notifications
  *  session: test with write and read connections
  *  session: write-only/read-only connection support, fallback when transaction
  *  transaction: document deffer helpers
  *  transaction: document immediate per default
  *  transaction: document isolation levels
  *  transaction: FOR UPDATE / FOR SHARE query dissociation from SELECT
+ *  travis: basic integration
+ *  travis: create a test suite per (driver, database version target) couple
+ *  travis: use docker to test
  *  WHERE builder tests: subqueries tests
