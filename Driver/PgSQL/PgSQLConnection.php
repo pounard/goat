@@ -35,6 +35,18 @@ class PgSQLConnection extends AbstractConnection
     /**
      * {@inheritdoc}
      */
+    protected function getEscapeSequences() : array
+    {
+        return [
+            '"',    // Identifier escape character
+            '\'',   // String literal escape character
+            '$$',   // String constant escape sequence
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function supportsReturning() : bool
     {
         return true;
@@ -106,7 +118,18 @@ class PgSQLConnection extends AbstractConnection
      */
     public function escapeLiteral(string $string) : string
     {
-        return pg_escape_literal($this->getConn(), $string);
+        if ('' === $string) {
+            return '';
+        }
+
+        $conn = $this->getConn();
+
+        $escaped = @pg_escape_literal($conn, $string);
+        if (false === $escaped) {
+            $this->connectionError($conn);
+        }
+
+        return $escaped;
     }
 
     /**
@@ -114,7 +137,18 @@ class PgSQLConnection extends AbstractConnection
      */
     public function escapeBlob(string $word) : string
     {
-        return pg_escape_bytea($this->getConn(), $word);
+        if ('' === $word) {
+            return '';
+        }
+
+        $conn = $this->getConn();
+
+        $escaped = @pg_escape_bytea($conn, $word);
+        if (false === $escaped) {
+            $this->connectionError($conn);
+        }
+
+        return $escaped;
     }
 
     /**
@@ -122,7 +156,18 @@ class PgSQLConnection extends AbstractConnection
      */
     public function escapeIdentifier(string $string) : string
     {
-        return pg_escape_identifier($this->getConn(), $string);
+          if ('' === $string) {
+            return '';
+        }
+
+        $conn = $this->getConn();
+
+        $escaped = @pg_escape_identifier($conn, $string);
+        if (false === $escaped) {
+            $this->connectionError($conn);
+        }
+
+        return $escaped;
     }
 
     /**

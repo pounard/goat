@@ -37,7 +37,14 @@ abstract class AbstractConnection implements ConnectionInterface
     use ConverterAwareTrait;
     use DebuggableTrait;
 
+    const PARAMETER_MATCH = '@
+        ESCAPE
+        \$+(\*|\d+)                     # Matches any number of dollar signs followed with * or digit
+        (?:::([\w\."]+(?:\[\])?)|)?     # Matches valid ::WORD cast
+        @x';
+
     private $currentTransaction;
+    private $matchParametersRegex;
     protected $configuration = [];
     protected $dsn;
     protected $formatter;
@@ -57,6 +64,30 @@ abstract class AbstractConnection implements ConnectionInterface
 
         // Register an empty instance for the converter, in case.
         $this->converter = new ConverterMap();
+
+        $this->buildParameterRegex();
+    }
+
+    /**
+     * Uses the connection driven escape sequences to build the parameter
+     * matching regex.
+     */
+    final protected function buildParameterRegex()
+    {
+        // Please see this really excellent Stack Overflow answer:
+        //   https://stackoverflow.com/a/23589204
+        $patterns = [];
+
+        foreach ($this->getEscapeSequences() as $sequence) {
+            $sequence = preg_quote($sequence);
+            $patterns[] = sprintf("%s.+%s", $sequence, $sequence);
+        }
+
+        if ($patterns) {
+            $this->matchParametersRegex = str_replace('ESCAPE', sprintf("(%s)|", implode("|", $patterns)), self::PARAMETER_MATCH);
+        } else {
+            $this->matchParametersRegex = str_replace('ESCAPE', self::PARAMETER_MATCH);
+        }
     }
 
     /**
@@ -66,6 +97,13 @@ abstract class AbstractConnection implements ConnectionInterface
     {
         $this->close();
     }
+
+    /**
+     * Get backend escape sequences
+     *
+     * @return string[]
+     */
+    abstract protected function getEscapeSequences() : array;
 
     /**
      * Create SQL formatter
@@ -204,9 +242,9 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    final public function select(string $relationName, string $alias = null) : SelectQuery
+    final public function select($relation, string $alias = null) : SelectQuery
     {
-        $select = new SelectQuery($relationName, $alias);
+        $select = new SelectQuery($relation, $alias);
         $select->setConnection($this);
 
         return $select;
@@ -215,9 +253,9 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    final public function update(string $relationName, string $alias = null) : UpdateQuery
+    final public function update($relation, string $alias = null) : UpdateQuery
     {
-        $update = new UpdateQuery($relationName, $alias);
+        $update = new UpdateQuery($relation, $alias);
         $update->setConnection($this);
 
         return $update;
@@ -226,9 +264,9 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    final public function insertQuery(string $relationName) : InsertQueryQuery
+    final public function insertQuery($relation) : InsertQueryQuery
     {
-        $insert = new InsertQueryQuery($relationName);
+        $insert = new InsertQueryQuery($relation);
         $insert->setConnection($this);
 
         return $insert;
@@ -237,9 +275,9 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    final public function insertValues(string $relationName) : InsertValuesQuery
+    final public function insertValues($relation) : InsertValuesQuery
     {
-        $insert = new InsertValuesQuery($relationName);
+        $insert = new InsertValuesQuery($relation);
         $insert->setConnection($this);
 
         return $insert;
@@ -248,9 +286,9 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    final public function delete(string $relationName, string $alias = null) : DeleteQuery
+    final public function delete($relation, string $alias = null) : DeleteQuery
     {
-        $insert = new DeleteQuery($relationName, $alias);
+        $insert = new DeleteQuery($relation, $alias);
         $insert->setConnection($this);
 
         return $insert;
@@ -378,7 +416,39 @@ abstract class AbstractConnection implements ConnectionInterface
         $parameters = $arguments->getAll($overrides);
         $done       = [];
 
-        $rawSQL = preg_replace_callback('/\$(\*|\d+)(?:::([\w\."]+(?:\[\])?)|)?/', function ($matches) use (&$parameters, &$index, &$done, $arguments) {
+        // See https://stackoverflow.com/a/3735908 for the  starting
+        // sequence explaination, the rest should be comprehensible.
+        // Working version: '/\$+(\*|\d+)(?:::([\w\."]+(?:\[\])?)|)?/'
+        $rawSQL = preg_replace_callback($this->matchParametersRegex, function ($matches) use (&$parameters, &$index, &$done, $arguments) {
+
+            // Still not implemented the (SKIP*)(F*) variant for the regex
+            // so I do need to exclude patterns we DO NOT want to match from
+            // here.
+            if ('$' !== $matches[0][0]) {
+                return $matches[0];
+            }
+
+            // Consider that $$ is a valid escape sequence, and should not be
+            // changed, more generally an even count is a series of escape
+            // sequences, whereas having an odd count means that we do have
+            // escape sequences and a parameter identifier at the same time.
+            // For example:
+            //  - $* : parameter
+            //  - $$* : escape sequence then *
+            //  - $$$* : escape sequence then parameter
+            //  - $$$$* : 2 escape sequences then *
+            //  - ... and you get it
+            $prefix = '';
+            if ('$' === $matches[0][1]) {
+                // We don't need to check if the second char is not a $ sign
+                $count = substr_count($matches[0], '$');
+                if (0 === $count % 2) {
+                    // Ignore this string, return complete string.
+                    return $matches[0];
+                } else {
+                    $prefix = str_repeat('*', $count - 1);
+                }
+            }
 
             $placeholder = $this->getPlaceholder($index);
 
@@ -386,19 +456,17 @@ abstract class AbstractConnection implements ConnectionInterface
                 throw new QueryError(sprintf("Invalid parameter number bound"));
             }
 
-            if (isset($matches[2])) { // Do we have a type?
-                $type = $matches[2];
+            if (isset($matches[3])) { // Do we have a type?
+                $type = $matches[3];
 
                 $replacement = $parameters[$index];
                 $replacement = $this->converter->toSQL($type, $replacement);
 
                 if ($this->converter->needsCast($type)) {
-
                     $castAs = $this->converter->cast($type);
                     if (!$castAs) {
                         $castAs = $type;
                     }
-
                     $placeholder = $this->writeCast($placeholder, $this->getCastType($castAs));
                 }
 
@@ -408,7 +476,7 @@ abstract class AbstractConnection implements ConnectionInterface
 
             ++$index;
 
-            return $placeholder;
+            return $prefix . $placeholder;
         }, $rawSQL);
 
         // Some parameters might remain untouched, case in which we do need to

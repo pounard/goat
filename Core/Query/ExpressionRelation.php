@@ -9,6 +9,25 @@ use Goat\Core\Client\ArgumentBag;
  */
 final class ExpressionRelation implements Expression
 {
+    /**
+     * Creates an instance without automatic split using '.' notation
+     *
+     * @param string $relationName
+     * @param string $alias
+     * @param string $schema
+     *
+     * @return ExpressionRelation
+     */
+    public static function escape(string $relationName, string $alias = null, string $schema = null) : ExpressionRelation
+    {
+        $instance = new ExpressionRelation('');
+        $instance->relationName = $relationName;
+        $instance->alias = $alias;
+        $instance->schema = $schema;
+
+        return $instance;
+    }
+
     private $alias;
     private $relationName;
     private $schema;

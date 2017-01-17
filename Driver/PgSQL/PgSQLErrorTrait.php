@@ -34,7 +34,7 @@ trait PgSQLErrorTrait
         if (false === $errorString) {
             throw new PgSQLDriverError("unknown error: could not fetch status code");
         } else {
-            throw new PgSQLDriverError($errorString);
+            throw new PgSQLDriverError($errorString, (int)pg_connection_status($resource));
         }
     }
 }

@@ -2,8 +2,8 @@
 
 namespace Goat\Driver\PDO;
 
-use Goat\Core\Transaction\Transaction;
 use Goat\Core\Error\QueryError;
+use Goat\Core\Transaction\Transaction;
 
 class PgSQLConnection extends AbstractPDOConnection
 {
@@ -54,6 +54,18 @@ class PgSQLConnection extends AbstractPDOConnection
     /**
      * {@inheritdoc}
      */
+    protected function getEscapeSequences() : array
+    {
+        return [
+            '"',    // Identifier escape character
+            '\'',   // String literal escape character
+            '$$',   // String constant escape sequence
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function doStartTransaction(int $isolationLevel = Transaction::REPEATABLE_READ) : Transaction
     {
         $ret = new PgSQLTransaction($isolationLevel);
@@ -79,7 +91,7 @@ class PgSQLConnection extends AbstractPDOConnection
      */
     public function escapeIdentifier(string $string) : string
     {
-        return '"' . str_replace('"', '\\"', $string) . '"';
+        return '"' . str_replace('"', '""', $string) . '"';
     }
 
     /**

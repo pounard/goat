@@ -134,12 +134,12 @@ class Session extends AbstractConnectionProxy
     /**
      * {@inheritdoc}
      */
-    public function select(string $relationName, string $alias = null) : SelectQuery
+    public function select($relation, string $alias = null) : SelectQuery
     {
         if ($this->readonlyConnection && !$this->isTransactionPending()) {
-            return $this->readonlyConnection->select($relationName, $alias);
+            return $this->readonlyConnection->select($relation, $alias);
         }
 
-        return $this->writeConnection->select($relationName, $alias);
+        return $this->writeConnection->select($relation, $alias);
     }
 }

@@ -107,41 +107,41 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function select(string $relationName, string $alias = null) : SelectQuery
+    public function select($relation, string $alias = null) : SelectQuery
     {
-        return $this->getInnerConnection()->select($relationName, $alias);
+        return $this->getInnerConnection()->select($relation, $alias);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function update(string $relationName, string $alias = null) : UpdateQuery
+    public function update($relation, string $alias = null) : UpdateQuery
     {
-        return $this->getInnerConnection()->update($relationName, $alias);
+        return $this->getInnerConnection()->update($relation, $alias);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function insertValues(string $relationName) : InsertValuesQuery
+    public function insertValues($relation) : InsertValuesQuery
     {
-        return $this->getInnerConnection()->insertValues($relationName);
+        return $this->getInnerConnection()->insertValues($relation);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function delete(string $relationName, string $alias = null) : DeleteQuery
+    public function delete($relation, string $alias = null) : DeleteQuery
     {
-        return $this->getInnerConnection()->delete($relationName, $alias);
+        return $this->getInnerConnection()->delete($relation, $alias);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function insertQuery(string $relationName) : InsertQueryQuery
+    public function insertQuery($relation) : InsertQueryQuery
     {
-        return $this->getInnerConnection()->insertQuery($relationName);
+        return $this->getInnerConnection()->insertQuery($relation);
     }
 
     /**

@@ -113,7 +113,7 @@ abstract class AbstractPDOConnection extends AbstractConnection
      */
     protected function getPlaceholder(int $index) : string
     {
-        return '?'; // This works for PDO, for example
+        return '?';
     }
 
     /**

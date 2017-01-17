@@ -138,58 +138,58 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface,
     /**
      * Create a select query builder
      *
-     * @param string $relationName
+     * @param string|ExpressionRelation $relation
      *   SQL from statement relation name
      * @param string $alias
      *   Alias for from clause relation
      *
      * @return SelectQuery
      */
-    public function select(string $relationName, string $alias = null) : SelectQuery;
+    public function select($relation, string $alias = null) : SelectQuery;
 
     /**
      * Create an update query builder
      *
-     * @param string $relationName
+     * @param string|ExpressionRelation $relation
      *   SQL from statement relation name
      * @param string $alias
      *   Alias for from clause relation
      *
      * @return UpdateQuery
      */
-    public function update(string $relationName, string $alias = null) : UpdateQuery;
+    public function update($relation, string $alias = null) : UpdateQuery;
 
     /**
      * Create an insert query builder
      *
-     * @param string $relationName
+     * @param string|ExpressionRelation $relation
      *   SQL from statement relation name
      *
      * @return InsertValuesQuery
      */
-    public function insertValues(string $relationName) : InsertValuesQuery;
+    public function insertValues($relation) : InsertValuesQuery;
 
     /**
      * Create an insert with query builder
      *
-     * @param string $relationName
+     * @param string|ExpressionRelation $relation
      *   SQL from statement relation name
      *
      * @return InsertQueryQuery
      */
-    public function insertQuery(string $relationName) : InsertQueryQuery;
+    public function insertQuery($relation) : InsertQueryQuery;
 
     /**
      * Create a delete query builder
      *
-     * @param string $relationName
+     * @param string|ExpressionRelation $relation
      *   SQL from statement relation name
      * @param string $alias
      *   Alias for from clause relation
      *
      * @return DeleteQuery
      */
-    public function delete(string $relationName, string $alias = null) : DeleteQuery;
+    public function delete($relation, string $alias = null) : DeleteQuery;
 
     /**
      * Truncate given tables (warning, it does it right away)

@@ -106,6 +106,7 @@ different software design and approach:
  *  [x] mapper: object hydration mechanism
  *  [x] parametric testing for backends
  *  [x] RIGHT and FULL JOIN types
+ *  [x] security: identifier testing https://github.com/minimaxir/big-list-of-naughty-strings
  *  [x] session: add basic session support (dual connection handling)
  *  [x] transaction support
  *  [x] transaction: test allow pending
@@ -123,7 +124,7 @@ different software design and approach:
  *  model manager: get rid of it
  *  MySQL default transaction level in configuration
  *  Query cloning does not clone relation (object is immutable)
- *  security: test using https://github.com/minimaxir/big-list-of-naughty-strings
+ *  security: parameter injcetion testing using https://github.com/minimaxir/big-list-of-naughty-strings
  *  session: connection: add logger and notifications
  *  session: test with write and read connections
  *  session: write-only/read-only connection support, fallback when transaction

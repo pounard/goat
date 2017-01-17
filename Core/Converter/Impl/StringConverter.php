@@ -19,7 +19,7 @@ class StringConverter implements ConverterInterface
      */
     public function toSQL(string $type, $value) : string
     {
-        return $value;
+        return (string)$value;
     }
 
     /**

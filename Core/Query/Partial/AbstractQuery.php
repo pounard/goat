@@ -22,14 +22,14 @@ abstract class AbstractQuery implements Query, ConnectionAwareInterface
     /**
      * Build a new query
      *
-     * @param string $relationName
+     * @param string|ExpressionRelation $relation
      *   SQL from statement relation name
      * @param string $alias
      *   Alias for from clause relation
      */
-    public function __construct(string $relationName, string $alias = null)
+    public function __construct($relation, string $alias = null)
     {
-        $this->relation = $this->normalizeRelation($relationName, $alias);
+        $this->relation = $this->normalizeRelation($relation, $alias);
     }
 
     /**
