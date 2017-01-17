@@ -3,6 +3,7 @@
 namespace Goat\Core\Client;
 
 use Goat\Core\Converter\ConverterMap;
+use Goat\Core\Error\GoatError;
 use Goat\Core\Hydrator\HydratorInterface;
 
 /**
@@ -28,6 +29,10 @@ final class PagerResultIterator implements ResultIteratorInterface
      */
     public function __construct(ResultIteratorInterface $result, int $count, int $limit, int $page)
     {
+        if ($page < 1) {
+            throw new GoatError(sprintf("page numbering starts with 1, %d given", $page));
+        }
+
         $this->result = $result;
         $this->count  = $count;
         $this->limit  = $limit;
@@ -103,7 +108,13 @@ final class PagerResultIterator implements ResultIteratorInterface
      */
     public function getStopOffset() : int
     {
-        return $this->getStartOffset() + $this->getCurrentCount();
+        $stopOffset = $this->getStartOffset() + $this->getCurrentCount();
+
+        if ($this->count < $stopOffset) {
+            $stopOffset = $this->count;
+        }
+
+        return $stopOffset;
     }
 
     /**

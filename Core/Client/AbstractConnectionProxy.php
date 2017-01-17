@@ -14,6 +14,10 @@ use Goat\Core\Query\UpdateQuery;
 
 /**
  * Connection proxy that emits events via Symfony's EventDispatcher
+ *
+ * @codeCoverageIgnore
+ *   We do ignore code coverage for this class at this point, because most
+ *   implementations will voluntarily drop lots of methods of it.
  */
 abstract class AbstractConnectionProxy implements ConnectionInterface
 {

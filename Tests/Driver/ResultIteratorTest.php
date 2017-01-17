@@ -2,19 +2,19 @@
 
 namespace Goat\Tests\Driver;
 
+use Goat\Core\Client\ConnectionInterface;
+use Goat\Core\Client\PagerResultIterator;
+use Goat\Core\Error\GoatError;
+use Goat\Core\Error\InvalidDataAccessError;
 use Goat\Tests\DriverTestCase;
 
 class ResultIteratorTest extends DriverTestCase
 {
     /**
-     * Test basic result iterator usage
-     *
-     * @dataProvider driverDataSource
+     * {@inheritdoc}
      */
-    public function testBasicUsage($driver, $class)
+    protected function createTestSchema(ConnectionInterface $connection)
     {
-        $connection = $this->createConnection($driver, $class);
-
         $connection->query("
             create temporary table type_test (
                 foo integer,
@@ -25,7 +25,13 @@ class ResultIteratorTest extends DriverTestCase
                 some_date date default null
             )
         ");
+    }
 
+    /**
+     * {@inheritdoc}
+     */
+    protected function createTestData(ConnectionInterface $connection)
+    {
         // ensure table data has the right types
         $connection->query("
             insert into type_test (foo, bar, baz, some_ts, some_time, some_date) values ($*::int4, $*::varchar, $*::timestamp, $*::timestamp, $*::time, $*::date);
@@ -37,6 +43,16 @@ class ResultIteratorTest extends DriverTestCase
             \DateTime::createFromFormat('Y-m-d H:i:s', '2003-03-22 10:25:00'),
             \DateTime::createFromFormat('Y-m-d H:i:s', '2013-03-22 11:25:00'),
         ]);
+    }
+
+    /**
+     * Test basic result iterator usage
+     *
+     * @dataProvider driverDataSource
+     */
+    public function testBasicUsage($driver, $class)
+    {
+        $connection = $this->createConnection($driver, $class);
 
         $results = $connection->query("select * from type_test");
         $this->assertCount(1, $results);
@@ -58,6 +74,7 @@ class ResultIteratorTest extends DriverTestCase
         $identifier = $connection->prepareQuery('select foo, bar, baz, some_time from type_test');
 
         $results = $connection->executePreparedQuery($identifier);
+        $this->assertSame(['foo', 'bar', 'baz', 'some_time'], $results->getColumnNames());
         $this->assertSame(4, $results->countColumns());
         $this->assertSame('foo', $results->getColumnName(0));
         $this->assertSame('int4', $results->getColumnType('foo'));
@@ -67,5 +84,139 @@ class ResultIteratorTest extends DriverTestCase
         $this->assertSame('timestamp', $results->getColumnType('baz'));
         $this->assertSame('some_time', $results->getColumnName(3));
         $this->assertSame('time', $results->getColumnType('some_time'));
+    }
+
+    /**
+     * Test the empty iterator implementation
+     *
+     * @dataProvider driverDataSource
+     */
+    public function testPager($driver, $class)
+    {
+        $connection = $this->createConnection($driver, $class);
+
+        // Create lots of entries
+        $insert = $connection->insertValues('type_test')->columns(['foo', 'bar']);
+        for ($i = 0; $i < 99; ++$i) {
+            $insert->values([$i, 'boo' . $i]);
+        }
+        $insert->execute();
+
+        $limit = 13;
+        $select = $connection
+            ->select('type_test')
+            ->range($limit, 2 * $limit)
+        ;
+
+        $count = $select->getCountQuery()->execute()->fetchField();
+        $result = $select->execute();
+
+        $pager = new PagerResultIterator($result, $count, $limit, 3);
+        $this->assertSame($limit, $pager->count());
+        $this->assertSame($result, $pager->getResult());
+        $this->assertSame(2 * $limit, $pager->getStartOffset());
+        $this->assertSame(3 * $limit, $pager->getStopOffset());
+        $this->assertSame(8, $pager->getLastPage());
+        $this->assertSame(3, $pager->getCurrentPage());
+        $this->assertTrue($pager->hasNextPage());
+        $this->assertTrue($pager->hasPreviousPage());
+        $this->assertSame(100, $pager->getTotalCount());
+        $this->assertSame($limit, $pager->getLimit());
+
+        // @todo
+        // countColumns() : int
+        // countRows() : int
+        // columnExists(string $name) : bool
+        // getColumnNames() : array
+        // getColumnType(string $name) : string
+        // getColumnName(int $index) : string
+        // fetchField($name = null)
+        // fetchColumn($name = null)
+        // fetch()
+
+        //
+        try {
+            $pager = new PagerResultIterator($result, $count, $limit, 0);
+            $this->fail();
+        } catch (GoatError $e) {
+        }
+
+        // We are deliberatly lying to the pager, but don't care
+        $pager = new PagerResultIterator($result, $count, $limit, 1);
+        $this->assertSame(0, $pager->getStartOffset());
+        $this->assertSame($limit, $pager->getStopOffset());
+        $this->assertSame(8, $pager->getLastPage());
+        $this->assertSame(1, $pager->getCurrentPage());
+        $this->assertTrue($pager->hasNextPage());
+        $this->assertFalse($pager->hasPreviousPage());
+
+        // We are deliberatly lying to the pager, but don't care
+        $pager = new PagerResultIterator($result, $count, $limit, 8);
+        $this->assertSame(7 * $limit, $pager->getStartOffset());
+        $this->assertSame(100, $pager->getStopOffset());
+        $this->assertSame(8, $pager->getLastPage());
+        $this->assertSame(8, $pager->getCurrentPage());
+        $this->assertFalse($pager->hasNextPage());
+        $this->assertTrue($pager->hasPreviousPage());
+    }
+
+    /**
+     * Test the empty iterator implementation
+     *
+     * @dataProvider driverDataSource
+     */
+    public function testEmptyIterator($driver, $class)
+    {
+        $connection = $this->createConnection($driver, $class);
+
+        // Drivers, when going through a non returning query, must return
+        // an empty iterator instance instead of a real iterator instance
+        $empty = $connection
+            ->update('type_test')
+            ->condition('bar', 'cassoulet')
+            ->set('foo', 137)
+            ->execute()
+        ;
+
+        $this->assertSame(1, $empty->countRows());
+        $this->assertSame(0, $empty->countColumns());
+        $this->assertCount(0, $empty);
+        $this->assertEmpty($empty);
+        $this->assertFalse($empty->columnExists('anything'));
+        $this->assertSame([], $empty->getColumnNames());
+        $this->assertNull($empty->fetch());
+
+        try {
+            $empty->getColumnType("anything");
+            $this->fail();
+        } catch (InvalidDataAccessError $e) {
+        }
+
+        try {
+            $empty->getColumnName(0);
+            $this->fail();
+        } catch (InvalidDataAccessError $e) {
+        }
+
+        try {
+            $empty->fetchField("anything");
+            $this->fail();
+        } catch (InvalidDataAccessError $e) {
+        }
+
+        try {
+            $empty->fetchColumn("anything");
+            $this->fail();
+        } catch (InvalidDataAccessError $e) {
+        }
+
+        $empty = $connection
+            ->update('type_test')
+            ->condition('bar', 'non existing column')
+            ->set('foo', 137)
+            ->execute()
+        ;
+
+        $this->assertSame(0, $empty->countRows());
     }
 }
