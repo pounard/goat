@@ -11,6 +11,14 @@ class MySQLConnection extends AbstractPDOConnection
     /**
      * {@inheritdoc}
      */
+    public function getDatabaseName() : string
+    {
+        return 'MySQL';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function supportsReturning() : bool
     {
         return false;

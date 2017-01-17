@@ -95,14 +95,8 @@ class DefaultResultIterator extends AbstractResultIterator
         $this->columnCount = $this->statement->columnCount();
 
         for ($i = 0; $i < $this->columnCount; ++$i) {
-
             $meta = $this->statement->getColumnMeta($i);
             $key = $meta['name'];
-
-            if (is_numeric($key)) {
-                $key = $i;
-            }
-
             $this->columnNameMap[$key] = $i;
             $this->columnTypeMap[$key] = $this->parseType($meta['native_type']);
         }

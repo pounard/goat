@@ -6,10 +6,20 @@ use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Error\GoatError;
 use Goat\Core\Query\ExpressionColumn;
 use Goat\Core\Query\ExpressionRelation;
+use Goat\Core\Query\ExpressionValue;
 use Goat\Tests\DriverTestCase;
 
 /**
  * Enfore strong security injection tests.
+ *
+ * Due to the enormous amount of strings, this is the longest test of all
+ * nevertheless, this is a small price to pay to have a secure API so nothing
+ * will probably ever be done to make it faster.
+ *
+ * Injected strings from the security-strings.json comes from:
+ *   https://github.com/minimaxir/big-list-of-naughty-strings
+ *
+ * All credits to their authors.
  */
 class SecurityTest extends DriverTestCase
 {
@@ -36,6 +46,11 @@ class SecurityTest extends DriverTestCase
     protected function createTestSchema(ConnectionInterface $connection)
     {
         $connection->query("
+            create temporary table users (
+                id serial primary key
+            )
+        ");
+        $connection->query("
             create temporary table some_table (
                 id serial primary key,
                 foo integer not null,
@@ -43,6 +58,138 @@ class SecurityTest extends DriverTestCase
                 baz timestamp default now()
             )
         ");
+    }
+
+    /**
+     * Handle driver exceptions, some are acceptable, some other not
+     *
+     * @param \Throwable $e
+     * @param string $veryBadString
+     * @param string[] $allowedErrors
+     *
+     * @throws GoatError
+     */
+    private function handleException(\Throwable $e, string $veryBadString, array $allowedErrors = [])
+    {
+        $previous = $e;
+        $isValid = false;
+
+        if ($allowedErrors) {
+            do {
+                foreach ($allowedErrors as $partialMessage) {
+                    if (false !== stripos($previous->getMessage(), $partialMessage)) {
+                        $isValid = true;
+                        break 2;
+                    }
+                }
+            } while ($previous = $previous->getPrevious());
+        }
+
+        if (!$isValid) {
+            throw new GoatError(sprintf("error with string %s", escapeshellcmd($veryBadString)), $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * Test parameter injection testing
+     *
+     * @dataProvider driverDataSource
+     */
+    public function testParameterInjection($driver, $class)
+    {
+        $connection = $this->createConnection($driver, $class);
+        $stringSet  = $this->getStrings();
+
+        // Those are errors, but valid errors, the SQL backend detected invalid
+        // strings and does not allows them, that's exactly what we are looking
+        // for doing this test
+        $allowedErrors = [
+            'Illegal mix of collations',
+        ];
+
+        // MySQL, sad MySQL, does not uses a case sensitive collation
+        // per default, in most environments those tests would fail.
+        // In order to fix that, we do have to reduce the test set.
+        if (false !== stripos('mysql', $connection->getDatabaseName())) {
+            $done = [];
+            foreach ($stringSet as $index => $veryBadString) {
+
+                // @todo
+                //   MySQL does not seem to like empty strings and various
+                //   whitespace caracters, ideally, I should deal with those
+                //   myself instead of dropping the test; BUT! PDO don't let
+                //   them work either, so I guess it's not my problem.
+                if ("" === $veryBadString) {
+                    unset($stringSet[$index]);
+                    continue;
+                }
+
+                // Remove case insentive duplicates
+                $lowered = mb_strtolower($veryBadString);
+                if (isset($done[$lowered])) {
+                    unset($stringSet[$index]);
+                    continue;
+                }
+
+                $done[$lowered] = true;
+            }
+        }
+
+        // Massive bulk insert
+        $insert = $connection->insertValues('some_table')->columns(['foo', 'bar']);
+        foreach ($stringSet as $index => $veryBadString) {
+            $insert->values([$index, $veryBadString]);
+        }
+        $insert->execute();
+
+        foreach ($stringSet as $index => $veryBadString) {
+            try {
+                $row = $connection
+                    ->select('some_table')
+                    ->expression('bar = $*', [$veryBadString])
+                    ->execute()
+                    ->fetch()
+                ;
+                $this->assertSame($index, $row['foo']);
+                $this->assertSame($veryBadString, $row['bar']);
+
+                $row = $connection
+                    ->select('some_table')
+                    ->condition('bar', $veryBadString)
+                    ->execute()
+                    ->fetch()
+                ;
+                $this->assertSame($index, $row['foo']);
+                $this->assertSame($veryBadString, $row['bar']);
+
+                $row = $connection
+                    ->select('some_table')
+                    ->condition('bar', ':bad')
+                    ->execute(['bad' => $veryBadString])
+                    ->fetch()
+                ;
+                $this->assertSame($index, $row['foo']);
+                $this->assertSame($veryBadString, $row['bar']);
+
+                $row = $connection
+                    ->select('some_table')
+                    ->condition('bar', new ExpressionValue($veryBadString))
+                    ->execute()
+                    ->fetch()
+                ;
+                $this->assertSame($index, $row['foo']);
+                $this->assertSame($veryBadString, $row['bar']);
+
+                // @todo missing LIKE testing
+
+                // Ensures that the user table still exists
+                $result = $connection->select('users')->execute();
+                $this->assertSame(0, $result->countRows());
+
+            } catch (\Exception $e) {
+                $this->handleException($e, $veryBadString, $allowedErrors);
+            }
+        }
     }
 
     /**
@@ -88,7 +235,7 @@ class SecurityTest extends DriverTestCase
             $done[$veryBadString] = true;
 
             // Prefix to be good with standard.
-            $veryBadString = 'a' . $veryBadString;
+            $veryBadString = $veryBadString;
 
             try {
                 $sql = sprintf(
@@ -122,23 +269,7 @@ class SecurityTest extends DriverTestCase
                 }
 
             } catch (\Exception $e) {
-
-                /** @var \Throwable $previous */
-                $previous = $e;
-                $isValid = false;
-
-                do {
-                    foreach ($allowedErrors as $partialMessage) {
-                        if (false !== stripos($previous->getMessage(), $partialMessage)) {
-                            $isValid = true;
-                            break 2;
-                        }
-                    }
-                } while ($previous = $previous->getPrevious());
-
-                if (!$isValid) {
-                    throw new GoatError(sprintf("error with string %s", escapeshellarg($veryBadString)), $e->getCode(), $e);
-                }
+                $this->handleException($e, $veryBadString, $allowedErrors);
             }
         }
     }

@@ -50,10 +50,6 @@ class PgSQLResultIterator extends AbstractResultIterator
                 $this->resultError($this->resource);
             }
 
-            if (is_numeric($key)) {
-                $key = $i;
-            }
-
             $this->columnNameMap[$key] = $i;
             $this->columnTypeMap[$key] = $type;
         }

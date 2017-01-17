@@ -27,6 +27,30 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
+    public function getDatabaseName() : string
+    {
+        return $this->getInnerConnection()->getDatabaseName();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getDriverName() : string
+    {
+        return $this->getInnerConnection()->getDriverName();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getDatabaseVersion() : string
+    {
+        return $this->getInnerConnection()->getDatabaseVersion();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function supportsReturning() : bool
     {
         return $this->getInnerConnection()->supportsReturning();

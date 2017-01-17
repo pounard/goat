@@ -38,6 +38,14 @@ class PgSQLConnection extends AbstractPDOConnection
     /**
      * {@inheritdoc}
      */
+    public function getDatabaseName() : string
+    {
+        return 'PostgreSQL';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function supportsReturning() : bool
     {
         return true;

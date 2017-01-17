@@ -118,6 +118,22 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
+    public function getDriverName() : string
+    {
+        return $this->dsn->getDriver();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getDatabaseVersion() : string
+    {
+        return null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function supportsReturning() : bool
     {
         return true;

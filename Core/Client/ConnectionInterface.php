@@ -19,6 +19,27 @@ use Goat\Core\Transaction\Transaction;
 interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface, DebuggableInterface
 {
     /**
+     * Get database server name
+     *
+     * @return string
+     */
+    public function getDatabaseName() : string;
+
+    /**
+     * Get driver name
+     *
+     * @return string
+     */
+    public function getDriverName() : string;
+
+    /**
+     * Get database version if found
+     *
+     * @return string
+     */
+    public function getDatabaseVersion() : string;
+
+    /**
      * Does the backend supports RETURNING clauses
      *
      * @return bool
