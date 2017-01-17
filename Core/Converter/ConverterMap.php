@@ -33,7 +33,7 @@ class ConverterMap implements ConverterInterface, DebuggableInterface
      *     - first value is the converter class name
      *     - second value is a type aliases array
      */
-    static public function getDefautConverterMap() : array
+    public static function getDefautConverterMap() : array
     {
         /*
          * Mapping from PostgreSQL 9.2

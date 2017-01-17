@@ -24,7 +24,7 @@ abstract class DriverTestCase extends \PHPUnit_Framework_TestCase
      *
      * @return array
      */
-    static public function getKnownDrivers() : array
+    public static function getKnownDrivers() : array
     {
         return [
             'pdo_mysql' => \Goat\Driver\PDO\MySQLConnection::class,

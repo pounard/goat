@@ -14,5 +14,5 @@ before_script:
 
 script:
   - ./vendor/bin/phpunit 
-  - ./vendor/bin/phpcs --ignore=vendor,cache,compat,pouet.php,.phan --exclude=Squiz.WhiteSpace.ControlStructureSpacing -n .
+  - ./vendor/bin/phpcs --exclude="Squiz.WhiteSpace.ControlStructureSpacing" -np Core/ Driver/ Tests/
 

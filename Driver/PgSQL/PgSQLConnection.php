@@ -166,7 +166,7 @@ class PgSQLConnection extends AbstractConnection
      */
     public function escapeIdentifier(string $string) : string
     {
-          if ('' === $string) {
+        if ('' === $string) {
             return '';
         }
 
