@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Goat\Driver\PDO;
 
 use Goat\Core\Client\AbstractConnection;
@@ -129,7 +131,7 @@ abstract class AbstractPDOConnection extends AbstractConnection
             }
         }
 
-        $rawSQL = null;
+        $rawSQL = '';
 
         try {
             list($rawSQL, $parameters) = $this->getProperSql($query, $parameters);
@@ -158,7 +160,7 @@ abstract class AbstractPDOConnection extends AbstractConnection
      */
     public function perform($query, array $parameters = null, $options = null) : int
     {
-        $rawSQL = null;
+        $rawSQL = '';
 
         try {
             list($rawSQL, $parameters) = $this->getProperSql($query, $parameters);

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Goat\Driver\PgSQL;
 
 use Goat\Core\Client\AbstractConnection;
@@ -199,7 +201,7 @@ class PgSQLConnection extends AbstractConnection
             }
         }
 
-        $rawSQL = null;
+        $rawSQL = '';
         $conn = $this->getConn();
 
         try {
@@ -227,7 +229,7 @@ class PgSQLConnection extends AbstractConnection
      */
     public function perform($query, array $parameters = null, $options = null) : int
     {
-        $rawSQL = null;
+        $rawSQL = '';
         $conn = $this->getConn();
 
         try {

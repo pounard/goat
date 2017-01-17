@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Goat\Core\Query\Partial;
 
 use Goat\Core\Client\ConnectionAwareInterface;

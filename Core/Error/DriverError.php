@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Goat\Core\Error;
 
 /**
@@ -17,7 +19,7 @@ class DriverError extends GoatError
      * @param array $parameters
      * @param \Throwable $previous
      */
-    public function __construct($rawSQL, array $parameters, \Throwable $previous = null)
+    public function __construct($rawSQL, $parameters = null, \Throwable $previous = null)
     {
         $this->rawSQL = $rawSQL;
         $this->parameters = $parameters;

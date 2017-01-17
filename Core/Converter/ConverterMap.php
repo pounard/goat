@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Goat\Core\Converter;
 
 use Goat\Core\Converter\Impl\BooleanConverter;
@@ -212,7 +214,7 @@ class ConverterMap implements ConverterInterface, DebuggableInterface
     /**
      * {@inheritdoc}
      */
-    public function fromSQL(string $type, string $value)
+    public function fromSQL(string $type, $value)
     {
         return $this->get($type)->fromSQL($type, $value);
     }

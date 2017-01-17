@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Goat\Core\Converter\Impl;
 
 use Goat\Core\Converter\ConverterInterface;
@@ -9,7 +11,7 @@ class IntegerConverter implements ConverterInterface
     /**
      * {@inheritdoc}
      */
-    public function fromSQL(string $type, string $value)
+    public function fromSQL(string $type, $value)
     {
         return (int)$value;
     }

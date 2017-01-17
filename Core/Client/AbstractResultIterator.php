@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Goat\Core\Client;
 
 use Goat\Core\Converter\ConverterAwareTrait;
@@ -21,7 +23,7 @@ abstract class AbstractResultIterator implements ResultIteratorInterface
      *
      * @return mixed
      */
-    protected function convertValue($name, $value)
+    protected function convertValue(string $name, $value)
     {
         return $this->converter->fromSQL($this->getColumnType($name), $value);
     }
@@ -47,7 +49,7 @@ abstract class AbstractResultIterator implements ResultIteratorInterface
 
         foreach ($row as $name => $value) {
             if (null !== $value) {
-                $ret[$name] = $this->convertValue($name, $value);
+                $ret[$name] = $this->convertValue((string)$name, $value);
             } else {
                 $ret[$name] = null;
             }

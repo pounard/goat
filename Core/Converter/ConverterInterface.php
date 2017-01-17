@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Goat\Core\Converter;
 
 interface ConverterInterface
@@ -8,11 +10,13 @@ interface ConverterInterface
      * From the given raw SQL string, get the PHP value
      *
      * @param string $type
-     * @param string $value
+     * @param mixed $value
+     *   This can't be type hinted, because some drivers will convert
+     *   scalar types by themselves
      *
      * @return mixed
      */
-    public function fromSQL(string $type, string $value);
+    public function fromSQL(string $type, $value);
 
     /**
      * From the given PHP value, get the raw SQL string

@@ -108,6 +108,7 @@ different software design and approach:
  *  [x] RIGHT and FULL JOIN types
  *  [x] security: identifier testing https://github.com/minimaxir/big-list-of-naughty-strings
  *  [x] session: add basic session support (dual connection handling)
+ *  [x] switch to strict types
  *  [x] transaction support
  *  [x] transaction: test allow pending
  *  [x] transaction: test savepoints
@@ -116,7 +117,6 @@ different software design and approach:
  *  [x] UPDATE queries
  *  [x] UPDATE query testing
  *  [x] WHERE with SELECT within
- *  all: switch to strict types
  *  converters: specific instances per driver
  *  converters: type map per driver
  *  mapper: advanced object mapping

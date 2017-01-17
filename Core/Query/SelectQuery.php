@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Goat\Core\Query;
 
 use Goat\Core\Client\ArgumentBag;
@@ -186,7 +188,7 @@ final class SelectQuery extends AbstractQuery
      *
      * @return string
      */
-    private function findColumnIndex($alias) : string
+    private function findColumnIndex($alias) : int
     {
         foreach ($this->columns as $index => $data) {
             if ($data[1] === $alias) {

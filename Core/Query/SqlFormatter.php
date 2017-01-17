@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Goat\Core\Query;
 
 use Goat\Core\Client\EscaperAwareInterface;
@@ -255,7 +257,7 @@ class SqlFormatter implements SqlFormatterInterface, EscaperAwareInterface
      *
      * @return string
      */
-    protected function formatJoinItem(ExpressionRelation $relation, Where $condition, string $mode) : string
+    protected function formatJoinItem(ExpressionRelation $relation, Where $condition, int $mode) : string
     {
         switch ($mode) {
 
