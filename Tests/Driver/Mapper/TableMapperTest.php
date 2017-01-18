@@ -29,7 +29,7 @@ class TableMapperTest extends AbstractMapperTest
                     [
                         'relation' => 'users',
                         'alias' => 'u',
-                        'condition' => 'u.id = t.user_id',
+                        'condition' => 'u.id = t.id_user',
                     ],
                 ],
             ]

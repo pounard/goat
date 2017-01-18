@@ -7,10 +7,10 @@ namespace Goat\Mapper;
 use Goat\Core\Client\ConnectionAwareInterface;
 use Goat\Core\Client\ConnectionAwareTrait;
 use Goat\Core\Client\PagerResultIterator;
-use Goat\Core\Error\NotImplementedError;
+use Goat\Core\Client\ResultIteratorInterface;
+use Goat\Core\Error\QueryError;
 use Goat\Core\Query\Query;
 use Goat\Core\Query\SelectQuery;
-use Goat\Core\Client\ResultIteratorInterface;
 
 /**
  * Table mapper is a simple model implementation that works on an arbitrary
@@ -54,11 +54,37 @@ class SelectMapper implements ConnectionAwareInterface, MapperInterface
     }
 
     /**
+     * Expand primary key item
+     *
+     * @param mixed $id
+     *
+     * @return array
+     *   Keys are column names, values
+     */
+    private function expandPrimaryKey($id) : array
+    {
+        if (!is_array($id)) {
+            $id = [$id];
+        }
+        if (count($id) !== count($this->primaryKey)) {
+            throw new QueryError(sprintf("column count mismatch between primary key and user input, awaiting columns: '%s'", implode("', '", $this->primaryKey)));
+        }
+
+        return array_combine($this->primaryKey, $id);
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function findOne($id)
     {
-        throw new NotImplementedError();
+        $select = clone $this->select;
+
+        foreach ($this->expandPrimaryKey($id) as $column => $value) {
+            $select->condition($column, $value);
+        }
+
+        return $select->range(1, 0)->execute([], ['class' => $this->class]);
     }
 
     /**
@@ -66,7 +92,17 @@ class SelectMapper implements ConnectionAwareInterface, MapperInterface
      */
     public function findAll(array $idList, bool $raiseErrorOnMissing = false) : ResultIteratorInterface
     {
-        throw new NotImplementedError();
+        $select = clone $this->select;
+        $orWhere = $select->getWhere()->or();
+
+        foreach ($idList as $id) {
+            $pkWhere = $orWhere->and();
+            foreach ($this->expandPrimaryKey($id) as $column => $value) {
+                $pkWhere->condition($column, $value);
+            }
+        }
+
+        return $select->execute([], ['class' => $this->class]);
     }
 
     /**

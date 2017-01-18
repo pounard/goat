@@ -79,7 +79,6 @@ different software design and approach:
 
  *  [pending] allow named parameters
  *  [pending] mapper: table proxy interface
- *  [pending] model manager: get rid of it
  *  [postponed] better parameter handling in AbstractConnection
  *  [postponed] DDL ALTER TABLE? - not sure I want this right now
  *  [postponed] DDL CREATE TABLE? - not sure I want this right now
@@ -106,6 +105,7 @@ different software design and approach:
  *  [x] improve WHERE builder tests: raw statement / sub where
  *  [x] mapper: basic object mapping (using hydrator)
  *  [x] mapper: object hydration mechanism
+ *  [x] mapper: object mapping
  *  [x] parametric testing for backends
  *  [x] RIGHT and FULL JOIN types
  *  [x] security: identifier testing https://github.com/minimaxir/big-list-of-naughty-strings
@@ -121,7 +121,6 @@ different software design and approach:
  *  [x] WHERE with SELECT within
  *  converters: specific instances per driver
  *  converters: type map per driver
- *  mapper: advanced object mapping
  *  MySQL default transaction level in configuration
  *  Query cloning does not clone relation (object is immutable)
  *  security: parameter injcetion testing using https://github.com/minimaxir/big-list-of-naughty-strings

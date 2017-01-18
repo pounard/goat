@@ -80,7 +80,7 @@ class TableMapper extends SelectMapper
                 if (empty($joinDefinition['relation'])) {
                     throw new ConfigurationError("invalid JOIN definition given, it must at least contain the 'relation' value");
                 }
-                $joinDefinition += ['condition' => null, 'alias' => null, 'mode' => Query::JOIN_INNER];
+                $joinDefinition += ['condition' => null, 'alias' => $joinDefinition['relation'], 'mode' => Query::JOIN_INNER];
                 $this->joins[] = $joinDefinition;
             }
         }
@@ -97,7 +97,11 @@ class TableMapper extends SelectMapper
 
         foreach ($this->joins as $join) {
             $select->join($join['relation'], $join['condition'], $join['alias'], $join['mode']);
+            $select->column($join['alias'] . '.*');
         }
+
+        // Main relation columns are prioritized over joins
+        $select->column(($this->relationAlias ?? $this->relation) . '.*');
 
         return $select;
     }

@@ -8,6 +8,9 @@ use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Query\Query;
 use Goat\Mapper\MapperInterface;
 use Goat\Tests\DriverTestCase;
+use Goat\Core\Query\ExpressionRaw;
+use Goat\Core\Query\Where;
+use Goat\Core\Error\QueryError;
 
 /**
  * Basics unit/functional testing for all mappers
@@ -79,7 +82,7 @@ abstract class AbstractMapperTest extends DriverTestCase
             ->values([29, 1, 'foo', $this->idJean, new \DateTime('now +2 months')])
             ->values([31, 0, 'foo', $this->idJean, new \DateTime('now +17 hours')])
             ->values([37, 2, 'foo', $this->idAdmin, new \DateTime('now -128 hours')])
-            ->values([41, 2, 'bar', $this->idAdmin, new \DateTime('now -8 days')])
+            ->values([41, 2, 'bar', $this->idJean, new \DateTime('now -8 days')])
             ->values([43, 2, 'bar', $this->idAdmin, new \DateTime('now -6 minutes')])
             ->execute()
         ;
@@ -107,8 +110,42 @@ abstract class AbstractMapperTest extends DriverTestCase
     public function testFind($driver, $class)
     {
         $connection = $this->createConnection($driver, $class);
+        $mapper = $this->createMapper($connection, MappedEntity::class, ['t.id']);
 
-        $mapper = $this->createMapper($connection, $class, ['id']);
+        foreach ([1, [1]] as $id) {
+            $result = $mapper->findOne($id);
+            $this->assertCount(1, $result);
+            $item1 = $result->fetch();
+            $this->assertTrue($item1 instanceof MappedEntity);
+            // This also tests there is no conflict between table columns
+            $this->assertSame(1, $item1->id);
+        }
+
+        foreach ([8, [8]] as $id) {
+            $result = $mapper->findOne($id);
+            $this->assertCount(1, $result);
+            $item8 = $result->fetch();
+            $this->assertTrue($item8 instanceof MappedEntity);
+            // This also tests there is no conflict between table columns
+            $this->assertSame(8, $item8->id);
+        }
+
+        $this->assertNotSame($item1, $item8);
+
+        // Also ensure that the user can legally be stupid
+        try {
+            $mapper->findOne([1, 12]);
+        } catch (QueryError $e) {
+        }
+
+       foreach ([[2, 3], [[2], [3]]] as $idList) {
+            $result = $mapper->findAll($idList);
+            $this->assertCount(2, $result);
+            $item2or3 = $result->fetch();
+            $this->assertTrue($item2or3 instanceof MappedEntity);
+            // This also tests there is no conflict between table columns
+            $this->assertContains($item2or3->id, [2, 3]);
+        }
     }
 
     /**
@@ -119,8 +156,23 @@ abstract class AbstractMapperTest extends DriverTestCase
     public function testFindMultiple($driver, $class)
     {
         $connection = $this->createConnection($driver, $class);
+        $mapper = $this->createMapper($connection, MappedEntity::class, ['foo', 'status']);
 
-        $mapper = $this->createMapper($connection, $class, ['id', 'foo']);
+        $result = $mapper->findOne([2, 1]);
+        $this->assertCount(1, $result);
+        $item1 = $result->fetch();
+        $this->assertTrue($item1 instanceof MappedEntity);
+        // This also tests there is no conflict between table columns
+        $this->assertSame(2, $item1->foo);
+        $this->assertSame(1, $item1->status);
+
+        $result = $mapper->findAll([[2, 1], [23, 0], [999, 1000]]);
+        $this->assertCount(2, $result);
+        foreach ($result as $item) {
+            $this->assertTrue($item instanceof MappedEntity);
+            $this->assertContains($item->foo, [2, 23]);
+            $this->assertContains($item->status, [1, 0]);
+        }
     }
 
     /**
@@ -131,20 +183,56 @@ abstract class AbstractMapperTest extends DriverTestCase
     public function testFindByCriteria($driver, $class)
     {
         $connection = $this->createConnection($driver, $class);
+        $mapper = $this->createMapper($connection, MappedEntity::class, ['id']);
 
-        $mapper = $this->createMapper($connection, $class, ['id']);
-    }
+        // Most simple condition ever
+        $result = $mapper->findBy(['id_user' => $this->idAdmin]);
+        $this->assertCount(7, $result);
+        foreach ($result as $item) {
+            $this->assertTrue($item instanceof MappedEntity);
+            $this->assertSame($this->idAdmin, $item->id_user);
+            $this->assertSame("admin", $item->name);
+        }
 
-    /**
-     * Tests find by criteria when primary key has more than one column
-     *
-     * @dataProvider driverDataSource
-     */
-    public function testFindByCriteriaMultiple($driver, $class)
-    {
-        $connection = $this->createConnection($driver, $class);
+        // Using a single expression
+        $result = $mapper->findBy(new ExpressionRaw('id_user = $*', [$this->idAdmin]));
+        $this->assertCount(7, $result);
+        foreach ($result as $item) {
+            $this->assertTrue($item instanceof MappedEntity);
+            $this->assertSame($this->idAdmin, $item->id_user);
+            $this->assertSame("admin", $item->name);
+        }
 
-        $mapper = $this->createMapper($connection, $class, ['id', 'foo']);
+        // Using a Where instance
+        $result = $mapper->findBy((new Where())->condition('id_user', $this->idAdmin));
+        $this->assertCount(7, $result);
+        foreach ($result as $item) {
+            $this->assertTrue($item instanceof MappedEntity);
+            $this->assertSame($this->idAdmin, $item->id_user);
+            $this->assertSame("admin", $item->name);
+        }
+
+        // More than one condition
+        $result = $mapper
+            ->findBy([
+                'id_user' => $this->idJean,
+                new ExpressionRaw('baz < $*', [new \DateTime("now -1 second")])
+            ])
+        ;
+        $this->assertCount(2, $result);
+        foreach ($result as $item) {
+            $this->assertTrue($item instanceof MappedEntity);
+            $this->assertSame($this->idJean, $item->id_user);
+            $this->assertSame("jean", $item->name);
+            $this->assertLessThan(new \DateTime("now -1 second"), $item->baz);
+        }
+
+        // Assert that user can be stupid sometime
+        try {
+            $mapper->findBy('oh you you you');
+            $this->fail();
+        } catch (QueryError $e) {
+        }
     }
 
     /**
@@ -155,19 +243,66 @@ abstract class AbstractMapperTest extends DriverTestCase
     public function testPaginate($driver, $class)
     {
         $connection = $this->createConnection($driver, $class);
+        $mapper = $this->createMapper($connection, MappedEntity::class, ['id']);
 
-        $mapper = $this->createMapper($connection, $class, ['id']);
-    }
+        // Most simple condition ever
+        $result = $mapper->paginate(['id_user' => $this->idAdmin], 3, 2);
+        $this->assertSame(2, $result->getCurrentPage());
+        $this->assertSame(3, $result->getLastPage());
+        $this->assertCount(3, $result);
+        foreach ($result as $item) {
+            $this->assertTrue($item instanceof MappedEntity);
+            $this->assertSame($this->idAdmin, $item->id_user);
+            $this->assertSame("admin", $item->name);
+        }
 
-    /**
-     * Tests pagination when primary key has more than one column
-     *
-     * @dataProvider driverDataSource
-     */
-    public function testPaginateMultiple($driver, $class)
-    {
-        $connection = $this->createConnection($driver, $class);
+        // Using a single expression
+        $result = $mapper->paginate(new ExpressionRaw('id_user = $*', [$this->idAdmin]));
+        $this->assertCount(7, $result);
+        foreach ($result as $item) {
+            $this->assertTrue($item instanceof MappedEntity);
+            $this->assertSame($this->idAdmin, $item->id_user);
+            $this->assertSame("admin", $item->name);
+        }
 
-        $mapper = $this->createMapper($connection, $class, ['id', 'foo']);
+        // Using a Where instance
+        $result = $mapper->paginate((new Where())->condition('id_user', $this->idAdmin), 6, 1);
+        $this->assertSame(1, $result->getCurrentPage());
+        $this->assertSame(2, $result->getLastPage());
+        $this->assertTrue($result->hasNextPage());
+        $this->assertFalse($result->hasPreviousPage());
+        $this->assertCount(6, $result);
+        foreach ($result as $item) {
+            $this->assertTrue($item instanceof MappedEntity);
+            $this->assertSame($this->idAdmin, $item->id_user);
+            $this->assertSame("admin", $item->name);
+        }
+
+        // More than one condition
+        $result = $mapper
+            ->paginate([
+                'id_user' => $this->idJean,
+                new ExpressionRaw('baz < $*', [new \DateTime("now -1 second")])
+            ], 10, 1)
+        ;
+        $this->assertSame(1, $result->getCurrentPage());
+        $this->assertSame(1, $result->getLastPage());
+        $this->assertFalse($result->hasNextPage());
+        $this->assertFalse($result->hasPreviousPage());
+            $this->assertCount(2, $result);
+        foreach ($result as $item) {
+            $this->assertTrue($item instanceof MappedEntity);
+            $this->assertSame($this->idJean, $item->id_user);
+            $this->assertSame("jean", $item->name);
+            $this->assertLessThan(new \DateTime("now -1 second"), $item->baz);
+        }
+
+        // Assert that user can be stupid sometime
+        try {
+            $mapper->findBy('oh you you you');
+            $this->fail();
+        } catch (QueryError $e) {
+        }
     }
 }
+
