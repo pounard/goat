@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Goat\Core\EventDispatcher;
+namespace Goat\Core\Profiling;
 
 /**
- * Timer for events
+ * Basic timer
  */
 final class Timer
 {

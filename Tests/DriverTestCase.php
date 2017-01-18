@@ -8,11 +8,8 @@ use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Client\Dsn;
 use Goat\Core\Client\Session;
 use Goat\Core\Converter\ConverterMap;
-use Goat\Core\EventDispatcher\EventEmitterConnectionProxy;
 use Goat\Core\Hydrator\HydratorMap;
-
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Goat\Core\Profiling\ProfilingConnectionProxy;
 
 /**
  * Single driver test case
@@ -32,11 +29,6 @@ abstract class DriverTestCase extends \PHPUnit_Framework_TestCase
             'ext_pgsql' => \Goat\Driver\PgSQL\PgSQLConnection::class
         ];
     }
-
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $eventDispatcher;
 
     /**
      * @var ConnectionInterface[]
@@ -78,27 +70,11 @@ abstract class DriverTestCase extends \PHPUnit_Framework_TestCase
      */
     protected function tearDown()
     {
-        $this->eventDispatcher = null;
-
         foreach ($this->connections as $connection) {
             $connection->close();
         }
 
         $this->connections = [];
-    }
-
-    /**
-     * Get event dispatcher
-     *
-     * @return EventDispatcherInterface
-     */
-    final protected function getEventDispatcher()
-    {
-        if (!$this->eventDispatcher) {
-            $this->eventDispatcher = new EventDispatcher();
-        }
-
-        return $this->eventDispatcher;
     }
 
     /**
@@ -169,6 +145,6 @@ abstract class DriverTestCase extends \PHPUnit_Framework_TestCase
         $this->createTestSchema($connection);
         $this->createTestData($connection);
 
-        return $this->connections[] = new EventEmitterConnectionProxy(new Session($connection), $this->getEventDispatcher());
+        return $this->connections[] = new ProfilingConnectionProxy(new Session($connection));
     }
 }

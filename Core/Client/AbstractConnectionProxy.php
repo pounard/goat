@@ -15,7 +15,7 @@ use Goat\Core\Query\SqlFormatterInterface;
 use Goat\Core\Query\UpdateQuery;
 
 /**
- * Connection proxy that emits events via Symfony's EventDispatcher
+ * Connection proxy basis
  *
  * @codeCoverageIgnore
  *   We do ignore code coverage for this class at this point, because most
