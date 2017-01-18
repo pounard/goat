@@ -7,38 +7,11 @@ namespace Goat\Driver\PgSQL;
 use Goat\Core\Error\DriverError;
 use Goat\Core\Error\TransactionError;
 use Goat\Core\Error\TransactionFailedError;
+use Goat\Core\Transaction\AbstractTransaction;
 use Goat\Core\Transaction\Transaction;
 
-class PgSQLTransaction extends Transaction
+class PgSQLTransaction extends AbstractTransaction
 {
-    /**
-     * Get transaction level string
-     *
-     * @param int $isolationLevel
-     *
-     * @return string
-     */
-    private function getIsolationLevelString(int $isolationLevel)
-    {
-        switch ($isolationLevel) {
-
-            case Transaction::READ_UNCOMMITED:
-                return 'READ UNCOMMITTED';
-
-            case Transaction::READ_COMMITED:
-                return 'READ COMMITTED';
-
-            case Transaction::REPEATABLE_READ:
-                return 'REPEATABLE READ';
-
-            case Transaction::SERIALIZABLE:
-                return 'SERIALIZABLE';
-
-            default:
-                throw new TransactionError(sprintf("%s: unknown transaction level", $isolationLevel));
-        }
-    }
-
     /**
      * Escape name list
      *
@@ -72,7 +45,7 @@ class PgSQLTransaction extends Transaction
             $this->connection->perform(
                 sprintf(
                     "START TRANSACTION ISOLATION LEVEL %s READ WRITE",
-                    $this->getIsolationLevelString($isolationLevel)
+                    self::getIsolationLevelString($isolationLevel)
                 )
             );
 
@@ -92,7 +65,7 @@ class PgSQLTransaction extends Transaction
             $this->connection->perform(
                 sprintf(
                     "SET TRANSACTION ISOLATION LEVEL %s",
-                    $this->getIsolationLevelString($isolationLevel)
+                    self::getIsolationLevelString($isolationLevel)
                 )
             );
 
