@@ -10,6 +10,8 @@ use Goat\Core\Transaction\Transaction;
 /**
  * This specific transaction implementation will keep track of everything
  * that's happening, timings, counts, etc...
+ *
+ * @codeCoverageIgnore
  */
 class ProfilingTransaction implements Transaction
 {

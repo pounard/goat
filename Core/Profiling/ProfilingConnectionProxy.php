@@ -17,6 +17,8 @@ use Goat\Core\Transaction\Transaction;
 
 /**
  * Connection proxy that emits events via Symfony's EventDispatcher
+ *
+ * @codeCoverageIgnore
  */
 class ProfilingConnectionProxy extends AbstractConnectionProxy
 {

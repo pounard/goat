@@ -6,6 +6,8 @@ namespace Goat\Core\Profiling;
 
 /**
  * Basic timer
+ *
+ * @codeCoverageIgnore
  */
 final class Timer
 {
