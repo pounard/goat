@@ -32,6 +32,7 @@ class ProfilingConnectionProxy extends AbstractConnectionProxy
     {
         $this->connection = $connection;
         $this->data = [
+            'exception' => 0,
             'execute_count' => 0,
             'execute_time' => 0,
             'perform_count' => 0,
@@ -89,17 +90,23 @@ class ProfilingConnectionProxy extends AbstractConnectionProxy
         $timer = new Timer();
         $this->data['query_count']++;
         $this->data['total_count']++;
+        $ret = null;
 
-        $ret = $this->getInnerConnection()->query($query, $parameters ?? [], $options);
-
-        $duration = $timer->stop();
-        // Ignore empty result iterator, this means it fallbacked on perform()
-        if ($ret instanceof EmptyResultIterator) {
-            $this->data['query_count']--;
-            $this->data['total_count']--;
-        } else {
-            $this->data['query_time'] += $duration;
-            $this->data['total_time'] += $duration;
+        try {
+            $ret = $this->getInnerConnection()->query($query, $parameters ?? [], $options);
+        } catch (\Exception $e) {
+            $this->data['exception']++;
+            throw $e;
+        } finally {
+            $duration = $timer->stop();
+            // Ignore empty result iterator, this means it fallbacked on perform()
+            if ($ret instanceof EmptyResultIterator) {
+                $this->data['query_count']--;
+                $this->data['total_count']--;
+            } else {
+                $this->data['query_time'] += $duration;
+                $this->data['total_time'] += $duration;
+            }
         }
 
         return $ret;
@@ -114,11 +121,16 @@ class ProfilingConnectionProxy extends AbstractConnectionProxy
         $this->data['perform_count']++;
         $this->data['total_count']++;
 
-        $ret = $this->getInnerConnection()->perform($query, $parameters ?? [], $options);
-
-        $duration = $timer->stop();
-        $this->data['perform_time'] += $duration;
-        $this->data['total_time'] += $duration;
+        try {
+            $ret = $this->getInnerConnection()->perform($query, $parameters ?? [], $options);
+        } catch (\Exception $e) {
+            $this->data['exception']++;
+            throw $e;
+        } finally {
+            $duration = $timer->stop();
+            $this->data['perform_time'] += $duration;
+            $this->data['total_time'] += $duration;
+        }
 
         return $ret;
     }
@@ -144,11 +156,16 @@ class ProfilingConnectionProxy extends AbstractConnectionProxy
         $this->data['execute_count']++;
         $this->data['total_count']++;
 
-        $ret = $this->getInnerConnection()->executePreparedQuery($identifier, $parameters ?? [], $options);
-
-        $duration = $timer->stop();
-        $this->data['execute_time'] += $duration;
-        $this->data['total_time'] += $duration;
+        try {
+            $ret = $this->getInnerConnection()->executePreparedQuery($identifier, $parameters ?? [], $options);
+        } catch (\Exception $e) {
+            $this->data['exception']++;
+            throw $e;
+        } finally {
+            $duration = $timer->stop();
+            $this->data['execute_time'] += $duration;
+            $this->data['total_time'] += $duration;
+        }
 
         return $ret;
     }
@@ -158,11 +175,10 @@ class ProfilingConnectionProxy extends AbstractConnectionProxy
      */
     public function startTransaction(int $isolationLevel = Transaction::REPEATABLE_READ, bool $allowPending = false) : Transaction
     {
-        $timer = new Timer();
         $this->data['transaction_count']++;
 
         $transaction = $this->getInnerConnection()->startTransaction($isolationLevel, $allowPending);
-        $ret = new ProfilingTransaction($this, $transaction, $timer);
+        $ret = new ProfilingTransaction($this, $transaction, new Timer());
 
         return $ret;
     }

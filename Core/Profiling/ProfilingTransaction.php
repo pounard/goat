@@ -132,10 +132,11 @@ class ProfilingTransaction implements Transaction
         try {
             return $this->transaction->rollback();
         } catch (\Exception $e) {
+            $this->profiler->addTo('exception');
             throw $e;
         } finally {
             // Always count rollbacks, no matter if they fail
-            $this->profiler->addTo('transation_roolback_count');
+            $this->profiler->addTo('transation_rollback_count');
             $this->profiler->addTo('transation_time', $this->timer->stop());
         }
 
