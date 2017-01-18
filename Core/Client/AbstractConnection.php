@@ -146,7 +146,7 @@ abstract class AbstractConnection implements ConnectionInterface
      *
      * @return string[]
      */
-    public function getDatabaseInfo() : array
+    final public function getDatabaseInfo() : array
     {
         $this->loadDatabaseInfo();
 
@@ -156,7 +156,7 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function getDatabaseName() : string
+    final public function getDatabaseName() : string
     {
         $this->loadDatabaseInfo();
 
@@ -166,7 +166,7 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function getDatabaseVersion() : string
+    final public function getDatabaseVersion() : string
     {
         $this->loadDatabaseInfo();
 
@@ -176,7 +176,7 @@ abstract class AbstractConnection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function getDriverName() : string
+    final public function getDriverName() : string
     {
         return $this->dsn->getDriver();
     }

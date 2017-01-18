@@ -109,6 +109,7 @@ different software design and approach:
  *  [x] parametric testing for backends
  *  [x] RIGHT and FULL JOIN types
  *  [x] security: identifier testing https://github.com/minimaxir/big-list-of-naughty-strings
+ *  [x] security: parameter injcetion testing using https://github.com/minimaxir/big-list-of-naughty-strings
  *  [x] session: add basic session support (dual connection handling)
  *  [x] switch to strict types
  *  [x] transaction support
@@ -121,9 +122,12 @@ different software design and approach:
  *  [x] WHERE with SELECT within
  *  converters: specific instances per driver
  *  converters: type map per driver
+ *  mapper: createSelect()
+ *  mapper: findAll() sorting order
+ *  mapper: order by
+ *  mapper: range
  *  MySQL default transaction level in configuration
  *  Query cloning does not clone relation (object is immutable)
- *  security: parameter injcetion testing using https://github.com/minimaxir/big-list-of-naughty-strings
  *  session: connection: add logger and notifications
  *  session: test with write and read connections
  *  session: write-only/read-only connection support, fallback when transaction
