@@ -33,6 +33,14 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
+    public function getDatabaseInfo() : array
+    {
+        return $this->getInnerConnection()->getDatabaseInfo();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getDatabaseName() : string
     {
         return $this->getInnerConnection()->getDatabaseName();

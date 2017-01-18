@@ -49,9 +49,33 @@ class PgSQLConnection extends AbstractConnection
     /**
      * {@inheritdoc}
      */
-    public function getDatabaseName() : string
+    protected function fetchDatabaseInfo() : array
     {
-        return 'PostgreSQL';
+        $conn = $this->getConn();
+        $resource = @pg_query($conn, "select version();");
+
+        if (false === $resource) {
+            $this->connectionError($conn);
+        }
+
+        $row = @pg_fetch_array($resource);
+        if (false === $row) {
+            $this->resultError($resource);
+        }
+
+        // Example string to parse:
+        //   PostgreSQL 9.2.9 on x86_64-unknown-linux-gnu, compiled by gcc (GCC) 4.4.7 20120313 (Red Hat 4.4.7-4), 64-bit
+        $string = reset($row);
+        $pieces = explode(', ', $string);
+        $server = explode(' ', $pieces[0]);
+
+        return [
+            'name'    => $server[0],
+            'version' => $server[1],
+            'arch'    => $pieces[2],
+            'os'      => $server[3],
+            'build'   => $pieces[1],
+        ];
     }
 
     /**

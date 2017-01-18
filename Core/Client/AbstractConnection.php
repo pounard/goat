@@ -46,6 +46,7 @@ abstract class AbstractConnection implements ConnectionInterface
         @x';
 
     private $currentTransaction;
+    private $databaseInfo;
     private $matchParametersRegex;
     protected $configuration = [];
     protected $dsn;
@@ -118,11 +119,48 @@ abstract class AbstractConnection implements ConnectionInterface
     }
 
     /**
+     * Fetch database information
+     *
+     * @return array
+     *   Must contain the following key:
+     *     -name: database server name
+     *     - version: database server version
+     *   It might contain abitrary other keys:
+     *     - build
+     *     - ...
+     */
+    abstract protected function fetchDatabaseInfo() : array;
+
+    /**
+     * Load database information
+     */
+    private function loadDatabaseInfo()
+    {
+        if (!$this->databaseInfo) {
+            $this->databaseInfo = $this->fetchDatabaseInfo();
+        }
+    }
+
+    /**
+     * Get database server information
+     *
+     * @return string[]
+     */
+    public function getDatabaseInfo() : array
+    {
+        $this->loadDatabaseInfo();
+
+        return $this->databaseInfo;
+    }
+
+    /**
      * {@inheritdoc}
      */
-    public function getDriverName() : string
+    public function getDatabaseName() : string
     {
-        return $this->dsn->getDriver();
+        $this->loadDatabaseInfo();
+
+        return $this->databaseInfo['name'];
     }
 
     /**
@@ -130,7 +168,17 @@ abstract class AbstractConnection implements ConnectionInterface
      */
     public function getDatabaseVersion() : string
     {
-        return null;
+        $this->loadDatabaseInfo();
+
+        return $this->databaseInfo['version'];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getDriverName() : string
+    {
+        return $this->dsn->getDriver();
     }
 
     /**

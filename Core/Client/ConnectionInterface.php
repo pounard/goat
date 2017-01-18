@@ -21,6 +21,13 @@ use Goat\Core\Transaction\Transaction;
 interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface, DebuggableInterface
 {
     /**
+     * Get database server information
+     *
+     * @return string[]
+     */
+    public function getDatabaseInfo() : array;
+
+    /**
      * Get database server name
      *
      * @return string

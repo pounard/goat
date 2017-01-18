@@ -13,9 +13,23 @@ class MySQLConnection extends AbstractPDOConnection
     /**
      * {@inheritdoc}
      */
-    public function getDatabaseName() : string
+    protected function fetchDatabaseInfo() : array
     {
-        return 'MySQL';
+        $result = $this->getPdo()->query("show variables like '%version%';");
+
+        $data = [];
+        foreach ($result as $row) {
+            list($variable, $value) = $row;;
+            $data[$variable] = $value;
+        }
+
+        return [
+            'name'    => 'MySQL',
+            'version' => $data['innodb_version'],
+            'arch'    => $data['version_compile_machine'],
+            'os'      => $data['version_compile_os'],
+            'build'   => $data['version'],
+        ];
     }
 
     /**
