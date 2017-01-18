@@ -11,6 +11,9 @@ use Goat\Core\Query\SelectQuery;
 use Goat\Core\Query\Where;
 use Goat\Core\Query\ExpressionColumn;
 
+/**
+ * @deprecated
+ */
 class ReadonlyModel implements ConnectionAwareInterface
 {
     use ConnectionAwareTrait;

@@ -20,8 +20,8 @@
         <testsuite name="Goat drivers">
             <directory>./Tests/Driver</directory>
         </testsuite>
-        <testsuite name="Goat model manager">
-            <directory>./Tests/ModelManager</directory>
+        <testsuite name="Goat mapper">
+            <directory>./Tests/Mapper</directory>
         </testsuite>
     </testsuites>
 

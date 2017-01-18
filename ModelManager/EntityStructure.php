@@ -4,6 +4,8 @@ namespace Goat\ModelManager;
 
 /**
  * Represent a composite structure like table or row.
+ *
+ * @deprecated
  */
 class EntityStructure
 {

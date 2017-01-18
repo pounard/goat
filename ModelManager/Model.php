@@ -8,6 +8,8 @@ use Goat\Core\Query\Where;
  * Goat base model, in opposition to Pomm default Model implementation, this
  * one will implement write queries, whether or not you like it, trait conflict
  * resolution was giving very wrong code indirections.
+ *
+ * @deprecated
  */
 class Model extends ReadonlyModel
 {

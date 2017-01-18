@@ -39,6 +39,11 @@ abstract class DriverTestCase extends \PHPUnit_Framework_TestCase
     private $eventDispatcher;
 
     /**
+     * @var ConnectionInterface[]
+     */
+    private $connections = [];
+
+    /**
      * Create test case schema
      */
     protected function createTestSchema(ConnectionInterface $connection)
@@ -74,6 +79,12 @@ abstract class DriverTestCase extends \PHPUnit_Framework_TestCase
     protected function tearDown()
     {
         $this->eventDispatcher = null;
+
+        foreach ($this->connections as $connection) {
+            $connection->close();
+        }
+
+        $this->connections = [];
     }
 
     /**
@@ -158,6 +169,6 @@ abstract class DriverTestCase extends \PHPUnit_Framework_TestCase
         $this->createTestSchema($connection);
         $this->createTestData($connection);
 
-        return new EventEmitterConnectionProxy(new Session($connection), $this->getEventDispatcher());
+        return $this->connections[] = new EventEmitterConnectionProxy(new Session($connection), $this->getEventDispatcher());
     }
 }

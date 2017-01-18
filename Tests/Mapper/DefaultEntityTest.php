@@ -1,20 +1,32 @@
 <?php
 
-namespace Goat\Tests\ModelManager;
+namespace Goat\Tests\Mapper;
 
-use Goat\ModelManager\DefaultEntity;
+use Goat\Mapper\Entity\DefaultEntity;
 
+/**
+ * Tests default entity behaviour
+ */
 class DefaultEntityTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * Tests property access
+     */
     public function testPropertyAccess()
     {
-        $entity = new DefaultEntity();
-
-        $entity->defineAll([
-            'foo' => 'foo',
-            'bar' => 845,
-            'baz' => null,
-        ]);
+        $entity = new DefaultEntity(
+            [
+                'foo'   => 'foo',
+                'bar'   => 845,
+                'baz'   => null,
+                'some'  => '',
+            ],
+            [
+                'foo' => 'varchar',
+                'bar' => 'int4',
+                'baz' => 'timestamp',
+            ]
+        );
 
         // Test exists()
         $this->assertTrue($entity->exists('foo'));
@@ -23,6 +35,7 @@ class DefaultEntityTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($entity->exists('status'));
         $this->assertFalse($entity->exists('cassoulet'));
         $this->assertFalse($entity->exists('other'));
+        $this->assertSame(['foo' => 'foo', 'bar' => 845, 'baz' => null, 'some' => ''], $entity->getAll());
 
         // Test get()
         $this->assertSame('foo', $entity->get('foo'));
@@ -50,29 +63,15 @@ class DefaultEntityTest extends \PHPUnit_Framework_TestCase
             }
         }
 
-        // Test remove()
-        $entity->remove('foo');
-        $this->assertFalse($entity->has('foo'));
-        $this->assertSame(null, $entity->get('foo'));
+        // Tests types
+        $this->assertSame('varchar', $entity->getType('foo'));
+        $this->assertSame('int4', $entity->getType('bar'));
+        $this->assertSame('timestamp', $entity->getType('baz'));
+        $this->assertSame(DefaultEntity::DEFAULT_TYPE, $entity->getType('some'));
+        $this->assertSame(['foo' => 'varchar', 'bar' => 'int4', 'baz' => 'timestamp', 'some' => DefaultEntity::DEFAULT_TYPE], $entity->getAllTypes());
         foreach (['status', 'cassoulet', 'other'] as $property) {
             try {
-                $entity->remove($property);
-                $this->fail("An exception should have been raised");
-            } catch (\InvalidArgumentException $e) {
-                $this->assertTrue(true);
-            }
-        }
-
-        // Test set()
-        $entity->set('bar', 666);
-        $this->assertTrue($entity->has('bar'));
-        $this->assertSame(666, $entity->get('bar'));
-        $entity->set('foo', 42);
-        $this->assertTrue($entity->has('foo'));
-        $this->assertSame(42, $entity->get('foo'));
-        foreach (['status', 'cassoulet', 'other'] as $property) {
-            try {
-                $entity->set($property, 'some_value');
+                $entity->getType($property);
                 $this->fail("An exception should have been raised");
             } catch (\InvalidArgumentException $e) {
                 $this->assertTrue(true);

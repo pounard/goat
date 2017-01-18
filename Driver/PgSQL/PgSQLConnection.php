@@ -76,7 +76,7 @@ class PgSQLConnection extends AbstractConnection
     public function close()
     {
         if ($this->conn) {
-            pg_close($this->conn);
+            @pg_close($this->conn);
         }
     }
 

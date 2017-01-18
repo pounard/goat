@@ -78,6 +78,8 @@ different software design and approach:
 # Todolist
 
  *  [pending] allow named parameters
+ *  [pending] mapper: table proxy interface
+ *  [pending] model manager: get rid of it
  *  [postponed] better parameter handling in AbstractConnection
  *  [postponed] DDL ALTER TABLE? - not sure I want this right now
  *  [postponed] DDL CREATE TABLE? - not sure I want this right now
@@ -120,8 +122,6 @@ different software design and approach:
  *  converters: specific instances per driver
  *  converters: type map per driver
  *  mapper: advanced object mapping
- *  mapper: table proxy interface
- *  model manager: get rid of it
  *  MySQL default transaction level in configuration
  *  Query cloning does not clone relation (object is immutable)
  *  security: parameter injcetion testing using https://github.com/minimaxir/big-list-of-naughty-strings
