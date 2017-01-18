@@ -41,7 +41,10 @@ class ProfilingConnectionProxy extends AbstractConnectionProxy
             'query_time' => 0,
             'total_count' => 0,
             'total_time' => 0,
+            'transaction_commit_count' => 0,
             'transaction_count' => 0,
+            'transaction_rollback_count' => 0,
+            'transaction_time' => 0,
         ];
     }
 
@@ -53,6 +56,21 @@ class ProfilingConnectionProxy extends AbstractConnectionProxy
     public function getCollectedData() : array
     {
         return $this->data;
+    }
+
+    /**
+     * Append value to a counter or timer
+     *
+     * @param string $name
+     * @param mixed $value
+     */
+    public function addTo(string $name, $value = 1)
+    {
+        if (!isset($this->data[$name])) {
+            $this->data[$name] = $value;
+        } else {
+            $this->data[$name] += $value;
+        }
     }
 
     /**
@@ -140,9 +158,11 @@ class ProfilingConnectionProxy extends AbstractConnectionProxy
      */
     public function startTransaction(int $isolationLevel = Transaction::REPEATABLE_READ, bool $allowPending = false) : Transaction
     {
+        $timer = new Timer();
         $this->data['transaction_count']++;
 
-        $ret = $this->getInnerConnection()->startTransaction($isolationLevel, $allowPending);
+        $transaction = $this->getInnerConnection()->startTransaction($isolationLevel, $allowPending);
+        $ret = new ProfilingTransaction($this, $transaction, $timer);
 
         return $ret;
     }
