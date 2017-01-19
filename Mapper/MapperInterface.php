@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Goat\Mapper;
 
+use Goat\Core\Client\ConnectionAwareInterface;
+use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Client\PagerResultIterator;
 use Goat\Core\Client\ResultIteratorInterface;
 use Goat\Core\Query\Expression;
@@ -17,8 +19,22 @@ use Goat\Mapper\Error\EntityNotFoundError;
  * Insertion, update and delete should happen at the table level, and will not
  * be handled by the mapper interface.
  */
-interface MapperInterface
+interface MapperInterface extends ConnectionAwareInterface
 {
+    /**
+     * Get connection
+     *
+     * @return ConnectionInterface
+     */
+    public function getConnection() : ConnectionInterface;
+
+    /**
+     * Get entity class name
+     *
+     * @return string
+     */
+    public function getClassName() : string;
+
     /**
      * Find a single object
      *
@@ -31,7 +47,7 @@ interface MapperInterface
      *   If the entity does not exist in database
      *
      * @return mixed
-     *   The object
+     *   Loaded entity
      */
     public function findOne($id);
 
@@ -53,6 +69,29 @@ interface MapperInterface
      *   An iterator on the loaded object
      */
     public function findAll(array $idList, bool $raiseErrorOnMissing = false) : ResultIteratorInterface;
+
+    /**
+     * Alias of findBy() that returns a single instance
+     *
+     *
+     * @param array|Expression|Where $criteria
+     *   This value might be either one of:
+     *     - a simple key/value array that will be translated into a where
+     *       clause using the AND statement
+     *     - a Expression instance
+     *     - a Where instance
+     * @param bool $raiseErrorOnMissing
+     *   If this is set to true, and objects could not be found in the database
+     *   this will raise exceptions
+     *
+     * @throws EntityNotFoundError
+     *   If the $raiseErrorOnMissing is set to true and one or more entities do
+     *   not exist in database
+     *
+     * @return mixed
+     *   Loaded entity
+     */
+    public function findFirst($criteria, bool $raiseErrorOnMissing = false);
 
     /**
      * Find all objects matching the given criteria

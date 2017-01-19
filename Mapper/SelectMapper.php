@@ -4,19 +4,20 @@ declare(strict_types=1);
 
 namespace Goat\Mapper;
 
-use Goat\Core\Client\ConnectionAwareInterface;
 use Goat\Core\Client\ConnectionAwareTrait;
 use Goat\Core\Client\PagerResultIterator;
 use Goat\Core\Client\ResultIteratorInterface;
 use Goat\Core\Error\QueryError;
 use Goat\Core\Query\Query;
 use Goat\Core\Query\SelectQuery;
+use Goat\Mapper\Error\EntityNotFoundError;
+use Goat\Core\Client\ConnectionInterface;
 
 /**
  * Table mapper is a simple model implementation that works on an arbitrary
  * select query.
  */
-class SelectMapper implements ConnectionAwareInterface, MapperInterface
+class SelectMapper implements MapperInterface
 {
     use ConnectionAwareTrait;
     use MapperTrait;
@@ -46,8 +47,9 @@ class SelectMapper implements ConnectionAwareInterface, MapperInterface
      * @param SelectQuery $query
      *   Select query that loads entities
      */
-    public function __construct(string $class, array $primaryKey, SelectQuery $query)
+    public function __construct(ConnectionInterface $connection, string $class, array $primaryKey, SelectQuery $query)
     {
+        $this->connection = $connection;
         $this->class = $class;
         $this->primaryKey = $primaryKey;
         $this->select = $query;
@@ -76,6 +78,22 @@ class SelectMapper implements ConnectionAwareInterface, MapperInterface
     /**
      * {@inheritdoc}
      */
+    public function getConnection() : ConnectionInterface
+    {
+        return $this->connection;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClassName() : string
+    {
+        return $this->class;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function findOne($id)
     {
         $select = clone $this->select;
@@ -84,7 +102,13 @@ class SelectMapper implements ConnectionAwareInterface, MapperInterface
             $select->condition($column, $value);
         }
 
-        return $select->range(1, 0)->execute([], ['class' => $this->class]);
+        $result = $select->range(1, 0)->execute([], ['class' => $this->class]);
+
+        if ($result->count()) {
+            return $result->fetch();
+        }
+
+        throw new EntityNotFoundError();
     }
 
     /**
@@ -103,6 +127,22 @@ class SelectMapper implements ConnectionAwareInterface, MapperInterface
         }
 
         return $select->execute([], ['class' => $this->class]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findFirst($criteria, bool $raiseErrorOnMissing = false)
+    {
+        $result = $this->findBy($criteria, 1, 0);
+
+        if ($result->count()) {
+            return $result->fetch();
+        }
+
+        if ($raiseErrorOnMissing) {
+            throw new EntityNotFoundError();
+        }
     }
 
     /**

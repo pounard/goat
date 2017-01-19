@@ -19,6 +19,7 @@ class SelectMapperTest extends AbstractMapperTest
     protected function createMapper(ConnectionInterface $connection, string $class, array $primaryKey) : MapperInterface
     {
         return new SelectMapper(
+            $connection,
             $class,
             $primaryKey,
             $connection

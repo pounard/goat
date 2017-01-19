@@ -124,8 +124,10 @@ different software design and approach:
  *  converters: type map per driver
  *  mapper: createSelect()
  *  mapper: findAll() sorting order
+ *  mapper: findFirst() tests
  *  mapper: order by
  *  mapper: range
+ *  mapper: various getters tests
  *  MySQL default transaction level in configuration
  *  Query cloning does not clone relation (object is immutable)
  *  session: connection: add logger and notifications

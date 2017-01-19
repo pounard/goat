@@ -23,12 +23,12 @@ class TableMapper extends SelectMapper
     /**
      * Default constructor
      *
+     * @param ConnectionInterface $connection
+     *   Connection is mandatory in order to build the select query
      * @param string $class
      *   Default class to use for hydration
      * @param string[] $primaryKey
      *   Primary key column names
-     * @param ConnectionInterface $connection
-     *   Connection is mandatory in order to build the select query
      * @param string|array $definition
      *   Informative array containing from table and various joins that are
      *   essential for fetching the data. If a string is given, consider it's
@@ -46,11 +46,11 @@ class TableMapper extends SelectMapper
      *         - mode: the join mode, must be a Query::JOIN_* constant, default
      *           is INNER JOIN
      */
-    public function __construct(string $class, array $primaryKey, ConnectionInterface $connection, $definition)
+    public function __construct(ConnectionInterface $connection, string $class, array $primaryKey, $definition)
     {
         $this->parseDefinition($definition);
 
-        parent::__construct($class, $primaryKey, $this->createSelect($connection));
+        parent::__construct($connection, $class, $primaryKey, $this->createSelect($connection));
     }
 
     /**

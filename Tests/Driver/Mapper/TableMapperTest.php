@@ -19,9 +19,9 @@ class TableMapperTest extends AbstractMapperTest
     protected function createMapper(ConnectionInterface $connection, string $class, array $primaryKey) : MapperInterface
     {
         return new TableMapper(
+            $connection,
             $class,
             $primaryKey,
-            $connection,
             [
                 'relation' => 'some_entity',
                 'alias' => 't',

@@ -113,18 +113,14 @@ abstract class AbstractMapperTest extends DriverTestCase
         $mapper = $this->createMapper($connection, MappedEntity::class, ['t.id']);
 
         foreach ([1, [1]] as $id) {
-            $result = $mapper->findOne($id);
-            $this->assertCount(1, $result);
-            $item1 = $result->fetch();
+            $item1 = $mapper->findOne($id);
             $this->assertTrue($item1 instanceof MappedEntity);
             // This also tests there is no conflict between table columns
             $this->assertSame(1, $item1->id);
         }
 
         foreach ([8, [8]] as $id) {
-            $result = $mapper->findOne($id);
-            $this->assertCount(1, $result);
-            $item8 = $result->fetch();
+            $item8 = $mapper->findOne($id);
             $this->assertTrue($item8 instanceof MappedEntity);
             // This also tests there is no conflict between table columns
             $this->assertSame(8, $item8->id);
@@ -158,9 +154,7 @@ abstract class AbstractMapperTest extends DriverTestCase
         $connection = $this->createConnection($driver, $class);
         $mapper = $this->createMapper($connection, MappedEntity::class, ['foo', 'status']);
 
-        $result = $mapper->findOne([2, 1]);
-        $this->assertCount(1, $result);
-        $item1 = $result->fetch();
+        $item1 = $mapper->findOne([2, 1]);
         $this->assertTrue($item1 instanceof MappedEntity);
         // This also tests there is no conflict between table columns
         $this->assertSame(2, $item1->foo);
