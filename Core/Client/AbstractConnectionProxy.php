@@ -6,13 +6,13 @@ namespace Goat\Core\Client;
 
 use Goat\Core\Converter\ConverterMap;
 use Goat\Core\Hydrator\HydratorMap;
-use Goat\Core\Transaction\Transaction;
-use Goat\Core\Query\SelectQuery;
-use Goat\Core\Query\InsertValuesQuery;
 use Goat\Core\Query\DeleteQuery;
 use Goat\Core\Query\InsertQueryQuery;
+use Goat\Core\Query\InsertValuesQuery;
+use Goat\Core\Query\SelectQuery;
 use Goat\Core\Query\SqlFormatterInterface;
 use Goat\Core\Query\UpdateQuery;
+use Goat\Core\Transaction\Transaction;
 
 /**
  * Connection proxy basis
@@ -105,7 +105,7 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function query($query, array $parameters = [], $options = null) : ResultIteratorInterface
+    public function query($query, array $parameters = null, $options = null) : ResultIteratorInterface
     {
         return $this->getInnerConnection()->query($query, $parameters, $options);
     }
@@ -113,7 +113,7 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function perform($query, array $parameters = [], $options = null) : int
+    public function perform($query, array $parameters = null, $options = null) : int
     {
         return $this->getInnerConnection()->perform($query, $parameters, $options);
     }
@@ -129,7 +129,7 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function executePreparedQuery(string $identifier, array $parameters = [], $options = null) : ResultIteratorInterface
+    public function executePreparedQuery(string $identifier, array $parameters = null, $options = null) : ResultIteratorInterface
     {
         return $this->getInnerConnection()->executePreparedQuery($identifier, $parameters, $options);
     }

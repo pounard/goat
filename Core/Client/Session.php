@@ -80,7 +80,7 @@ class Session extends AbstractConnectionProxy
     /**
      * {@inheritdoc}
      */
-    public function query($query, array $parameters = [], $options = null) : ResultIteratorInterface
+    public function query($query, array $parameters = null, $options = null) : ResultIteratorInterface
     {
         if ($this->readonlyConnection && !$this->isTransactionPending()) {
             return $this->readonlyConnection->query($query, $parameters, $options);
@@ -92,7 +92,7 @@ class Session extends AbstractConnectionProxy
     /**
      * {@inheritdoc}
      */
-    public function perform($query, array $parameters = [], $options = null) : int
+    public function perform($query, array $parameters = null, $options = null) : int
     {
         if ($this->readonlyConnection && !$this->isTransactionPending()) {
             return $this->readonlyConnection->perform($query, $parameters, $options);
@@ -116,7 +116,7 @@ class Session extends AbstractConnectionProxy
     /**
      * {@inheritdoc}
      */
-    public function executePreparedQuery(string $identifier, array $parameters = [], $options = null) : ResultIteratorInterface
+    public function executePreparedQuery(string $identifier, array $parameters = null, $options = null) : ResultIteratorInterface
     {
         if ($this->readonlyConnection && !$this->isTransactionPending()) {
             return $this->readonlyConnection->executePreparedQuery($identifier, $parameters, $options);

@@ -70,7 +70,12 @@ class InsertTest extends DriverTestCase
             ->fetch()
         ;
 
-        $this->assertEquals($referenceDate, $value['date']);
+        // PHP 7.1 seems to compare date with millisecs where PHP 7.0 stops
+        // at the second granularity
+        $this->assertSame(
+            $referenceDate->format(\DateTime::ISO8601),
+            $value['date']->format(\DateTime::ISO8601)
+        );
     }
 
     /**
