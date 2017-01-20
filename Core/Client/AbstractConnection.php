@@ -291,11 +291,11 @@ abstract class AbstractConnection implements ConnectionInterface
     {
         if ($this->currentTransaction) {
             if (!$this->currentTransaction->valid()) {
-                unset($this->currentTransaction);
+                $this->currentTransaction = null;
             } else {
                 $pending = $this->currentTransaction->get();
                 if (!$pending instanceof Transaction || !$pending->isStarted()) {
-                    unset($this->currentTransaction);
+                    $this->currentTransaction = null;
                 } else {
                     return true;
                 }
