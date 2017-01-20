@@ -11,6 +11,7 @@ use Goat\Tests\DriverTestCase;
 use Goat\Core\Query\ExpressionRaw;
 use Goat\Core\Query\Where;
 use Goat\Core\Error\QueryError;
+use Goat\Mapper\Error\EntityNotFoundError;
 
 /**
  * Basics unit/functional testing for all mappers
@@ -129,11 +130,15 @@ abstract class AbstractMapperTest extends DriverTestCase
         $relation = $mapper->getRelation();
         $this->assertSame('some_entity', $relation->getName());
         $this->assertSame('t', $relation->getAlias());
+        $this->assertSame(MappedEntity::class, $mapper->getClassName());
+        $this->assertSame($connection, $mapper->getConnection());
 
         $mapper = $this->createWritableMapper($connection, MappedEntity::class, ['t.id']);
         $relation = $mapper->getRelation();
         $this->assertSame('some_entity', $relation->getName());
         $this->assertSame('t', $relation->getAlias());
+        $this->assertSame(MappedEntity::class, $mapper->getClassName());
+        $this->assertSame($connection, $mapper->getConnection());
     }
 
     /**
@@ -165,16 +170,45 @@ abstract class AbstractMapperTest extends DriverTestCase
         // Also ensure that the user can legally be stupid
         try {
             $mapper->findOne([1, 12]);
+            $this->fail();
         } catch (QueryError $e) {
         }
 
-       foreach ([[2, 3], [[2], [3]]] as $idList) {
+        foreach ([[2, 3], [[2], [3]]] as $idList) {
             $result = $mapper->findAll($idList);
             $this->assertCount(2, $result);
             $item2or3 = $result->fetch();
             $this->assertTrue($item2or3 instanceof MappedEntity);
             // This also tests there is no conflict between table columns
             $this->assertContains($item2or3->id, [2, 3]);
+        }
+    }
+
+    /**
+     * Tests find by primary key(s) feature
+     *
+     * @dataProvider driverDataSource
+     */
+    public function testFindFirst($driver, $class)
+    {
+        $connection = $this->createConnection($driver, $class);
+        $mapper = $this->createMapper($connection, MappedEntity::class, ['t.id']);
+
+        $item1 = $mapper->findFirst(['id_user' => $this->idAdmin]);
+        $this->assertInstanceOf(MappedEntity::class, $item1);
+        $this->assertSame($item1->id_user, $this->idAdmin);
+
+        $item2 = $mapper->findFirst(['id_user' => -1], false);
+        $this->assertNull($item2);
+
+        $item3 = $mapper->findFirst(['id_user' => -1]);
+        $this->assertNull($item3);
+
+        // Also ensure that the user can legally be stupid
+        try {
+            $mapper->findFirst(['id_user' => -1], true);
+            $this->fail();
+        } catch (EntityNotFoundError $e) {
         }
     }
 
