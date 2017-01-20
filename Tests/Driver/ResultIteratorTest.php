@@ -9,6 +9,7 @@ use Goat\Core\Client\PagerResultIterator;
 use Goat\Core\Error\GoatError;
 use Goat\Core\Error\InvalidDataAccessError;
 use Goat\Tests\DriverTestCase;
+use Goat\Tests\Driver\Mock\TestTypeEntity;
 
 class ResultIteratorTest extends DriverTestCase
 {
@@ -86,6 +87,32 @@ class ResultIteratorTest extends DriverTestCase
         $this->assertSame('timestamp', $results->getColumnType('baz'));
         $this->assertSame('some_time', $results->getColumnName(3));
         $this->assertSame('time', $results->getColumnType('some_time'));
+    }
+
+    /**
+     * Test passing options in the query
+     *
+     * @dataProvider driverDataSource
+     */
+    public function testOptions($driver, $class)
+    {
+        $connection = $this->createConnection($driver, $class);
+
+        $select = $connection->select('type_test');
+        $select->setOption('class', TestTypeEntity::class);
+        $result = $select->range(1, 0)->execute();
+        $this->assertCount(1, $result);
+        $this->assertInstanceOf(TestTypeEntity::class, $result->fetch());
+
+        $select->setOption('class', null);
+        $result = $select->execute();
+        $this->assertCount(1, $result);
+        $this->assertNotInstanceOf(TestTypeEntity::class, $result->fetch());
+
+        $select->setOptions(['class' => TestTypeEntity::class]);
+        $result = $select->execute();
+        $this->assertCount(1, $result);
+        $this->assertInstanceOf(TestTypeEntity::class, $result->fetch());
     }
 
     /**
