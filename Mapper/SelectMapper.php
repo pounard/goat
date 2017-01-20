@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Goat\Mapper;
 
 use Goat\Core\Client\ConnectionAwareTrait;
+use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Client\PagerResultIterator;
 use Goat\Core\Client\ResultIteratorInterface;
 use Goat\Core\Error\QueryError;
+use Goat\Core\Query\ExpressionRelation;
 use Goat\Core\Query\Query;
 use Goat\Core\Query\SelectQuery;
 use Goat\Mapper\Error\EntityNotFoundError;
-use Goat\Core\Client\ConnectionInterface;
 
 /**
  * Table mapper is a simple model implementation that works on an arbitrary
@@ -94,9 +95,25 @@ class SelectMapper implements MapperInterface
     /**
      * {@inheritdoc}
      */
+    public function getRelation() : ExpressionRelation
+    {
+        return clone $this->select->getRelation();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createSelect() : SelectQuery
+    {
+        return clone $this->select;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function findOne($id)
     {
-        $select = clone $this->select;
+        $select = $this->createSelect();
 
         foreach ($this->expandPrimaryKey($id) as $column => $value) {
             $select->condition($column, $value);
@@ -116,7 +133,7 @@ class SelectMapper implements MapperInterface
      */
     public function findAll(array $idList, bool $raiseErrorOnMissing = false) : ResultIteratorInterface
     {
-        $select = clone $this->select;
+        $select = $this->createSelect();
         $orWhere = $select->getWhere()->or();
 
         foreach ($idList as $id) {
@@ -150,7 +167,7 @@ class SelectMapper implements MapperInterface
      */
     public function findBy($criteria, int $limit = 0, int $offset = 0) : ResultIteratorInterface
     {
-        $select = clone $this->select;
+        $select = $this->createSelect();
 
         return $select
             ->expression($this->createWhereWith($criteria))
@@ -164,7 +181,7 @@ class SelectMapper implements MapperInterface
      */
     public function paginate($criteria, int $limit = 0, int $page = 1) : PagerResultIterator
     {
-        $select = clone $this->select;
+        $select = $this->createSelect();
 
         $select
             ->expression(

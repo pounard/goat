@@ -50,7 +50,7 @@ class TableMapper extends SelectMapper
     {
         $this->parseDefinition($definition);
 
-        parent::__construct($connection, $class, $primaryKey, $this->createSelect($connection));
+        parent::__construct($connection, $class, $primaryKey, $this->buildSelect($connection));
     }
 
     /**
@@ -91,7 +91,7 @@ class TableMapper extends SelectMapper
      *
      * @return SelectQuery
      */
-    private function createSelect(ConnectionInterface $connection) : SelectQuery
+    private function buildSelect(ConnectionInterface $connection) : SelectQuery
     {
         $select = $connection->select($this->relation, $this->relationAlias);
 

@@ -11,6 +11,8 @@ use Goat\Core\Client\ResultIteratorInterface;
 use Goat\Core\Query\Expression;
 use Goat\Core\Query\Where;
 use Goat\Mapper\Error\EntityNotFoundError;
+use Goat\Core\Query\SelectQuery;
+use Goat\Core\Query\ExpressionRelation;
 
 /**
  * Maps immutable entities on SQL projections, and provides a set of utilities
@@ -34,6 +36,20 @@ interface MapperInterface extends ConnectionAwareInterface
      * @return string
      */
     public function getClassName() : string;
+
+    /**
+     * Get relation this mapper works on
+     *
+     * @return ExpressionRelation
+     */
+    public function getRelation() : ExpressionRelation;
+
+    /**
+     * Create a select query based upon this mapper definition
+     *
+     * @return SelectQuery
+     */
+    public function createSelect() : SelectQuery;
 
     /**
      * Find a single object

@@ -7,6 +7,7 @@ namespace Goat\Tests\Driver\Mapper;
 use Goat\Core\Client\ConnectionInterface;
 use Goat\Mapper\MapperInterface;
 use Goat\Mapper\SelectMapper;
+use Goat\Mapper\WritableSelectMapper;
 
 /**
  * Tests the selet based mapper
@@ -19,6 +20,23 @@ class SelectMapperTest extends AbstractMapperTest
     protected function createMapper(ConnectionInterface $connection, string $class, array $primaryKey) : MapperInterface
     {
         return new SelectMapper(
+            $connection,
+            $class,
+            $primaryKey,
+            $connection
+                ->select('some_entity', 't')
+                ->column('t.*')
+                ->column('u.name')
+                ->join('users', 'u.id = t.id_user', 'u')
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function createWritableMapper(ConnectionInterface $connection, string $class, array $primaryKey) : MapperInterface
+    {
+        return new WritableSelectMapper(
             $connection,
             $class,
             $primaryKey,

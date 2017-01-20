@@ -103,6 +103,40 @@ abstract class AbstractMapperTest extends DriverTestCase
     abstract protected function createMapper(ConnectionInterface $connection, string $class, array $primaryKey) : MapperInterface;
 
     /**
+     * Create writable mapper to test
+     *
+     * @param ConnectionInterface $connection
+     *   Current connection to test with
+     * @param string $class
+     *   Object class to use for hydrators
+     * @param string[] $primaryKey
+     *   Entity primary key definition
+     *
+     * @return MapperInterface
+     */
+    abstract protected function createWritableMapper(ConnectionInterface $connection, string $class, array $primaryKey) : MapperInterface;
+
+    /**
+     * Tests various utility methods
+     *
+     * @dataProvider driverDataSource
+     */
+    public function testUtilityMethods($driver, $class)
+    {
+        $connection = $this->createConnection($driver, $class);
+
+        $mapper = $this->createMapper($connection, MappedEntity::class, ['t.id']);
+        $relation = $mapper->getRelation();
+        $this->assertSame('some_entity', $relation->getName());
+        $this->assertSame('t', $relation->getAlias());
+
+        $mapper = $this->createWritableMapper($connection, MappedEntity::class, ['t.id']);
+        $relation = $mapper->getRelation();
+        $this->assertSame('some_entity', $relation->getName());
+        $this->assertSame('t', $relation->getAlias());
+    }
+
+    /**
      * Tests find by primary key(s) feature
      *
      * @dataProvider driverDataSource
