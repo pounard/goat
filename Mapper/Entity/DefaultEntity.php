@@ -35,6 +35,30 @@ class DefaultEntity implements EntityInterface
     }
 
     /**
+     * Get a value
+     *
+     * @param string $name
+     *
+     * @return mixed
+     */
+    public function __get(string $name)
+    {
+        return $this->get($name);
+    }
+
+    /**
+     * Does value exists
+     *
+     * @param string $name
+     *
+     * @return bool
+     */
+    public function __isset(string $name) : bool
+    {
+        return array_key_exists($name, $this->values);
+    }
+
+    /**
      * Get field name, and validate it's defined
      *
      * @param string $name

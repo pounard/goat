@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Goat\Core\Hydrator;
 
+use Goat\Mapper\Entity\DefaultEntity;
+
 final class HydratorMap
 {
     private $cacheDir;
@@ -18,6 +20,7 @@ final class HydratorMap
     public function __construct(string $cacheDir = null)
     {
         $this->cacheDir = $cacheDir;
+        $this->hydrators[DefaultEntity::class] = new DefaultEntityHydrator();
     }
 
     /**
