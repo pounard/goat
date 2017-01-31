@@ -83,7 +83,7 @@ class ConverterMap implements ConverterInterface, DebuggableInterface
             'timestampz' => [TimestampConverter::class, ['timestamp', 'datetime']],
             'date' => [TimestampConverter::class, []],
             'timez' => [TimestampConverter::class, ['time']],
-            'varchar' => [StringConverter::class, ['character', 'char']],
+            'varchar' => [StringConverter::class, ['character', 'char', 'text']],
             'bytea' => [StringConverter::class, ['blob']],
             'boolean' => [BooleanConverter::class, ['bool']],
             'bigint' => [IntegerConverter::class, ['int8']],
