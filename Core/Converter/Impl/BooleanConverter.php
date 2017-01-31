@@ -13,7 +13,22 @@ class BooleanConverter implements ConverterInterface
      */
     public function fromSQL(string $type, $value)
     {
-        return (bool)$value;
+        if (!$value) {
+            return false;
+        }
+        if (is_numeric($value)) {
+            return (bool)$value;
+        }
+
+        switch ($value) {
+
+            case 'f';
+            case 'false':
+                return false;
+
+            default;
+                return true;
+        }
     }
 
     /**
