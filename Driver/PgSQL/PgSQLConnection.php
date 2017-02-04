@@ -233,7 +233,7 @@ class PgSQLConnection extends AbstractConnection
             $resource = @pg_query_params($conn, $rawSQL, $parameters);
 
             if (false === $resource) {
-                $this->connectionError($conn);
+                $this->connectionError($conn, $rawSQL);
             }
 
             $ret = $this->createResultIterator($options, $resource);
@@ -261,7 +261,7 @@ class PgSQLConnection extends AbstractConnection
             $resource = @pg_query_params($conn, $rawSQL, $parameters);
 
             if (false === $resource) {
-                $this->connectionError($conn);
+                $this->connectionError($conn, $rawSQL);
             }
 
             $rowCount = pg_affected_rows($resource);

@@ -29,13 +29,21 @@ trait PgSQLErrorTrait
      * Throw an exception if the given status is an error
      *
      * @param resource $resource
+     * @param string $rawSQL
      */
-    private function connectionError($resource = null)
+    private function connectionError($resource = null, string $rawSQL = null)
     {
         $errorString = pg_last_error($resource);
         if (false === $errorString) {
-            throw new PgSQLDriverError("unknown error: could not fetch status code");
+            $errorString = "unknown error: could not fetch status code";
+            if ($rawSQL) {
+                $errorString .= ', query was: ' .$rawSQL;
+            }
+            throw new PgSQLDriverError($errorString);
         } else {
+            if ($rawSQL) {
+                $errorString .= ', query was: ' .$rawSQL;
+            }
             throw new PgSQLDriverError($errorString, (int)pg_connection_status($resource));
         }
     }
