@@ -111,6 +111,17 @@ class SelectMapper implements MapperInterface
     /**
      * {@inheritdoc}
      */
+    public function exists($criteria) : bool
+    {
+        // @todo replace columns using '1'
+        $result = $this->findBy($criteria, 1, 0);
+
+        return 0 < $result->count();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function findOne($id)
     {
         $select = $this->createSelect();

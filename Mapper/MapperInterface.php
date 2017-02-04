@@ -68,6 +68,20 @@ interface MapperInterface extends ConnectionAwareInterface
     public function findOne($id);
 
     /**
+     * Is there objects existing with the given criteria
+     *
+     * @param array|Expression|Where $criteria
+     *   This value might be either one of:
+     *     - a simple key/value array that will be translated into a where
+     *       clause using the AND statement
+     *     - a Expression instance
+     *     - a Where instance
+     *
+     * @return bool
+     */
+    public function exists($criteria) : bool;
+
+    /**
      * Find all object with the given primary keys
      *
      * @param array $idList

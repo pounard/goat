@@ -25,7 +25,7 @@ trait MapperTrait
      *
      * @return Where
      */
-    private function createWhereWith($criteria) : Where
+    protected function createWhereWith($criteria) : Where
     {
         if (!$criteria) {
             return new Where();
