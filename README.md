@@ -106,6 +106,7 @@ different software design and approach:
  *  [x] mapper: basic object mapping (using hydrator)
  *  [x] mapper: object hydration mechanism
  *  [x] mapper: object mapping
+ *  [x] move source to src/ folder
  *  [x] parametric testing for backends
  *  [x] RIGHT and FULL JOIN types
  *  [x] security: identifier testing https://github.com/minimaxir/big-list-of-naughty-strings

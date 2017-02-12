@@ -14,17 +14,17 @@
     "minimum-stability" : "dev",
     "prefer-stable" : true,
     "autoload" : {
-        "exclude-from-classmap": ["/Tests/"],
         "psr-0": {
             "WeakRef" : "compat/"
         },
         "psr-4" : {
-            "Goat\\" : "."
+            "Goat\\" : "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Goat\\Benchmark\\": "benchmarks"
+            "Goat\\Benchmark\\": "benchmarks",
+            "Goat\\Tests\\": "tests"
         }
     },
     "require" : {
