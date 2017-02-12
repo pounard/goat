@@ -48,6 +48,7 @@ class ProfilingConnectionProxy extends AbstractConnectionProxy
             'transaction_count' => 0,
             'transaction_rollback_count' => 0,
             'transaction_time' => 0,
+            'queries' => [],
         ];
     }
 
@@ -95,7 +96,11 @@ class ProfilingConnectionProxy extends AbstractConnectionProxy
         $ret = null;
 
         try {
-            $ret = $this->getInnerConnection()->query($query, $parameters ?? [], $options);
+            $connection = $this->getInnerConnection();
+            $this->data['queries'][] = ['sql' => $connection->getSqlFormatter()->format($query), 'params' => $parameters];
+
+            $ret = $connection->query($query, $parameters ?? [], $options);
+
         } catch (\Exception $e) {
             $this->data['exception']++;
             throw $e;
@@ -124,7 +129,11 @@ class ProfilingConnectionProxy extends AbstractConnectionProxy
         $this->data['total_count']++;
 
         try {
-            $ret = $this->getInnerConnection()->perform($query, $parameters ?? [], $options);
+            $connection = $this->getInnerConnection();
+            $this->data['queries'][] = ['sql' => $connection->getSqlFormatter()->format($query), 'params' => $parameters];
+
+            $ret = $connection->perform($query, $parameters ?? [], $options);
+
         } catch (\Exception $e) {
             $this->data['exception']++;
             throw $e;
