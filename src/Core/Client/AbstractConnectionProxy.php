@@ -137,14 +137,6 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    // public function getLastInsertId()
-    // {
-    //     return $this->getInnerConnection()->getLastInsertId();
-    // }
-
-    /**
-     * {@inheritdoc}
-     */
     public function select($relation, string $alias = null) : SelectQuery
     {
         return $this->getInnerConnection()->select($relation, $alias);

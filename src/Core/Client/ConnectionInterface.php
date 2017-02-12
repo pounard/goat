@@ -234,13 +234,6 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface,
     public function truncateTables($relationNames);
 
     /**
-     * Get last insert identifier
-     *
-     * @return int|string
-     */
-    // public function getLastInsertId();
-
-    /**
      * Set connection encoding
      *
      * @param string $encoding

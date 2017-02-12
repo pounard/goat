@@ -128,14 +128,6 @@ class Session extends AbstractConnectionProxy
     /**
      * {@inheritdoc}
      */
-    // public function getLastInsertId()
-    // {
-    //     return $this->connection->getLastInsertId();
-    // }
-
-    /**
-     * {@inheritdoc}
-     */
     public function select($relation, string $alias = null) : SelectQuery
     {
         if ($this->readonlyConnection && !$this->isTransactionPending()) {
