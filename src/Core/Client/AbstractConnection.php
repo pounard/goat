@@ -11,6 +11,7 @@ use Goat\Core\Error\GoatError;
 use Goat\Core\Error\QueryError;
 use Goat\Core\Error\TransactionError;
 use Goat\Core\Hydrator\HydratorMap;
+use Goat\Core\Query\ArgumentBag;
 use Goat\Core\Query\DeleteQuery;
 use Goat\Core\Query\InsertQueryQuery;
 use Goat\Core\Query\InsertValuesQuery;

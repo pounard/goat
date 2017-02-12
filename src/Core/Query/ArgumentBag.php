@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Goat\Core\Client;
+namespace Goat\Core\Query;
 
 use Goat\Core\Error\QueryError;
 

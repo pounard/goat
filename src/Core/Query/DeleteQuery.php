@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Goat\Core\Query;
 
-use Goat\Core\Client\ArgumentBag;
+use Goat\Core\Query\ArgumentBag;
 use Goat\Core\Query\Partial\AbstractQuery;
 use Goat\Core\Query\Partial\FromClauseTrait;
 use Goat\Core\Query\Partial\ReturningClauseTrait;

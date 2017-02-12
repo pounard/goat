@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Goat\Tests\Core\Query;
 
-use Goat\Core\Client\ArgumentBag;
+use Goat\Core\Query\ArgumentBag;
 use Goat\Core\Query\ExpressionValue;
 
 class BuilderExpresionTest extends \PHPUnit_Framework_TestCase

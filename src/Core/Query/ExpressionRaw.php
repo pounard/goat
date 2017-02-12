@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Goat\Core\Query;
 
-use Goat\Core\Client\ArgumentBag;
+use Goat\Core\Query\ArgumentBag;
 
 /**
  * Represents a raw SQL expression, remember that an expression must always

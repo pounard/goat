@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Goat\Core\Query;
 
-use Goat\Core\Client\ArgumentHolderInterface;
+use Goat\Core\Query\ArgumentHolderInterface;
 
 /**
  * A statement is something that the SQL database can execute. It does not
