@@ -14,6 +14,7 @@ use Goat\Core\Query\InsertValuesQuery;
 use Goat\Core\Query\SelectQuery;
 use Goat\Core\Query\UpdateQuery;
 use Goat\Core\Transaction\Transaction;
+use Goat\Core\Query\Statement;
 
 /**
  * Connection proxy that emits events via Symfony's EventDispatcher
@@ -97,7 +98,13 @@ class ProfilingConnectionProxy extends AbstractConnectionProxy
 
         try {
             $connection = $this->getInnerConnection();
-            $this->data['queries'][] = ['sql' => $connection->getSqlFormatter()->format($query), 'params' => $parameters];
+
+            if ($query instanceof Statement) {
+                $rawSQL = $connection->getSqlFormatter()->format($query);
+            } else {
+                $rawSQL = (string)$query;
+            }
+            $this->data['queries'][] = ['sql' => $rawSQL, 'params' => $parameters];
 
             $ret = $connection->query($query, $parameters ?? [], $options);
 
@@ -130,7 +137,13 @@ class ProfilingConnectionProxy extends AbstractConnectionProxy
 
         try {
             $connection = $this->getInnerConnection();
-            $this->data['queries'][] = ['sql' => $connection->getSqlFormatter()->format($query), 'params' => $parameters];
+
+            if ($query instanceof Statement) {
+                $rawSQL = $connection->getSqlFormatter()->format($query);
+            } else {
+                $rawSQL = (string)$query;
+            }
+            $this->data['queries'][] = ['sql' => $rawSQL, 'params' => $parameters];
 
             $ret = $connection->perform($query, $parameters ?? [], $options);
 
