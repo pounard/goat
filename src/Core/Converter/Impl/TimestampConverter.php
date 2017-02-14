@@ -52,8 +52,20 @@ class TimestampConverter implements ConverterInterface
     {
         $data = trim($value);
 
-        // Time is supposed to be standard, so
-        return $data ? new \DateTime($data) : null;
+        if (!$data) {
+            return null;
+        }
+
+        // Time is supposed to be standard, so...
+        // Just attempt to find if there is a timezone there, if not provide
+        // the PHP current one in the \DateTime object.
+        if (false !== strpos($value, '.')) {
+            return new \DateTime($data);
+        }
+
+        $tzId = @date_default_timezone_get() ?? "UTC";
+
+        return new \DateTime($data, new \DateTimeZone($tzId));
     }
 
     /**
