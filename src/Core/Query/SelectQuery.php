@@ -106,6 +106,18 @@ final class SelectQuery extends AbstractQuery
     }
 
     /**
+     * Remove everything from the current ORDER clause
+     *
+     * @return $this
+     */
+    public function removeAllOrder() : SelectQuery
+    {
+        $this->orders = [];
+
+        return $this;
+    }
+
+    /**
      * Add a selected column
      *
      * If you need to pass arguments, use a Expression instance or columnExpression().
@@ -501,6 +513,7 @@ final class SelectQuery extends AbstractQuery
         //   aggregates functions (SQL standard)
         return (clone $this)
             ->removeAllColumns()
+            ->removeAllOrder()
             ->range(0, 0)
             ->column(new ExpressionRaw("count(*)"), $countAlias)
         ;
