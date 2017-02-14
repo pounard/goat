@@ -46,9 +46,6 @@ where
     and "t"."deadline" < now()
 group
     by "t"."id", "n"."type"
-order by
-    "n"."type" asc,
-    count(n.nid) desc
 having
     count(n.nid) < $*
 EOT;
@@ -113,9 +110,6 @@ where
     and "t"."deadline" < now()
 group
     by "t"."id", "n"."type"
-order by
-    "n"."type" asc,
-    count(n.nid) desc
 having
     count(n.nid) < $*
 EOT;
@@ -182,9 +176,6 @@ where
     and task.deadline < now()
 group by
     "task"."id", "task_note"."type"
-order by
-    "task_note"."type" asc,
-    count(task_note.nid) desc
 having
     count(task_note.nid) < $*
 EOT;
