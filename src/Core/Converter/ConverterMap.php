@@ -7,6 +7,7 @@ namespace Goat\Core\Converter;
 use Goat\Core\Converter\Impl\BooleanConverter;
 use Goat\Core\Converter\Impl\DecimalConverter;
 use Goat\Core\Converter\Impl\IntegerConverter;
+use Goat\Core\Converter\Impl\IntervalConverter;
 use Goat\Core\Converter\Impl\StringConverter;
 use Goat\Core\Converter\Impl\TimestampConverter;
 use Goat\Core\DebuggableInterface;
@@ -81,6 +82,7 @@ class ConverterMap implements ConverterInterface, DebuggableInterface
 
         return [
             'timestampz' => [TimestampConverter::class, ['timestamp', 'datetime']],
+            'interval' => [IntervalConverter::class, []],
             'date' => [TimestampConverter::class, []],
             'timez' => [TimestampConverter::class, ['time']],
             'varchar' => [StringConverter::class, ['character', 'char', 'text']],
