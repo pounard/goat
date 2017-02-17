@@ -1,3 +1,4 @@
+# I am sorry if this does not work.
 language: php
 dist: trusty
 sudo: required
