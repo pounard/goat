@@ -6,7 +6,7 @@ sudo: required
 php:
   - 7.0
   - 7.1
-  - hhvm
+#  - hhvm
 
 services:
   - postgresql
@@ -23,7 +23,7 @@ before_install:
 
 before_script:
   - composer self-update
-  - composer update --prefer-source --dev
+  - composer update --prefer-dist --dev
 
 script:
   - PDO_PGSQL_DSN="pdo_pgsql://localhost/goat" PDO_PGSQL_USERNAME="travis" PDO_PGSQL_PASSWORD="" EXT_PGSQL_DSN="ext_pgsql://localhost/goat" EXT_PGSQL_USERNAME="travis" EXT_PGSQL_PASSWORD="" PDO_MYSQL_DSN="pdo_mysql://localhost/goat" PDO_MYSQL_USERNAME="travis" PDO_MYSQL_PASSWORD="" ./vendor/bin/phpunit
