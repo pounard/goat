@@ -21,7 +21,7 @@ addons:
   postgresql: "9.4"
 
 before_install:
-  - sudo apt-get install php-pgsql
+#  - sudo apt-get install php-pgsql
   - mysql -e 'CREATE DATABASE IF NOT EXISTS goat;'
   - psql -c 'create database goat;' -U postgres
 
