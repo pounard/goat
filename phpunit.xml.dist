@@ -40,6 +40,7 @@
     </filter>
 
     <php>
+	<!--
         <env name="PDO_MYSQL_DSN" value="pdo_mysql://192.168.57.102/some_database" />
         <env name="PDO_MYSQL_USERNAME" value="some_user" />
         <env name="PDO_MYSQL_PASSWORD" value="some_password" />
@@ -48,6 +49,7 @@
         <env name="PDO_PGSQL_PASSWORD" value="some_password" />
         <env name="EXT_PGSQL_DSN" value="ext_pgsql://192.168.57.102/some_database" />
         <env name="EXT_PGSQL_USERNAME" value="some_user" />
-        <env name="EXT_PGSQL_PASSWORD" value="some_password" />
+	<env name="EXT_PGSQL_PASSWORD" value="some_password" />
+         -->
     </php>
 </phpunit>

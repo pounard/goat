@@ -1,12 +1,28 @@
 language: php
+dist: trusty
+sudo: required
 
 php:
   - 7.0
+  - 7.1
   - hhvm
 
-matrix:
-  allow_failures:
-    - php: hhvm
+env:
+  - PDO_MYSQL_DSN="pdo_mysql://localhost/goat" PDO_MYSQL_USERNAME="travis" PDO_MYSQL_PASSWORD=""
+  - PDO_PGSQL_DSN="pdo_pgsql://localhost/goat" PDO_PGSQL_USERNAME="travis" PDO_PGSQL_PASSWORD=""
+  - EXT_PGSQL_DSN="ext_pgsql://localhost/goat" EXT_PGSQL_USERNAME="travis" EXT_PGSQL_PASSWORD=""
+
+services:
+  - postgresql
+  - mysql
+
+addons:
+  postgresql: "9.4"
+
+before_install:
+  - apt-get install php-pgsql
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS goat;'
+  - psql -c 'create database goat;' -U postgres
 
 before_script:
   - composer self-update
