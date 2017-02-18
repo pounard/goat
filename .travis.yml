@@ -23,7 +23,7 @@ before_script:
   - composer update --prefer-dist --dev
 
 script:
-  - PDO_PGSQL_DSN="pdo_pgsql://localhost/goat" PDO_PGSQL_USERNAME="travis" PDO_PGSQL_PASSWORD="" EXT_PGSQL_DSN="ext_pgsql://localhost/goat" EXT_PGSQL_USERNAME="travis" EXT_PGSQL_PASSWORD="" PDO_MYSQL_DSN="pdo_mysql://localhost/goat" PDO_MYSQL_USERNAME="travis" PDO_MYSQL_PASSWORD="" -vvv ./vendor/bin/phpunit
+  - PDO_PGSQL_DSN="pdo_pgsql://localhost/goat" PDO_PGSQL_USERNAME="travis" PDO_PGSQL_PASSWORD="" EXT_PGSQL_DSN="ext_pgsql://localhost/goat" EXT_PGSQL_USERNAME="travis" EXT_PGSQL_PASSWORD="" PDO_MYSQL_DSN="pdo_mysql://localhost/goat" PDO_MYSQL_USERNAME="travis" PDO_MYSQL_PASSWORD="" ./vendor/bin/phpunit -vvv
 
 #  - ./vendor/bin/phpcs --exclude="Squiz.WhiteSpace.ControlStructureSpacing" -np Core/ Driver/ Tests/
 
