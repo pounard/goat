@@ -67,11 +67,12 @@ class SecurityTest extends DriverTestCase
      *
      * @param \Throwable $e
      * @param string $veryBadString
+     * @param int $index
      * @param string[] $allowedErrors
      *
      * @throws GoatError
      */
-    private function handleException(\Throwable $e, string $veryBadString, array $allowedErrors = [])
+    private function handleException(\Throwable $e, string $veryBadString, $index, array $allowedErrors = [])
     {
         $previous = $e;
         $isValid = false;
@@ -88,7 +89,7 @@ class SecurityTest extends DriverTestCase
         }
 
         if (!$isValid) {
-            throw new GoatError(sprintf("error with string %s", escapeshellcmd($veryBadString)), $e->getCode(), $e);
+            throw new GoatError(sprintf("error with string %d: %s", $index, escapeshellcmd($veryBadString)), $e->getCode(), $e);
         }
     }
 
@@ -189,7 +190,7 @@ class SecurityTest extends DriverTestCase
                 $this->assertSame(0, $result->countRows());
 
             } catch (\Exception $e) {
-                $this->handleException($e, $veryBadString, $allowedErrors);
+                $this->handleException($e, $veryBadString, $index, $allowedErrors);
             }
         }
     }
@@ -218,7 +219,7 @@ class SecurityTest extends DriverTestCase
         ];
 
         $done = [];
-        foreach ($this->getStrings() as $veryBadString) {
+        foreach ($this->getStrings() as $index => $veryBadString) {
             if ("" === $veryBadString) {
                 continue;
             }
@@ -271,7 +272,7 @@ class SecurityTest extends DriverTestCase
                 }
 
             } catch (\Exception $e) {
-                $this->handleException($e, $veryBadString, $allowedErrors);
+                $this->handleException($e, $veryBadString, $index, $allowedErrors);
             }
         }
     }
