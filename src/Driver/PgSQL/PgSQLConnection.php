@@ -13,9 +13,9 @@ use Goat\Core\Error\DriverError;
 use Goat\Core\Error\GoatError;
 use Goat\Core\Error\NotImplementedError;
 use Goat\Core\Error\QueryError;
-use Goat\Core\Query\Query;
-use Goat\Core\Query\SqlFormatterInterface;
 use Goat\Core\Transaction\Transaction;
+use Goat\Query\Query;
+use Goat\Query\SqlFormatterInterface;
 
 /**
  * ext_pgsql connection implementation

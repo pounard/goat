@@ -6,9 +6,9 @@ namespace Goat\Mapper;
 
 use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Error\ConfigurationError;
-use Goat\Core\Query\Query;
-use Goat\Core\Query\SelectQuery;
-use Goat\Core\Query\Where;
+use Goat\Query\Query;
+use Goat\Query\SelectQuery;
+use Goat\Query\Where;
 
 /**
  * Mapper implementation that is based upon the SelectMapper, it builds the

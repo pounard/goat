@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Goat\Core\Query;
+namespace Goat\Query;
 
-use Goat\Core\Query\ArgumentBag;
 use Goat\Core\Error\QueryError;
-use Goat\Core\Query\Partial\AbstractQuery;
-use Goat\Core\Query\Partial\ReturningClauseTrait;
+use Goat\Query\ArgumentBag;
+use Goat\Query\Partial\AbstractQuery;
+use Goat\Query\Partial\ReturningClauseTrait;
 
 /**
  * Represents an INSERT VALUES query

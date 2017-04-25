@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Goat\Mapper;
 
 use Goat\Core\Error\QueryError;
-use Goat\Core\Query\Expression;
-use Goat\Core\Query\Where;
+use Goat\Query\Expression;
+use Goat\Query\Where;
 
 trait MapperTrait
 {

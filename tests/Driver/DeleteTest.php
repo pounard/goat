@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Goat\Tests\Driver;
 
 use Goat\Core\Client\ConnectionInterface;
-use Goat\Core\Query\Query;
-use Goat\Tests\DriverTestCase;
+use Goat\Query\Query;
 use Goat\Tests\Driver\Mock\DeleteSomeTableWithUser;
+use Goat\Tests\DriverTestCase;
 
 class DeleteTest extends DriverTestCase
 {

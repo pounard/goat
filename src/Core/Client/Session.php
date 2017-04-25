@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Goat\Core\Client;
 
 use Goat\Core\Error\ConfigurationError;
-use Goat\Core\Query\SelectQuery;
+use Goat\Query\SelectQuery;
 
 /**
  * Facade connection that handles read and write connection for you.

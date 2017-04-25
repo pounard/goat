@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Goat\Tests\Driver\Mapper;
 
 use Goat\Core\Client\ConnectionInterface;
-use Goat\Core\Query\Query;
-use Goat\Mapper\MapperInterface;
-use Goat\Tests\DriverTestCase;
-use Goat\Core\Query\ExpressionRaw;
-use Goat\Core\Query\Where;
 use Goat\Core\Error\QueryError;
 use Goat\Mapper\Error\EntityNotFoundError;
+use Goat\Mapper\MapperInterface;
+use Goat\Query\ExpressionRaw;
+use Goat\Query\Query;
+use Goat\Query\Where;
+use Goat\Tests\DriverTestCase;
 
 /**
  * Basics unit/functional testing for all mappers

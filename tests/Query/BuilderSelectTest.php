@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Goat\Tests\Core\Query;
+namespace Goat\Tests\Query;
 
-use Goat\Core\Query\ExpressionRaw;
-use Goat\Core\Query\Query;
-use Goat\Core\Query\SelectQuery;
-use Goat\Core\Query\SqlFormatter;
-use Goat\Core\Query\ExpressionColumn;
+use Goat\Query\ExpressionRaw;
+use Goat\Query\Query;
+use Goat\Query\SelectQuery;
+use Goat\Query\SqlFormatter;
+use Goat\Query\ExpressionColumn;
 
 class BuilderSelectTest extends \PHPUnit_Framework_TestCase
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Goat\Core\Query;
+namespace Goat\Query;
 
 use Goat\Core\Client\EscaperAwareInterface;
 use Goat\Core\Client\EscaperAwareTrait;

@@ -6,7 +6,7 @@ namespace Goat\Tests\Driver;
 
 use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Error\GoatError;
-use Goat\Core\Query\Query;
+use Goat\Query\Query;
 use Goat\Tests\DriverTestCase;
 
 class NamedParametersTest extends DriverTestCase

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Goat\Tests\Core\Query;
+namespace Goat\Tests\Query;
 
 use Goat\Core\Client\EscaperInterface;
 use Goat\Core\Error\GoatError;

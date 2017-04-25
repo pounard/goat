@@ -6,13 +6,13 @@ namespace Goat\Core\Client;
 
 use Goat\Core\Converter\ConverterMap;
 use Goat\Core\Hydrator\HydratorMap;
-use Goat\Core\Query\DeleteQuery;
-use Goat\Core\Query\InsertQueryQuery;
-use Goat\Core\Query\InsertValuesQuery;
-use Goat\Core\Query\SelectQuery;
-use Goat\Core\Query\SqlFormatterInterface;
-use Goat\Core\Query\UpdateQuery;
 use Goat\Core\Transaction\Transaction;
+use Goat\Query\DeleteQuery;
+use Goat\Query\InsertQueryQuery;
+use Goat\Query\InsertValuesQuery;
+use Goat\Query\SelectQuery;
+use Goat\Query\SqlFormatterInterface;
+use Goat\Query\UpdateQuery;
 
 /**
  * Connection proxy basis

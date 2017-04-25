@@ -7,19 +7,19 @@ use Goat\Core\Client\EscaperAwareTrait;
 use Goat\Core\Client\EscaperInterface;
 use Goat\Core\Error\NotImplementedError;
 use Goat\Core\Error\QueryError;
-use Goat\Core\Query\DeleteQuery;
-use Goat\Core\Query\ExpressionColumn;
-use Goat\Core\Query\ExpressionRaw;
-use Goat\Core\Query\ExpressionRelation;
-use Goat\Core\Query\ExpressionValue;
-use Goat\Core\Query\InsertQueryQuery;
-use Goat\Core\Query\InsertValuesQuery;
-use Goat\Core\Query\Query;
-use Goat\Core\Query\SelectQuery;
-use Goat\Core\Query\SqlFormatterInterface;
-use Goat\Core\Query\Statement;
-use Goat\Core\Query\UpdateQuery;
-use Goat\Core\Query\Where;
+use Goat\Query\DeleteQuery;
+use Goat\Query\ExpressionColumn;
+use Goat\Query\ExpressionRaw;
+use Goat\Query\ExpressionRelation;
+use Goat\Query\ExpressionValue;
+use Goat\Query\InsertQueryQuery;
+use Goat\Query\InsertValuesQuery;
+use Goat\Query\Query;
+use Goat\Query\SelectQuery;
+use Goat\Query\SqlFormatterInterface;
+use Goat\Query\Statement;
+use Goat\Query\UpdateQuery;
+use Goat\Query\Where;
 
 /**
  * Rewrite of the SQL standard formatter that uses string contact instead

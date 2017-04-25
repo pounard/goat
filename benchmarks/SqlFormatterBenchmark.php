@@ -3,11 +3,11 @@
 namespace Goat\Benchmark;
 
 use Goat\Core\Client\EscaperInterface;
-use Goat\Core\Query\Query;
-use Goat\Core\Query\SelectQuery;
-use Goat\Core\Query\SqlFormatter;
-use Goat\Core\Query\SqlFormatterInterface;
-use Goat\Tests\Core\Query\NullEscaper;
+use Goat\Query\Query;
+use Goat\Query\SelectQuery;
+use Goat\Query\SqlFormatter;
+use Goat\Query\SqlFormatterInterface;
+use Goat\Tests\Query\NullEscaper;
 
 /**
  * Benchmark SQL formatter, sprinf()/implode vs string concat.

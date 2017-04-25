@@ -6,9 +6,9 @@ namespace Goat\Tests\Driver;
 
 use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Error\GoatError;
-use Goat\Core\Query\ExpressionColumn;
-use Goat\Core\Query\ExpressionRelation;
-use Goat\Core\Query\ExpressionValue;
+use Goat\Query\ExpressionColumn;
+use Goat\Query\ExpressionRelation;
+use Goat\Query\ExpressionValue;
 use Goat\Tests\DriverTestCase;
 
 /**

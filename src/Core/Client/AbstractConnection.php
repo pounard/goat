@@ -11,16 +11,16 @@ use Goat\Core\Error\GoatError;
 use Goat\Core\Error\QueryError;
 use Goat\Core\Error\TransactionError;
 use Goat\Core\Hydrator\HydratorMap;
-use Goat\Core\Query\ArgumentBag;
-use Goat\Core\Query\DeleteQuery;
-use Goat\Core\Query\InsertQueryQuery;
-use Goat\Core\Query\InsertValuesQuery;
-use Goat\Core\Query\Query;
-use Goat\Core\Query\SelectQuery;
-use Goat\Core\Query\SqlFormatter;
-use Goat\Core\Query\SqlFormatterInterface;
-use Goat\Core\Query\UpdateQuery;
 use Goat\Core\Transaction\Transaction;
+use Goat\Query\ArgumentBag;
+use Goat\Query\DeleteQuery;
+use Goat\Query\InsertQueryQuery;
+use Goat\Query\InsertValuesQuery;
+use Goat\Query\Query;
+use Goat\Query\SelectQuery;
+use Goat\Query\SqlFormatter;
+use Goat\Query\SqlFormatterInterface;
+use Goat\Query\UpdateQuery;
 
 /**
  * Default implementation for connection, it handles for you:

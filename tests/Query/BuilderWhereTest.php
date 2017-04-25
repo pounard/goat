@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Goat\Tests\Core\Query;
+namespace Goat\Tests\Query;
 
-use Goat\Core\Query\ExpressionColumn;
-use Goat\Core\Query\SelectQuery;
-use Goat\Core\Query\Where;
+use Goat\Query\ExpressionColumn;
+use Goat\Query\SelectQuery;
+use Goat\Query\Where;
 
 class BuilderWhereTest extends \PHPUnit_Framework_TestCase
 {

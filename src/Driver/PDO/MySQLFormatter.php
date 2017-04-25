@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Goat\Driver\PDO;
 
 use Goat\Core\Error\QueryError;
-use Goat\Core\Query\DeleteQuery;
-use Goat\Core\Query\SqlFormatter;
-use Goat\Core\Query\UpdateQuery;
+use Goat\Query\DeleteQuery;
+use Goat\Query\SqlFormatter;
+use Goat\Query\UpdateQuery;
 
 /**
  * Standard SQL query formatter

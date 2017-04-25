@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Goat\Mapper;
 
 use Goat\Core\Client\ConnectionInterface;
-use Goat\Core\Query\DeleteQuery;
-use Goat\Core\Query\ExpressionRelation;
-use Goat\Core\Query\InsertQueryQuery;
-use Goat\Core\Query\InsertValuesQuery;
-use Goat\Core\Query\UpdateQuery;
+use Goat\Query\DeleteQuery;
+use Goat\Query\ExpressionRelation;
+use Goat\Query\InsertQueryQuery;
+use Goat\Query\InsertValuesQuery;
+use Goat\Query\UpdateQuery;
 
 /**
  * Default implementation for the writable mapper trait

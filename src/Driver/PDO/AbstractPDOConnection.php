@@ -12,8 +12,8 @@ use Goat\Core\Error\ConfigurationError;
 use Goat\Core\Error\DriverError;
 use Goat\Core\Error\GoatError;
 use Goat\Core\Error\QueryError;
-use Goat\Core\Query\Query;
-use Goat\Core\Query\SqlFormatterInterface;
+use Goat\Query\Query;
+use Goat\Query\SqlFormatterInterface;
 
 abstract class AbstractPDOConnection extends AbstractConnection
 {

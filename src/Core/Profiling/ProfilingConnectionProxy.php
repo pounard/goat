@@ -8,13 +8,13 @@ use Goat\Core\Client\AbstractConnectionProxy;
 use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Client\EmptyResultIterator;
 use Goat\Core\Client\ResultIteratorInterface;
-use Goat\Core\Query\DeleteQuery;
-use Goat\Core\Query\InsertQueryQuery;
-use Goat\Core\Query\InsertValuesQuery;
-use Goat\Core\Query\SelectQuery;
-use Goat\Core\Query\UpdateQuery;
 use Goat\Core\Transaction\Transaction;
-use Goat\Core\Query\Statement;
+use Goat\Query\DeleteQuery;
+use Goat\Query\InsertQueryQuery;
+use Goat\Query\InsertValuesQuery;
+use Goat\Query\SelectQuery;
+use Goat\Query\Statement;
+use Goat\Query\UpdateQuery;
 
 /**
  * Connection proxy that emits events via Symfony's EventDispatcher

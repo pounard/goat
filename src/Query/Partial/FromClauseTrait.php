@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Goat\Core\Query\Partial;
+namespace Goat\Query\Partial;
 
 use Goat\Core\Error\QueryError;
-use Goat\Core\Query\ExpressionRaw;
-use Goat\Core\Query\ExpressionRelation;
-use Goat\Core\Query\Query;
-use Goat\Core\Query\Where;
+use Goat\Query\ExpressionRaw;
+use Goat\Query\ExpressionRelation;
+use Goat\Query\Query;
+use Goat\Query\Where;
 
 /**
  * Represents the FROM part of a DELETE, SELECT or UPDATE query.

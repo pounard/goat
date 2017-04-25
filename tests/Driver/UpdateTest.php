@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Goat\Tests\Driver;
 
 use Goat\Core\Client\ConnectionInterface;
-use Goat\Core\Query\ExpressionColumn;
-use Goat\Core\Query\ExpressionRaw;
-use Goat\Core\Query\Query;
-use Goat\Core\Query\Where;
+use Goat\Query\ExpressionColumn;
+use Goat\Query\ExpressionRaw;
+use Goat\Query\Query;
+use Goat\Query\Where;
 use Goat\Tests\DriverTestCase;
 
 class UpdateTest extends DriverTestCase

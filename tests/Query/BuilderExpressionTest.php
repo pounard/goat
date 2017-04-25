@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Goat\Tests\Core\Query;
+namespace Goat\Tests\Query;
 
-use Goat\Core\Query\ArgumentBag;
-use Goat\Core\Query\ExpressionValue;
+use Goat\Query\ArgumentBag;
+use Goat\Query\ExpressionValue;
 
 class BuilderExpresionTest extends \PHPUnit_Framework_TestCase
 {

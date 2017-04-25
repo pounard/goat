@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Goat\Driver\PDO;
 
 use Goat\Core\Error\QueryError;
-use Goat\Core\Query\SqlFormatterInterface;
 use Goat\Core\Transaction\Transaction;
+use Goat\Query\SqlFormatterInterface;
 
 class MySQLConnection extends AbstractPDOConnection
 {

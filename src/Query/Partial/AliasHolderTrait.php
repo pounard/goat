@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Goat\Core\Query\Partial;
+namespace Goat\Query\Partial;
 
 use Goat\Core\Error\QueryError;
-use Goat\Core\Query\ExpressionRelation;
+use Goat\Query\ExpressionRelation;
 
 /**
  * Aliasing and conflict dedupe logic.

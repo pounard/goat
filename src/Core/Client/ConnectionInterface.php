@@ -9,14 +9,14 @@ use Goat\Core\Converter\ConverterAwareInterface;
 use Goat\Core\DebuggableInterface;
 use Goat\Core\Error\TransactionError;
 use Goat\Core\Hydrator\HydratorMap;
-use Goat\Core\Query\DeleteQuery;
-use Goat\Core\Query\InsertQueryQuery;
-use Goat\Core\Query\InsertValuesQuery;
-use Goat\Core\Query\Query;
-use Goat\Core\Query\SelectQuery;
-use Goat\Core\Query\SqlFormatterInterface;
-use Goat\Core\Query\UpdateQuery;
 use Goat\Core\Transaction\Transaction;
+use Goat\Query\DeleteQuery;
+use Goat\Query\InsertQueryQuery;
+use Goat\Query\InsertValuesQuery;
+use Goat\Query\Query;
+use Goat\Query\SelectQuery;
+use Goat\Query\SqlFormatterInterface;
+use Goat\Query\UpdateQuery;
 
 interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface, DebuggableInterface
 {

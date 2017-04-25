@@ -17,6 +17,9 @@
         <testsuite name="Goat core">
             <directory>./tests/Core</directory>
         </testsuite>
+        <testsuite name="Goat query builder">
+            <directory>./tests/Query</directory>
+        </testsuite>
         <testsuite name="Goat drivers">
             <directory>./tests/Driver</directory>
         </testsuite>

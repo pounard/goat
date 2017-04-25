@@ -8,11 +8,11 @@ use Goat\Core\Client\ConnectionAwareInterface;
 use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Client\PagerResultIterator;
 use Goat\Core\Client\ResultIteratorInterface;
-use Goat\Core\Query\Expression;
-use Goat\Core\Query\Where;
 use Goat\Mapper\Error\EntityNotFoundError;
-use Goat\Core\Query\SelectQuery;
-use Goat\Core\Query\ExpressionRelation;
+use Goat\Query\Expression;
+use Goat\Query\ExpressionRelation;
+use Goat\Query\SelectQuery;
+use Goat\Query\Where;
 
 /**
  * Maps immutable entities on SQL projections, and provides a set of utilities

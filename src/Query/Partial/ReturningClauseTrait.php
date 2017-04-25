@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Goat\Core\Query\Partial;
+namespace Goat\Query\Partial;
 
 use Goat\Core\Error\QueryError;
-use Goat\Core\Query\Expression;
-use Goat\Core\Query\ExpressionColumn;
+use Goat\Query\Expression;
+use Goat\Query\ExpressionColumn;
 
 /**
  * Represents the RETURNING part of any query.

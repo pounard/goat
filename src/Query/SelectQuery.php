@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Goat\Core\Query;
+namespace Goat\Query;
 
 use Goat\Core\Error\QueryError;
-use Goat\Core\Query\ArgumentBag;
-use Goat\Core\Query\ArgumentHolderInterface;
-use Goat\Core\Query\Partial\AbstractQuery;
-use Goat\Core\Query\Partial\FromClauseTrait;
+use Goat\Query\ArgumentBag;
+use Goat\Query\ArgumentHolderInterface;
+use Goat\Query\Partial\AbstractQuery;
+use Goat\Query\Partial\FromClauseTrait;
 
 /**
  * Represents a SELECT query
