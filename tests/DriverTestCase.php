@@ -7,7 +7,7 @@ namespace Goat\Tests;
 use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Client\Dsn;
 use Goat\Core\Client\Session;
-use Goat\Core\Converter\ConverterMap;
+use Goat\Converter\ConverterMap;
 use Goat\Core\Hydrator\HydratorMap;
 use Goat\Core\Profiling\ProfilingConnectionProxy;
 
@@ -24,9 +24,9 @@ abstract class DriverTestCase extends \PHPUnit_Framework_TestCase
     public static function getKnownDrivers() : array
     {
         return [
-            'pdo_mysql' => \Goat\Driver\PDO\MySQLConnection::class,
-            'pdo_pgsql' => \Goat\Driver\PDO\PgSQLConnection::class,
-            'ext_pgsql' => \Goat\Driver\PgSQL\PgSQLConnection::class
+            'pdo_mysql' => \Goat\Driver\PDO\PDOMySQLConnection::class,
+            'pdo_pgsql' => \Goat\Driver\PDO\PDOPgSQLConnection::class,
+            'ext_pgsql' => \Goat\Driver\PgSQL\ExtPgSQLConnection::class
         ];
     }
 

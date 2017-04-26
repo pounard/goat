@@ -100,7 +100,7 @@ class ProfilingConnectionProxy extends AbstractConnectionProxy
             $connection = $this->getInnerConnection();
 
             if ($query instanceof Statement) {
-                $rawSQL = $connection->getSqlFormatter()->format($query);
+                $rawSQL = $connection->getFormatter()->format($query);
             } else {
                 $rawSQL = (string)$query;
             }
@@ -139,7 +139,7 @@ class ProfilingConnectionProxy extends AbstractConnectionProxy
             $connection = $this->getInnerConnection();
 
             if ($query instanceof Statement) {
-                $rawSQL = $connection->getSqlFormatter()->format($query);
+                $rawSQL = $connection->getFormatter()->format($query);
             } else {
                 $rawSQL = (string)$query;
             }

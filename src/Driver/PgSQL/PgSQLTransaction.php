@@ -27,7 +27,7 @@ class PgSQLTransaction extends AbstractTransaction
             ', ',
             array_map(
                 function ($name) use ($connection) {
-                    return $connection->escapeIdentifier($name);
+                    return $connection->getEscaper()->escapeIdentifier($name);
                 },
                 $names
             )
@@ -83,7 +83,7 @@ class PgSQLTransaction extends AbstractTransaction
             $this->connection->perform(
                 sprintf(
                     "SAVEPOINT %s",
-                    $this->connection->escapeIdentifier($name)
+                    $this->connection->getEscaper()->escapeIdentifier($name)
                 )
             );
         } catch (DriverError $e) {
@@ -100,7 +100,7 @@ class PgSQLTransaction extends AbstractTransaction
             $this->connection->perform(
                 sprintf(
                     "ROLLBACK TO SAVEPOINT %s",
-                    $this->connection->escapeIdentifier($name)
+                    $this->connection->getEscaper()->escapeIdentifier($name)
                 )
             );
         } catch (DriverError $e) {

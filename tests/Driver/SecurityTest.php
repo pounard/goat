@@ -243,8 +243,8 @@ class SecurityTest extends DriverTestCase
             try {
                 $sql = sprintf(
                     "create temporary table %s (%s varchar(1024))",
-                    $connection->escapeIdentifier($veryBadString),
-                    $connection->escapeIdentifier($veryBadString)
+                    $connection->getEscaper()->escapeIdentifier($veryBadString),
+                    $connection->getEscaper()->escapeIdentifier($veryBadString)
                 );
 
                 $connection->query($sql);

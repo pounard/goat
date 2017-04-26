@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Goat\Core\Client;
 
 use Goat\Core\Client\ResultIteratorInterface;
-use Goat\Core\Converter\ConverterAwareInterface;
+use Goat\Converter\ConverterAwareInterface;
 use Goat\Core\DebuggableInterface;
 use Goat\Core\Error\TransactionError;
 use Goat\Core\Hydrator\HydratorMap;
@@ -15,10 +15,11 @@ use Goat\Query\InsertQueryQuery;
 use Goat\Query\InsertValuesQuery;
 use Goat\Query\Query;
 use Goat\Query\SelectQuery;
-use Goat\Query\SqlFormatterInterface;
+use Goat\Query\Writer\EscaperInterface;
+use Goat\Query\Writer\FormatterInterface;
 use Goat\Query\UpdateQuery;
 
-interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface, DebuggableInterface
+interface ConnectionInterface extends ConverterAwareInterface, DebuggableInterface
 {
     /**
      * Get database server information
@@ -243,23 +244,16 @@ interface ConnectionInterface extends ConverterAwareInterface, EscaperInterface,
     /**
      * Get SQL formatter
      *
-     * @return SqlFormatterInterface
+     * @return FormatterInterface
      */
-    public function getSqlFormatter() : SqlFormatterInterface;
+    public function getFormatter() : FormatterInterface;
 
     /**
-     * Allows the driver to proceed to different type cast
+     * Get SQL escaper
      *
-     * Use this if you want to keep a default implementation for a specific
-     * type and don't want to override it.
-     *
-     * @param string $type
-     *   The internal type carried by converters
-     *
-     * @return string
-     *   The real type the server will understand
+     * @return EscaperInterface
      */
-    public function getCastType(string $type) : string;
+    public function getEscaper() : EscaperInterface;
 
     /**
      * Set hydrator map

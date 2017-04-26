@@ -1,10 +1,13 @@
 <?php
 
-namespace Goat\Benchmark;
+declare(strict_types=1);
+
+namespace Goat\Query\Writer;
 
 use Goat\Core\Error\NotImplementedError;
 use Goat\Core\Error\QueryError;
 use Goat\Query\DeleteQuery;
+use Goat\Query\Expression;
 use Goat\Query\ExpressionColumn;
 use Goat\Query\ExpressionRaw;
 use Goat\Query\ExpressionRelation;
@@ -16,29 +19,24 @@ use Goat\Query\SelectQuery;
 use Goat\Query\Statement;
 use Goat\Query\UpdateQuery;
 use Goat\Query\Where;
-use Goat\Query\Writer\EscaperAwareInterface;
-use Goat\Query\Writer\EscaperAwareTrait;
-use Goat\Query\Writer\EscaperInterface;
-use Goat\Query\Writer\FormatterInterface;
 
 /**
- * Rewrite of the SQL standard formatter that uses string contact instead
- * of implode() and sprintf() for benchmarking purpose.
+ * Standard SQL query formatter: this implementation conforms as much as it
+ * can to SQL-92 standard, and higher revisions for some functions.
+ *
+ * Here are a few differences with the SQL standard:
+ *
+ *  - per default, UPDATE queries allow FROM..JOIN statement, but first JOIN
+ *    must be INNER or NATURAL in order to substitute the JOIN per FROM;
+ *
+ *  - per default, DELETE queries allow USING..JOIN statement, but first JOIN
+ *    must be INNER or NATURAL in order to substitute the JOIN per USING.
+ *
+ * It will work gracefully with PostgreSQL, but also, from the various
+ * documentation I could read, probably with MSSQL too.
  */
-class FormatterConcat implements FormatterInterface, EscaperAwareInterface
+class Formatter extends FormatterBase
 {
-    use EscaperAwareTrait;
-
-    /**
-     * Default constructor
-     *
-     * @param EscaperInterface $escaper
-     */
-    public function __construct(EscaperInterface $escaper)
-    {
-        $this->setEscaper($escaper);
-    }
-
     /**
      * Format a single set clause (update queries)
      *
@@ -52,11 +50,11 @@ class FormatterConcat implements FormatterInterface, EscaperAwareInterface
         $columnString = $this->escaper->escapeIdentifier($columnName);
 
         if ($expression instanceof Expression) {
-            return $columnString . ' = ' . $this->format($expression);
+            return sprintf("%s = %s", $columnString, $this->format($expression));
         } else if ($expression instanceof Statement) {
-            return $columnString . ' = (' . $this->format($expression) . ')';
+            return sprintf("%s = (%s)", $columnString, $this->format($expression));
         } else {
-            return $columnString . ' = ' . $this->escaper->escapeLiteral($expression);
+            return sprintf("%s = %s", $columnString, $this->escaper->escapeLiteral($expression));
         }
     }
 
@@ -68,13 +66,13 @@ class FormatterConcat implements FormatterInterface, EscaperAwareInterface
      */
     protected function formatUpdateSet(array $columns) : string
     {
-        $output = '';
+        $output = [];
 
         foreach ($columns as $column => $statement) {
-            $output .= $this->formatUpdateSetItem($column, $statement) . "\n";
+            $output[] = $this->formatUpdateSetItem($column, $statement);
         }
 
-        return $output;
+        return implode(",\n", $output);
     }
 
     /**
@@ -122,19 +120,13 @@ class FormatterConcat implements FormatterInterface, EscaperAwareInterface
             return '*';
         }
 
-        $output = '';
-        $first = true;
+        $output = [];
 
         foreach ($columns as $column) {
-            if ($first) {
-                $first = false;
-                $output .= $this->formatSelectItem(...$column);
-            } else {
-                $output .= ",\n" . $this->formatSelectItem(...$column);
-            }
+            $output[] = $this->formatSelectItem(...$column);
         }
 
-        return $output;
+        return implode(",\n", $output);
     }
 
     /**
@@ -200,7 +192,7 @@ class FormatterConcat implements FormatterInterface, EscaperAwareInterface
                 break;
         }
 
-        return $column . ' ' . $orderStr . $nullStr;
+        return sprintf('%s %s%s', $column, $orderStr, $nullStr);
     }
 
     /**
@@ -220,20 +212,14 @@ class FormatterConcat implements FormatterInterface, EscaperAwareInterface
             return '';
         }
 
-        $output = 'order by ';
-        $first = false;
+        $output = [];
 
         foreach ($orders as $data) {
             list($column, $order, $null) = $data;
-            if ($first) {
-                $first = false;
-                $output .= $this->formatOrderByItem($column, $order, $null);
-            } else {
-                $output .= ', ' . $this->formatOrderByItem($column, $order, $null);
-            }
+            $output[] = $this->formatOrderByItem($column, $order, $null);
         }
 
-        return $output;
+        return "order by " . implode(", ", $output);
     }
 
     /**
@@ -272,7 +258,7 @@ class FormatterConcat implements FormatterInterface, EscaperAwareInterface
      *
      * @return string
      */
-    protected function formatJoinItem(ExpressionRelation $relation, Where $condition, string $mode) : string
+    protected function formatJoinItem(ExpressionRelation $relation, Where $condition, int $mode) : string
     {
         switch ($mode) {
 
@@ -297,9 +283,18 @@ class FormatterConcat implements FormatterInterface, EscaperAwareInterface
         }
 
         if ($condition->isEmpty()) {
-            return $prefix . ' ' . $this->formatExpressionRelation($relation);
+            return sprintf(
+                "%s %s",
+                $prefix,
+                $this->formatExpressionRelation($relation)
+            );
         } else {
-            return $prefix . ' ' . $this->formatExpressionRelation($relation) . ' on (' . $this->formatWhere($condition) . ')';
+            return sprintf(
+                "%s %s on (%s)",
+                $prefix,
+                $this->formatExpressionRelation($relation),
+                $this->formatWhere($condition)
+            );
         }
     }
 
@@ -321,13 +316,13 @@ class FormatterConcat implements FormatterInterface, EscaperAwareInterface
             return '';
         }
 
-        $output = '';
+        $output = [];
 
         foreach ($joins as $join) {
-            $output .= $this->formatJoinItem(...$join) . "\n";
+            $output[] = $this->formatJoinItem(...$join);
         }
 
-        return $output;
+        return implode("\n", $output);
     }
 
     /**
@@ -745,27 +740,29 @@ class FormatterConcat implements FormatterInterface, EscaperAwareInterface
      */
     protected function formatQuerySelect(SelectQuery $query) : string
     {
-        $output =
-            "select " . $this->formatSelect($query->getAllColumns()) ."\nfrom "
-                . $this->formatExpressionRelation($query->getRelation()) . "\n"
-                . $this->formatJoin($query->getAllJoin())
-        ;
+        $output = [];
+        $output[] = sprintf(
+            "select %s\nfrom %s\n%s",
+            $this->formatSelect($query->getAllColumns()),
+            $this->formatExpressionRelation($query->getRelation()),
+            $this->formatJoin($query->getAllJoin())
+        );
 
         $where = $query->getWhere();
         if (!$where->isEmpty()) {
-            $output .= '\nwhere ' . $this->formatWhere($where);
+            $output[] = sprintf('where %s', $this->formatWhere($where));
         }
 
-        $output .= "\n" . $this->formatGroupBy($query->getAllGroupBy());
-        $output .= "\n" . $this->formatOrderBy($query->getAllOrderBy());
-        $output .= "\n" . $this->formatRange(...$query->getRange());
+        $output[] = $this->formatGroupBy($query->getAllGroupBy());
+        $output[] = $this->formatOrderBy($query->getAllOrderBy());
+        $output[] = $this->formatRange(...$query->getRange());
 
         $having = $query->getHaving();
         if (!$having->isEmpty()) {
-            $output = "\nhaving " . $this->formatWhere($having);
+            $output[] = sprintf('having %s', $this->formatWhere($having));
         }
 
-        return $output;
+        return implode("\n", array_filter($output));
     }
 
     /**
@@ -798,7 +795,11 @@ class FormatterConcat implements FormatterInterface, EscaperAwareInterface
         }
 
         if ($relation) {
-            return $this->escaper->escapeIdentifier($relation) . '.' . $target;
+            return sprintf(
+                "%s.%s",
+                $this->escaper->escapeIdentifier($relation),
+                $target
+            );
         } else {
             return $target;
         }
@@ -822,13 +823,29 @@ class FormatterConcat implements FormatterInterface, EscaperAwareInterface
         }
 
         if ($schema && $alias) {
-            return $this->escaper->escapeIdentifier($schema) . '.' . $this->escaper->escapeIdentifier($table) . ' as ' . $this->escaper->escapeIdentifier($alias);
+            return sprintf(
+                "%s.%s as %s",
+                $this->escaper->escapeIdentifier($schema),
+                $this->escaper->escapeIdentifier($table),
+                $this->escaper->escapeIdentifier($alias)
+            );
         } else if ($schema) {
-            return $this->escaper->escapeIdentifier($schema) . '.' . $this->escaper->escapeIdentifier($table);
+            return sprintf(
+                "%s.%s",
+                $this->escaper->escapeIdentifier($schema),
+                $this->escaper->escapeIdentifier($table)
+            );
         } else if ($alias) {
-            return $this->escaper->escapeIdentifier($table) . ' as ' . $this->escaper->escapeIdentifier($alias);
+            return sprintf(
+                "%s as %s",
+                $this->escaper->escapeIdentifier($table),
+                $this->escaper->escapeIdentifier($alias)
+            );
         } else {
-            return $this->escaper->escapeIdentifier($alias);
+            return sprintf(
+                "%s",
+                $this->escaper->escapeIdentifier($table)
+            );
         }
     }
 

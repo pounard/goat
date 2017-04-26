@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Goat\Core\Client;
 
-use Goat\Core\Converter\ConverterMap;
+use Goat\Converter\ConverterMap;
 use Goat\Core\Error\GoatError;
 use Goat\Core\Hydrator\HydratorInterface;
 

@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace Goat\Core\Client;
 
-use Goat\Core\Converter\ConverterMap;
+use Goat\Converter\ConverterMap;
 use Goat\Core\Hydrator\HydratorMap;
 use Goat\Core\Transaction\Transaction;
 use Goat\Query\DeleteQuery;
 use Goat\Query\InsertQueryQuery;
 use Goat\Query\InsertValuesQuery;
 use Goat\Query\SelectQuery;
-use Goat\Query\SqlFormatterInterface;
+use Goat\Query\Writer\EscaperInterface;
+use Goat\Query\Writer\FormatterInterface;
 use Goat\Query\UpdateQuery;
 
 /**
@@ -193,17 +194,9 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function getSqlFormatter() : SqlFormatterInterface
+    public function getFormatter() : FormatterInterface
     {
-        return $this->getInnerConnection()->getSqlFormatter();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getCastType(string $type) : string
-    {
-        return $this->getInnerConnection()->getCastType($type);
+        return $this->getInnerConnection()->getFormatter();
     }
 
     /**
@@ -220,38 +213,6 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     public function setHydratorMap(HydratorMap $hydratorMap)
     {
         return $this->getInnerConnection()->setHydratorMap($hydratorMap);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function escapeIdentifier(string $string) : string
-    {
-        return $this->getInnerConnection()->escapeIdentifier($string);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function escapeIdentifierList($strings) : string
-    {
-        return $this->getInnerConnection()->escapeIdentifierList($strings);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function escapeLiteral(string $string) : string
-    {
-        return $this->getInnerConnection()->escapeLiteral($string);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function escapeBlob(string $word) : string
-    {
-        return $this->getInnerConnection()->escapeBlob($word);
     }
 
     /**
@@ -276,6 +237,14 @@ abstract class AbstractConnectionProxy implements ConnectionInterface
     public function debugMessage(string $message, int $level = E_USER_WARNING)
     {
         return $this->getInnerConnection()->debugMessage($message, $level);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getEscaper() : EscaperInterface
+    {
+        return $this->getInnerConnection()->getEscaper();
     }
 
     /**

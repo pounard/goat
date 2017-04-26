@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Goat\Core\Client;
 
-use Goat\Core\Converter\ConverterAwareTrait;
+use Goat\Converter\ConverterAwareTrait;
 use Goat\Core\Error\InvalidDataAccessError;
 use Goat\Core\Hydrator\HydratorAwareTrait;
 

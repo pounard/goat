@@ -13,7 +13,7 @@ use Goat\Core\Error\DriverError;
 use Goat\Core\Error\GoatError;
 use Goat\Core\Error\QueryError;
 use Goat\Query\Query;
-use Goat\Query\SqlFormatterInterface;
+use Goat\Query\Writer\FormatterInterface;
 
 abstract class AbstractPDOConnection extends AbstractConnection
 {
@@ -89,33 +89,9 @@ abstract class AbstractPDOConnection extends AbstractConnection
     /**
      * {@inheritdoc}
      */
-    public function escapeLiteral(string $string) : string
-    {
-        return $this->getPdo()->quote($string, \PDO::PARAM_STR);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function escapeBlob(string $word) : string
-    {
-        return $this->getPdo()->quote($word, \PDO::PARAM_LOB);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     protected function doCreateResultIterator(...$constructorArgs) : ResultIteratorInterface
     {
         return new DefaultResultIterator(...$constructorArgs);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getPlaceholder(int $index) : string
-    {
-        return '?';
     }
 
     /**
@@ -134,10 +110,12 @@ abstract class AbstractPDOConnection extends AbstractConnection
         $rawSQL = '';
 
         try {
-            list($rawSQL, $parameters) = $this->getProperSql($query, $parameters);
+            $prepared = $this->formatter->prepare($query, $parameters);
+            $rawSQL   = $prepared->getQuery();
+            $args     = $prepared->getParameters();
 
             $statement = $this->getPdo()->prepare($rawSQL, [\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY]);
-            $statement->execute($parameters);
+            $statement->execute($args);
 
             $ret = $this->createResultIterator($options, $statement);
             $ret->setConverter($this->converter);
@@ -163,11 +141,13 @@ abstract class AbstractPDOConnection extends AbstractConnection
         $rawSQL = '';
 
         try {
-            list($rawSQL, $parameters) = $this->getProperSql($query, $parameters);
+            $prepared = $this->formatter->prepare($query, $parameters);
+            $rawSQL   = $prepared->getQuery();
+            $args     = $prepared->getParameters();
 
             // We still use PDO prepare emulation, it's better for security
             $statement = $this->getPdo()->prepare($rawSQL, [\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY]);
-            $statement->execute($parameters);
+            $statement->execute($args);
 
             // echo $rawSQL, "\n\n";
 
@@ -176,9 +156,9 @@ abstract class AbstractPDOConnection extends AbstractConnection
         } catch (GoatError $e) {
             throw $e;
         } catch (\PDOException $e) {
-            throw new DriverError($rawSQL, $parameters, $e);
+            throw new DriverError($rawSQL, [], $e);
         } catch (\Exception $e) {
-            throw new DriverError($rawSQL, $parameters, $e);
+            throw new DriverError($rawSQL, [], $e);
         }
     }
 
@@ -187,7 +167,8 @@ abstract class AbstractPDOConnection extends AbstractConnection
      */
     public function prepareQuery($query, string $identifier = null) : string
     {
-        list($rawSQL) = $this->getProperSql($query);
+        $prepared = $this->formatter->prepare($query);
+        $rawSQL   = $prepared->getQuery();
 
         if (null === $identifier) {
             $identifier = md5($rawSQL);
@@ -216,7 +197,7 @@ abstract class AbstractPDOConnection extends AbstractConnection
     /**
      * {@inheritdoc}
      */
-    public function getSqlFormatter() : SqlFormatterInterface
+    public function getFormatter() : FormatterInterface
     {
         return $this->formatter;
     }

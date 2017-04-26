@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Goat\Tests\Query;
 
-use Goat\Core\Client\EscaperInterface;
 use Goat\Core\Error\GoatError;
+use Goat\Query\Writer\EscaperInterface;
 
 /**
  * Does escape pretty much nothing.
@@ -49,5 +49,13 @@ class NullEscaper implements EscaperInterface
     public function escapeBlob(string $word) : string
     {
         return '#' . $word . '#';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getEscapeSequences() : array
+    {
+        return ['"', "'"];
     }
 }

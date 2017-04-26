@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Goat\Tests\Query;
 
+use Goat\Query\ExpressionColumn;
 use Goat\Query\ExpressionRaw;
 use Goat\Query\Query;
 use Goat\Query\SelectQuery;
-use Goat\Query\SqlFormatter;
-use Goat\Query\ExpressionColumn;
+use Goat\Query\Writer\Formatter;
 
 class BuilderSelectTest extends \PHPUnit_Framework_TestCase
 {
@@ -16,7 +16,7 @@ class BuilderSelectTest extends \PHPUnit_Framework_TestCase
 
     public function testSimpleQuery()
     {
-        $formatter = new SqlFormatter(new NullEscaper());
+        $formatter = new Formatter(new NullEscaper());
 
         $referenceArguments = [12, 3];
         $reference = <<<EOT

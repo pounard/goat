@@ -2,11 +2,11 @@
 
 namespace Goat\Benchmark;
 
-use Goat\Core\Client\EscaperInterface;
 use Goat\Query\Query;
 use Goat\Query\SelectQuery;
-use Goat\Query\SqlFormatter;
-use Goat\Query\SqlFormatterInterface;
+use Goat\Query\Writer\EscaperInterface;
+use Goat\Query\Writer\Formatter;
+use Goat\Query\Writer\FormatterInterface;
 use Goat\Tests\Query\NullEscaper;
 
 /**
@@ -16,17 +16,17 @@ use Goat\Tests\Query\NullEscaper;
  *
  * @BeforeMethods({"setUp"})
  */
-class SqlFormatterBenchmark
+class FormatterBenchmark
 {
     /**
-     * @var SqlFormatterInterface
+     * @var FormatterInterface
      */
-    private $concatSqlFormatter;
+    private $concatFormatter;
 
     /**
-     * @var SqlFormatterInterface
+     * @var FormatterInterface
      */
-    private $normalSqlFormatter;
+    private $normalFormatter;
 
     /**
      * @var EscaperInterface
@@ -41,8 +41,8 @@ class SqlFormatterBenchmark
     public function setUp()
     {
         $this->escaper = new NullEscaper();
-        $this->concatSqlFormatter = new SqlFormatterConcat($this->escaper);
-        $this->normalSqlFormatter = new SqlFormatter($this->escaper);
+        $this->concatFormatter = new FormatterConcat($this->escaper);
+        $this->normalFormatter = new Formatter($this->escaper);
 
         // Create a select query
         $this->selectQuery = (new SelectQuery('task', 't'))
@@ -69,7 +69,7 @@ class SqlFormatterBenchmark
      */
     public function benchNormalSelect()
     {
-        $this->normalSqlFormatter->format($this->selectQuery);
+        $this->normalFormatter->format($this->selectQuery);
     }
 
     /**
@@ -78,6 +78,6 @@ class SqlFormatterBenchmark
      */
     public function benchConcatSelect()
     {
-        $this->concatSqlFormatter->format($this->selectQuery);
+        $this->concatFormatter->format($this->selectQuery);
     }
 }

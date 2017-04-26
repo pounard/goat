@@ -8,7 +8,7 @@ Benchmarks have carefully written, extending the standard SQL formatter in order
 to rewrite it to use PHP string concatenation instead of ``sprintf()`` +
 ``implode()`` calls.
 
-You can look at the ``\Goat\Benchmark\SqlFormatterBenchmark`` class.
+You can look at the ``\Goat\Benchmark\FormatterBenchmark`` class.
 
 
 ### Notes
@@ -36,7 +36,7 @@ Here are the raw results collected at the time:
 PhpBench 0.13.0. Running benchmarks.
 Using configuration file: /var/www/goat/phpbench.json
 
-\Goat\Benchmark\SqlFormatterBenchmark
+\Goat\Benchmark\FormatterBenchmark
 
     benchNormalSelect             I199 P0   [μ Mo]/r: 96.670 96.152 (μs)    [μSD μRSD]/r: 1.908μs 1.97%
     benchConcatSelect             I199 P0   [μ Mo]/r: 91.857 91.526 (μs)    [μSD μRSD]/r: 1.251μs 1.36%
@@ -45,12 +45,12 @@ Using configuration file: /var/www/goat/phpbench.json
 (best [mean mode] worst) = 88.836 [94.264 93.839] 97.218 (μs)
 ⅀T: 37,705.472μs μSD/r 1.580μs μRSD/r: 1.668%
 suite: 133c58330e1143dcd42feb997b8a4d8aa4c6a06d, date: 2017-01-15, stime: 12:00:35
-+-----------------------+-------------------+--------+--------+------+-----+------------+----------+----------+----------+-----------+---------+--------+--------+
-| benchmark             | subject           | groups | params | revs | its | mem_peak   | best     | mean     | mode     | worst     | stdev   | rstdev | diff   |
-+-----------------------+-------------------+--------+--------+------+-----+------------+----------+----------+----------+-----------+---------+--------+--------+
-| SqlFormatterBenchmark | benchNormalSelect |        | []     | 500  | 200 | 1,474,312b | 93.008μs | 96.670μs | 96.152μs | 109.402μs | 1.908μs | 1.97%  | +5.24% |
-| SqlFormatterBenchmark | benchConcatSelect |        | []     | 500  | 200 | 1,474,312b | 88.836μs | 91.857μs | 91.526μs | 97.218μs  | 1.251μs | 1.36%  | 0.00%  |
-+-----------------------+-------------------+--------+--------+------+-----+------------+----------+----------+----------+-----------+---------+--------+--------+
++--------------------+-------------------+--------+--------+------+-----+------------+----------+----------+----------+-----------+---------+--------+--------+
+| benchmark          | subject           | groups | params | revs | its | mem_peak   | best     | mean     | mode     | worst     | stdev   | rstdev | diff   |
++--------------------+-------------------+--------+--------+------+-----+------------+----------+----------+----------+-----------+---------+--------+--------+
+| FormatterBenchmark | benchNormalSelect |        | []     | 500  | 200 | 1,474,312b | 93.008μs | 96.670μs | 96.152μs | 109.402μs | 1.908μs | 1.97%  | +5.24% |
+| FormatterBenchmark | benchConcatSelect |        | []     | 500  | 200 | 1,474,312b | 88.836μs | 91.857μs | 91.526μs | 97.218μs  | 1.251μs | 1.36%  | 0.00%  |
++--------------------+-------------------+--------+--------+------+-----+------------+----------+----------+----------+-----------+---------+--------+--------+
 ```
 
 This one of the many runs, and one with the most significant difference.

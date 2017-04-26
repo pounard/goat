@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Goat\Core\Client;
 
-use Goat\Core\Converter\ConverterAwareInterface;
+use Goat\Converter\ConverterAwareInterface;
 use Goat\Core\Hydrator\HydratorAwareInterface;
 
 /**

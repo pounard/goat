@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Goat\Tests\Query;
 
-use Goat\Query\SqlFormatter;
+use Goat\Query\Writer\Formatter;
 
 trait BuilderTestTrait
 {
@@ -27,8 +27,8 @@ trait BuilderTestTrait
         );
     }
 
-    protected function createStandardSQLFormatter()
+    protected function createStandardFormatter()
     {
-        return new SqlFormatter(new NullEscaper());
+        return new Formatter(new NullEscaper());
     }
 }

@@ -14,7 +14,7 @@ class BuilderWhereTest extends \PHPUnit_Framework_TestCase
 
     public function testWhere()
     {
-        $formatter = $this->createStandardSQLFormatter();
+        $formatter = $this->createStandardFormatter();
 
         $select = new SelectQuery('the_universe', 'u');
         $select->column('id');
@@ -154,7 +154,7 @@ EOT;
 
     public function testWhereWhenEmpty()
     {
-        $formatter = $this->createStandardSQLFormatter();
+        $formatter = $this->createStandardFormatter();
 
         $where = (new Where());
 
