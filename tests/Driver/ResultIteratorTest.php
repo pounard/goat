@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Goat\Tests\Driver;
 
 use Goat\Core\Client\ConnectionInterface;
-use Goat\Core\Client\PagerResultIterator;
 use Goat\Core\Error\GoatError;
 use Goat\Core\Error\InvalidDataAccessError;
-use Goat\Tests\DriverTestCase;
+use Goat\Runner\PagerResultIterator;
 use Goat\Tests\Driver\Mock\TestTypeEntity;
+use Goat\Tests\DriverTestCase;
 
 class ResultIteratorTest extends DriverTestCase
 {

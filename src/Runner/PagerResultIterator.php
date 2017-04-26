@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Goat\Core\Client;
+namespace Goat\Runner;
 
 use Goat\Converter\ConverterMap;
 use Goat\Core\Error\GoatError;

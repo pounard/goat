@@ -6,8 +6,6 @@ namespace Goat\Core\Profiling;
 
 use Goat\Core\Client\AbstractConnectionProxy;
 use Goat\Core\Client\ConnectionInterface;
-use Goat\Core\Client\EmptyResultIterator;
-use Goat\Core\Client\ResultIteratorInterface;
 use Goat\Core\Transaction\Transaction;
 use Goat\Query\DeleteQuery;
 use Goat\Query\InsertQueryQuery;
@@ -15,6 +13,8 @@ use Goat\Query\InsertValuesQuery;
 use Goat\Query\SelectQuery;
 use Goat\Query\Statement;
 use Goat\Query\UpdateQuery;
+use Goat\Runner\EmptyResultIterator;
+use Goat\Runner\ResultIteratorInterface;
 
 /**
  * Connection proxy that emits events via Symfony's EventDispatcher

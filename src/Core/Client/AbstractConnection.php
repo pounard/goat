@@ -16,10 +16,11 @@ use Goat\Query\InsertQueryQuery;
 use Goat\Query\InsertValuesQuery;
 use Goat\Query\Query;
 use Goat\Query\SelectQuery;
+use Goat\Query\UpdateQuery;
 use Goat\Query\Writer\EscaperAwareTrait;
 use Goat\Query\Writer\EscaperInterface;
 use Goat\Query\Writer\FormatterInterface;
-use Goat\Query\UpdateQuery;
+use Goat\Runner\ResultIteratorInterface;
 
 /**
  * Default implementation for connection, it handles for you:
@@ -366,7 +367,7 @@ abstract class AbstractConnection implements ConnectionInterface
     }
 
     /**
-    * {@inheritdoc}
+     * {@inheritdoc}
      */
     final public function setHydratorMap(HydratorMap $hydratorMap)
     {

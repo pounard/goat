@@ -15,7 +15,7 @@ trait EscaperAwareTrait
     protected $escaper;
 
     /**
-     * Set connection
+     * Set escaper
      *
      * @param EscaperInterface $escaper
      */

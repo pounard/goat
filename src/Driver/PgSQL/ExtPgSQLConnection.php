@@ -6,8 +6,6 @@ namespace Goat\Driver\PgSQL;
 
 use Goat\Core\Client\AbstractConnection;
 use Goat\Core\Client\Dsn;
-use Goat\Core\Client\EmptyResultIterator;
-use Goat\Core\Client\ResultIteratorInterface;
 use Goat\Core\Error\ConfigurationError;
 use Goat\Core\Error\DriverError;
 use Goat\Core\Error\GoatError;
@@ -17,6 +15,8 @@ use Goat\Core\Transaction\Transaction;
 use Goat\Query\Query;
 use Goat\Query\Writer\EscaperInterface;
 use Goat\Query\Writer\FormatterInterface;
+use Goat\Runner\EmptyResultIterator;
+use Goat\Runner\ResultIteratorInterface;
 
 /**
  * ext_pgsql connection implementation

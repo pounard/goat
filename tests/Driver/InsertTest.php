@@ -102,7 +102,7 @@ class InsertTest extends DriverTestCase
 
         $insert->execute();
 
-        /** @var \Goat\Core\Client\ResultIteratorInterface $result */
+        /** @var \Goat\Runner\ResultIteratorInterface $result */
         $result = $connection
             ->select('some_table', 't')
             ->orderBy('t.id', Query::ORDER_ASC)

@@ -11,9 +11,10 @@ use Goat\Query\DeleteQuery;
 use Goat\Query\InsertQueryQuery;
 use Goat\Query\InsertValuesQuery;
 use Goat\Query\SelectQuery;
+use Goat\Query\UpdateQuery;
 use Goat\Query\Writer\EscaperInterface;
 use Goat\Query\Writer\FormatterInterface;
-use Goat\Query\UpdateQuery;
+use Goat\Runner\ResultIteratorInterface;
 
 /**
  * Connection proxy basis

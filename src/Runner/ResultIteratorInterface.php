@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Goat\Core\Client;
+namespace Goat\Runner;
 
 use Goat\Converter\ConverterAwareInterface;
 use Goat\Core\Hydrator\HydratorAwareInterface;

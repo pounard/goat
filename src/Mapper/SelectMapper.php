@@ -6,13 +6,13 @@ namespace Goat\Mapper;
 
 use Goat\Core\Client\ConnectionAwareTrait;
 use Goat\Core\Client\ConnectionInterface;
-use Goat\Core\Client\PagerResultIterator;
-use Goat\Core\Client\ResultIteratorInterface;
 use Goat\Core\Error\QueryError;
 use Goat\Mapper\Error\EntityNotFoundError;
 use Goat\Query\ExpressionRelation;
 use Goat\Query\Query;
 use Goat\Query\SelectQuery;
+use Goat\Runner\PagerResultIterator;
+use Goat\Runner\ResultIteratorInterface;
 
 /**
  * Table mapper is a simple model implementation that works on an arbitrary

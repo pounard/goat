@@ -6,10 +6,10 @@ namespace Goat\Query\Partial;
 
 use Goat\Core\Client\ConnectionAwareInterface;
 use Goat\Core\Client\ConnectionAwareTrait;
-use Goat\Core\Client\ResultIteratorInterface;
 use Goat\Core\Error\GoatError;
 use Goat\Query\ExpressionRelation;
 use Goat\Query\Query;
+use Goat\Runner\ResultIteratorInterface;
 
 /**
  * Reprensents the basis of an SQL query.

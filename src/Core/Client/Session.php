@@ -6,6 +6,7 @@ namespace Goat\Core\Client;
 
 use Goat\Core\Error\ConfigurationError;
 use Goat\Query\SelectQuery;
+use Goat\Runner\ResultIteratorInterface;
 
 /**
  * Facade connection that handles read and write connection for you.

@@ -6,13 +6,13 @@ namespace Goat\Mapper;
 
 use Goat\Core\Client\ConnectionAwareInterface;
 use Goat\Core\Client\ConnectionInterface;
-use Goat\Core\Client\PagerResultIterator;
-use Goat\Core\Client\ResultIteratorInterface;
 use Goat\Mapper\Error\EntityNotFoundError;
 use Goat\Query\Expression;
 use Goat\Query\ExpressionRelation;
 use Goat\Query\SelectQuery;
 use Goat\Query\Where;
+use Goat\Runner\PagerResultIterator;
+use Goat\Runner\ResultIteratorInterface;
 
 /**
  * Maps immutable entities on SQL projections, and provides a set of utilities

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Goat\Driver\PgSQL;
 
-use Goat\Core\Client\AbstractResultIterator;
 use Goat\Core\Error\InvalidDataAccessError;
+use Goat\Runner\AbstractResultIterator;
 
 class ExtPgSQLResultIterator extends AbstractResultIterator
 {

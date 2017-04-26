@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Goat\Query;
 
-use Goat\Core\Client\ResultIteratorInterface;
+use Goat\Runner\ResultIteratorInterface;
 
 interface Query extends Statement
 {

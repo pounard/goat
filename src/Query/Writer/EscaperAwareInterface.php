@@ -7,7 +7,7 @@ namespace Goat\Query\Writer;
 interface EscaperAwareInterface
 {
     /**
-     * Set connection
+     * Set escaper
      *
      * @param EscaperInterface $escaper
      */

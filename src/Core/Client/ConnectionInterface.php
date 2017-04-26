@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Goat\Core\Client;
 
-use Goat\Core\Client\ResultIteratorInterface;
 use Goat\Converter\ConverterAwareInterface;
 use Goat\Core\DebuggableInterface;
 use Goat\Core\Error\TransactionError;
@@ -15,9 +14,10 @@ use Goat\Query\InsertQueryQuery;
 use Goat\Query\InsertValuesQuery;
 use Goat\Query\Query;
 use Goat\Query\SelectQuery;
+use Goat\Query\UpdateQuery;
 use Goat\Query\Writer\EscaperInterface;
 use Goat\Query\Writer\FormatterInterface;
-use Goat\Query\UpdateQuery;
+use Goat\Runner\ResultIteratorInterface;
 
 interface ConnectionInterface extends ConverterAwareInterface, DebuggableInterface
 {
