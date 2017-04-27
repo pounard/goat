@@ -213,7 +213,7 @@ class ProfilingDriverProxy extends AbstractDriverProxy
     final public function select($relation, string $alias = null) : SelectQuery
     {
         $select = new SelectQuery($relation, $alias);
-        $select->setDriver($this);
+        $select->setRunner($this);
 
         return $select;
     }
@@ -224,7 +224,7 @@ class ProfilingDriverProxy extends AbstractDriverProxy
     final public function update($relation, string $alias = null) : UpdateQuery
     {
         $update = new UpdateQuery($relation, $alias);
-        $update->setDriver($this);
+        $update->setRunner($this);
 
         return $update;
     }
@@ -235,7 +235,7 @@ class ProfilingDriverProxy extends AbstractDriverProxy
     final public function insertQuery($relation) : InsertQueryQuery
     {
         $insert = new InsertQueryQuery($relation);
-        $insert->setDriver($this);
+        $insert->setRunner($this);
 
         return $insert;
     }
@@ -246,7 +246,7 @@ class ProfilingDriverProxy extends AbstractDriverProxy
     final public function insertValues($relation) : InsertValuesQuery
     {
         $insert = new InsertValuesQuery($relation);
-        $insert->setDriver($this);
+        $insert->setRunner($this);
 
         return $insert;
     }
@@ -257,7 +257,7 @@ class ProfilingDriverProxy extends AbstractDriverProxy
     final public function delete($relation, string $alias = null) : DeleteQuery
     {
         $insert = new DeleteQuery($relation, $alias);
-        $insert->setDriver($this);
+        $insert->setRunner($this);
 
         return $insert;
     }

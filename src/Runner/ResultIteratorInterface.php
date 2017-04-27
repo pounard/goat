@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Goat\Runner;
 
 use Goat\Converter\ConverterAwareInterface;
-use Goat\Core\Hydrator\HydratorAwareInterface;
+use Goat\Hydrator\HydratorAwareInterface;
 
 /**
  * When in use using the iterator, default behavior is to return associative arrays

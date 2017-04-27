@@ -6,7 +6,7 @@ namespace Goat\Runner;
 
 use Goat\Converter\ConverterAwareTrait;
 use Goat\Core\Error\InvalidDataAccessError;
-use Goat\Core\Hydrator\HydratorAwareTrait;
+use Goat\Hydrator\HydratorAwareTrait;
 
 /**
  * Empty iterator for some edge cases results

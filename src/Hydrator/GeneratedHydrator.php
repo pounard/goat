@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Goat\Core\Hydrator;
+namespace Goat\Hydrator;
 
 use GeneratedHydrator\Configuration;
 

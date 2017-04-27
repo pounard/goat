@@ -2,8 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Goat\Core\Hydrator;
+namespace Goat\Hydrator;
 
+/**
+ * Base implementation of the HydratorAwareInterface
+ */
 trait HydratorAwareTrait
 {
     /**

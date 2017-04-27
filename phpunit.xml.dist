@@ -14,17 +14,23 @@
     </php>
 
     <testsuites>
-        <testsuite name="Goat core">
-            <directory>./tests/Core</directory>
+        <testsuite name="Goat converters">
+            <directory>./tests/Converter</directory>
         </testsuite>
-        <testsuite name="Goat query builder">
-            <directory>./tests/Query</directory>
+        <testsuite name="Goat core (oudated)">
+            <directory>./tests/Core</directory>
         </testsuite>
         <testsuite name="Goat drivers">
             <directory>./tests/Driver</directory>
         </testsuite>
+        <testsuite name="Goat hydrators">
+            <directory>./tests/Hydrator</directory>
+        </testsuite>
         <testsuite name="Goat mapper">
             <directory>./tests/Mapper</directory>
+        </testsuite>
+        <testsuite name="Goat query builder">
+            <directory>./tests/Query</directory>
         </testsuite>
     </testsuites>
 

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Goat\Driver;
 
 use Goat\Converter\ConverterMap;
-use Goat\Core\Hydrator\HydratorMap;
 use Goat\Core\Transaction\Transaction;
+use Goat\Hydrator\HydratorMap;
 use Goat\Query\DeleteQuery;
 use Goat\Query\InsertQueryQuery;
 use Goat\Query\InsertValuesQuery;

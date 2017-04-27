@@ -6,7 +6,7 @@ namespace Goat\Runner;
 
 use Goat\Converter\ConverterMap;
 use Goat\Core\Error\GoatError;
-use Goat\Core\Hydrator\HydratorInterface;
+use Goat\Hydrator\HydratorInterface;
 
 /**
  * Wraps a result iterator in order to paginate results

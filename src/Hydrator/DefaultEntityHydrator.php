@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Goat\Core\Hydrator;
+namespace Goat\Hydrator;
 
 use Goat\Mapper\Entity\DefaultEntity;
 use Goat\Core\Error\GoatError;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Goat\Tests\Core\Hydrator;
+namespace Goat\Tests\Hydrator;
 
 final class HydratedClass extends HydratedParentClass
 {

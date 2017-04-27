@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Goat\Tests;
 
 use Goat\Converter\ConverterMap;
-use Goat\Core\Hydrator\HydratorMap;
 use Goat\Core\Profiling\ProfilingDriverProxy;
 use Goat\Core\Session\Dsn;
 use Goat\Core\Session\Session;
 use Goat\Driver\DriverInterface;
+use Goat\Hydrator\HydratorMap;
 
 /**
  * Single driver test case

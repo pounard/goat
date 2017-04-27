@@ -5,18 +5,18 @@ declare(strict_types=1);
 namespace Goat\Query\Partial;
 
 use Goat\Core\Error\GoatError;
-use Goat\Driver\DriverAwareInterface;
-use Goat\Driver\DriverAwareTrait;
 use Goat\Query\ExpressionRelation;
 use Goat\Query\Query;
 use Goat\Runner\ResultIteratorInterface;
+use Goat\Runner\RunnerAwareInterface;
+use Goat\Runner\RunnerAwareTrait;
 
 /**
  * Reprensents the basis of an SQL query.
  */
-abstract class AbstractQuery implements Query, DriverAwareInterface
+abstract class AbstractQuery implements Query, RunnerAwareInterface
 {
-    use DriverAwareTrait;
+    use RunnerAwareTrait;
     use AliasHolderTrait;
 
     private $relation;
@@ -102,11 +102,11 @@ abstract class AbstractQuery implements Query, DriverAwareInterface
      */
     final public function execute(array $parameters = [], $options = null) : ResultIteratorInterface
     {
-        if (!$this->driver) {
-            throw new GoatError("this query has no reference to any connection, therefore cannot execute itself");
+        if (!$this->runner) {
+            throw new GoatError("this query has no reference to query runner, therefore cannot execute itself");
         }
 
-        return $this->driver->query($this, $parameters, $this->buildOptions($options));
+        return $this->runner->query($this, $parameters, $this->buildOptions($options));
     }
 
     /**
@@ -114,10 +114,10 @@ abstract class AbstractQuery implements Query, DriverAwareInterface
      */
     public function perform(array $parameters = [], $options = null) : int
     {
-        if (!$this->driver) {
-            throw new GoatError("this query has no reference to any connection, therefore cannot execute itself");
+        if (!$this->runner) {
+            throw new GoatError("this query has no reference to any query runner, therefore cannot execute itself");
         }
 
-        return $this->driver->perform($this, $parameters, $this->buildOptions($options));
+        return $this->runner->perform($this, $parameters, $this->buildOptions($options));
     }
 }

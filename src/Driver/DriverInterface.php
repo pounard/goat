@@ -7,8 +7,8 @@ namespace Goat\Driver;
 use Goat\Converter\ConverterAwareInterface;
 use Goat\Core\DebuggableInterface;
 use Goat\Core\Error\TransactionError;
-use Goat\Core\Hydrator\HydratorMap;
 use Goat\Core\Transaction\Transaction;
+use Goat\Hydrator\HydratorMap;
 use Goat\Query\DeleteQuery;
 use Goat\Query\InsertQueryQuery;
 use Goat\Query\InsertValuesQuery;
@@ -17,9 +17,9 @@ use Goat\Query\SelectQuery;
 use Goat\Query\UpdateQuery;
 use Goat\Query\Writer\EscaperInterface;
 use Goat\Query\Writer\FormatterInterface;
-use Goat\Runner\QueryRunnerInterface;
+use Goat\Runner\RunnerInterface;
 
-interface DriverInterface extends ConverterAwareInterface, DebuggableInterface, QueryRunnerInterface
+interface DriverInterface extends ConverterAwareInterface, DebuggableInterface, RunnerInterface
 {
     /**
      * Get database server information

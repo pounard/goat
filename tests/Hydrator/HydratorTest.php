@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Goat\Tests\Core\Hydrator;
+namespace Goat\Tests\Hydrator;
 
-use Goat\Core\Hydrator\HydratorMap;
-use Goat\Core\Hydrator\HydratorInterface;
+use Goat\Hydrator\HydratorMap;
+use Goat\Hydrator\HydratorInterface;
 
 class HydratorTest extends \PHPUnit_Framework_TestCase
 {
     public function testBasicFeatures()
     {
-        $hydratorMap = new HydratorMap(__DIR__ . '/../../../cache/hydrator');
+        $hydratorMap = new HydratorMap(__DIR__ . '/../../cache/hydrator');
         $hydrator = $hydratorMap->get(HydratedClass::class);
 
         $test1 = new HydratedClass();

@@ -9,9 +9,9 @@ use Goat\Converter\ConverterMap;
 use Goat\Core\DebuggableTrait;
 use Goat\Core\Error\QueryError;
 use Goat\Core\Error\TransactionError;
-use Goat\Core\Hydrator\HydratorMap;
 use Goat\Core\Session\Dsn;
 use Goat\Core\Transaction\Transaction;
+use Goat\Hydrator\HydratorMap;
 use Goat\Query\DeleteQuery;
 use Goat\Query\InsertQueryQuery;
 use Goat\Query\InsertValuesQuery;
@@ -291,7 +291,7 @@ abstract class AbstractDriver implements DriverInterface
     final public function select($relation, string $alias = null) : SelectQuery
     {
         $select = new SelectQuery($relation, $alias);
-        $select->setDriver($this);
+        $select->setRunner($this);
 
         return $select;
     }
@@ -302,7 +302,7 @@ abstract class AbstractDriver implements DriverInterface
     final public function update($relation, string $alias = null) : UpdateQuery
     {
         $update = new UpdateQuery($relation, $alias);
-        $update->setDriver($this);
+        $update->setRunner($this);
 
         return $update;
     }
@@ -313,7 +313,7 @@ abstract class AbstractDriver implements DriverInterface
     final public function insertQuery($relation) : InsertQueryQuery
     {
         $insert = new InsertQueryQuery($relation);
-        $insert->setDriver($this);
+        $insert->setRunner($this);
 
         return $insert;
     }
@@ -324,7 +324,7 @@ abstract class AbstractDriver implements DriverInterface
     final public function insertValues($relation) : InsertValuesQuery
     {
         $insert = new InsertValuesQuery($relation);
-        $insert->setDriver($this);
+        $insert->setRunner($this);
 
         return $insert;
     }
@@ -335,7 +335,7 @@ abstract class AbstractDriver implements DriverInterface
     final public function delete($relation, string $alias = null) : DeleteQuery
     {
         $insert = new DeleteQuery($relation, $alias);
-        $insert->setDriver($this);
+        $insert->setRunner($this);
 
         return $insert;
     }

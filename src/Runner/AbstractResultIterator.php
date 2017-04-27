@@ -7,7 +7,7 @@ namespace Goat\Runner;
 use Goat\Converter\ConverterAwareTrait;
 use Goat\Core\DebuggableTrait;
 use Goat\Core\Error\InvalidDataAccessError;
-use Goat\Core\Hydrator\HydratorAwareTrait;
+use Goat\Hydrator\HydratorAwareTrait;
 
 abstract class AbstractResultIterator implements ResultIteratorInterface
 {

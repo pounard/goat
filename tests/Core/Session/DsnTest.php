@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Goat\Tests\Core\Client;
+namespace Goat\Tests\Session\Client;
 
 use Goat\Core\Error\ConfigurationError;
 use Goat\Core\Session\Dsn;

@@ -4,7 +4,10 @@ namespace Goat\Runner;
 
 use Goat\Query\Query;
 
-interface QueryRunnerInterface
+/**
+ * Stripped down representation of a connection/driver that can run queries.
+ */
+interface RunnerInterface
 {
     /**
      * Send query
