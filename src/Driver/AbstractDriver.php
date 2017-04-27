@@ -7,10 +7,9 @@ namespace Goat\Driver;
 use Goat\Converter\ConverterAwareTrait;
 use Goat\Converter\ConverterMap;
 use Goat\Core\DebuggableTrait;
-use Goat\Core\Error\QueryError;
-use Goat\Core\Error\TransactionError;
-use Goat\Core\Session\Dsn;
-use Goat\Core\Transaction\Transaction;
+use Goat\Driver\Dsn;
+use Goat\Error\QueryError;
+use Goat\Error\TransactionError;
 use Goat\Hydrator\HydratorMap;
 use Goat\Query\DeleteQuery;
 use Goat\Query\InsertQueryQuery;
@@ -22,6 +21,7 @@ use Goat\Query\Writer\EscaperAwareTrait;
 use Goat\Query\Writer\EscaperInterface;
 use Goat\Query\Writer\FormatterInterface;
 use Goat\Runner\ResultIteratorInterface;
+use Goat\Runner\Transaction;
 
 /**
  * Default implementation for connection, it handles for you:

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Goat\Query\Writer;
 
-use Goat\Core\Error\NotImplementedError;
-use Goat\Core\Error\QueryError;
+use Goat\Error\NotImplementedError;
+use Goat\Error\QueryError;
 use Goat\Query\DeleteQuery;
 use Goat\Query\Expression;
 use Goat\Query\ExpressionColumn;

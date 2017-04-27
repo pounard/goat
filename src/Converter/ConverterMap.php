@@ -12,7 +12,7 @@ use Goat\Converter\Impl\StringConverter;
 use Goat\Converter\Impl\TimestampConverter;
 use Goat\Core\DebuggableInterface;
 use Goat\Core\DebuggableTrait;
-use Goat\Core\Error\ConfigurationError;
+use Goat\Error\ConfigurationError;
 
 /**
  * Converter map contains references to all existing converters and is the

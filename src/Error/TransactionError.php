@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Goat\Core\Error;
+namespace Goat\Error;
 
 /**
  * Errors have been raised during a transaction

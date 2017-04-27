@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Goat\Core\Session;
+namespace Goat\Driver;
 
-use Goat\Core\Error\ConfigurationError;
+use Goat\Error\ConfigurationError;
 
 /**
  * Allow the following two reprensentations:

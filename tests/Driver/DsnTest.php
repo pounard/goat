@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Goat\Tests\Session\Client;
+namespace Goat\Tests\Driver;
 
-use Goat\Core\Error\ConfigurationError;
-use Goat\Core\Session\Dsn;
+use Goat\Driver\Dsn;
+use Goat\Error\ConfigurationError;
 
 class DsnTest extends \PHPUnit_Framework_TestCase
 {

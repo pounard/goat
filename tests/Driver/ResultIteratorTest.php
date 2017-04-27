@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Goat\Tests\Driver;
 
-use Goat\Core\Error\GoatError;
-use Goat\Core\Error\InvalidDataAccessError;
 use Goat\Driver\DriverInterface;
+use Goat\Error\GoatError;
+use Goat\Error\InvalidDataAccessError;
 use Goat\Runner\PagerResultIterator;
 use Goat\Tests\Driver\Mock\TestTypeEntity;
 use Goat\Tests\DriverTestCase;

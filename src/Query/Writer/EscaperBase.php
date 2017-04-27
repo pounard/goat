@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Goat\Query\Writer;
 
-use Goat\Core\Error\GoatError;
+use Goat\Error\GoatError;
 
 /**
  * Base implementation for escapers

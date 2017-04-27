@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Goat\Core\Error;
+namespace Goat\Error;
 
 /**
  * Driver specific error while running a query

@@ -2,11 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Goat\Core\Transaction;
+namespace Goat\Runner;
 
 use Goat\Core\DebuggableTrait;
-use Goat\Core\Error\TransactionError;
-use Goat\Driver\DriverInterface;
+use Goat\Error\TransactionError;
 
 /**
  * Base implementation of the Transaction interface that prevents logic errors.
@@ -14,6 +13,7 @@ use Goat\Driver\DriverInterface;
 abstract class AbstractTransaction implements Transaction
 {
     use DebuggableTrait;
+    use RunnerAwareTrait;
 
     /**
      * Default savepoint name prefix
@@ -48,11 +48,6 @@ abstract class AbstractTransaction implements Transaction
         }
     }
 
-    /**
-     * @var DriverInterface
-     */
-    protected $driver;
-
     private $isolationLevel = self::REPEATABLE_READ;
     private $savepoint = 0;
     private $savepoints = [];
@@ -67,17 +62,6 @@ abstract class AbstractTransaction implements Transaction
     final public function __construct(int $isolationLevel = self::REPEATABLE_READ)
     {
         $this->level($isolationLevel);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    final public function setDriver(DriverInterface $driver) : Transaction
-    {
-        $this->driver = $driver;
-        $this->setDebug($driver->isDebugEnabled());
-
-        return $this;
     }
 
     /**

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Goat\Query\Writer;
 
-use Goat\Core\Error\QueryError;
+use Goat\Error\QueryError;
 use Goat\Query\ArgumentBag;
 use Goat\Query\Query;
 use Goat\Query\Statement;

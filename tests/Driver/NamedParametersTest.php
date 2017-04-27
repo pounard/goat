@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Goat\Tests\Driver;
 
-use Goat\Core\Error\GoatError;
 use Goat\Driver\DriverInterface;
+use Goat\Error\GoatError;
 use Goat\Query\Query;
 use Goat\Tests\DriverTestCase;
 

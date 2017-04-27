@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Goat\Converter\Impl;
 
 use Goat\Converter\ConverterInterface;
-use Goat\Core\Error\TypeConversionError;
+use Goat\Error\TypeConversionError;
 
 class TimestampConverter implements ConverterInterface
 {

@@ -67,6 +67,29 @@ different software design and approach:
     don't need it.
 
 
+# Architecture
+
+This API is composed of several components, that are slightly coupled:
+
+ * Converters have no dependency, it aims to convert PHP types to SQL types and
+   vice-versa, it also know how to cast those types;
+
+ * The Hydrator API provides raw result convertion to business class objects
+   hydration, it has no dependency;
+
+ * Runnable is a stripped down API that gives the bare minimum interface to
+   query a database engine and the basics for result iterator interfaces.
+   Iterators rely upon the Hydrator component to provide full-fledge business
+   objects;
+
+ * The query builder aims to build valid SQL queries via a feature-complete
+   fluent API, it only depends on the converters, to build those queries,
+   and on the runnable, to execute those queries;
+
+ * Drivers are complete implementation of runnables, which depends upon all
+   the other components.
+
+
 # Documentation
 
  *  Get started, installation and configuration guide (@todo)

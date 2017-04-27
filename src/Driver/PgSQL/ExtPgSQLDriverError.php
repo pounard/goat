@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Goat\Driver\PgSQL;
 
-use Goat\Core\Error\DriverError;
-use Goat\Core\Error\GoatError;
+use Goat\Error\DriverError;
+use Goat\Error\GoatError;
 
 /**
  * ext_pgsql does not send any exceptions, so we have no previous exception

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Goat\Tests\Query;
 
-use Goat\Core\Error\GoatError;
+use Goat\Error\GoatError;
 use Goat\Query\Writer\EscaperInterface;
 
 /**

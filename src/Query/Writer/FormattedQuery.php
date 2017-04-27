@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Goat\Query\Writer;
 
-use Goat\Core\Error\QueryError;
+use Goat\Error\QueryError;
 
 /**
  * Carries a formatted query for a driver, along with its parameters

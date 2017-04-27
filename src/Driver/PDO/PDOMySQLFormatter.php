@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Goat\Driver\PDO;
 
-use Goat\Core\Error\QueryError;
+use Goat\Error\QueryError;
 use Goat\Query\DeleteQuery;
 use Goat\Query\Writer\Formatter;
 use Goat\Query\UpdateQuery;

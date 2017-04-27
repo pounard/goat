@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Goat\Hydrator;
 
+use Goat\Error\GoatError;
 use Goat\Mapper\Entity\DefaultEntity;
-use Goat\Core\Error\GoatError;
 
 /**
  * Hydrates DefaultEntity instances

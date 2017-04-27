@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Goat\Query;
 
-use Goat\Core\Error\QueryError;
+use Goat\Error\QueryError;
 
 /**
  * Stores a copy of all parameters, and matching type if any found.

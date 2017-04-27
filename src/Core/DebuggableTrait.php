@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Goat\Core;
 
-use Goat\Core\Error\GoatError;
+use Goat\Error\GoatError;
 
 trait DebuggableTrait /* implements DebuggableInterface */
 {

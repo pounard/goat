@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Goat\Driver\PDO;
 
-use Goat\Core\Error\QueryError;
+use Goat\Error\QueryError;
 
 /**
  * MySQL SQL query formatter

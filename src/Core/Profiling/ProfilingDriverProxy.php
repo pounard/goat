@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Goat\Core\Profiling;
 
-use Goat\Core\Transaction\Transaction;
 use Goat\Driver\AbstractDriverProxy;
 use Goat\Driver\DriverInterface;
 use Goat\Query\DeleteQuery;
@@ -15,6 +14,7 @@ use Goat\Query\Statement;
 use Goat\Query\UpdateQuery;
 use Goat\Runner\EmptyResultIterator;
 use Goat\Runner\ResultIteratorInterface;
+use Goat\Runner\Transaction;
 
 /**
  * Driver proxy that emits events via Symfony's EventDispatcher

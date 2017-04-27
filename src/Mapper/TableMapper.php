@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Goat\Mapper;
 
-use Goat\Core\Error\ConfigurationError;
 use Goat\Driver\DriverInterface;
+use Goat\Error\ConfigurationError;
 use Goat\Query\Query;
 use Goat\Query\SelectQuery;
 use Goat\Query\Where;

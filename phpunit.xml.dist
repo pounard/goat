@@ -17,9 +17,6 @@
         <testsuite name="Goat converters">
             <directory>./tests/Converter</directory>
         </testsuite>
-        <testsuite name="Goat core (oudated)">
-            <directory>./tests/Core</directory>
-        </testsuite>
         <testsuite name="Goat drivers">
             <directory>./tests/Driver</directory>
         </testsuite>

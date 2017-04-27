@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Goat\Query\Partial;
 
-use Goat\Core\Error\GoatError;
+use Goat\Error\GoatError;
 use Goat\Query\ExpressionRelation;
 use Goat\Query\Query;
 use Goat\Runner\ResultIteratorInterface;

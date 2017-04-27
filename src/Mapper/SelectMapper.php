@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Goat\Mapper;
 
-use Goat\Core\Error\QueryError;
 use Goat\Driver\DriverAwareTrait;
 use Goat\Driver\DriverInterface;
+use Goat\Error\QueryError;
 use Goat\Mapper\Error\EntityNotFoundError;
 use Goat\Query\ExpressionRelation;
 use Goat\Query\Query;

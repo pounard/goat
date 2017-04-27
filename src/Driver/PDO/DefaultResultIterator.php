@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Goat\Driver\PDO;
 
-use Goat\Core\Error\InvalidDataAccessError;
+use Goat\Error\InvalidDataAccessError;
 use Goat\Runner\AbstractResultIterator;
 
 class DefaultResultIterator extends AbstractResultIterator

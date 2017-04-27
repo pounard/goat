@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace Goat\Driver\PgSQL;
 
-use Goat\Core\Error\ConfigurationError;
-use Goat\Core\Error\DriverError;
-use Goat\Core\Error\GoatError;
-use Goat\Core\Error\NotImplementedError;
-use Goat\Core\Error\QueryError;
-use Goat\Core\Session\Dsn;
-use Goat\Core\Transaction\Transaction;
 use Goat\Driver\AbstractDriver;
+use Goat\Driver\Dsn;
+use Goat\Error\ConfigurationError;
+use Goat\Error\DriverError;
+use Goat\Error\GoatError;
+use Goat\Error\NotImplementedError;
+use Goat\Error\QueryError;
 use Goat\Query\Query;
 use Goat\Query\Writer\EscaperInterface;
 use Goat\Query\Writer\FormatterInterface;
 use Goat\Runner\EmptyResultIterator;
 use Goat\Runner\ResultIteratorInterface;
+use Goat\Runner\Transaction;
 
 /**
  * ext_pgsql connection implementation
@@ -147,7 +147,7 @@ class ExtPgSQLConnection extends AbstractDriver
     protected function doStartTransaction(int $isolationLevel = Transaction::REPEATABLE_READ) : Transaction
     {
         $ret = new PgSQLTransaction($isolationLevel);
-        $ret->setDriver($this);
+        $ret->setRunner($this);
 
         return $ret;
     }

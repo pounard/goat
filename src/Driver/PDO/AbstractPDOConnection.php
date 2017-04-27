@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Goat\Driver\PDO;
 
-use Goat\Core\Error\ConfigurationError;
-use Goat\Core\Error\DriverError;
-use Goat\Core\Error\GoatError;
-use Goat\Core\Error\QueryError;
-use Goat\Core\Session\Dsn;
 use Goat\Driver\AbstractDriver;
+use Goat\Driver\Dsn;
+use Goat\Error\ConfigurationError;
+use Goat\Error\DriverError;
+use Goat\Error\GoatError;
+use Goat\Error\QueryError;
 use Goat\Query\Query;
 use Goat\Query\Writer\FormatterInterface;
 use Goat\Runner\EmptyResultIterator;

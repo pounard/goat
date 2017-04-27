@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Goat\Core\Profiling;
 
-use Goat\Core\Transaction\Transaction;
-use Goat\Driver\DriverInterface;
+use Goat\Runner\RunnerInterface;
+use Goat\Runner\Transaction;
 
 /**
  * This specific transaction implementation will keep track of everything
@@ -51,7 +51,7 @@ class ProfilingTransaction implements Transaction
     /**
      * {@inheritdoc}
      */
-    public function setDriver(DriverInterface $driver)
+    public function setRunner(RunnerInterface $runner)
     {
         // This is a noop.
     }

@@ -2,17 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Goat\Core\Transaction;
+namespace Goat\Runner;
 
-use Goat\Core\Error\TransactionError;
-use Goat\Driver\DriverAwareInterface;
+use Goat\Error\TransactionError;
 
 /**
  * Represents a transaction
  *
  * Each driver must implement it.
  */
-interface Transaction extends DriverAwareInterface
+interface Transaction extends RunnerAwareInterface
 {
     const READ_UNCOMMITED = 1;
     const READ_COMMITED = 2;

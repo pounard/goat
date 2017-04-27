@@ -6,8 +6,7 @@ namespace Goat\Driver;
 
 use Goat\Converter\ConverterAwareInterface;
 use Goat\Core\DebuggableInterface;
-use Goat\Core\Error\TransactionError;
-use Goat\Core\Transaction\Transaction;
+use Goat\Error\TransactionError;
 use Goat\Hydrator\HydratorMap;
 use Goat\Query\DeleteQuery;
 use Goat\Query\InsertQueryQuery;
@@ -18,6 +17,7 @@ use Goat\Query\UpdateQuery;
 use Goat\Query\Writer\EscaperInterface;
 use Goat\Query\Writer\FormatterInterface;
 use Goat\Runner\RunnerInterface;
+use Goat\Runner\Transaction;
 
 interface DriverInterface extends ConverterAwareInterface, DebuggableInterface, RunnerInterface
 {

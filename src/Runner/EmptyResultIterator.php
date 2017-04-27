@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Goat\Runner;
 
 use Goat\Converter\ConverterAwareTrait;
-use Goat\Core\Error\InvalidDataAccessError;
+use Goat\Error\InvalidDataAccessError;
 use Goat\Hydrator\HydratorAwareTrait;
 
 /**

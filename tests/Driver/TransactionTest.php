@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Goat\Tests\Driver;
 
-use Goat\Core\Error\GoatError;
-use Goat\Core\Error\TransactionError;
-use Goat\Core\Error\TransactionFailedError;
-use Goat\Core\Transaction\Transaction;
 use Goat\Driver\DriverInterface;
+use Goat\Error\GoatError;
+use Goat\Error\TransactionError;
+use Goat\Error\TransactionFailedError;
+use Goat\Runner\Transaction;
 use Goat\Tests\DriverTestCase;
 
 class TransactionTest extends DriverTestCase

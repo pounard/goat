@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Goat\Driver\PDO;
 
-use Goat\Core\Error\QueryError;
-use Goat\Core\Transaction\Transaction;
+use Goat\Error\QueryError;
 use Goat\Query\Writer\EscaperInterface;
 use Goat\Query\Writer\FormatterInterface;
+use Goat\Runner\Transaction;
 
 class PDOPgSQLConnection extends AbstractPDOConnection
 {
@@ -89,7 +89,7 @@ class PDOPgSQLConnection extends AbstractPDOConnection
     protected function doStartTransaction(int $isolationLevel = Transaction::REPEATABLE_READ) : Transaction
     {
         $ret = new PgSQLTransaction($isolationLevel);
-        $ret->setDriver($this);
+        $ret->setRunner($this);
 
         return $ret;
     }

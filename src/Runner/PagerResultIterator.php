@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Goat\Runner;
 
 use Goat\Converter\ConverterMap;
-use Goat\Core\Error\GoatError;
+use Goat\Error\GoatError;
 use Goat\Hydrator\HydratorInterface;
 
 /**

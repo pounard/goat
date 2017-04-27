@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Goat\Core\Error;
+namespace Goat\Error;
 
 /**
  * Non implemented feature
