@@ -4,18 +4,14 @@ declare(strict_types=1);
 
 namespace Goat\Driver;
 
-use Goat\Converter\ConverterAwareInterface;
 use Goat\Core\DebuggableInterface;
-use Goat\Hydrator\HydratorMap;
 use Goat\Query\QueryFactoryInterface;
-use Goat\Query\Writer\EscaperInterface;
-use Goat\Query\Writer\FormatterInterface;
 use Goat\Runner\RunnerInterface;
 
 /**
  * Driver interface
  */
-interface DriverInterface extends ConverterAwareInterface, DebuggableInterface, RunnerInterface, QueryFactoryInterface
+interface DriverInterface extends DebuggableInterface, RunnerInterface, QueryFactoryInterface
 {
     /**
      * Get database server information
@@ -82,25 +78,4 @@ interface DriverInterface extends ConverterAwareInterface, DebuggableInterface, 
      * @param string $encoding
      */
     public function setClientEncoding(string $encoding);
-
-    /**
-     * Get SQL formatter
-     *
-     * @return FormatterInterface
-     */
-    public function getFormatter() : FormatterInterface;
-
-    /**
-     * Get SQL escaper
-     *
-     * @return EscaperInterface
-     */
-    public function getEscaper() : EscaperInterface;
-
-    /**
-     * Set hydrator map
-     *
-     * @param HydratorMap $hydratorMap
-     */
-    public function setHydratorMap(HydratorMap $hydratorMap);
 }

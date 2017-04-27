@@ -2,12 +2,13 @@
 
 namespace Goat\Runner;
 
-use Goat\Query\Query;
+use Goat\Converter\ConverterAwareInterface;
+use Goat\Hydrator\HydratorMap;
 
 /**
  * Stripped down representation of a connection/driver that can run queries.
  */
-interface RunnerInterface
+interface RunnerInterface extends ConverterAwareInterface
 {
     /**
      * Creates a new transaction
@@ -106,4 +107,11 @@ interface RunnerInterface
      * @return ResultIteratorInterface
      */
     public function executePreparedQuery(string $identifier, array $parameters = null, $options = null) : ResultIteratorInterface;
+
+    /**
+     * Set hydrator map
+     *
+     * @param HydratorMap $hydratorMap
+     */
+    public function setHydratorMap(HydratorMap $hydratorMap);
 }
