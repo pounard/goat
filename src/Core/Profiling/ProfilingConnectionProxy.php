@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Goat\Core\Profiling;
 
-use Goat\Core\Client\AbstractConnectionProxy;
-use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Transaction\Transaction;
+use Goat\Driver\AbstractDriverProxy;
+use Goat\Driver\DriverInterface;
 use Goat\Query\DeleteQuery;
 use Goat\Query\InsertQueryQuery;
 use Goat\Query\InsertValuesQuery;
@@ -21,7 +21,7 @@ use Goat\Runner\ResultIteratorInterface;
  *
  * @codeCoverageIgnore
  */
-class ProfilingConnectionProxy extends AbstractConnectionProxy
+class ProfilingConnectionProxy extends AbstractDriverProxy
 {
     private $connection;
     private $data = [];
@@ -29,9 +29,9 @@ class ProfilingConnectionProxy extends AbstractConnectionProxy
     /**
      * Default constructor
      *
-     * @param ConnectionInterface $connection
+     * @param DriverInterface $connection
      */
-    public function __construct(ConnectionInterface $connection)
+    public function __construct(DriverInterface $connection)
     {
         $this->connection = $connection;
         $this->data = [
@@ -81,7 +81,7 @@ class ProfilingConnectionProxy extends AbstractConnectionProxy
     /**
      * {@inheritdoc}
      */
-    protected function getInnerConnection() : ConnectionInterface
+    protected function getInnerConnection() : DriverInterface
     {
         return $this->connection;
     }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Goat\Tests\Driver\Mapper;
 
-use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Error\QueryError;
+use Goat\Driver\DriverInterface;
 use Goat\Mapper\Error\EntityNotFoundError;
 use Goat\Mapper\MapperInterface;
 use Goat\Query\ExpressionRaw;
@@ -24,7 +24,7 @@ abstract class AbstractMapperTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestSchema(ConnectionInterface $connection)
+    protected function createTestSchema(DriverInterface $connection)
     {
         $connection->query("
             create temporary table some_entity (
@@ -47,7 +47,7 @@ abstract class AbstractMapperTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestData(ConnectionInterface $connection)
+    protected function createTestData(DriverInterface $connection)
     {
         $connection
             ->insertValues('users')
@@ -92,7 +92,7 @@ abstract class AbstractMapperTest extends DriverTestCase
     /**
      * Create the mapper to test
      *
-     * @param ConnectionInterface $connection
+     * @param DriverInterface $connection
      *   Current connection to test with
      * @param string $class
      *   Object class to use for hydrators
@@ -101,12 +101,12 @@ abstract class AbstractMapperTest extends DriverTestCase
      *
      * @return MapperInterface
      */
-    abstract protected function createMapper(ConnectionInterface $connection, string $class, array $primaryKey) : MapperInterface;
+    abstract protected function createMapper(DriverInterface $connection, string $class, array $primaryKey) : MapperInterface;
 
     /**
      * Create writable mapper to test
      *
-     * @param ConnectionInterface $connection
+     * @param DriverInterface $connection
      *   Current connection to test with
      * @param string $class
      *   Object class to use for hydrators
@@ -115,7 +115,7 @@ abstract class AbstractMapperTest extends DriverTestCase
      *
      * @return MapperInterface
      */
-    abstract protected function createWritableMapper(ConnectionInterface $connection, string $class, array $primaryKey) : MapperInterface;
+    abstract protected function createWritableMapper(DriverInterface $connection, string $class, array $primaryKey) : MapperInterface;
 
     /**
      * Tests various utility methods

@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Goat\Driver\PgSQL;
 
-use Goat\Core\Client\AbstractConnection;
-use Goat\Core\Client\Dsn;
 use Goat\Core\Error\ConfigurationError;
 use Goat\Core\Error\DriverError;
 use Goat\Core\Error\GoatError;
 use Goat\Core\Error\NotImplementedError;
 use Goat\Core\Error\QueryError;
+use Goat\Core\Session\Dsn;
 use Goat\Core\Transaction\Transaction;
+use Goat\Driver\AbstractDriver;
 use Goat\Query\Query;
 use Goat\Query\Writer\EscaperInterface;
 use Goat\Query\Writer\FormatterInterface;
@@ -21,7 +21,7 @@ use Goat\Runner\ResultIteratorInterface;
 /**
  * ext_pgsql connection implementation
  */
-class ExtPgSQLConnection extends AbstractConnection
+class ExtPgSQLConnection extends AbstractDriver
 {
     use ExtPgSQLErrorTrait;
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Goat\Mapper;
 
-use Goat\Core\Client\ConnectionInterface;
+use Goat\Driver\DriverInterface;
 use Goat\Query\DeleteQuery;
 use Goat\Query\ExpressionRelation;
 use Goat\Query\InsertQueryQuery;
@@ -21,7 +21,7 @@ trait WritableMapperTrait /* implements WritableMapperInterface */
     /**
      * {@inheritdoc}
      */
-    abstract public function getConnection() : ConnectionInterface;
+    abstract public function getConnection() : DriverInterface;
 
     /**
      * {@inheritdoc}

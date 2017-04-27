@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Goat\Tests\Driver;
 
-use Goat\Core\Client\ConnectionInterface;
+use Goat\Driver\DriverInterface;
 use Goat\Query\ExpressionColumn;
 use Goat\Query\ExpressionRaw;
 use Goat\Query\Query;
@@ -19,7 +19,7 @@ class UpdateTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestSchema(ConnectionInterface $connection)
+    protected function createTestSchema(DriverInterface $connection)
     {
         $connection->query("
             create temporary table some_table (
@@ -41,7 +41,7 @@ class UpdateTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestData(ConnectionInterface $connection)
+    protected function createTestData(DriverInterface $connection)
     {
         $connection
             ->insertValues('users')

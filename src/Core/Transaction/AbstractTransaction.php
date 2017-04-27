@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Goat\Core\Transaction;
 
-use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\DebuggableTrait;
 use Goat\Core\Error\TransactionError;
+use Goat\Driver\DriverInterface;
 
 /**
  * Base implementation of the Transaction interface that prevents logic errors.
@@ -49,7 +49,7 @@ abstract class AbstractTransaction implements Transaction
     }
 
     /**
-     * @var ConnectionInterface
+     * @var DriverInterface
      */
     protected $connection;
 
@@ -72,11 +72,11 @@ abstract class AbstractTransaction implements Transaction
     /**
      * Set connection
      *
-     * @param ConnectionInterface $connection
+     * @param DriverInterface $connection
      *
      * @return Transaction
      */
-    final public function setConnection(ConnectionInterface $connection) : Transaction
+    final public function setConnection(DriverInterface $connection) : Transaction
     {
         $this->connection = $connection;
         $this->setDebug($connection->isDebugEnabled());

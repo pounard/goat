@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Goat\Mapper;
 
-use Goat\Core\Client\ConnectionAwareInterface;
-use Goat\Core\Client\ConnectionInterface;
+use Goat\Driver\DriverAwareInterface;
+use Goat\Driver\DriverInterface;
 use Goat\Mapper\Error\EntityNotFoundError;
 use Goat\Query\Expression;
 use Goat\Query\ExpressionRelation;
@@ -21,14 +21,14 @@ use Goat\Runner\ResultIteratorInterface;
  * Insertion, update and delete should happen at the table level, and will not
  * be handled by the mapper interface.
  */
-interface MapperInterface extends ConnectionAwareInterface
+interface MapperInterface extends DriverAwareInterface
 {
     /**
      * Get connection
      *
-     * @return ConnectionInterface
+     * @return DriverInterface
      */
-    public function getConnection() : ConnectionInterface;
+    public function getConnection() : DriverInterface;
 
     /**
      * Get entity class name

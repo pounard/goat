@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Goat\Core\Client;
+namespace Goat\Driver;
 
 use Goat\Converter\ConverterMap;
 use Goat\Core\Hydrator\HydratorMap;
@@ -23,14 +23,14 @@ use Goat\Runner\ResultIteratorInterface;
  *   We do ignore code coverage for this class at this point, because most
  *   implementations will voluntarily drop lots of methods of it.
  */
-abstract class AbstractConnectionProxy implements ConnectionInterface
+abstract class AbstractDriverProxy implements DriverInterface
 {
     /**
      * Get nested connection
      *
-     * @return ConnectionInterface
+     * @return DriverInterface
      */
-    abstract protected function getInnerConnection() : ConnectionInterface;
+    abstract protected function getInnerConnection() : DriverInterface;
 
     /**
      * {@inheritdoc}

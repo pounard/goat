@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Goat\Tests\Driver;
 
-use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Error\GoatError;
 use Goat\Core\Error\InvalidDataAccessError;
+use Goat\Driver\DriverInterface;
 use Goat\Runner\PagerResultIterator;
 use Goat\Tests\Driver\Mock\TestTypeEntity;
 use Goat\Tests\DriverTestCase;
@@ -16,7 +16,7 @@ class ResultIteratorTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestSchema(ConnectionInterface $connection)
+    protected function createTestSchema(DriverInterface $connection)
     {
         $connection->query("
             create temporary table type_test (
@@ -33,7 +33,7 @@ class ResultIteratorTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestData(ConnectionInterface $connection)
+    protected function createTestData(DriverInterface $connection)
     {
         // ensure table data has the right types
         $connection->query("

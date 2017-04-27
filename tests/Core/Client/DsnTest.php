@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Goat\Tests\Core\Client;
 
-use Goat\Core\Client\Dsn;
 use Goat\Core\Error\ConfigurationError;
+use Goat\Core\Session\Dsn;
 
 class DsnTest extends \PHPUnit_Framework_TestCase
 {

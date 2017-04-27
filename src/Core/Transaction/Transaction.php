@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Goat\Core\Transaction;
 
-use Goat\Core\Client\ConnectionAwareInterface;
 use Goat\Core\Error\TransactionError;
+use Goat\Driver\DriverAwareInterface;
 
 /**
  * Represents a transaction
  *
  * Each driver must implement it.
  */
-interface Transaction extends ConnectionAwareInterface
+interface Transaction extends DriverAwareInterface
 {
     const READ_UNCOMMITED = 1;
     const READ_COMMITED = 2;

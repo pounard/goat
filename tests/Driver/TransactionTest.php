@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Goat\Tests\Driver;
 
-use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Error\GoatError;
 use Goat\Core\Error\TransactionError;
 use Goat\Core\Error\TransactionFailedError;
 use Goat\Core\Transaction\Transaction;
+use Goat\Driver\DriverInterface;
 use Goat\Tests\DriverTestCase;
 
 class TransactionTest extends DriverTestCase
@@ -16,7 +16,7 @@ class TransactionTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestSchema(ConnectionInterface $connection)
+    protected function createTestSchema(DriverInterface $connection)
     {
         $connection->query("
             create temporary table transaction_test (
@@ -57,7 +57,7 @@ class TransactionTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestData(ConnectionInterface $connection)
+    protected function createTestData(DriverInterface $connection)
     {
         $connection
             ->insertValues('transaction_test')
@@ -312,9 +312,9 @@ class TransactionTest extends DriverTestCase
     /**
      * Internal test for testWeakRefAllowFailOnScopeClose()
      *
-     * @param ConnectionInterface $connection
+     * @param DriverInterface $connection
      */
-    protected function privateScopeForWeakRef(ConnectionInterface $connection)
+    protected function privateScopeForWeakRef(DriverInterface $connection)
     {
         $transaction = $connection->startTransaction();
         $transaction->start();

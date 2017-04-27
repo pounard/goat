@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Goat\Tests\Driver\Mapper;
 
-use Goat\Core\Client\ConnectionInterface;
+use Goat\Driver\DriverInterface;
 use Goat\Mapper\MapperInterface;
 use Goat\Mapper\TableMapper;
 use Goat\Mapper\WritableTableMapper;
@@ -37,7 +37,7 @@ class TableMapperTest extends AbstractMapperTest
     /**
      * {@inheritdoc}
      */
-    protected function createMapper(ConnectionInterface $connection, string $class, array $primaryKey) : MapperInterface
+    protected function createMapper(DriverInterface $connection, string $class, array $primaryKey) : MapperInterface
     {
         return new TableMapper($connection, $class, $primaryKey, $this->getTableMapperDefinition());
     }
@@ -45,7 +45,7 @@ class TableMapperTest extends AbstractMapperTest
     /**
      * {@inheritdoc}
      */
-    protected function createWritableMapper(ConnectionInterface $connection, string $class, array $primaryKey) : MapperInterface
+    protected function createWritableMapper(DriverInterface $connection, string $class, array $primaryKey) : MapperInterface
     {
         return new WritableTableMapper($connection, $class, $primaryKey, $this->getTableMapperDefinition());
     }

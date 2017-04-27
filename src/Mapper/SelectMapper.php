@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Goat\Mapper;
 
-use Goat\Core\Client\ConnectionAwareTrait;
-use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Error\QueryError;
+use Goat\Driver\DriverAwareTrait;
+use Goat\Driver\DriverInterface;
 use Goat\Mapper\Error\EntityNotFoundError;
 use Goat\Query\ExpressionRelation;
 use Goat\Query\Query;
@@ -20,7 +20,7 @@ use Goat\Runner\ResultIteratorInterface;
  */
 class SelectMapper implements MapperInterface
 {
-    use ConnectionAwareTrait;
+    use DriverAwareTrait;
     use MapperTrait;
 
     /**
@@ -48,7 +48,7 @@ class SelectMapper implements MapperInterface
      * @param SelectQuery $query
      *   Select query that loads entities
      */
-    public function __construct(ConnectionInterface $connection, string $class, array $primaryKey, SelectQuery $query)
+    public function __construct(DriverInterface $connection, string $class, array $primaryKey, SelectQuery $query)
     {
         $this->connection = $connection;
         $this->class = $class;
@@ -79,7 +79,7 @@ class SelectMapper implements MapperInterface
     /**
      * {@inheritdoc}
      */
-    public function getConnection() : ConnectionInterface
+    public function getConnection() : DriverInterface
     {
         return $this->connection;
     }

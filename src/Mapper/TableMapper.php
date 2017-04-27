@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Goat\Mapper;
 
-use Goat\Core\Client\ConnectionInterface;
 use Goat\Core\Error\ConfigurationError;
+use Goat\Driver\DriverInterface;
 use Goat\Query\Query;
 use Goat\Query\SelectQuery;
 use Goat\Query\Where;
@@ -23,7 +23,7 @@ class TableMapper extends SelectMapper
     /**
      * Default constructor
      *
-     * @param ConnectionInterface $connection
+     * @param DriverInterface $connection
      *   Connection is mandatory in order to build the select query
      * @param string $class
      *   Default class to use for hydration
@@ -46,7 +46,7 @@ class TableMapper extends SelectMapper
      *         - mode: the join mode, must be a Query::JOIN_* constant, default
      *           is INNER JOIN
      */
-    public function __construct(ConnectionInterface $connection, string $class, array $primaryKey, $definition)
+    public function __construct(DriverInterface $connection, string $class, array $primaryKey, $definition)
     {
         $this->parseDefinition($definition);
 
@@ -91,7 +91,7 @@ class TableMapper extends SelectMapper
      *
      * @return SelectQuery
      */
-    private function buildSelect(ConnectionInterface $connection) : SelectQuery
+    private function buildSelect(DriverInterface $connection) : SelectQuery
     {
         $select = $connection->select($this->relation, $this->relationAlias);
 

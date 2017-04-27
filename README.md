@@ -79,7 +79,7 @@ different software design and approach:
 
  *  [pending] allow named parameters
  *  [pending] mapper: table proxy interface
- *  [postponed] better parameter handling in AbstractConnection
+ *  [postponed] better parameter handling in AbstractDriver
  *  [postponed] DDL ALTER TABLE? - not sure I want this right now
  *  [postponed] DDL CREATE TABLE? - not sure I want this right now
  *  [postponed] ext-pgsql driver

@@ -2,16 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Goat\Core\Client;
+namespace Goat\Core\Session;
 
 use Goat\Core\Error\ConfigurationError;
+use Goat\Driver\AbstractDriverProxy;
+use Goat\Driver\DriverInterface;
 use Goat\Query\SelectQuery;
 use Goat\Runner\ResultIteratorInterface;
 
 /**
  * Facade connection that handles read and write connection for you.
  */
-class Session extends AbstractConnectionProxy
+class Session extends AbstractDriverProxy
 {
     private $readonlyConnection;
     private $writeConnection;
@@ -19,10 +21,10 @@ class Session extends AbstractConnectionProxy
     /**
      * Default constructor
      *
-     * @param ConnectionInterface $writeConnection
-     * @param ConnectionInterface $readonlyConnection
+     * @param DriverInterface $writeConnection
+     * @param DriverInterface $readonlyConnection
      */
-    public function __construct(ConnectionInterface $writeConnection, ConnectionInterface $readonlyConnection = null)
+    public function __construct(DriverInterface $writeConnection, DriverInterface $readonlyConnection = null)
     {
         if ($readonlyConnection) {
             if (get_class($readonlyConnection) !== get_class($writeConnection)) {
@@ -38,9 +40,9 @@ class Session extends AbstractConnectionProxy
     /**
      * Get readonly connection
      *
-     * @return ConnectionInterface
+     * @return DriverInterface
      */
-    public function getReadonlyConnection() : ConnectionInterface
+    public function getReadonlyConnection() : DriverInterface
     {
         if ($this->readonlyConnection) {
             return $this->readonlyConnection;
@@ -52,9 +54,9 @@ class Session extends AbstractConnectionProxy
     /**
      * Get writeable connection
      *
-     * @return ConnectionInterface
+     * @return DriverInterface
      */
-    public function getWriteConnection() : ConnectionInterface
+    public function getWriteConnection() : DriverInterface
     {
         return $this->writeConnection;
     }
@@ -62,7 +64,7 @@ class Session extends AbstractConnectionProxy
     /**
      * {@inheritdoc}
      */
-    protected function getInnerConnection() : ConnectionInterface
+    protected function getInnerConnection() : DriverInterface
     {
         return $this->writeConnection;
     }

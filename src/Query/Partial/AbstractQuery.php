@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Goat\Query\Partial;
 
-use Goat\Core\Client\ConnectionAwareInterface;
-use Goat\Core\Client\ConnectionAwareTrait;
 use Goat\Core\Error\GoatError;
+use Goat\Driver\DriverAwareInterface;
+use Goat\Driver\DriverAwareTrait;
 use Goat\Query\ExpressionRelation;
 use Goat\Query\Query;
 use Goat\Runner\ResultIteratorInterface;
@@ -14,9 +14,9 @@ use Goat\Runner\ResultIteratorInterface;
 /**
  * Reprensents the basis of an SQL query.
  */
-abstract class AbstractQuery implements Query, ConnectionAwareInterface
+abstract class AbstractQuery implements Query, DriverAwareInterface
 {
-    use ConnectionAwareTrait;
+    use DriverAwareTrait;
     use AliasHolderTrait;
 
     private $relation;

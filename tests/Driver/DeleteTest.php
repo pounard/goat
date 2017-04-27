@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Goat\Tests\Driver;
 
-use Goat\Core\Client\ConnectionInterface;
+use Goat\Driver\DriverInterface;
 use Goat\Query\Query;
 use Goat\Tests\Driver\Mock\DeleteSomeTableWithUser;
 use Goat\Tests\DriverTestCase;
@@ -17,7 +17,7 @@ class DeleteTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestSchema(ConnectionInterface $connection)
+    protected function createTestSchema(DriverInterface $connection)
     {
         $connection->query("
             create temporary table some_table (
@@ -45,7 +45,7 @@ class DeleteTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestData(ConnectionInterface $connection)
+    protected function createTestData(DriverInterface $connection)
     {
         $connection
             ->insertValues('users')

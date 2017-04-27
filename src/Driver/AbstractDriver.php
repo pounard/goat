@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Goat\Core\Client;
+namespace Goat\Driver;
 
 use Goat\Converter\ConverterAwareTrait;
 use Goat\Converter\ConverterMap;
@@ -10,6 +10,7 @@ use Goat\Core\DebuggableTrait;
 use Goat\Core\Error\QueryError;
 use Goat\Core\Error\TransactionError;
 use Goat\Core\Hydrator\HydratorMap;
+use Goat\Core\Session\Dsn;
 use Goat\Core\Transaction\Transaction;
 use Goat\Query\DeleteQuery;
 use Goat\Query\InsertQueryQuery;
@@ -35,7 +36,7 @@ use Goat\Runner\ResultIteratorInterface;
  *  - query parameters rewriting and conversion, this is a tricky one but it's
  *    thoroughly tested: you should not rewrite this by yourself.
  */
-abstract class AbstractConnection implements ConnectionInterface
+abstract class AbstractDriver implements DriverInterface
 {
     use ConverterAwareTrait;
     use DebuggableTrait;

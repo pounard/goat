@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Goat\Driver\PDO;
 
-use Goat\Core\Client\AbstractConnection;
-use Goat\Core\Client\Dsn;
 use Goat\Core\Error\ConfigurationError;
 use Goat\Core\Error\DriverError;
 use Goat\Core\Error\GoatError;
 use Goat\Core\Error\QueryError;
+use Goat\Core\Session\Dsn;
+use Goat\Driver\AbstractDriver;
 use Goat\Query\Query;
 use Goat\Query\Writer\FormatterInterface;
 use Goat\Runner\EmptyResultIterator;
 use Goat\Runner\ResultIteratorInterface;
 
-abstract class AbstractPDOConnection extends AbstractConnection
+abstract class AbstractPDOConnection extends AbstractDriver
 {
     /**
      * @var \PDO

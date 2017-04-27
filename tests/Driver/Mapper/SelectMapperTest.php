@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Goat\Tests\Driver\Mapper;
 
-use Goat\Core\Client\ConnectionInterface;
+use Goat\Driver\DriverInterface;
 use Goat\Mapper\MapperInterface;
 use Goat\Mapper\SelectMapper;
 use Goat\Mapper\WritableSelectMapper;
@@ -17,7 +17,7 @@ class SelectMapperTest extends AbstractMapperTest
     /**
      * {@inheritdoc}
      */
-    protected function createMapper(ConnectionInterface $connection, string $class, array $primaryKey) : MapperInterface
+    protected function createMapper(DriverInterface $connection, string $class, array $primaryKey) : MapperInterface
     {
         return new SelectMapper(
             $connection,
@@ -34,7 +34,7 @@ class SelectMapperTest extends AbstractMapperTest
     /**
      * {@inheritdoc}
      */
-    protected function createWritableMapper(ConnectionInterface $connection, string $class, array $primaryKey) : MapperInterface
+    protected function createWritableMapper(DriverInterface $connection, string $class, array $primaryKey) : MapperInterface
     {
         return new WritableSelectMapper(
             $connection,
