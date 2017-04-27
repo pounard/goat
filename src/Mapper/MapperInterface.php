@@ -24,11 +24,11 @@ use Goat\Runner\ResultIteratorInterface;
 interface MapperInterface extends DriverAwareInterface
 {
     /**
-     * Get connection
+     * Get driver
      *
      * @return DriverInterface
      */
-    public function getConnection() : DriverInterface;
+    public function getDriver() : DriverInterface;
 
     /**
      * Get entity class name

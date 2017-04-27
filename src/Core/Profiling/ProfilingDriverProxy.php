@@ -17,23 +17,23 @@ use Goat\Runner\EmptyResultIterator;
 use Goat\Runner\ResultIteratorInterface;
 
 /**
- * Connection proxy that emits events via Symfony's EventDispatcher
+ * Driver proxy that emits events via Symfony's EventDispatcher
  *
  * @codeCoverageIgnore
  */
-class ProfilingConnectionProxy extends AbstractDriverProxy
+class ProfilingDriverProxy extends AbstractDriverProxy
 {
-    private $connection;
+    private $driver;
     private $data = [];
 
     /**
      * Default constructor
      *
-     * @param DriverInterface $connection
+     * @param DriverInterface $driver
      */
-    public function __construct(DriverInterface $connection)
+    public function __construct(DriverInterface $driver)
     {
-        $this->connection = $connection;
+        $this->driver = $driver;
         $this->data = [
             'exception' => 0,
             'execute_count' => 0,
@@ -81,9 +81,9 @@ class ProfilingConnectionProxy extends AbstractDriverProxy
     /**
      * {@inheritdoc}
      */
-    protected function getInnerConnection() : DriverInterface
+    protected function getInnerDriver() : DriverInterface
     {
-        return $this->connection;
+        return $this->driver;
     }
 
     /**
@@ -97,16 +97,16 @@ class ProfilingConnectionProxy extends AbstractDriverProxy
         $ret = null;
 
         try {
-            $connection = $this->getInnerConnection();
+            $driver = $this->getInnerDriver();
 
             if ($query instanceof Statement) {
-                $rawSQL = $connection->getFormatter()->format($query);
+                $rawSQL = $driver->getFormatter()->format($query);
             } else {
                 $rawSQL = (string)$query;
             }
             $this->data['queries'][] = ['sql' => $rawSQL, 'params' => $parameters];
 
-            $ret = $connection->query($query, $parameters ?? [], $options);
+            $ret = $driver->query($query, $parameters ?? [], $options);
 
         } catch (\Exception $e) {
             $this->data['exception']++;
@@ -136,16 +136,16 @@ class ProfilingConnectionProxy extends AbstractDriverProxy
         $this->data['total_count']++;
 
         try {
-            $connection = $this->getInnerConnection();
+            $driver = $this->getInnerDriver();
 
             if ($query instanceof Statement) {
-                $rawSQL = $connection->getFormatter()->format($query);
+                $rawSQL = $driver->getFormatter()->format($query);
             } else {
                 $rawSQL = (string)$query;
             }
             $this->data['queries'][] = ['sql' => $rawSQL, 'params' => $parameters];
 
-            $ret = $connection->perform($query, $parameters ?? [], $options);
+            $ret = $driver->perform($query, $parameters ?? [], $options);
 
         } catch (\Exception $e) {
             $this->data['exception']++;
@@ -166,7 +166,7 @@ class ProfilingConnectionProxy extends AbstractDriverProxy
     {
         $this->data['prepare_count']++;
 
-        $ret = $this->getInnerConnection()->prepareQuery($query, $identifier);
+        $ret = $this->getInnerDriver()->prepareQuery($query, $identifier);
 
         return $ret;
     }
@@ -181,7 +181,7 @@ class ProfilingConnectionProxy extends AbstractDriverProxy
         $this->data['total_count']++;
 
         try {
-            $ret = $this->getInnerConnection()->executePreparedQuery($identifier, $parameters ?? [], $options);
+            $ret = $this->getInnerDriver()->executePreparedQuery($identifier, $parameters ?? [], $options);
         } catch (\Exception $e) {
             $this->data['exception']++;
             throw $e;
@@ -201,7 +201,7 @@ class ProfilingConnectionProxy extends AbstractDriverProxy
     {
         $this->data['transaction_count']++;
 
-        $transaction = $this->getInnerConnection()->startTransaction($isolationLevel, $allowPending);
+        $transaction = $this->getInnerDriver()->startTransaction($isolationLevel, $allowPending);
         $ret = new ProfilingTransaction($this, $transaction, new Timer());
 
         return $ret;
@@ -213,7 +213,7 @@ class ProfilingConnectionProxy extends AbstractDriverProxy
     final public function select($relation, string $alias = null) : SelectQuery
     {
         $select = new SelectQuery($relation, $alias);
-        $select->setConnection($this);
+        $select->setDriver($this);
 
         return $select;
     }
@@ -224,7 +224,7 @@ class ProfilingConnectionProxy extends AbstractDriverProxy
     final public function update($relation, string $alias = null) : UpdateQuery
     {
         $update = new UpdateQuery($relation, $alias);
-        $update->setConnection($this);
+        $update->setDriver($this);
 
         return $update;
     }
@@ -235,7 +235,7 @@ class ProfilingConnectionProxy extends AbstractDriverProxy
     final public function insertQuery($relation) : InsertQueryQuery
     {
         $insert = new InsertQueryQuery($relation);
-        $insert->setConnection($this);
+        $insert->setDriver($this);
 
         return $insert;
     }
@@ -246,7 +246,7 @@ class ProfilingConnectionProxy extends AbstractDriverProxy
     final public function insertValues($relation) : InsertValuesQuery
     {
         $insert = new InsertValuesQuery($relation);
-        $insert->setConnection($this);
+        $insert->setDriver($this);
 
         return $insert;
     }
@@ -257,7 +257,7 @@ class ProfilingConnectionProxy extends AbstractDriverProxy
     final public function delete($relation, string $alias = null) : DeleteQuery
     {
         $insert = new DeleteQuery($relation, $alias);
-        $insert->setConnection($this);
+        $insert->setDriver($this);
 
         return $insert;
     }

@@ -7,9 +7,9 @@ namespace Goat\Driver;
 interface DriverAwareInterface
 {
     /**
-     * Set connection
+     * Set driver
      *
-     * @param DriverInterface $connection
+     * @param DriverInterface $driver
      */
-    public function setConnection(DriverInterface $connection);
+    public function setDriver(DriverInterface $driver);
 }

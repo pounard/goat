@@ -291,7 +291,7 @@ abstract class AbstractDriver implements DriverInterface
     final public function select($relation, string $alias = null) : SelectQuery
     {
         $select = new SelectQuery($relation, $alias);
-        $select->setConnection($this);
+        $select->setDriver($this);
 
         return $select;
     }
@@ -302,7 +302,7 @@ abstract class AbstractDriver implements DriverInterface
     final public function update($relation, string $alias = null) : UpdateQuery
     {
         $update = new UpdateQuery($relation, $alias);
-        $update->setConnection($this);
+        $update->setDriver($this);
 
         return $update;
     }
@@ -313,7 +313,7 @@ abstract class AbstractDriver implements DriverInterface
     final public function insertQuery($relation) : InsertQueryQuery
     {
         $insert = new InsertQueryQuery($relation);
-        $insert->setConnection($this);
+        $insert->setDriver($this);
 
         return $insert;
     }
@@ -324,7 +324,7 @@ abstract class AbstractDriver implements DriverInterface
     final public function insertValues($relation) : InsertValuesQuery
     {
         $insert = new InsertValuesQuery($relation);
-        $insert->setConnection($this);
+        $insert->setDriver($this);
 
         return $insert;
     }
@@ -335,7 +335,7 @@ abstract class AbstractDriver implements DriverInterface
     final public function delete($relation, string $alias = null) : DeleteQuery
     {
         $insert = new DeleteQuery($relation, $alias);
-        $insert->setConnection($this);
+        $insert->setDriver($this);
 
         return $insert;
     }

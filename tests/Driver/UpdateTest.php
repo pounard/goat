@@ -19,9 +19,9 @@ class UpdateTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestSchema(DriverInterface $connection)
+    protected function createTestSchema(DriverInterface $driver)
     {
-        $connection->query("
+        $driver->query("
             create temporary table some_table (
                 id serial primary key,
                 foo integer not null,
@@ -30,7 +30,7 @@ class UpdateTest extends DriverTestCase
                 id_user integer
             )
         ");
-        $connection->query("
+        $driver->query("
             create temporary table users (
                 id serial primary key,
                 name varchar(255)
@@ -41,9 +41,9 @@ class UpdateTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestData(DriverInterface $connection)
+    protected function createTestData(DriverInterface $driver)
     {
-        $connection
+        $driver
             ->insertValues('users')
             ->columns(['name'])
             ->values(["admin"])
@@ -51,7 +51,7 @@ class UpdateTest extends DriverTestCase
             ->execute()
         ;
 
-        $idList = $connection
+        $idList = $driver
             ->select('users')
             ->column('id')
             ->orderBy('name')
@@ -62,7 +62,7 @@ class UpdateTest extends DriverTestCase
         $this->idAdmin = $idList[0];
         $this->idJean = $idList[1];
 
-        $connection
+        $driver
             ->insertValues('some_table')
             ->columns(['foo', 'bar', 'id_user'])
             ->values([42, 'a', $this->idAdmin])
@@ -79,11 +79,11 @@ class UpdateTest extends DriverTestCase
      *
      * @dataProvider driverDataSource
      */
-    public function testUpdateWhere($driver, $class)
+    public function testUpdateWhere($driverName, $class)
     {
-        $connection = $this->createConnection($driver, $class);
+        $driver = $this->createDriver($driverName, $class);
 
-        $result = $connection
+        $result = $driver
             ->update('some_table')
             ->condition('foo', 42)
             ->set('foo', 43)
@@ -92,7 +92,7 @@ class UpdateTest extends DriverTestCase
 
         $this->assertSame(1, $result->countRows());
 
-        $result = $connection
+        $result = $driver
             ->select('some_table')
             ->condition('foo', 43)
             ->execute()
@@ -101,7 +101,7 @@ class UpdateTest extends DriverTestCase
         $this->assertSame(1, $result->countRows());
         $this->assertSame('a', $result->fetch()['bar']);
 
-        $query = $connection->update('some_table', 'trout');
+        $query = $driver->update('some_table', 'trout');
         $query
             ->getWhere()
             ->open(Where::OR)
@@ -123,11 +123,11 @@ class UpdateTest extends DriverTestCase
      *
      * @dataProvider driverDataSource
      */
-    public function testUpdateJoin($driver, $class)
+    public function testUpdateJoin($driverName, $class)
     {
-        $connection = $this->createConnection($driver, $class);
+        $driver = $this->createDriver($driverName, $class);
 
-        $result = $connection
+        $result = $driver
             ->update('some_table', 't')
             ->set('foo', 127)
             ->join('users', "u.id = t.id_user", 'u')
@@ -138,7 +138,7 @@ class UpdateTest extends DriverTestCase
         $this->assertSame(3, $result->countRows());
 
         // All code below is just consistency checks
-        $result = $connection
+        $result = $driver
             ->select('some_table', 'roger')
             ->join('users', 'john.id = roger.id_user', 'john')
             ->condition('john.name', 'admin')
@@ -150,7 +150,7 @@ class UpdateTest extends DriverTestCase
             $this->assertSame(127, $row['foo']);
         }
 
-        $result = $connection
+        $result = $driver
             ->select('some_table')
             ->condition('foo', 127)
             ->execute()
@@ -164,17 +164,17 @@ class UpdateTest extends DriverTestCase
      *
      * @dataProvider driverDataSource
      */
-    public function testUpdateWhereIn($driver, $class)
+    public function testUpdateWhereIn($driverName, $class)
     {
-        $connection = $this->createConnection($driver, $class);
+        $driver = $this->createDriver($driverName, $class);
 
-        $selectInQuery = $connection
+        $selectInQuery = $driver
             ->select('users')
             ->column('id')
             ->condition('name', 'admin')
         ;
 
-        $result = $connection
+        $result = $driver
             ->update('some_table', 't')
             ->set('foo', 127)
             ->condition('t.id_user', $selectInQuery)
@@ -184,7 +184,7 @@ class UpdateTest extends DriverTestCase
         $this->assertSame(3, $result->countRows());
 
         // All code below is just consistency checks
-        $result = $connection
+        $result = $driver
             ->select('some_table', 'roger')
             ->join('users', 'john.id = roger.id_user', 'john')
             ->condition('john.name', 'admin')
@@ -196,7 +196,7 @@ class UpdateTest extends DriverTestCase
             $this->assertSame(127, $row['foo']);
         }
 
-        $result = $connection
+        $result = $driver
             ->select('some_table')
             ->condition('foo', 127)
             ->execute()
@@ -210,15 +210,15 @@ class UpdateTest extends DriverTestCase
      *
      * @dataProvider driverDataSource
      */
-    public function testUpateReturning($driver, $class)
+    public function testUpateReturning($driverName, $class)
     {
-        $connection = $this->createConnection($driver, $class);
+        $driver = $this->createDriver($driverName, $class);
 
-        if (!$connection->supportsReturning()) {
+        if (!$driver->supportsReturning()) {
             $this->markTestIncomplete("driver does not support RETURNING");
         }
 
-        $result = $connection
+        $result = $driver
             ->update('some_table', 't')
             ->set('foo', 127)
             ->join('users', "u.id = t.id_user", 'u')
@@ -239,11 +239,11 @@ class UpdateTest extends DriverTestCase
      *
      * @dataProvider driverDataSource
      */
-    public function testUpateSetExpressionColumn($driver, $class)
+    public function testUpateSetExpressionColumn($driverName, $class)
     {
-        $connection = $this->createConnection($driver, $class);
+        $driver = $this->createDriver($driverName, $class);
 
-        $result = $connection
+        $result = $driver
             ->update('some_table', 't')
             ->set('foo', new ExpressionColumn('u.id'))
             ->join('users', "u.id = t.id_user", 'u')
@@ -254,7 +254,7 @@ class UpdateTest extends DriverTestCase
         $this->assertSame(3, $result->countRows());
 
         // All code below is just consistency checks
-        $result = $connection
+        $result = $driver
             ->select('some_table', 't')
             ->columns(['t.foo', 't.id_user'])
             ->join('users', 'u.id = t.id_user', 'u')
@@ -273,11 +273,11 @@ class UpdateTest extends DriverTestCase
      *
      * @dataProvider driverDataSource
      */
-    public function testUpateSetExpressionRaw($driver, $class)
+    public function testUpateSetExpressionRaw($driverName, $class)
     {
-        $connection = $this->createConnection($driver, $class);
+        $driver = $this->createDriver($driverName, $class);
 
-        $result = $connection
+        $result = $driver
             ->update('some_table', 't')
             ->set('foo', new ExpressionRaw('u.id'))
             ->join('users', "u.id = t.id_user", 'u')
@@ -288,7 +288,7 @@ class UpdateTest extends DriverTestCase
         $this->assertSame(3, $result->countRows());
 
         // All code below is just consistency checks
-        $result = $connection
+        $result = $driver
             ->select('some_table', 't')
             ->columns(['t.foo', 't.id_user'])
             ->join('users', 'u.id = t.id_user', 'u')
@@ -307,17 +307,17 @@ class UpdateTest extends DriverTestCase
      *
      * @dataProvider driverDataSource
      */
-    public function testUpateSetSelectQuery($driver, $class)
+    public function testUpateSetSelectQuery($driverName, $class)
     {
-        $connection = $this->createConnection($driver, $class);
+        $driver = $this->createDriver($driverName, $class);
 
-        $selectValueQuery = $connection
+        $selectValueQuery = $driver
             ->select('users', 'z')
             ->columnExpression('z.id + 7')
             ->expression('z.id = id_user')
         ;
 
-        $result = $connection
+        $result = $driver
             ->update('some_table')
             ->set('foo', $selectValueQuery)
             ->condition('id_user', $this->idJean)
@@ -326,7 +326,7 @@ class UpdateTest extends DriverTestCase
 
         $this->assertSame(2, $result->countRows());
 
-        $result = $connection
+        $result = $driver
             ->select('some_table')
             ->condition('id_user', $this->idJean)
             ->execute()
@@ -335,7 +335,7 @@ class UpdateTest extends DriverTestCase
             $this->assertSame($row['id_user'] + 7, $row['foo']);
         }
 
-        $result = $connection
+        $result = $driver
             ->select('some_table')
             ->condition('id_user', $this->idAdmin)
             ->execute()
@@ -350,11 +350,11 @@ class UpdateTest extends DriverTestCase
      *
      * @dataProvider driverDataSource
      */
-    public function testUpateSetSqlStatement($driver, $class)
+    public function testUpateSetSqlStatement($driverName, $class)
     {
-        $connection = $this->createConnection($driver, $class);
+        $driver = $this->createDriver($driverName, $class);
 
-        $result = $connection
+        $result = $driver
             ->update('some_table')
             ->set('foo', new ExpressionRaw('id_user * 2'))
             ->join('users', 'u.id = id_user', 'u')

@@ -51,7 +51,7 @@ class ExtPgSQLEscaper extends EscaperBase
 
         $escaped = @pg_escape_literal($this->resource, $string);
         if (false === $escaped) {
-            $this->connectionError($this->resource);
+            $this->driverError($this->resource);
         }
 
         return $escaped;
@@ -68,7 +68,7 @@ class ExtPgSQLEscaper extends EscaperBase
 
         $escaped = @pg_escape_bytea($this->resource, $word);
         if (false === $escaped) {
-            $this->connectionError($this->resource);
+            $this->driverError($this->resource);
         }
 
         return $escaped;
@@ -85,7 +85,7 @@ class ExtPgSQLEscaper extends EscaperBase
 
         $escaped = @pg_escape_identifier($this->resource, $string);
         if (false === $escaped) {
-            $this->connectionError($this->resource);
+            $this->driverError($this->resource);
         }
 
         return $escaped;

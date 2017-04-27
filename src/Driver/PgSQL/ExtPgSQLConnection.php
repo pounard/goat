@@ -60,7 +60,7 @@ class ExtPgSQLConnection extends AbstractDriver
         $resource = @pg_query($conn, "select version();");
 
         if (false === $resource) {
-            $this->connectionError($conn);
+            $this->driverError($conn);
         }
 
         $row = @pg_fetch_array($resource);
@@ -147,7 +147,7 @@ class ExtPgSQLConnection extends AbstractDriver
     protected function doStartTransaction(int $isolationLevel = Transaction::REPEATABLE_READ) : Transaction
     {
         $ret = new PgSQLTransaction($isolationLevel);
-        $ret->setConnection($this);
+        $ret->setDriver($this);
 
         return $ret;
     }
@@ -183,7 +183,7 @@ class ExtPgSQLConnection extends AbstractDriver
             $resource = @pg_query_params($conn, $rawSQL, $args);
 
             if (false === $resource) {
-                $this->connectionError($conn, $rawSQL);
+                $this->driverError($conn, $rawSQL);
             }
 
             $ret = $this->createResultIterator($options, $resource);
@@ -213,7 +213,7 @@ class ExtPgSQLConnection extends AbstractDriver
             $resource = @pg_query_params($conn, $rawSQL, $args);
 
             if (false === $resource) {
-                $this->connectionError($conn, $rawSQL);
+                $this->driverError($conn, $rawSQL);
             }
 
             $rowCount = pg_affected_rows($resource);

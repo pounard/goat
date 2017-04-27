@@ -21,7 +21,7 @@ class ProfilingTransaction implements Transaction
     private $transaction;
 
     /**
-     * @var ProfilingConnectionProxy
+     * @var ProfilingDriverProxy
      */
     private $profiler;
 
@@ -33,11 +33,11 @@ class ProfilingTransaction implements Transaction
     /**
      * Default constructor
      *
-     * @param ProfilingConnectionProxy $profiler
+     * @param ProfilingDriverProxy $profiler
      * @param Transaction $transaction
      * @param Timer $timer
      */
-    public function __construct(ProfilingConnectionProxy $profiler, Transaction $transaction, Timer $timer)
+    public function __construct(ProfilingDriverProxy $profiler, Transaction $transaction, Timer $timer)
     {
         $this->transaction = $transaction;
         $this->profiler = $profiler;
@@ -51,7 +51,7 @@ class ProfilingTransaction implements Transaction
     /**
      * {@inheritdoc}
      */
-    public function setConnection(DriverInterface $connection)
+    public function setDriver(DriverInterface $driver)
     {
         // This is a noop.
     }

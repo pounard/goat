@@ -12,9 +12,9 @@ trait ConverterAwareTrait
     protected $converter;
 
     /**
-     * Set connection
+     * Set converter
      *
-     * @param ConverterMap $connection
+     * @param ConverterMap $converter
      */
     public function setConverter(ConverterMap $converter)
     {

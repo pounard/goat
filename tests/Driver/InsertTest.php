@@ -14,9 +14,9 @@ class InsertTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestSchema(DriverInterface $connection)
+    protected function createTestSchema(DriverInterface $driver)
     {
-        $connection->query("
+        $driver->query("
             create temporary table some_table (
                 id serial primary key,
                 foo integer not null,
@@ -24,7 +24,7 @@ class InsertTest extends DriverTestCase
                 baz timestamp default now()
             )
         ");
-        $connection->query("
+        $driver->query("
             create temporary table users (
                 id serial primary key,
                 name varchar(255)
@@ -35,9 +35,9 @@ class InsertTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestData(DriverInterface $connection)
+    protected function createTestData(DriverInterface $driver)
     {
-        $connection->insertValues('users')->columns(['name'])->values(["admin"])->values(["jean"])->execute();
+        $driver->insertValues('users')->columns(['name'])->values(["admin"])->values(["jean"])->execute();
     }
 
     /**
@@ -45,13 +45,13 @@ class InsertTest extends DriverTestCase
      *
      * @dataProvider driverDataSource
      */
-    public function testSingleValueInsert($driver, $class)
+    public function testSingleValueInsert($driverName, $class)
     {
-        $connection = $this->createConnection($driver, $class);
+        $driver = $this->createDriver($driverName, $class);
 
         $referenceDate = new \DateTime();
 
-        $connection
+        $driver
             ->insertValues('some_table')
             ->columns(['foo', 'bar', 'baz'])
             // @todo argument conversion on querybuilder!
@@ -59,7 +59,7 @@ class InsertTest extends DriverTestCase
             ->execute()
         ;
 
-        $value = $connection
+        $value = $driver
             ->select('some_table', 't')
             ->column('t.foo')
             ->column('t.bar')
@@ -83,11 +83,11 @@ class InsertTest extends DriverTestCase
      *
      * @dataProvider driverDataSource
      */
-    public function testBulkValueInsert($driver, $class)
+    public function testBulkValueInsert($driverName, $class)
     {
-        $connection = $this->createConnection($driver, $class);
+        $driver = $this->createDriver($driverName, $class);
 
-        $insert = $connection
+        $insert = $driver
             ->insertValues('some_table')
             ->columns(['foo', 'bar'])
             ->values([1, 'one'])
@@ -103,7 +103,7 @@ class InsertTest extends DriverTestCase
         $insert->execute();
 
         /** @var \Goat\Runner\ResultIteratorInterface $result */
-        $result = $connection
+        $result = $driver
             ->select('some_table', 't')
             ->orderBy('t.id', Query::ORDER_ASC)
             ->execute()
@@ -124,13 +124,13 @@ class InsertTest extends DriverTestCase
      *
      * @dataProvider driverDataSource
      */
-    public function testBulkValueInsertWithReturning($driver, $class)
+    public function testBulkValueInsertWithReturning($driverName, $class)
     {
-        $connection = $this->createConnection($driver, $class);
+        $driver = $this->createDriver($driverName, $class);
 
         // Add one value, so there is data in the table, it will ensure that
         // the returning count is the right one
-        $result = $connection
+        $result = $driver
             ->insertValues('some_table')
             ->columns(['foo', 'bar'])
             ->values([1, 'a'])
@@ -147,7 +147,7 @@ class InsertTest extends DriverTestCase
 
         // Add one value, so there is data in the table, it will ensure that
         // the returning count is the right one
-        $affectedRowCount = $connection
+        $affectedRowCount = $driver
             ->insertValues('some_table')
             ->columns(['foo', 'bar'])
             ->values([3, 'c'])
@@ -158,11 +158,11 @@ class InsertTest extends DriverTestCase
 
         $this->assertSame(3, $affectedRowCount);
 
-        if (!$connection->supportsReturning()) {
+        if (!$driver->supportsReturning()) {
             $this->markTestIncomplete("driver does not support RETURNING");
         }
 
-        $result = $connection
+        $result = $driver
             ->insertValues('some_table')
             ->columns(['foo', 'bar'])
             ->returning('id')
@@ -200,17 +200,17 @@ class InsertTest extends DriverTestCase
      *
      * @dataProvider driverDataSource
      */
-    public function testBulkValueInsertWithReturningAndHydration($driver, $class)
+    public function testBulkValueInsertWithReturningAndHydration($driverName, $class)
     {
-        $connection = $this->createConnection($driver, $class);
+        $driver = $this->createDriver($driverName, $class);
 
-        if (!$connection->supportsReturning()) {
+        if (!$driver->supportsReturning()) {
             $this->markTestIncomplete("driver does not support RETURNING");
         }
 
         // Add one value, so there is data in the table, it will ensure that
         // the returning count is the right one
-        $result = $connection
+        $result = $driver
             ->insertValues('some_table')
             ->columns(['foo', 'bar'])
             ->values([1, 'a'])
@@ -232,9 +232,9 @@ class InsertTest extends DriverTestCase
      *
      * @dataProvider driverDataSource
      */
-    public function testBulkInsertFromQuery($driver, $class)
+    public function testBulkInsertFromQuery($driverName, $class)
     {
-        $connection = $this->createConnection($driver, $class);
+        $driver = $this->createDriver($driverName, $class);
 
         $this->markTestIncomplete("not implemented yet");
     }

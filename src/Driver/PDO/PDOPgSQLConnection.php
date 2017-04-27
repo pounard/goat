@@ -89,7 +89,7 @@ class PDOPgSQLConnection extends AbstractPDOConnection
     protected function doStartTransaction(int $isolationLevel = Transaction::REPEATABLE_READ) : Transaction
     {
         $ret = new PgSQLTransaction($isolationLevel);
-        $ret->setConnection($this);
+        $ret->setDriver($this);
 
         return $ret;
     }

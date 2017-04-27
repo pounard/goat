@@ -31,7 +31,7 @@ trait ExtPgSQLErrorTrait
      * @param resource $resource
      * @param string $rawSQL
      */
-    private function connectionError($resource = null, string $rawSQL = null)
+    private function driverError($resource = null, string $rawSQL = null)
     {
         $errorString = pg_last_error($resource);
         if (false === $errorString) {

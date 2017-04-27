@@ -45,14 +45,14 @@ class SecurityTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestSchema(DriverInterface $connection)
+    protected function createTestSchema(DriverInterface $driver)
     {
-        $connection->query("
+        $driver->query("
             create temporary table users (
                 id serial primary key
             )
         ");
-        $connection->query("
+        $driver->query("
             create temporary table some_table (
                 id serial primary key,
                 foo integer not null,
@@ -98,11 +98,11 @@ class SecurityTest extends DriverTestCase
      *
      * @dataProvider driverDataSource
      */
-    public function testParameterInjection($driver, $class)
+    public function testParameterInjection($driverName, $class)
     {
         $this->markTestSkipped("I AM TO SLOW");
 
-        $connection = $this->createConnection($driver, $class);
+        $driver = $this->createDriver($driverName, $class);
         $stringSet  = $this->getStrings();
 
         // Those are errors, but valid errors, the SQL backend detected invalid
@@ -115,7 +115,7 @@ class SecurityTest extends DriverTestCase
         // MySQL, sad MySQL, does not uses a case sensitive collation
         // per default, in most environments those tests would fail.
         // In order to fix that, we do have to reduce the test set.
-        if (false !== stripos('mysql', $connection->getDatabaseName())) {
+        if (false !== stripos('mysql', $driver->getDatabaseName())) {
             $done = [];
             foreach ($stringSet as $index => $veryBadString) {
 
@@ -141,7 +141,7 @@ class SecurityTest extends DriverTestCase
         }
 
         // Massive bulk insert
-        $insert = $connection->insertValues('some_table')->columns(['foo', 'bar']);
+        $insert = $driver->insertValues('some_table')->columns(['foo', 'bar']);
         foreach ($stringSet as $index => $veryBadString) {
             $insert->values([$index, $veryBadString]);
         }
@@ -149,7 +149,7 @@ class SecurityTest extends DriverTestCase
 
         foreach ($stringSet as $index => $veryBadString) {
             try {
-                $row = $connection
+                $row = $driver
                     ->select('some_table')
                     ->expression('bar = $*', [$veryBadString])
                     ->execute()
@@ -158,7 +158,7 @@ class SecurityTest extends DriverTestCase
                 $this->assertSame($index, $row['foo']);
                 $this->assertSame($veryBadString, $row['bar']);
 
-                $row = $connection
+                $row = $driver
                     ->select('some_table')
                     ->condition('bar', $veryBadString)
                     ->execute()
@@ -167,7 +167,7 @@ class SecurityTest extends DriverTestCase
                 $this->assertSame($index, $row['foo']);
                 $this->assertSame($veryBadString, $row['bar']);
 
-                $row = $connection
+                $row = $driver
                     ->select('some_table')
                     ->condition('bar', ':bad')
                     ->execute(['bad' => $veryBadString])
@@ -176,7 +176,7 @@ class SecurityTest extends DriverTestCase
                 $this->assertSame($index, $row['foo']);
                 $this->assertSame($veryBadString, $row['bar']);
 
-                $row = $connection
+                $row = $driver
                     ->select('some_table')
                     ->condition('bar', new ExpressionValue($veryBadString))
                     ->execute()
@@ -188,7 +188,7 @@ class SecurityTest extends DriverTestCase
                 // @todo missing LIKE testing
 
                 // Ensures that the user table still exists
-                $result = $connection->select('users')->execute();
+                $result = $driver->select('users')->execute();
                 $this->assertSame(0, $result->countRows());
 
             } catch (\Exception $e) {
@@ -202,11 +202,11 @@ class SecurityTest extends DriverTestCase
      *
      * @dataProvider driverDataSource
      */
-    public function testCreateTableAndColumn($driver, $class)
+    public function testCreateTableAndColumn($driverName, $class)
     {
         $this->markTestSkipped("I AM TO SLOW");
 
-        $connection = $this->createConnection($driver, $class);
+        $driver = $this->createDriver($driverName, $class);
 
         // Those are errors, but valid errors, the SQL backend detected invalid
         // strings and does not allows them, that's exactly what we are looking
@@ -247,14 +247,14 @@ class SecurityTest extends DriverTestCase
             try {
                 $sql = sprintf(
                     "create temporary table %s (%s varchar(1024))",
-                    $connection->getEscaper()->escapeIdentifier($veryBadString),
-                    $connection->getEscaper()->escapeIdentifier($veryBadString)
+                    $driver->getEscaper()->escapeIdentifier($veryBadString),
+                    $driver->getEscaper()->escapeIdentifier($veryBadString)
                 );
 
-                $connection->query($sql);
+                $driver->query($sql);
 
                 // We are going to test with whatever passed.
-                $result = $connection
+                $result = $driver
                     ->insertValues(ExpressionRelation::escape($veryBadString))
                     ->columns([$veryBadString])
                     ->values(['some_text'])
@@ -262,7 +262,7 @@ class SecurityTest extends DriverTestCase
                 ;
                 $this->assertSame(1, $result->countRows());
 
-                $result = $connection
+                $result = $driver
                     ->select(ExpressionRelation::escape($veryBadString))
                     ->groupBy(ExpressionColumn::escape($veryBadString))
                     ->orderBy(ExpressionColumn::escape($veryBadString))

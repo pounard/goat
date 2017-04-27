@@ -16,9 +16,9 @@ class ResultIteratorTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestSchema(DriverInterface $connection)
+    protected function createTestSchema(DriverInterface $driver)
     {
-        $connection->query("
+        $driver->query("
             create temporary table type_test (
                 foo integer,
                 bar varchar(255),
@@ -33,10 +33,10 @@ class ResultIteratorTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestData(DriverInterface $connection)
+    protected function createTestData(DriverInterface $driver)
     {
         // ensure table data has the right types
-        $connection->query("
+        $driver->query("
             insert into type_test (foo, bar, baz, some_ts, some_time, some_date) values ($*::int4, $*::varchar, $*::timestamp, $*::timestamp, $*::time, $*::date);
         ", [
             42,
@@ -53,11 +53,11 @@ class ResultIteratorTest extends DriverTestCase
      *
      * @dataProvider driverDataSource
      */
-    public function testBasicUsage($driver, $class)
+    public function testBasicUsage($driverName, $class)
     {
-        $connection = $this->createConnection($driver, $class);
+        $driver = $this->createDriver($driverName, $class);
 
-        $results = $connection->query("select * from type_test");
+        $results = $driver->query("select * from type_test");
         $this->assertCount(1, $results);
 
         foreach ($results as $result) {
@@ -74,9 +74,9 @@ class ResultIteratorTest extends DriverTestCase
         }
 
         // and a prepared query for fun
-        $identifier = $connection->prepareQuery('select foo, bar, baz, some_time from type_test');
+        $identifier = $driver->prepareQuery('select foo, bar, baz, some_time from type_test');
 
-        $results = $connection->executePreparedQuery($identifier);
+        $results = $driver->executePreparedQuery($identifier);
         $this->assertSame(['foo', 'bar', 'baz', 'some_time'], $results->getColumnNames());
         $this->assertSame(4, $results->countColumns());
         $this->assertSame('foo', $results->getColumnName(0));
@@ -94,11 +94,11 @@ class ResultIteratorTest extends DriverTestCase
      *
      * @dataProvider driverDataSource
      */
-    public function testOptions($driver, $class)
+    public function testOptions($driverName, $class)
     {
-        $connection = $this->createConnection($driver, $class);
+        $driver = $this->createDriver($driverName, $class);
 
-        $select = $connection->select('type_test');
+        $select = $driver->select('type_test');
         $select->setOption('class', TestTypeEntity::class);
         $result = $select->range(1, 0)->execute();
         $this->assertCount(1, $result);
@@ -120,19 +120,19 @@ class ResultIteratorTest extends DriverTestCase
      *
      * @dataProvider driverDataSource
      */
-    public function testPager($driver, $class)
+    public function testPager($driverName, $class)
     {
-        $connection = $this->createConnection($driver, $class);
+        $driver = $this->createDriver($driverName, $class);
 
         // Create lots of entries
-        $insert = $connection->insertValues('type_test')->columns(['foo', 'bar']);
+        $insert = $driver->insertValues('type_test')->columns(['foo', 'bar']);
         for ($i = 0; $i < 99; ++$i) {
             $insert->values([$i, 'boo' . $i]);
         }
         $insert->execute();
 
         $limit = 13;
-        $select = $connection
+        $select = $driver
             ->select('type_test')
             ->range($limit, 2 * $limit)
         ;
@@ -194,13 +194,13 @@ class ResultIteratorTest extends DriverTestCase
      *
      * @dataProvider driverDataSource
      */
-    public function testEmptyIterator($driver, $class)
+    public function testEmptyIterator($driverName, $class)
     {
-        $connection = $this->createConnection($driver, $class);
+        $driver = $this->createDriver($driverName, $class);
 
         // Drivers, when going through a non returning query, must return
         // an empty iterator instance instead of a real iterator instance
-        $empty = $connection
+        $empty = $driver
             ->update('type_test')
             ->condition('bar', 'cassoulet')
             ->set('foo', 137)
@@ -239,7 +239,7 @@ class ResultIteratorTest extends DriverTestCase
         } catch (InvalidDataAccessError $e) {
         }
 
-        $empty = $connection
+        $empty = $driver
             ->update('type_test')
             ->condition('bar', 'non existing column')
             ->set('foo', 137)

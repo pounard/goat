@@ -7,9 +7,9 @@ namespace Goat\Converter;
 interface ConverterAwareInterface
 {
     /**
-     * Set connection
+     * Set converter map
      *
-     * @param ConverterMap $connection
+     * @param ConverterMap $converter
      */
     public function setConverter(ConverterMap $converter);
 }

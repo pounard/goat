@@ -13,18 +13,19 @@ class DatabaseInfoTest extends DriverTestCase
      *
      * @dataProvider driverDataSource
      */
-    public function testDeleteWhere($driver, $class)
+    public function testDatabaseInfo($driverName, $class)
     {
-        $connection = $this->createConnection($driver, $class);
+        $driver = $this->createDriver($driverName, $class);
 
-        $info = $connection->getDatabaseInfo();
-        $name = $connection->getDatabaseName();
-        $version = $connection->getDatabaseVersion();
+        $info = $driver->getDatabaseInfo();
+        $name = $driver->getDatabaseName();
+        $version = $driver->getDatabaseVersion();
 
         $this->assertSame($name, $info['name']);
+        $this->assertNotEmpty($name);
         $this->assertSame($version, $info['version']);
 
-        $currentDriver = $connection->getDriverName();
-        $this->assertSame($driver, $currentDriver);
+        $currentDriver = $driver->getDriverName();
+        $this->assertSame($driverName, $currentDriver);
     }
 }

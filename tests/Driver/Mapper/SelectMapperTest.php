@@ -17,13 +17,13 @@ class SelectMapperTest extends AbstractMapperTest
     /**
      * {@inheritdoc}
      */
-    protected function createMapper(DriverInterface $connection, string $class, array $primaryKey) : MapperInterface
+    protected function createMapper(DriverInterface $driver, string $class, array $primaryKey) : MapperInterface
     {
         return new SelectMapper(
-            $connection,
+            $driver,
             $class,
             $primaryKey,
-            $connection
+            $driver
                 ->select('some_entity', 't')
                 ->column('t.*')
                 ->column('u.name')
@@ -34,13 +34,13 @@ class SelectMapperTest extends AbstractMapperTest
     /**
      * {@inheritdoc}
      */
-    protected function createWritableMapper(DriverInterface $connection, string $class, array $primaryKey) : MapperInterface
+    protected function createWritableMapper(DriverInterface $driver, string $class, array $primaryKey) : MapperInterface
     {
         return new WritableSelectMapper(
-            $connection,
+            $driver,
             $class,
             $primaryKey,
-            $connection
+            $driver
                 ->select('some_entity', 't')
                 ->column('t.*')
                 ->column('u.name')

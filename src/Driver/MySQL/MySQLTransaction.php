@@ -20,7 +20,7 @@ class MySQLTransaction extends AbstractTransaction
         try {
             // Transaction level cannot be changed while in the transaction,
             // so it must set before starting the transaction
-            $this->connection->perform(
+            $this->driver->perform(
                 sprintf(
                     "SET TRANSACTION ISOLATION LEVEL %s",
                     self::getIsolationLevelString($isolationLevel)
@@ -34,14 +34,14 @@ class MySQLTransaction extends AbstractTransaction
             // than they asked for, and data consistency is not ensured anymore
             // that's the downside of using MySQL.
             if (1568 == $e->getCode()) {
-                $this->connection->debugMessage("transaction is nested into another, MySQL can't change the isolation level", E_USER_NOTICE);
+                $this->driver->debugMessage("transaction is nested into another, MySQL can't change the isolation level", E_USER_NOTICE);
             } else {
                 throw new TransactionError("transaction start failed", null, $e);
             }
         }
 
         try {
-            $this->connection->perform("BEGIN");
+            $this->driver->perform("BEGIN");
         } catch (DriverError $e) {
             throw new TransactionError("transaction start failed", null, $e);
         }
@@ -52,7 +52,7 @@ class MySQLTransaction extends AbstractTransaction
      */
     protected function doChangeLevel(int $isolationLevel)
     {
-        $this->connection->debugMessage("MySQL does not support transaction level change during transaction", E_USER_NOTICE);
+        $this->driver->debugMessage("MySQL does not support transaction level change during transaction", E_USER_NOTICE);
     }
 
     /**
@@ -61,9 +61,9 @@ class MySQLTransaction extends AbstractTransaction
     protected function doCreateSavepoint(string $name)
     {
         try {
-            $this->connection->perform(sprintf(
+            $this->driver->perform(sprintf(
                 "SAVEPOINT %s",
-                $this->connection->getEscaper()->escapeIdentifier($name)
+                $this->driver->getEscaper()->escapeIdentifier($name)
             ));
         } catch (DriverError $e) {
             throw new TransactionError(sprintf("%s: create savepoint failed", $name), null, $e);
@@ -76,9 +76,9 @@ class MySQLTransaction extends AbstractTransaction
     protected function doRollbackToSavepoint(string $name)
     {
         try {
-            $this->connection->perform(sprintf(
+            $this->driver->perform(sprintf(
                 "ROLLBACK TO SAVEPOINT %s",
-                $this->connection->getEscaper()->escapeIdentifier($name)
+                $this->driver->getEscaper()->escapeIdentifier($name)
             ));
         } catch (DriverError $e) {
             throw new TransactionError(sprintf("%s: rollback to savepoint failed", $name), null, $e);
@@ -91,7 +91,7 @@ class MySQLTransaction extends AbstractTransaction
     protected function doRollback()
     {
         try {
-            $this->connection->perform("ROLLBACK");
+            $this->driver->perform("ROLLBACK");
         } catch (DriverError $e) {
             throw new TransactionError(null, null, $e);
         }
@@ -103,7 +103,7 @@ class MySQLTransaction extends AbstractTransaction
     protected function doCommit()
     {
         try {
-            $this->connection->perform("COMMIT");
+            $this->driver->perform("COMMIT");
         } catch (DriverError $e) {
             throw new TransactionFailedError(null, null, $e);
         }
@@ -114,7 +114,7 @@ class MySQLTransaction extends AbstractTransaction
      */
     protected function doDeferConstraints(array $constraints)
     {
-        $this->connection->debugMessage("MySQL does not support deferred constraints", E_USER_NOTICE);
+        $this->driver->debugMessage("MySQL does not support deferred constraints", E_USER_NOTICE);
     }
 
     /**
@@ -122,7 +122,7 @@ class MySQLTransaction extends AbstractTransaction
      */
     protected function doDeferAll()
     {
-        $this->connection->debugMessage("MySQL does not support deferred constraints", E_USER_NOTICE);
+        $this->driver->debugMessage("MySQL does not support deferred constraints", E_USER_NOTICE);
     }
 
     /**

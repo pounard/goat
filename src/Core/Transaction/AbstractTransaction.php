@@ -51,7 +51,7 @@ abstract class AbstractTransaction implements Transaction
     /**
      * @var DriverInterface
      */
-    protected $connection;
+    protected $driver;
 
     private $isolationLevel = self::REPEATABLE_READ;
     private $savepoint = 0;
@@ -70,16 +70,12 @@ abstract class AbstractTransaction implements Transaction
     }
 
     /**
-     * Set connection
-     *
-     * @param DriverInterface $connection
-     *
-     * @return Transaction
+     * {@inheritdoc}
      */
-    final public function setConnection(DriverInterface $connection) : Transaction
+    final public function setDriver(DriverInterface $driver) : Transaction
     {
-        $this->connection = $connection;
-        $this->setDebug($connection->isDebugEnabled());
+        $this->driver = $driver;
+        $this->setDebug($driver->isDebugEnabled());
 
         return $this;
     }

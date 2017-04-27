@@ -102,11 +102,11 @@ abstract class AbstractQuery implements Query, DriverAwareInterface
      */
     final public function execute(array $parameters = [], $options = null) : ResultIteratorInterface
     {
-        if (!$this->connection) {
+        if (!$this->driver) {
             throw new GoatError("this query has no reference to any connection, therefore cannot execute itself");
         }
 
-        return $this->connection->query($this, $parameters, $this->buildOptions($options));
+        return $this->driver->query($this, $parameters, $this->buildOptions($options));
     }
 
     /**
@@ -114,10 +114,10 @@ abstract class AbstractQuery implements Query, DriverAwareInterface
      */
     public function perform(array $parameters = [], $options = null) : int
     {
-        if (!$this->connection) {
+        if (!$this->driver) {
             throw new GoatError("this query has no reference to any connection, therefore cannot execute itself");
         }
 
-        return $this->connection->perform($this, $parameters, $this->buildOptions($options));
+        return $this->driver->perform($this, $parameters, $this->buildOptions($options));
     }
 }

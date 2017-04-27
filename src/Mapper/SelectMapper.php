@@ -48,9 +48,9 @@ class SelectMapper implements MapperInterface
      * @param SelectQuery $query
      *   Select query that loads entities
      */
-    public function __construct(DriverInterface $connection, string $class, array $primaryKey, SelectQuery $query)
+    public function __construct(DriverInterface $driver, string $class, array $primaryKey, SelectQuery $query)
     {
-        $this->connection = $connection;
+        $this->driver = $driver;
         $this->class = $class;
         $this->primaryKey = $primaryKey;
         $this->select = $query;
@@ -79,9 +79,9 @@ class SelectMapper implements MapperInterface
     /**
      * {@inheritdoc}
      */
-    public function getConnection() : DriverInterface
+    public function getDriver() : DriverInterface
     {
-        return $this->connection;
+        return $this->driver;
     }
 
     /**

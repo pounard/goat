@@ -21,7 +21,7 @@ trait WritableMapperTrait /* implements WritableMapperInterface */
     /**
      * {@inheritdoc}
      */
-    abstract public function getConnection() : DriverInterface;
+    abstract public function getDriver() : DriverInterface;
 
     /**
      * {@inheritdoc}
@@ -33,7 +33,7 @@ trait WritableMapperTrait /* implements WritableMapperInterface */
      */
     public function createUpdate($criteria = null) : UpdateQuery
     {
-        $update = $this->getConnection()->update($this->getRelation());
+        $update = $this->getDriver()->update($this->getRelation());
 
         if ($criteria) {
             $update->expression($this->createWhereWith($criteria));
@@ -47,7 +47,7 @@ trait WritableMapperTrait /* implements WritableMapperInterface */
      */
     public function createDelete($criteria = null) : DeleteQuery
     {
-        $update = $this->getConnection()->delete($this->getRelation());
+        $update = $this->getDriver()->delete($this->getRelation());
 
         if ($criteria) {
             $update->expression($this->createWhereWith($criteria));
@@ -61,7 +61,7 @@ trait WritableMapperTrait /* implements WritableMapperInterface */
      */
     public function createInsertValues() : InsertValuesQuery
     {
-        return $this->getConnection()->insertValues($this->getRelation());
+        return $this->getDriver()->insertValues($this->getRelation());
     }
 
     /**
@@ -69,6 +69,6 @@ trait WritableMapperTrait /* implements WritableMapperInterface */
      */
     public function createInsertQuery() : InsertQueryQuery
     {
-        return $this->getConnection()->insertQuery($this->getRelation());
+        return $this->getDriver()->insertQuery($this->getRelation());
     }
 }

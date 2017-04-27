@@ -42,7 +42,7 @@ class Session extends AbstractDriverProxy
      *
      * @return DriverInterface
      */
-    public function getReadonlyConnection() : DriverInterface
+    public function getReadonlyDriver() : DriverInterface
     {
         if ($this->readonlyConnection) {
             return $this->readonlyConnection;
@@ -56,7 +56,7 @@ class Session extends AbstractDriverProxy
      *
      * @return DriverInterface
      */
-    public function getWriteConnection() : DriverInterface
+    public function getWriteDriver() : DriverInterface
     {
         return $this->writeConnection;
     }
@@ -64,7 +64,7 @@ class Session extends AbstractDriverProxy
     /**
      * {@inheritdoc}
      */
-    protected function getInnerConnection() : DriverInterface
+    protected function getInnerDriver() : DriverInterface
     {
         return $this->writeConnection;
     }

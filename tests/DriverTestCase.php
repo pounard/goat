@@ -6,7 +6,7 @@ namespace Goat\Tests;
 
 use Goat\Converter\ConverterMap;
 use Goat\Core\Hydrator\HydratorMap;
-use Goat\Core\Profiling\ProfilingConnectionProxy;
+use Goat\Core\Profiling\ProfilingDriverProxy;
 use Goat\Core\Session\Dsn;
 use Goat\Core\Session\Session;
 use Goat\Driver\DriverInterface;
@@ -33,19 +33,19 @@ abstract class DriverTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @var DriverInterface[]
      */
-    private $connections = [];
+    private $drivers = [];
 
     /**
      * Create test case schema
      */
-    protected function createTestSchema(DriverInterface $connection)
+    protected function createTestSchema(DriverInterface $driver)
     {
     }
 
     /**
      * Create test case schema
      */
-    protected function createTestData(DriverInterface $connection)
+    protected function createTestData(DriverInterface $driver)
     {
     }
 
@@ -58,8 +58,8 @@ abstract class DriverTestCase extends \PHPUnit_Framework_TestCase
     {
         $ret = [];
 
-        foreach (self::getKnownDrivers() as $driver => $class) {
-            $ret[] = [$driver, $class];
+        foreach (self::getKnownDrivers() as $driverName => $class) {
+            $ret[] = [$driverName, $class];
         }
 
         return $ret;
@@ -70,21 +70,21 @@ abstract class DriverTestCase extends \PHPUnit_Framework_TestCase
      */
     protected function tearDown()
     {
-        foreach ($this->connections as $connection) {
-            $connection->close();
+        foreach ($this->drivers as $driver) {
+            $driver->close();
         }
 
-        $this->connections = [];
+        $this->drivers = [];
     }
 
     /**
      * Create converter
      *
-     * @param DriverInterface $connection
+     * @param DriverInterface $driver
      *
      * @return ConverterMap
      */
-    final protected function createConverter(DriverInterface $connection) : ConverterMap
+    final protected function createConverter(DriverInterface $driver) : ConverterMap
     {
         $map = new ConverterMap();
 
@@ -100,11 +100,11 @@ abstract class DriverTestCase extends \PHPUnit_Framework_TestCase
     /**
      * Create object hydrator
      *
-     * @param DriverInterface $connection
+     * @param DriverInterface $driver
      *
      * @return HydratorMap
      */
-    final protected function createHydrator(DriverInterface $connection) : HydratorMap
+    final protected function createHydrator(DriverInterface $driver) : HydratorMap
     {
         return new HydratorMap(__DIR__ . '/../cache/hydrator');
     }
@@ -117,7 +117,7 @@ abstract class DriverTestCase extends \PHPUnit_Framework_TestCase
      *
      * @return DriverInterface
      */
-    final protected function createConnection(string $driver, string $class) : DriverInterface
+    final protected function createDriver(string $driver, string $class) : DriverInterface
     {
         $variable = strtoupper($driver) . '_DSN';
         $hostname = getenv($variable);
@@ -137,14 +137,14 @@ abstract class DriverTestCase extends \PHPUnit_Framework_TestCase
 
         $dsn = new Dsn($hostname, $username, $password);
 
-        /** @var \Goat\Driver\DriverInterface $connection */
-        $connection = new $class($dsn);
-        $connection->setConverter($this->createConverter($connection));
-        $connection->setHydratorMap($this->createHydrator($connection));
+        /** @var \Goat\Driver\DriverInterface $driver */
+        $driver = new $class($dsn);
+        $driver->setConverter($this->createConverter($driver));
+        $driver->setHydratorMap($this->createHydrator($driver));
 
-        $this->createTestSchema($connection);
-        $this->createTestData($connection);
+        $this->createTestSchema($driver);
+        $this->createTestData($driver);
 
-        return $this->connections[] = new ProfilingConnectionProxy(new Session($connection));
+        return $this->drivers[] = new ProfilingDriverProxy(new Session($driver));
     }
 }

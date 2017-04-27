@@ -21,13 +21,13 @@ class PgSQLTransaction extends AbstractTransaction
      */
     private function escapeNameList(array $names)
     {
-        $connection = $this->connection;
+        $driver = $this->driver;
 
         return implode(
             ', ',
             array_map(
-                function ($name) use ($connection) {
-                    return $connection->getEscaper()->escapeIdentifier($name);
+                function ($name) use ($driver) {
+                    return $driver->getEscaper()->escapeIdentifier($name);
                 },
                 $names
             )
@@ -42,7 +42,7 @@ class PgSQLTransaction extends AbstractTransaction
         try {
             // Set immediate constraint fail per default to be ISO with
             // backends that don't support deferable constraints
-            $this->connection->perform(
+            $this->driver->perform(
                 sprintf(
                     "START TRANSACTION ISOLATION LEVEL %s READ WRITE",
                     self::getIsolationLevelString($isolationLevel)
@@ -62,7 +62,7 @@ class PgSQLTransaction extends AbstractTransaction
         try {
             // Set immediate constraint fail per default to be ISO with
             // backends that don't support deferable constraints
-            $this->connection->perform(
+            $this->driver->perform(
                 sprintf(
                     "SET TRANSACTION ISOLATION LEVEL %s",
                     self::getIsolationLevelString($isolationLevel)
@@ -80,10 +80,10 @@ class PgSQLTransaction extends AbstractTransaction
     protected function doCreateSavepoint(string $name)
     {
         try {
-            $this->connection->perform(
+            $this->driver->perform(
                 sprintf(
                     "SAVEPOINT %s",
-                    $this->connection->getEscaper()->escapeIdentifier($name)
+                    $this->driver->getEscaper()->escapeIdentifier($name)
                 )
             );
         } catch (DriverError $e) {
@@ -97,10 +97,10 @@ class PgSQLTransaction extends AbstractTransaction
     protected function doRollbackToSavepoint(string $name)
     {
         try {
-            $this->connection->perform(
+            $this->driver->perform(
                 sprintf(
                     "ROLLBACK TO SAVEPOINT %s",
-                    $this->connection->getEscaper()->escapeIdentifier($name)
+                    $this->driver->getEscaper()->escapeIdentifier($name)
                 )
             );
         } catch (DriverError $e) {
@@ -114,7 +114,7 @@ class PgSQLTransaction extends AbstractTransaction
     protected function doRollback()
     {
         try {
-            $this->connection->perform("ROLLBACK");
+            $this->driver->perform("ROLLBACK");
         } catch (DriverError $e) {
             throw new TransactionError(null, null, $e);
         }
@@ -126,7 +126,7 @@ class PgSQLTransaction extends AbstractTransaction
     protected function doCommit()
     {
         try {
-            $this->connection->perform("COMMIT");
+            $this->driver->perform("COMMIT");
         } catch (DriverError $e) {
             throw new TransactionFailedError(null, null, $e);
         }
@@ -139,7 +139,7 @@ class PgSQLTransaction extends AbstractTransaction
     {
         try {
             $this
-                ->connection
+                ->driver
                 ->perform(
                     sprintf(
                         "SET CONSTRAINTS %s DEFERRED",
@@ -159,7 +159,7 @@ class PgSQLTransaction extends AbstractTransaction
     protected function doDeferAll()
     {
         try {
-            $this->connection->perform("SET CONSTRAINTS ALL DEFERRED");
+            $this->driver->perform("SET CONSTRAINTS ALL DEFERRED");
         } catch (DriverError $e) {
             throw new TransactionFailedError(null, null, $e);
         }
@@ -172,7 +172,7 @@ class PgSQLTransaction extends AbstractTransaction
     {
         try {
             $this
-                ->connection
+                ->driver
                 ->perform(
                     sprintf(
                         "SET CONSTRAINTS %s IMMEDIATE",
@@ -192,7 +192,7 @@ class PgSQLTransaction extends AbstractTransaction
     protected function doImmediateAll()
     {
         try {
-            $this->connection->perform("SET CONSTRAINTS ALL IMMEDIATE");
+            $this->driver->perform("SET CONSTRAINTS ALL IMMEDIATE");
         } catch (DriverError $e) {
             throw new TransactionFailedError(null, null, $e);
         }

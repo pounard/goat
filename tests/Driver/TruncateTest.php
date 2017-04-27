@@ -13,9 +13,9 @@ class TruncateTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestSchema(DriverInterface $connection)
+    protected function createTestSchema(DriverInterface $driver)
     {
-        $connection->query("
+        $driver->query("
             create temporary table some_table (
                 id serial primary key,
                 foo integer not null,
@@ -24,13 +24,13 @@ class TruncateTest extends DriverTestCase
                 id_user integer
             )
         ");
-        $connection->query("
+        $driver->query("
             create temporary table users (
                 id serial primary key,
                 name varchar(255)
             )
         ");
-        $connection->query("
+        $driver->query("
             create temporary table users_status (
                 id_user integer,
                 status integer
@@ -41,9 +41,9 @@ class TruncateTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestData(DriverInterface $connection)
+    protected function createTestData(DriverInterface $driver)
     {
-        $connection
+        $driver
             ->insertValues('users')
             ->columns(['name'])
             ->values(["admin"])
@@ -51,7 +51,7 @@ class TruncateTest extends DriverTestCase
             ->execute()
         ;
 
-        $idList = $connection
+        $idList = $driver
             ->select('users')
             ->column('id')
             ->orderBy('name')
@@ -62,7 +62,7 @@ class TruncateTest extends DriverTestCase
         $idAdmin = $idList[0];
         $idJean = $idList[1];
 
-        $connection
+        $driver
             ->insertValues('users_status')
             ->columns(['id_user', 'status'])
             ->values([$idAdmin, 7])
@@ -71,7 +71,7 @@ class TruncateTest extends DriverTestCase
             ->execute()
         ;
 
-        $connection
+        $driver
             ->insertValues('some_table')
             ->columns(['foo', 'bar', 'id_user'])
             ->values([42, 'a', $idAdmin])
@@ -88,18 +88,18 @@ class TruncateTest extends DriverTestCase
      *
      * @dataProvider driverDataSource
      */
-    public function testTruncateSingle($driver, $class)
+    public function testTruncateSingle($driverName, $class)
     {
-        $connection = $this->createConnection($driver, $class);
+        $driver = $this->createDriver($driverName, $class);
 
-        $this->assertSame(5, $connection->query("select count(*) from some_table")->fetchField());
-        $this->assertSame(2, $connection->query("select count(*) from users")->fetchField());
-        $this->assertSame(3, $connection->query("select count(*) from users_status")->fetchField());
+        $this->assertSame(5, $driver->query("select count(*) from some_table")->fetchField());
+        $this->assertSame(2, $driver->query("select count(*) from users")->fetchField());
+        $this->assertSame(3, $driver->query("select count(*) from users_status")->fetchField());
 
-        $connection->truncateTables('some_table');
-        $this->assertSame(0, $connection->query("select count(*) from some_table")->fetchField());
-        $this->assertSame(2, $connection->query("select count(*) from users")->fetchField());
-        $this->assertSame(3, $connection->query("select count(*) from users_status")->fetchField());
+        $driver->truncateTables('some_table');
+        $this->assertSame(0, $driver->query("select count(*) from some_table")->fetchField());
+        $this->assertSame(2, $driver->query("select count(*) from users")->fetchField());
+        $this->assertSame(3, $driver->query("select count(*) from users_status")->fetchField());
     }
 
     /**
@@ -107,17 +107,17 @@ class TruncateTest extends DriverTestCase
      *
      * @dataProvider driverDataSource
      */
-    public function testTruncateMutltiple($driver, $class)
+    public function testTruncateMutltiple($driverName, $class)
     {
-        $connection = $this->createConnection($driver, $class);
+        $driver = $this->createDriver($driverName, $class);
 
-        $this->assertSame(5, $connection->query("select count(*) from some_table")->fetchField());
-        $this->assertSame(2, $connection->query("select count(*) from users")->fetchField());
-        $this->assertSame(3, $connection->query("select count(*) from users_status")->fetchField());
+        $this->assertSame(5, $driver->query("select count(*) from some_table")->fetchField());
+        $this->assertSame(2, $driver->query("select count(*) from users")->fetchField());
+        $this->assertSame(3, $driver->query("select count(*) from users_status")->fetchField());
 
-        $connection->truncateTables(['some_table', 'users']);
-        $this->assertSame(0, $connection->query("select count(*) from some_table")->fetchField());
-        $this->assertSame(0, $connection->query("select count(*) from users")->fetchField());
-        $this->assertSame(3, $connection->query("select count(*) from users_status")->fetchField());
+        $driver->truncateTables(['some_table', 'users']);
+        $this->assertSame(0, $driver->query("select count(*) from some_table")->fetchField());
+        $this->assertSame(0, $driver->query("select count(*) from users")->fetchField());
+        $this->assertSame(3, $driver->query("select count(*) from users_status")->fetchField());
     }
 }

@@ -71,7 +71,7 @@ class PDOMySQLConnection extends AbstractPDOConnection
     protected function doStartTransaction(int $isolationLevel = Transaction::REPEATABLE_READ) : Transaction
     {
         $ret = new MySQLTransaction($isolationLevel);
-        $ret->setConnection($this);
+        $ret->setDriver($this);
 
         return $ret;
     }

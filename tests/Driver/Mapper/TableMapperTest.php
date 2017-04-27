@@ -37,16 +37,16 @@ class TableMapperTest extends AbstractMapperTest
     /**
      * {@inheritdoc}
      */
-    protected function createMapper(DriverInterface $connection, string $class, array $primaryKey) : MapperInterface
+    protected function createMapper(DriverInterface $driver, string $class, array $primaryKey) : MapperInterface
     {
-        return new TableMapper($connection, $class, $primaryKey, $this->getTableMapperDefinition());
+        return new TableMapper($driver, $class, $primaryKey, $this->getTableMapperDefinition());
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function createWritableMapper(DriverInterface $connection, string $class, array $primaryKey) : MapperInterface
+    protected function createWritableMapper(DriverInterface $driver, string $class, array $primaryKey) : MapperInterface
     {
-        return new WritableTableMapper($connection, $class, $primaryKey, $this->getTableMapperDefinition());
+        return new WritableTableMapper($driver, $class, $primaryKey, $this->getTableMapperDefinition());
     }
 }

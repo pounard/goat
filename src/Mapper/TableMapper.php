@@ -23,7 +23,7 @@ class TableMapper extends SelectMapper
     /**
      * Default constructor
      *
-     * @param DriverInterface $connection
+     * @param DriverInterface $driver
      *   Connection is mandatory in order to build the select query
      * @param string $class
      *   Default class to use for hydration
@@ -46,11 +46,11 @@ class TableMapper extends SelectMapper
      *         - mode: the join mode, must be a Query::JOIN_* constant, default
      *           is INNER JOIN
      */
-    public function __construct(DriverInterface $connection, string $class, array $primaryKey, $definition)
+    public function __construct(DriverInterface $driver, string $class, array $primaryKey, $definition)
     {
         $this->parseDefinition($definition);
 
-        parent::__construct($connection, $class, $primaryKey, $this->buildSelect($connection));
+        parent::__construct($driver, $class, $primaryKey, $this->buildSelect($driver));
     }
 
     /**
@@ -91,9 +91,9 @@ class TableMapper extends SelectMapper
      *
      * @return SelectQuery
      */
-    private function buildSelect(DriverInterface $connection) : SelectQuery
+    private function buildSelect(DriverInterface $driver) : SelectQuery
     {
-        $select = $connection->select($this->relation, $this->relationAlias);
+        $select = $driver->select($this->relation, $this->relationAlias);
 
         foreach ($this->joins as $join) {
             $select->join($join['relation'], $join['condition'], $join['alias'], $join['mode']);

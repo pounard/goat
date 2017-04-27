@@ -9,15 +9,15 @@ trait DriverAwareTrait
     /**
      * @var DriverInterface
      */
-    protected $connection;
+    protected $driver;
 
     /**
      * Set connection
      *
-     * @param DriverInterface $connection
+     * @param DriverInterface $driver
      */
-    public function setConnection(DriverInterface $connection)
+    public function setDriver(DriverInterface $driver)
     {
-        $this->connection = $connection;
+        $this->driver = $driver;
     }
 }

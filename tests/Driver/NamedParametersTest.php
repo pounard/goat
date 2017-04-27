@@ -17,9 +17,9 @@ class NamedParametersTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestSchema(DriverInterface $connection)
+    protected function createTestSchema(DriverInterface $driver)
     {
-        $connection->query("
+        $driver->query("
             create temporary table some_table (
                 id serial primary key,
                 foo integer not null,
@@ -28,7 +28,7 @@ class NamedParametersTest extends DriverTestCase
                 id_user integer
             )
         ");
-        $connection->query("
+        $driver->query("
             create temporary table users (
                 id serial primary key,
                 name varchar(255)
@@ -39,9 +39,9 @@ class NamedParametersTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestData(DriverInterface $connection)
+    protected function createTestData(DriverInterface $driver)
     {
-        $connection
+        $driver
             ->insertValues('users')
             ->columns(['name'])
             ->values(["admin"])
@@ -49,7 +49,7 @@ class NamedParametersTest extends DriverTestCase
             ->execute()
         ;
 
-        $idList = $connection
+        $idList = $driver
             ->select('users')
             ->column('id')
             ->orderBy('name')
@@ -60,7 +60,7 @@ class NamedParametersTest extends DriverTestCase
         $this->idAdmin = $idList[0];
         $this->idJean = $idList[1];
 
-        $connection
+        $driver
             ->insertValues('some_table')
             ->columns(['foo', 'bar', 'id_user'])
             ->values([42, 'a', $this->idAdmin])
@@ -77,11 +77,11 @@ class NamedParametersTest extends DriverTestCase
      *
      * @dataProvider driverDataSource
      */
-    public function testNamedParameterSelect($driver, $class)
+    public function testNamedParameterSelect($driverName, $class)
     {
-        $connection = $this->createConnection($driver, $class);
+        $driver = $this->createDriver($driverName, $class);
 
-        $query = $connection->select('some_table');
+        $query = $driver->select('some_table');
         $query
             ->getWhere()
             ->or()
@@ -127,9 +127,9 @@ class NamedParametersTest extends DriverTestCase
      *
      * @dataProvider driverDataSource
      */
-    public function testNamedParameterRawQuery($driver, $class)
+    public function testNamedParameterRawQuery($driverName, $class)
     {
-        $connection = $this->createConnection($driver, $class);
+        $driver = $this->createDriver($driverName, $class);
 
         $this->markTestIncomplete("not implemented yet");
     }
@@ -139,9 +139,9 @@ class NamedParametersTest extends DriverTestCase
      *
      * @dataProvider driverDataSource
      */
-    public function testNamedParameterInsert($driver, $class)
+    public function testNamedParameterInsert($driverName, $class)
     {
-        $connection = $this->createConnection($driver, $class);
+        $driver = $this->createDriver($driverName, $class);
 
         $this->markTestIncomplete("not implemented yet");
     }

@@ -16,9 +16,9 @@ class TransactionTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestSchema(DriverInterface $connection)
+    protected function createTestSchema(DriverInterface $driver)
     {
-        $connection->query("
+        $driver->query("
             create temporary table transaction_test (
                 id serial primary key,
                 foo integer not null,
@@ -27,26 +27,26 @@ class TransactionTest extends DriverTestCase
         ");
 
 
-        if ($connection->supportsDeferingConstraints()) {
-            $connection->query("
+        if ($driver->supportsDeferingConstraints()) {
+            $driver->query("
                 alter table transaction_test
                     add constraint transaction_test_foo
                     unique (foo)
                     deferrable
             ");
-            $connection->query("
+            $driver->query("
                 alter table transaction_test
                     add constraint transaction_test_bar
                     unique (bar)
                     deferrable
             ");
         } else {
-            $connection->query("
+            $driver->query("
                 alter table transaction_test
                     add constraint transaction_test_foo
                     unique (foo)
             ");
-            $connection->query("
+            $driver->query("
                 alter table transaction_test
                     add constraint transaction_test_bar
                     unique (bar)
@@ -57,9 +57,9 @@ class TransactionTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestData(DriverInterface $connection)
+    protected function createTestData(DriverInterface $driver)
     {
-        $connection
+        $driver
             ->insertValues('transaction_test')
             ->columns(['foo', 'bar'])
             ->values([1, 'a'])
@@ -74,14 +74,14 @@ class TransactionTest extends DriverTestCase
      *
      * @dataProvider driverDataSource
      */
-    public function testTransaction($driver, $class)
+    public function testTransaction($driverName, $class)
     {
-        $connection = $this->createConnection($driver, $class);
+        $driver = $this->createDriver($driverName, $class);
 
-        $transaction = $connection->startTransaction();
+        $transaction = $driver->startTransaction();
         $transaction->start();
 
-        $connection
+        $driver
             ->insertValues('transaction_test')
             ->columns(['foo', 'bar'])
             ->values([4, 'd'])
@@ -90,7 +90,7 @@ class TransactionTest extends DriverTestCase
 
         $transaction->commit();
 
-        $result = $connection
+        $result = $driver
             ->select('transaction_test')
             ->orderBy('foo')
             ->execute()
@@ -108,11 +108,11 @@ class TransactionTest extends DriverTestCase
      *
      * @dataProvider driverDataSource
      */
-    public function testImmediateTransactionFail($driver, $class)
+    public function testImmediateTransactionFail($driverName, $class)
     {
-        $connection = $this->createConnection($driver, $class);
+        $driver = $this->createDriver($driverName, $class);
 
-        $transaction = $connection
+        $transaction = $driver
             ->startTransaction()
             ->start()
             ->deferred() // Defer all
@@ -125,7 +125,7 @@ class TransactionTest extends DriverTestCase
             // if backend does not support defering, this will
             // fail anyway, but the rest of the test is still
             // valid
-            $connection
+            $driver
                 ->insertValues('transaction_test')
                 ->columns(['foo', 'bar'])
                 ->values([2, 'd'])
@@ -133,7 +133,7 @@ class TransactionTest extends DriverTestCase
             ;
 
             // This should fail, bar constraint it immediate
-            $connection
+            $driver
                 ->insertValues('transaction_test')
                 ->columns(['foo', 'bar'])
                 ->values([5, 'b'])
@@ -156,15 +156,15 @@ class TransactionTest extends DriverTestCase
      *
      * @dataProvider driverDataSource
      */
-    public function testDeferredTransactionFail($driver, $class)
+    public function testDeferredTransactionFail($driverName, $class)
     {
-        $connection = $this->createConnection($driver, $class);
+        $driver = $this->createDriver($driverName, $class);
 
-        if (!$connection->supportsDeferingConstraints()) {
+        if (!$driver->supportsDeferingConstraints()) {
             $this->markTestSkipped("driver does not support defering constraints");
         }
 
-        $transaction = $connection
+        $transaction = $driver
             ->startTransaction()
             ->start()
             ->immediate() // Immediate all
@@ -174,7 +174,7 @@ class TransactionTest extends DriverTestCase
         try {
 
             // This should pass, foo constraint it deferred
-            $connection
+            $driver
                 ->insertValues('transaction_test')
                 ->columns(['foo', 'bar'])
                 ->values([2, 'd'])
@@ -182,7 +182,7 @@ class TransactionTest extends DriverTestCase
             ;
 
             // This should fail, bar constraint it immediate
-            $connection
+            $driver
                 ->insertValues('transaction_test')
                 ->columns(['foo', 'bar'])
                 ->values([5, 'b'])
@@ -205,15 +205,15 @@ class TransactionTest extends DriverTestCase
      *
      * @dataProvider driverDataSource
      */
-    public function testDeferredAllTransactionFail($driver, $class)
+    public function testDeferredAllTransactionFail($driverName, $class)
     {
-        $connection = $this->createConnection($driver, $class);
+        $driver = $this->createDriver($driverName, $class);
 
-        if (!$connection->supportsDeferingConstraints()) {
+        if (!$driver->supportsDeferingConstraints()) {
             $this->markTestSkipped("driver does not support defering constraints");
         }
 
-        $transaction = $connection
+        $transaction = $driver
             ->startTransaction()
             ->start()
             ->deferred()
@@ -222,7 +222,7 @@ class TransactionTest extends DriverTestCase
         try {
 
             // This should pass, all are deferred
-            $connection
+            $driver
                 ->insertValues('transaction_test')
                 ->columns(['foo', 'bar'])
                 ->values([2, 'd'])
@@ -230,7 +230,7 @@ class TransactionTest extends DriverTestCase
             ;
 
             // This should pass, all are deferred
-            $connection
+            $driver
                 ->insertValues('transaction_test')
                 ->columns(['foo', 'bar'])
                 ->values([5, 'b'])
@@ -254,14 +254,14 @@ class TransactionTest extends DriverTestCase
      *
      * @dataProvider driverDataSource
      */
-    public function testTransactionRollback($driver, $class)
+    public function testTransactionRollback($driverName, $class)
     {
-        $connection = $this->createConnection($driver, $class);
+        $driver = $this->createDriver($driverName, $class);
 
-        $transaction = $connection->startTransaction();
+        $transaction = $driver->startTransaction();
         $transaction->start();
 
-        $connection
+        $driver
             ->insertValues('transaction_test')
             ->columns(['foo', 'bar'])
             ->values([4, 'd'])
@@ -270,7 +270,7 @@ class TransactionTest extends DriverTestCase
 
         $transaction->rollback();
 
-        $result = $connection
+        $result = $driver
             ->select('transaction_test')
             ->execute()
         ;
@@ -283,22 +283,22 @@ class TransactionTest extends DriverTestCase
      *
      * @dataProvider driverDataSource
      */
-    public function testPendingAllowed($driver, $class)
+    public function testPendingAllowed($driverName, $class)
     {
-        $connection = $this->createConnection($driver, $class);
+        $driver = $this->createDriver($driverName, $class);
 
-        $transaction = $connection->startTransaction();
+        $transaction = $driver->startTransaction();
         $transaction->start();
 
         // Fetch another transaction, it should fail
         try {
-            $connection->startTransaction();
+            $driver->startTransaction();
             $this->fail();
         } catch (TransactionError $e) {
         }
 
         // Fetch another transaction, it should NOT fail
-        $t3 = $connection->startTransaction(Transaction::REPEATABLE_READ, true);
+        $t3 = $driver->startTransaction(Transaction::REPEATABLE_READ, true);
         // @todo temporary deactivating this test since that the profiling
         //   transaction makes it harder
         //$this->assertSame($t3, $transaction);
@@ -312,11 +312,11 @@ class TransactionTest extends DriverTestCase
     /**
      * Internal test for testWeakRefAllowFailOnScopeClose()
      *
-     * @param DriverInterface $connection
+     * @param DriverInterface $driver
      */
-    protected function privateScopeForWeakRef(DriverInterface $connection)
+    protected function privateScopeForWeakRef(DriverInterface $driver)
     {
-        $transaction = $connection->startTransaction();
+        $transaction = $driver->startTransaction();
         $transaction->start();
 
         // Force fail
@@ -330,16 +330,16 @@ class TransactionTest extends DriverTestCase
      *
      * @dataProvider driverDataSource
      */
-    public function testWeakRefAllowFailOnScopeClose($driver, $class)
+    public function testWeakRefAllowFailOnScopeClose($driverName, $class)
     {
-        $connection = $this->createConnection($driver, $class);
+        $driver = $this->createDriver($driverName, $class);
 
         if (!extension_loaded('weakref')) {
             $this->markTestSkipped("this test can only work with the WeakRef extension");
         }
 
         try {
-            $this->privateScopeForWeakRef($connection);
+            $this->privateScopeForWeakRef($driver);
             $this->fail();
         } catch (TransactionError $e) {
             // Success
@@ -351,14 +351,14 @@ class TransactionTest extends DriverTestCase
      *
      * @dataProvider driverDataSource
      */
-    public function testTransactionSavepoint($driver, $class)
+    public function testTransactionSavepoint($driverName, $class)
     {
-        $connection = $this->createConnection($driver, $class);
+        $driver = $this->createDriver($driverName, $class);
 
-        $transaction = $connection->startTransaction();
+        $transaction = $driver->startTransaction();
         $transaction->start();
 
-        $connection
+        $driver
             ->update('transaction_test')
             ->set('bar', 'z')
             ->condition('foo', 1)
@@ -367,7 +367,7 @@ class TransactionTest extends DriverTestCase
 
         $transaction->savepoint('bouyaya');
 
-        $connection
+        $driver
             ->update('transaction_test')
             ->set('bar', 'y')
             ->condition('foo', 2)
@@ -377,7 +377,7 @@ class TransactionTest extends DriverTestCase
         $transaction->rollbackToSavepoint('bouyaya');
         $transaction->commit();
 
-        $oneBar = $connection
+        $oneBar = $driver
             ->select('transaction_test')
             ->column('bar')
             ->condition('foo', 1)
@@ -387,7 +387,7 @@ class TransactionTest extends DriverTestCase
         // This should have pass since it's before the savepoint
         $this->assertSame('z', $oneBar);
 
-        $twoBar = $connection
+        $twoBar = $driver
             ->select('transaction_test')
             ->column('bar')
             ->condition('foo', 2)
