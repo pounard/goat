@@ -17,7 +17,7 @@ trait RunnerAwareTrait
     /**
      * Set runner
      *
-     * @param RunnerInterface $driver
+     * @param RunnerInterface $runner
      */
     public function setRunner(RunnerInterface $runner)
     {

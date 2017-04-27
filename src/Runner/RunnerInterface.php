@@ -10,6 +10,36 @@ use Goat\Query\Query;
 interface RunnerInterface
 {
     /**
+     * Creates a new transaction
+     *
+     * If a transaction is pending, continue the same transaction by adding a
+     * new savepoint that will be transparently rollbacked in case of failure
+     * in between.
+     *
+     * @param int $isolationLevel
+     *   Default transaction isolation level, it is advised that you set it
+     *   directly at this point, since some drivers don't allow isolation
+     *   level changes while transaction is started
+     * @param bool $allowPending = false
+     *   If set to true, explicitely allow to fetch the currently pending
+     *   transaction, else errors will be raised
+     *
+     * @throws TransactionError
+     *   If you asked a new transaction while another one is opened, or if the
+     *   transaction fails starting
+     *
+     * @return Transaction
+     */
+    public function startTransaction(int $isolationLevel = Transaction::REPEATABLE_READ, bool $allowPending = false) : Transaction;
+
+    /**
+     * Is there a pending transaction
+     *
+     * @return bool
+     */
+    public function isTransactionPending() : bool;
+
+    /**
      * Send query
      *
      * @param string|Query $query

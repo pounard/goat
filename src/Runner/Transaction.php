@@ -8,8 +8,6 @@ use Goat\Error\TransactionError;
 
 /**
  * Represents a transaction
- *
- * Each driver must implement it.
  */
 interface Transaction extends RunnerAwareInterface
 {

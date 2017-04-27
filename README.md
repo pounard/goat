@@ -86,7 +86,7 @@ This API is composed of several components, that are slightly coupled:
    fluent API, it only depends on the converters, to build those queries,
    and on the runnable, to execute those queries;
 
- * Drivers are complete implementation of runnables, which depends upon all
+ * Drivers are complete implementations of runnables, which depends upon all
    the other components.
 
 

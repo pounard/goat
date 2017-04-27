@@ -10,7 +10,7 @@ namespace Goat\Runner;
 interface RunnerAwareInterface
 {
     /**
-     * Set driver
+     * Set runner
      *
      * @param RunnerInterface $runner
      */
