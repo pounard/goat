@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Goat\Tests\Driver;
 
-use Goat\Driver\DriverInterface;
 use Goat\Query\Query;
+use Goat\Runner\RunnerInterface;
 use Goat\Tests\Driver\Mock\InsertAndTheCatSays;
 use Goat\Tests\DriverTestCase;
 
@@ -14,7 +14,7 @@ class InsertTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestSchema(DriverInterface $driver)
+    protected function createTestSchema(RunnerInterface $driver)
     {
         $driver->query("
             create temporary table some_table (
@@ -35,7 +35,7 @@ class InsertTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestData(DriverInterface $driver)
+    protected function createTestData(RunnerInterface $driver)
     {
         $driver->insertValues('users')->columns(['name'])->values(["admin"])->values(["jean"])->execute();
     }
@@ -47,7 +47,7 @@ class InsertTest extends DriverTestCase
      */
     public function testSingleValueInsert($driverName, $class)
     {
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
 
         $referenceDate = new \DateTime();
 
@@ -85,7 +85,7 @@ class InsertTest extends DriverTestCase
      */
     public function testBulkValueInsert($driverName, $class)
     {
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
 
         $insert = $driver
             ->insertValues('some_table')
@@ -126,7 +126,7 @@ class InsertTest extends DriverTestCase
      */
     public function testBulkValueInsertWithReturning($driverName, $class)
     {
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
 
         // Add one value, so there is data in the table, it will ensure that
         // the returning count is the right one
@@ -202,7 +202,7 @@ class InsertTest extends DriverTestCase
      */
     public function testBulkValueInsertWithReturningAndHydration($driverName, $class)
     {
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
 
         if (!$driver->supportsReturning()) {
             $this->markTestIncomplete("driver does not support RETURNING");
@@ -234,7 +234,7 @@ class InsertTest extends DriverTestCase
      */
     public function testBulkInsertFromQuery($driverName, $class)
     {
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
 
         $this->markTestIncomplete("not implemented yet");
     }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Goat\Tests\Driver;
 
-use Goat\Driver\DriverInterface;
 use Goat\Query\Query;
+use Goat\Runner\RunnerInterface;
 use Goat\Tests\DriverTestCase;
 
 class TruncateTest extends DriverTestCase
@@ -13,7 +13,7 @@ class TruncateTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestSchema(DriverInterface $driver)
+    protected function createTestSchema(RunnerInterface $driver)
     {
         $driver->query("
             create temporary table some_table (
@@ -41,7 +41,7 @@ class TruncateTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestData(DriverInterface $driver)
+    protected function createTestData(RunnerInterface $driver)
     {
         $driver
             ->insertValues('users')

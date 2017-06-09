@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Goat\Tests\Driver\Mapper;
 
-use Goat\Driver\DriverInterface;
 use Goat\Error\QueryError;
 use Goat\Mapper\Error\EntityNotFoundError;
 use Goat\Mapper\MapperInterface;
 use Goat\Query\ExpressionRaw;
 use Goat\Query\Query;
 use Goat\Query\Where;
+use Goat\Runner\RunnerInterface;
 use Goat\Tests\DriverTestCase;
 
 /**
@@ -24,7 +24,7 @@ abstract class AbstractMapperTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestSchema(DriverInterface $driver)
+    protected function createTestSchema(RunnerInterface $driver)
     {
         $driver->query("
             create temporary table some_entity (
@@ -47,7 +47,7 @@ abstract class AbstractMapperTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestData(DriverInterface $driver)
+    protected function createTestData(RunnerInterface $driver)
     {
         $driver
             ->insertValues('users')
@@ -92,7 +92,7 @@ abstract class AbstractMapperTest extends DriverTestCase
     /**
      * Create the mapper to test
      *
-     * @param DriverInterface $driver
+     * @param RunnerInterface $driver
      *   Current connection to test with
      * @param string $class
      *   Object class to use for hydrators
@@ -101,12 +101,12 @@ abstract class AbstractMapperTest extends DriverTestCase
      *
      * @return MapperInterface
      */
-    abstract protected function createMapper(DriverInterface $driver, string $class, array $primaryKey) : MapperInterface;
+    abstract protected function createMapper(RunnerInterface $driver, string $class, array $primaryKey) : MapperInterface;
 
     /**
      * Create writable mapper to test
      *
-     * @param DriverInterface $driver
+     * @param RunnerInterface $driver
      *   Current connection to test with
      * @param string $class
      *   Object class to use for hydrators
@@ -115,7 +115,7 @@ abstract class AbstractMapperTest extends DriverTestCase
      *
      * @return MapperInterface
      */
-    abstract protected function createWritableMapper(DriverInterface $driver, string $class, array $primaryKey) : MapperInterface;
+    abstract protected function createWritableMapper(RunnerInterface $driver, string $class, array $primaryKey) : MapperInterface;
 
     /**
      * Tests various utility methods
@@ -124,21 +124,21 @@ abstract class AbstractMapperTest extends DriverTestCase
      */
     public function testUtilityMethods($driverName, $class)
     {
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
 
         $mapper = $this->createMapper($driver, MappedEntity::class, ['t.id']);
         $relation = $mapper->getRelation();
         $this->assertSame('some_entity', $relation->getName());
         $this->assertSame('t', $relation->getAlias());
         $this->assertSame(MappedEntity::class, $mapper->getClassName());
-        $this->assertSame($driver, $mapper->getDriver());
+        $this->assertSame($driver, $mapper->getRunner());
 
         $mapper = $this->createWritableMapper($driver, MappedEntity::class, ['t.id']);
         $relation = $mapper->getRelation();
         $this->assertSame('some_entity', $relation->getName());
         $this->assertSame('t', $relation->getAlias());
         $this->assertSame(MappedEntity::class, $mapper->getClassName());
-        $this->assertSame($driver, $mapper->getDriver());
+        $this->assertSame($driver, $mapper->getRunner());
     }
 
     /**
@@ -148,7 +148,7 @@ abstract class AbstractMapperTest extends DriverTestCase
      */
     public function testFind($driverName, $class)
     {
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
         $mapper = $this->createMapper($driver, MappedEntity::class, ['t.id']);
 
         foreach ([1, [1]] as $id) {
@@ -191,7 +191,7 @@ abstract class AbstractMapperTest extends DriverTestCase
      */
     public function testFindFirst($driverName, $class)
     {
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
         $mapper = $this->createMapper($driver, MappedEntity::class, ['t.id']);
 
         $item1 = $mapper->findFirst(['id_user' => $this->idAdmin]);
@@ -219,7 +219,7 @@ abstract class AbstractMapperTest extends DriverTestCase
      */
     public function testFindMultiple($driverName, $class)
     {
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
         $mapper = $this->createMapper($driver, MappedEntity::class, ['foo', 'status']);
 
         $item1 = $mapper->findOne([2, 1]);
@@ -244,7 +244,7 @@ abstract class AbstractMapperTest extends DriverTestCase
      */
     public function testFindByCriteria($driverName, $class)
     {
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
         $mapper = $this->createMapper($driver, MappedEntity::class, ['id']);
 
         // Most simple condition ever
@@ -304,7 +304,7 @@ abstract class AbstractMapperTest extends DriverTestCase
      */
     public function testPaginate($driverName, $class)
     {
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
         $mapper = $this->createMapper($driver, MappedEntity::class, ['id']);
 
         // Most simple condition ever

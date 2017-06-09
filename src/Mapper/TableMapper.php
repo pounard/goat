@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace Goat\Mapper;
 
-use Goat\Driver\DriverInterface;
 use Goat\Error\ConfigurationError;
 use Goat\Query\Query;
 use Goat\Query\SelectQuery;
-use Goat\Query\Where;
+use Goat\Runner\RunnerInterface;
 
 /**
  * Mapper implementation that is based upon the SelectMapper, it builds the
@@ -23,7 +22,7 @@ class TableMapper extends SelectMapper
     /**
      * Default constructor
      *
-     * @param DriverInterface $driver
+     * @param RunnerInterface $runner
      *   Connection is mandatory in order to build the select query
      * @param string $class
      *   Default class to use for hydration
@@ -46,11 +45,11 @@ class TableMapper extends SelectMapper
      *         - mode: the join mode, must be a Query::JOIN_* constant, default
      *           is INNER JOIN
      */
-    public function __construct(DriverInterface $driver, string $class, array $primaryKey, $definition)
+    public function __construct(RunnerInterface $runner, string $class, array $primaryKey, $definition)
     {
         $this->parseDefinition($definition);
 
-        parent::__construct($driver, $class, $primaryKey, $this->buildSelect($driver));
+        parent::__construct($runner, $class, $primaryKey, $this->buildSelect($runner));
     }
 
     /**
@@ -91,9 +90,9 @@ class TableMapper extends SelectMapper
      *
      * @return SelectQuery
      */
-    private function buildSelect(DriverInterface $driver) : SelectQuery
+    private function buildSelect(RunnerInterface $runner) : SelectQuery
     {
-        $select = $driver->select($this->relation, $this->relationAlias);
+        $select = $runner->select($this->relation, $this->relationAlias);
 
         foreach ($this->joins as $join) {
             $select->join($join['relation'], $join['condition'], $join['alias'], $join['mode']);

@@ -8,6 +8,7 @@ use Goat\Driver\DriverInterface;
 use Goat\Error\GoatError;
 use Goat\Error\TransactionError;
 use Goat\Error\TransactionFailedError;
+use Goat\Runner\RunnerInterface;
 use Goat\Runner\Transaction;
 use Goat\Tests\DriverTestCase;
 
@@ -16,7 +17,7 @@ class TransactionTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestSchema(DriverInterface $driver)
+    protected function createTestSchema(RunnerInterface $driver)
     {
         $driver->query("
             create temporary table transaction_test (
@@ -57,7 +58,7 @@ class TransactionTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestData(DriverInterface $driver)
+    protected function createTestData(RunnerInterface $driver)
     {
         $driver
             ->insertValues('transaction_test')
@@ -76,7 +77,7 @@ class TransactionTest extends DriverTestCase
      */
     public function testTransaction($driverName, $class)
     {
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
 
         $transaction = $driver->startTransaction();
         $transaction->start();
@@ -110,7 +111,7 @@ class TransactionTest extends DriverTestCase
      */
     public function testImmediateTransactionFail($driverName, $class)
     {
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
 
         $transaction = $driver
             ->startTransaction()
@@ -158,7 +159,7 @@ class TransactionTest extends DriverTestCase
      */
     public function testDeferredTransactionFail($driverName, $class)
     {
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
 
         if (!$driver->supportsDeferingConstraints()) {
             $this->markTestSkipped("driver does not support defering constraints");
@@ -207,7 +208,7 @@ class TransactionTest extends DriverTestCase
      */
     public function testDeferredAllTransactionFail($driverName, $class)
     {
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
 
         if (!$driver->supportsDeferingConstraints()) {
             $this->markTestSkipped("driver does not support defering constraints");
@@ -256,7 +257,7 @@ class TransactionTest extends DriverTestCase
      */
     public function testTransactionRollback($driverName, $class)
     {
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
 
         $transaction = $driver->startTransaction();
         $transaction->start();
@@ -285,7 +286,7 @@ class TransactionTest extends DriverTestCase
      */
     public function testPendingAllowed($driverName, $class)
     {
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
 
         $transaction = $driver->startTransaction();
         $transaction->start();
@@ -332,7 +333,7 @@ class TransactionTest extends DriverTestCase
      */
     public function testWeakRefAllowFailOnScopeClose($driverName, $class)
     {
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
 
         if (!extension_loaded('weakref')) {
             $this->markTestSkipped("this test can only work with the WeakRef extension");
@@ -353,7 +354,7 @@ class TransactionTest extends DriverTestCase
      */
     public function testTransactionSavepoint($driverName, $class)
     {
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
 
         $transaction = $driver->startTransaction();
         $transaction->start();

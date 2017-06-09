@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Goat\Tests\Driver\Mapper;
 
-use Goat\Driver\DriverInterface;
 use Goat\Mapper\MapperInterface;
 use Goat\Mapper\TableMapper;
 use Goat\Mapper\WritableTableMapper;
+use Goat\Runner\RunnerInterface;
 
 /**
  * Tests the selet based mapper
@@ -37,7 +37,7 @@ class TableMapperTest extends AbstractMapperTest
     /**
      * {@inheritdoc}
      */
-    protected function createMapper(DriverInterface $driver, string $class, array $primaryKey) : MapperInterface
+    protected function createMapper(RunnerInterface $driver, string $class, array $primaryKey) : MapperInterface
     {
         return new TableMapper($driver, $class, $primaryKey, $this->getTableMapperDefinition());
     }
@@ -45,7 +45,7 @@ class TableMapperTest extends AbstractMapperTest
     /**
      * {@inheritdoc}
      */
-    protected function createWritableMapper(DriverInterface $driver, string $class, array $primaryKey) : MapperInterface
+    protected function createWritableMapper(RunnerInterface $driver, string $class, array $primaryKey) : MapperInterface
     {
         return new WritableTableMapper($driver, $class, $primaryKey, $this->getTableMapperDefinition());
     }

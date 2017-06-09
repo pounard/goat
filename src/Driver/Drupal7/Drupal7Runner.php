@@ -2,33 +2,42 @@
 
 declare(strict_types=1);
 
-namespace Goat\Driver\PDO;
+namespace Goat\Driver\Drupal7;
 
 use Goat\Converter\ConverterAwareTrait;
 use Goat\Converter\ConverterMap;
+use Goat\Driver\PDO\DefaultResultIterator;
+use Goat\Driver\PDO\PDOMySQLEscaper;
+use Goat\Driver\PDO\PDOMySQLFormatter;
+use Goat\Driver\PDO\PDOPgSQLEscaper;
+use Goat\Driver\PDO\PDOPgSQLFormatter;
 use Goat\Error\DriverError;
 use Goat\Error\GoatError;
 use Goat\Error\NotImplementedError;
 use Goat\Error\QueryError;
-use Goat\Query\QueryFactoryInterface;
+use Goat\Query\Query;
 use Goat\Query\QueryFactoryRunnerTrait;
 use Goat\Runner\EmptyResultIterator;
 use Goat\Runner\ResultIteratorInterface;
 use Goat\Runner\RunnerInterface;
+use Goat\Runner\RunnerTrait;
 use Goat\Runner\Transaction;
 
 /**
  * Drupal 7 runnable: not a Driver: it doesn't need to handle the connection
  */
-class Drupal7Runner implements RunnerInterface, QueryFactoryInterface
+class Drupal7Runner implements RunnerInterface
 {
     use ConverterAwareTrait;
     use QueryFactoryRunnerTrait;
+    use RunnerTrait;
 
     private $connection;
     private $escaper;
     private $formatter;
     private $prepared = [];
+    private $supportsDefering = false;
+    private $supportsReturning = false;
 
     /**
      * Default constructor
@@ -50,6 +59,8 @@ class Drupal7Runner implements RunnerInterface, QueryFactoryInterface
             case 'pgsql':
                 $this->escaper = new PDOPgSQLEscaper($connection);
                 $this->formatter = new PDOPgSQLFormatter($this->escaper);
+                $this->supportsDefering = true;
+                $this->supportsReturning = true;
                 break;
 
             default:
@@ -60,47 +71,49 @@ class Drupal7Runner implements RunnerInterface, QueryFactoryInterface
     }
 
     /**
-     * Creates a new transaction
-     *
-     * If a transaction is pending, continue the same transaction by adding a
-     * new savepoint that will be transparently rollbacked in case of failure
-     * in between.
-     *
-     * @param int $isolationLevel
-     *   Default transaction isolation level, it is advised that you set it
-     *   directly at this point, since some drivers don't allow isolation
-     *   level changes while transaction is started
-     * @param bool $allowPending = false
-     *   If set to true, explicitely allow to fetch the currently pending
-     *   transaction, else errors will be raised
-     *
-     * @throws TransactionError
-     *   If you asked a new transaction while another one is opened, or if the
-     *   transaction fails starting
-     *
-     * @return Transaction
+     * {@inheritdoc}
      */
-    public function startTransaction(int $isolationLevel = Transaction::REPEATABLE_READ, bool $allowPending = false) : Transaction
+    public function setConverter(ConverterMap $converter)
     {
-        throw new NotImplementedError();
+        $this->converter = $converter;
+        $this->formatter->setConverter($converter);
     }
 
     /**
-     * Is there a pending transaction
-     *
-     * @return bool
+     * {@inheritdoc}
      */
-    public function isTransactionPending() : bool
+    public function supportsReturning() : bool
     {
+        return $this->supportsReturning;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supportsDeferingConstraints() : bool
+    {
+        return $this->supportsDefering;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function doStartTransaction(int $isolationLevel = Transaction::REPEATABLE_READ) : Transaction
+    {
+        // Real question being: should we or should we not proxify with Drupal
+        // transactions? It'd make the whole more stable and robust, but our
+        // code much more complex to maintain; and Drupal transactions are meant
+        // to auto-commit when going out of scope, it does not match *at all*
+        // the way we do things ourselves.
         throw new NotImplementedError();
     }
 
     /**
      * Create the result iterator instance
      *
-     * @param $options = null
+     * @param $options
      *   Query options
-     * @param ...$constructorArgs
+     * @param mixed[] $constructorArgs
      *   Driver specific parameters
      *
      * @return ResultIteratorInterface

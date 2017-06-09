@@ -35,14 +35,14 @@ final class Dsn
     const DEFAULT_PORT_PGSQL = 5432;
     const DEFAULT_CHARSET = 'utf8';
 
-    private $driver;
-    private $scheme;
-    private $host;
+    private $driver = '';
+    private $scheme = '';
+    private $host = '';
     private $port = 0;
     private $charset = self::DEFAULT_CHARSET;
-    private $database;
-    private $username;
-    private $password;
+    private $database = '';
+    private $username = '';
+    private $password = '';
 
     /**
      * Default constructor
@@ -70,10 +70,14 @@ final class Dsn
             if (empty($this->port)) {
                 switch ($this->driver) {
 
+                    case 'drupal7_mysql':
+                    case 'drupal8_mysql':
                     case 'pdo_mysql':
                         $this->port = self::DEFAULT_PORT_MYSQL;
                         break;
 
+                    case 'drupal7_pgsql':
+                    case 'drupal8_pgsql':
                     case 'ext_pgsql':
                     case 'pdo_pgsql':
                         $this->port = self::DEFAULT_PORT_PGSQL;
@@ -100,12 +104,6 @@ final class Dsn
             throw new ConfigurationError(sprintf("%s: invalid dsn", $string));
         }
 
-        // @todo make this dynamic
-        $supportedDrivers = ['ext_pgsql', 'pdo_mysql', 'pdo_pgsql'];
-        if (!in_array($this->driver, $supportedDrivers)) {
-            throw new ConfigurationError(sprintf("%s: only supports '%s', '%s' given", implode("', '", $supportedDrivers), $string, $this->driver));
-        }
-
         if (empty($this->database)) {
             throw new ConfigurationError(sprintf("%s: database name is mandatory", $string));
         }
@@ -124,7 +122,7 @@ final class Dsn
      */
     public function getUsername() : string
     {
-        return $this->username;
+        return $this->username ?? '';
     }
 
     /**
@@ -134,7 +132,7 @@ final class Dsn
      */
     public function getPassword() : string
     {
-        return $this->password;
+        return $this->password ?? '';
     }
 
     /**
@@ -144,7 +142,7 @@ final class Dsn
      */
     public function getDriver() : string
     {
-        return $this->driver;
+        return $this->driver ?? '';
     }
 
     /**
@@ -154,7 +152,7 @@ final class Dsn
      */
     public function getScheme() : string
     {
-        return $this->scheme;
+        return $this->scheme ?? '';
     }
 
     /**
@@ -164,7 +162,7 @@ final class Dsn
      */
     public function getHost() : string
     {
-        return $this->host;
+        return $this->host ?? '';
     }
 
     /**
@@ -174,7 +172,7 @@ final class Dsn
      */
     public function getPort() : int
     {
-        return $this->port;
+        return $this->port ?? 0;
     }
 
     /**
@@ -184,7 +182,7 @@ final class Dsn
      */
     public function getSocketPath() : string
     {
-        return $this->host;
+        return $this->host ?? '';
     }
 
     /**
@@ -255,11 +253,15 @@ final class Dsn
         //   even using the same driver
         switch ($this->driver) {
 
+            case 'drupal7_mysql':
+            case 'drupal8_mysql':
             case 'pdo_mysql':
                 $map['charset'] = $this->charset;
                 $PDODriver = 'mysql';
                 break;
 
+            case 'drupal7_pgsql':
+            case 'drupal8_pgsql':
             case 'ext_pgsql':
             case 'pdo_pgsql':
                 $map['client_encoding'] = $this->charset;

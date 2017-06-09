@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Goat\Tests\Driver;
 
-use Goat\Driver\DriverInterface;
 use Goat\Query\ExpressionColumn;
 use Goat\Query\ExpressionRaw;
 use Goat\Query\Query;
 use Goat\Query\Where;
+use Goat\Runner\RunnerInterface;
 use Goat\Tests\DriverTestCase;
 
 class UpdateTest extends DriverTestCase
@@ -19,7 +19,7 @@ class UpdateTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestSchema(DriverInterface $driver)
+    protected function createTestSchema(RunnerInterface $driver)
     {
         $driver->query("
             create temporary table some_table (
@@ -41,7 +41,7 @@ class UpdateTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestData(DriverInterface $driver)
+    protected function createTestData(RunnerInterface $driver)
     {
         $driver
             ->insertValues('users')
@@ -81,7 +81,7 @@ class UpdateTest extends DriverTestCase
      */
     public function testUpdateWhere($driverName, $class)
     {
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
 
         $result = $driver
             ->update('some_table')
@@ -125,7 +125,7 @@ class UpdateTest extends DriverTestCase
      */
     public function testUpdateJoin($driverName, $class)
     {
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
 
         $result = $driver
             ->update('some_table', 't')
@@ -166,7 +166,7 @@ class UpdateTest extends DriverTestCase
      */
     public function testUpdateWhereIn($driverName, $class)
     {
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
 
         $selectInQuery = $driver
             ->select('users')
@@ -212,7 +212,7 @@ class UpdateTest extends DriverTestCase
      */
     public function testUpateReturning($driverName, $class)
     {
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
 
         if (!$driver->supportsReturning()) {
             $this->markTestIncomplete("driver does not support RETURNING");
@@ -241,7 +241,7 @@ class UpdateTest extends DriverTestCase
      */
     public function testUpateSetExpressionColumn($driverName, $class)
     {
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
 
         $result = $driver
             ->update('some_table', 't')
@@ -275,7 +275,7 @@ class UpdateTest extends DriverTestCase
      */
     public function testUpateSetExpressionRaw($driverName, $class)
     {
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
 
         $result = $driver
             ->update('some_table', 't')
@@ -309,7 +309,7 @@ class UpdateTest extends DriverTestCase
      */
     public function testUpateSetSelectQuery($driverName, $class)
     {
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
 
         $selectValueQuery = $driver
             ->select('users', 'z')
@@ -352,7 +352,7 @@ class UpdateTest extends DriverTestCase
      */
     public function testUpateSetSqlStatement($driverName, $class)
     {
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
 
         $result = $driver
             ->update('some_table')

@@ -47,15 +47,27 @@
 
     <php>
         <!--
-        <env name="PDO_MYSQL_DSN" value="pdo_mysql://192.168.57.102/some_database" />
-        <env name="PDO_MYSQL_USERNAME" value="some_user" />
-        <env name="PDO_MYSQL_PASSWORD" value="some_password" />
-        <env name="PDO_PGSQL_DSN" value="pdo_pgsql://192.168.57.102/some_database" />
-        <env name="PDO_PGSQL_USERNAME" value="some_user" />
-        <env name="PDO_PGSQL_PASSWORD" value="some_password" />
+        <env name="DRUPAL7_MYSQL_DSN" value="pgsql://192.168.57.102/some_database" />
+        <env name="DRUPAL7_MYSQL_PATH" value="/var/www/my-drupal-site/webroot" />
+        <env name="DRUPAL7_MYSQL_PASSWORD" value="some_password" />
+        <env name="DRUPAL7_MYSQL_USERNAME" value="some_user" />
+        <env name="DRUPAL7_PGSQL_DSN" value="mysql://192.168.57.102/some_database" />
+        <env name="DRUPAL7_PGSQL_PATH" value="/var/www/my-drupal-site/webroot" />
+        <env name="DRUPAL7_PGSQL_PASSWORD" value="some_password" />
+        <env name="DRUPAL7_PGSQL_USERNAME" value="some_user" />
+        <env name="DRUPAL8_MYSQL_DSN" value="pgsql://192.168.57.102/some_database" />
+        <env name="DRUPAL8_MYSQL_PATH" value="/var/www/my-drupal-site/webroot" />
+        <env name="DRUPAL8_PGSQL_DSN" value="mysql://192.168.57.102/some_database" />
+        <env name="DRUPAL8_PGSQL_PATH" value="/var/www/my-drupal-site/webroot" />
         <env name="EXT_PGSQL_DSN" value="ext_pgsql://192.168.57.102/some_database" />
-        <env name="EXT_PGSQL_USERNAME" value="some_user" />
         <env name="EXT_PGSQL_PASSWORD" value="some_password" />
+        <env name="EXT_PGSQL_USERNAME" value="some_user" />
+        <env name="PDO_MYSQL_DSN" value="pdo_mysql://192.168.57.102/some_database" />
+        <env name="PDO_MYSQL_PASSWORD" value="some_password" />
+        <env name="PDO_MYSQL_USERNAME" value="some_user" />
+        <env name="PDO_PGSQL_DSN" value="pdo_pgsql://192.168.57.102/some_database" />
+        <env name="PDO_PGSQL_PASSWORD" value="some_password" />
+        <env name="PDO_PGSQL_USERNAME" value="some_user" />
          -->
     </php>
 </phpunit>

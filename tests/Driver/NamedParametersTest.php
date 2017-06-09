@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Goat\Tests\Driver;
 
-use Goat\Driver\DriverInterface;
 use Goat\Error\GoatError;
 use Goat\Query\Query;
+use Goat\Runner\RunnerInterface;
 use Goat\Tests\DriverTestCase;
 
 class NamedParametersTest extends DriverTestCase
@@ -17,7 +17,7 @@ class NamedParametersTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestSchema(DriverInterface $driver)
+    protected function createTestSchema(RunnerInterface $driver)
     {
         $driver->query("
             create temporary table some_table (
@@ -39,7 +39,7 @@ class NamedParametersTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestData(DriverInterface $driver)
+    protected function createTestData(RunnerInterface $driver)
     {
         $driver
             ->insertValues('users')
@@ -79,7 +79,7 @@ class NamedParametersTest extends DriverTestCase
      */
     public function testNamedParameterSelect($driverName, $class)
     {
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
 
         $query = $driver->select('some_table');
         $query
@@ -129,7 +129,7 @@ class NamedParametersTest extends DriverTestCase
      */
     public function testNamedParameterRawQuery($driverName, $class)
     {
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
 
         $this->markTestIncomplete("not implemented yet");
     }
@@ -141,7 +141,7 @@ class NamedParametersTest extends DriverTestCase
      */
     public function testNamedParameterInsert($driverName, $class)
     {
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
 
         $this->markTestIncomplete("not implemented yet");
     }

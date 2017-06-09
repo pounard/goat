@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Goat\Mapper;
 
-use Goat\Driver\DriverAwareTrait;
-use Goat\Driver\DriverInterface;
 use Goat\Error\QueryError;
 use Goat\Mapper\Error\EntityNotFoundError;
 use Goat\Query\ExpressionRelation;
@@ -13,6 +11,8 @@ use Goat\Query\Query;
 use Goat\Query\SelectQuery;
 use Goat\Runner\PagerResultIterator;
 use Goat\Runner\ResultIteratorInterface;
+use Goat\Runner\RunnerAwareTrait;
+use Goat\Runner\RunnerInterface;
 
 /**
  * Table mapper is a simple model implementation that works on an arbitrary
@@ -20,8 +20,8 @@ use Goat\Runner\ResultIteratorInterface;
  */
 class SelectMapper implements MapperInterface
 {
-    use DriverAwareTrait;
     use MapperTrait;
+    use RunnerAwareTrait;
 
     /**
      * @var string
@@ -48,9 +48,9 @@ class SelectMapper implements MapperInterface
      * @param SelectQuery $query
      *   Select query that loads entities
      */
-    public function __construct(DriverInterface $driver, string $class, array $primaryKey, SelectQuery $query)
+    public function __construct(RunnerInterface $runner, string $class, array $primaryKey, SelectQuery $query)
     {
-        $this->driver = $driver;
+        $this->runner = $runner;
         $this->class = $class;
         $this->primaryKey = $primaryKey;
         $this->select = $query;
@@ -79,9 +79,9 @@ class SelectMapper implements MapperInterface
     /**
      * {@inheritdoc}
      */
-    public function getDriver() : DriverInterface
+    public function getRunner() : RunnerInterface
     {
-        return $this->driver;
+        return $this->runner;
     }
 
     /**

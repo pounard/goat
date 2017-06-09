@@ -7,10 +7,7 @@ namespace Goat\Driver;
 use Goat\Converter\ConverterAwareTrait;
 use Goat\Converter\ConverterMap;
 use Goat\Core\DebuggableTrait;
-use Goat\Driver\Dsn;
 use Goat\Error\QueryError;
-use Goat\Hydrator\HydratorMap;
-use Goat\Query\Query;
 use Goat\Query\QueryFactoryRunnerTrait;
 use Goat\Query\Writer\EscaperAwareTrait;
 use Goat\Query\Writer\EscaperInterface;
@@ -175,7 +172,7 @@ abstract class AbstractDriver implements DriverInterface
     /**
      * Do create iterator
      *
-     * @param ...$constructorArgs
+     * @param mixed[] $constructorArgs
      *   Driver specific parameters
      */
     abstract protected function doCreateResultIterator(...$constructorArgs) : ResultIteratorInterface;
@@ -183,9 +180,9 @@ abstract class AbstractDriver implements DriverInterface
     /**
      * Create the result iterator instance
      *
-     * @param $options = null
+     * @param string[] $options
      *   Query options
-     * @param ...$constructorArgs
+     * @param mixed[] $constructorArgs
      *   Driver specific parameters
      *
      * @return ResultIteratorInterface

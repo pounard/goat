@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Goat\Mapper;
 
-use Goat\Driver\DriverInterface;
 use Goat\Query\DeleteQuery;
 use Goat\Query\ExpressionRelation;
 use Goat\Query\InsertQueryQuery;
 use Goat\Query\InsertValuesQuery;
 use Goat\Query\UpdateQuery;
+use Goat\Runner\RunnerInterface;
 
 /**
  * Default implementation for the writable mapper trait
@@ -21,7 +21,7 @@ trait WritableMapperTrait /* implements WritableMapperInterface */
     /**
      * {@inheritdoc}
      */
-    abstract public function getDriver() : DriverInterface;
+    abstract public function getRunner() : RunnerInterface;
 
     /**
      * {@inheritdoc}
@@ -33,7 +33,7 @@ trait WritableMapperTrait /* implements WritableMapperInterface */
      */
     public function createUpdate($criteria = null) : UpdateQuery
     {
-        $update = $this->getDriver()->update($this->getRelation());
+        $update = $this->getRunner()->update($this->getRelation());
 
         if ($criteria) {
             $update->expression($this->createWhereWith($criteria));
@@ -47,7 +47,7 @@ trait WritableMapperTrait /* implements WritableMapperInterface */
      */
     public function createDelete($criteria = null) : DeleteQuery
     {
-        $update = $this->getDriver()->delete($this->getRelation());
+        $update = $this->getRunner()->delete($this->getRelation());
 
         if ($criteria) {
             $update->expression($this->createWhereWith($criteria));
@@ -61,7 +61,7 @@ trait WritableMapperTrait /* implements WritableMapperInterface */
      */
     public function createInsertValues() : InsertValuesQuery
     {
-        return $this->getDriver()->insertValues($this->getRelation());
+        return $this->getRunner()->insertValues($this->getRelation());
     }
 
     /**
@@ -69,6 +69,6 @@ trait WritableMapperTrait /* implements WritableMapperInterface */
      */
     public function createInsertQuery() : InsertQueryQuery
     {
-        return $this->getDriver()->insertQuery($this->getRelation());
+        return $this->getRunner()->insertQuery($this->getRelation());
     }
 }

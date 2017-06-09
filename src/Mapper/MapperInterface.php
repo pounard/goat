@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Goat\Mapper;
 
-use Goat\Driver\DriverAwareInterface;
-use Goat\Driver\DriverInterface;
 use Goat\Mapper\Error\EntityNotFoundError;
 use Goat\Query\Expression;
 use Goat\Query\ExpressionRelation;
@@ -13,6 +11,8 @@ use Goat\Query\SelectQuery;
 use Goat\Query\Where;
 use Goat\Runner\PagerResultIterator;
 use Goat\Runner\ResultIteratorInterface;
+use Goat\Runner\RunnerAwareInterface;
+use Goat\Runner\RunnerInterface;
 
 /**
  * Maps immutable entities on SQL projections, and provides a set of utilities
@@ -21,14 +21,14 @@ use Goat\Runner\ResultIteratorInterface;
  * Insertion, update and delete should happen at the table level, and will not
  * be handled by the mapper interface.
  */
-interface MapperInterface extends DriverAwareInterface
+interface MapperInterface extends RunnerAwareInterface
 {
     /**
-     * Get driver
+     * Get runner
      *
-     * @return DriverInterface
+     * @return RunnerInterface
      */
-    public function getDriver() : DriverInterface;
+    public function getRunner() : RunnerInterface;
 
     /**
      * Get entity class name

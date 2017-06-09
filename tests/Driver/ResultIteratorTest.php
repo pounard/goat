@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Goat\Tests\Driver;
 
-use Goat\Driver\DriverInterface;
 use Goat\Error\GoatError;
 use Goat\Error\InvalidDataAccessError;
 use Goat\Runner\PagerResultIterator;
+use Goat\Runner\RunnerInterface;
 use Goat\Tests\Driver\Mock\TestTypeEntity;
 use Goat\Tests\DriverTestCase;
 
@@ -16,7 +16,7 @@ class ResultIteratorTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestSchema(DriverInterface $driver)
+    protected function createTestSchema(RunnerInterface $driver)
     {
         $driver->query("
             create temporary table type_test (
@@ -33,7 +33,7 @@ class ResultIteratorTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestData(DriverInterface $driver)
+    protected function createTestData(RunnerInterface $driver)
     {
         // ensure table data has the right types
         $driver->query("
@@ -55,7 +55,7 @@ class ResultIteratorTest extends DriverTestCase
      */
     public function testBasicUsage($driverName, $class)
     {
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
 
         $results = $driver->query("select * from type_test");
         $this->assertCount(1, $results);
@@ -96,7 +96,7 @@ class ResultIteratorTest extends DriverTestCase
      */
     public function testOptions($driverName, $class)
     {
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
 
         $select = $driver->select('type_test');
         $select->setOption('class', TestTypeEntity::class);
@@ -122,7 +122,7 @@ class ResultIteratorTest extends DriverTestCase
      */
     public function testPager($driverName, $class)
     {
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
 
         // Create lots of entries
         $insert = $driver->insertValues('type_test')->columns(['foo', 'bar']);
@@ -196,7 +196,7 @@ class ResultIteratorTest extends DriverTestCase
      */
     public function testEmptyIterator($driverName, $class)
     {
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
 
         // Drivers, when going through a non returning query, must return
         // an empty iterator instance instead of a real iterator instance

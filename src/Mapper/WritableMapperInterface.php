@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Goat\Mapper;
 
 use Goat\Query\DeleteQuery;
+use Goat\Query\Expression;
 use Goat\Query\InsertQueryQuery;
 use Goat\Query\InsertValuesQuery;
 use Goat\Query\UpdateQuery;
+use Goat\Query\Where;
 
 /**
  * Add update and insert functions to mappers.

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Goat\Tests\Driver;
 
-use Goat\Driver\DriverInterface;
 use Goat\Error\GoatError;
 use Goat\Query\ExpressionColumn;
 use Goat\Query\ExpressionRelation;
 use Goat\Query\ExpressionValue;
+use Goat\Runner\RunnerInterface;
 use Goat\Tests\DriverTestCase;
 
 /**
@@ -45,7 +45,7 @@ class SecurityTest extends DriverTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createTestSchema(DriverInterface $driver)
+    protected function createTestSchema(RunnerInterface $driver)
     {
         $driver->query("
             create temporary table users (
@@ -102,7 +102,7 @@ class SecurityTest extends DriverTestCase
     {
         $this->markTestSkipped("I AM TO SLOW");
 
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
         $stringSet  = $this->getStrings();
 
         // Those are errors, but valid errors, the SQL backend detected invalid
@@ -206,7 +206,7 @@ class SecurityTest extends DriverTestCase
     {
         $this->markTestSkipped("I AM TO SLOW");
 
-        $driver = $this->createDriver($driverName, $class);
+        $driver = $this->createRunner($driverName, $class);
 
         // Those are errors, but valid errors, the SQL backend detected invalid
         // strings and does not allows them, that's exactly what we are looking

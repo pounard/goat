@@ -3,13 +3,30 @@
 namespace Goat\Runner;
 
 use Goat\Converter\ConverterAwareInterface;
+use Goat\Error\TransactionError;
 use Goat\Hydrator\HydratorMap;
+use Goat\Query\Query;
+use Goat\Query\QueryFactoryInterface;
 
 /**
  * Stripped down representation of a connection/driver that can run queries.
  */
-interface RunnerInterface extends ConverterAwareInterface
+interface RunnerInterface extends ConverterAwareInterface, QueryFactoryInterface
 {
+    /**
+     * Does the backend supports RETURNING clauses
+     *
+     * @return bool
+     */
+    public function supportsReturning() : bool;
+
+    /**
+     * Does the backend supports defering constraints
+     *
+     * @return bool
+     */
+    public function supportsDeferingConstraints() : bool;
+
     /**
      * Creates a new transaction
      *

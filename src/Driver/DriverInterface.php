@@ -11,7 +11,7 @@ use Goat\Runner\RunnerInterface;
 /**
  * Driver interface
  */
-interface DriverInterface extends DebuggableInterface, RunnerInterface, QueryFactoryInterface
+interface DriverInterface extends DebuggableInterface, RunnerInterface
 {
     /**
      * Get database server information
@@ -40,20 +40,6 @@ interface DriverInterface extends DebuggableInterface, RunnerInterface, QueryFac
      * @return string
      */
     public function getDatabaseVersion() : string;
-
-    /**
-     * Does the backend supports RETURNING clauses
-     *
-     * @return bool
-     */
-    public function supportsReturning() : bool;
-
-    /**
-     * Does the backend supports defering constraints
-     *
-     * @return bool
-     */
-    public function supportsDeferingConstraints() : bool;
 
     /**
      * Close connection
