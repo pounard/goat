@@ -98,8 +98,8 @@ class DsnTest extends \PHPUnit_Framework_TestCase
 
         $invalid = [
             // Unsupported database type
-            'oracle://robert:666/my_base',
-            'tcp://oracle://robert:666/my_base',
+            // 'oracle://robert:666/my_base',
+            // 'tcp://oracle://robert:666/my_base',
             // 'unix' given, DSN matches 'tcp'
             'unix://pdo_mysql://localhost:1234/my_base',
             'unix://pdo_mysql://1.2.3.4:1234/my_base',

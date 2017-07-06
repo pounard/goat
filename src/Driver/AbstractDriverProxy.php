@@ -219,14 +219,6 @@ abstract class AbstractDriverProxy implements DriverInterface
     /**
      * {@inheritdoc}
      */
-    public function isDebugEnabled() : bool
-    {
-        return $this->getInnerDriver()->isDebugEnabled();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function setDebug(bool $debug = true)
     {
         return $this->getInnerDriver()->setDebug($debug);
@@ -235,24 +227,8 @@ abstract class AbstractDriverProxy implements DriverInterface
     /**
      * {@inheritdoc}
      */
-    public function debugMessage(string $message, int $level = E_USER_WARNING)
-    {
-        return $this->getInnerDriver()->debugMessage($message, $level);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getEscaper() : EscaperInterface
     {
         return $this->getInnerDriver()->getEscaper();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function debugRaiseException(string $message = null, int $code = null, \Throwable $previous = null)
-    {
-        return $this->getInnerDriver()->debugRaiseException($message, $code, $previous);
     }
 }

@@ -89,6 +89,22 @@ class ProfilingDriverProxy extends AbstractDriverProxy
     /**
      * {@inheritdoc}
      */
+    public function setDebug(bool $debug = true)
+    {
+        $this->driver->setDebug($debug);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isDebugEnabled() : bool
+    {
+        return $this->driver->isDebugEnabled();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function query($query, array $parameters = null, $options = null) : ResultIteratorInterface
     {
         $timer = new Timer();

@@ -315,7 +315,7 @@ class TransactionTest extends DriverTestCase
      *
      * @param DriverInterface $driver
      */
-    protected function privateScopeForWeakRef(DriverInterface $driver)
+    protected function privateScopeForWeakRef(RunnerInterface $driver)
     {
         $transaction = $driver->startTransaction();
         $transaction->start();

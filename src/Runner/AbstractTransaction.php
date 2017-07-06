@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Goat\Runner;
 
-use Goat\Core\DebuggableTrait;
 use Goat\Error\TransactionError;
 
 /**
@@ -12,7 +11,6 @@ use Goat\Error\TransactionError;
  */
 abstract class AbstractTransaction implements Transaction
 {
-    use DebuggableTrait;
     use RunnerAwareTrait;
 
     /**

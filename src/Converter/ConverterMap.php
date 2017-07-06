@@ -10,18 +10,14 @@ use Goat\Converter\Impl\IntegerConverter;
 use Goat\Converter\Impl\IntervalConverter;
 use Goat\Converter\Impl\StringConverter;
 use Goat\Converter\Impl\TimestampConverter;
-use Goat\Core\DebuggableInterface;
-use Goat\Core\DebuggableTrait;
 use Goat\Error\ConfigurationError;
 
 /**
  * Converter map contains references to all existing converters and is the
  * central point of all native to SQL or SQL to native type conversion.
  */
-class ConverterMap implements ConverterInterface, DebuggableInterface
+class ConverterMap implements ConverterInterface
 {
-    use DebuggableTrait;
-
     /**
      * Get default converter map
      *
@@ -99,19 +95,9 @@ class ConverterMap implements ConverterInterface, DebuggableInterface
         ];
     }
 
-    /**
-     * @var string[]
-     */
     private $aliasMap = [];
-
-    /**
-     * @var ConverterInterface[]
-     */
     private $converters = [];
-
-    /**
-     * @var ConverterInterface
-     */
+    private $debug = false;
     private $fallback;
 
     /**
@@ -120,6 +106,16 @@ class ConverterMap implements ConverterInterface, DebuggableInterface
     public function __construct()
     {
         $this->setFallback(new StringConverter());
+    }
+
+    /**
+     * Toggle debug mode
+     *
+     * @param bool $debug
+     */
+    public function setDebug(bool $debug = true)
+    {
+        $this->debug = $debug;
     }
 
     /**

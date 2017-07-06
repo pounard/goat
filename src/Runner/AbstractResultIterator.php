@@ -5,13 +5,11 @@ declare(strict_types=1);
 namespace Goat\Runner;
 
 use Goat\Converter\ConverterAwareTrait;
-use Goat\Core\DebuggableTrait;
 use Goat\Error\InvalidDataAccessError;
 use Goat\Hydrator\HydratorAwareTrait;
 
 abstract class AbstractResultIterator implements ResultIteratorInterface
 {
-    use DebuggableTrait;
     use ConverterAwareTrait;
     use HydratorAwareTrait;
 

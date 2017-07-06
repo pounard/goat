@@ -8,7 +8,6 @@ use Goat\Error\DriverError;
 use Goat\Error\TransactionError;
 use Goat\Error\TransactionFailedError;
 use Goat\Runner\AbstractTransaction;
-use Goat\Runner\Transaction;
 
 class MySQLTransaction extends AbstractTransaction
 {
@@ -34,7 +33,9 @@ class MySQLTransaction extends AbstractTransaction
             // than they asked for, and data consistency is not ensured anymore
             // that's the downside of using MySQL.
             if (1568 == $e->getCode()) {
-                $this->runner->debugMessage("transaction is nested into another, MySQL can't change the isolation level", E_USER_NOTICE);
+                if ($this->runner->isDebugEnabled()) {
+                    trigger_error("transaction is nested into another, MySQL can't change the isolation level", E_USER_NOTICE);
+                }
             } else {
                 throw new TransactionError("transaction start failed", null, $e);
             }
@@ -52,7 +53,9 @@ class MySQLTransaction extends AbstractTransaction
      */
     protected function doChangeLevel(int $isolationLevel)
     {
-        $this->runner->debugMessage("MySQL does not support transaction level change during transaction", E_USER_NOTICE);
+        if ($this->runner->isDebugEnabled()) {
+            trigger_error("MySQL does not support transaction level change during transaction", E_USER_NOTICE);
+        }
     }
 
     /**
@@ -114,7 +117,9 @@ class MySQLTransaction extends AbstractTransaction
      */
     protected function doDeferConstraints(array $constraints)
     {
-        $this->runner->debugMessage("MySQL does not support deferred constraints", E_USER_NOTICE);
+        if ($this->runner->isDebugEnabled()) {
+            trigger_error("MySQL does not support deferred constraints", E_USER_NOTICE);
+        }
     }
 
     /**
@@ -122,7 +127,9 @@ class MySQLTransaction extends AbstractTransaction
      */
     protected function doDeferAll()
     {
-        $this->runner->debugMessage("MySQL does not support deferred constraints", E_USER_NOTICE);
+        if ($this->runner->isDebugEnabled()) {
+            trigger_error("MySQL does not support deferred constraints", E_USER_NOTICE);
+        }
     }
 
     /**

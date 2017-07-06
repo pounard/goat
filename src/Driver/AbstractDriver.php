@@ -6,7 +6,6 @@ namespace Goat\Driver;
 
 use Goat\Converter\ConverterAwareTrait;
 use Goat\Converter\ConverterMap;
-use Goat\Core\DebuggableTrait;
 use Goat\Error\QueryError;
 use Goat\Query\QueryFactoryRunnerTrait;
 use Goat\Query\Writer\EscaperAwareTrait;
@@ -31,11 +30,11 @@ use Goat\Runner\RunnerTrait;
 abstract class AbstractDriver implements DriverInterface
 {
     use ConverterAwareTrait;
-    use DebuggableTrait;
     use EscaperAwareTrait;
     use QueryFactoryRunnerTrait;
     use RunnerTrait;
 
+    private $debug = false;
     private $databaseInfo;
     protected $configuration = [];
     protected $converter;
@@ -57,6 +56,22 @@ abstract class AbstractDriver implements DriverInterface
 
         // Register an empty instance for the converter, in case.
         $this->setConverter(new ConverterMap());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setDebug(bool $debug = true)
+    {
+        $this->debug = $debug;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isDebugEnabled() : bool
+    {
+        return $this->debug;
     }
 
     /**

@@ -6,17 +6,20 @@ namespace Goat\Driver\Drupal7;
 
 use Goat\Converter\ConverterAwareTrait;
 use Goat\Converter\ConverterMap;
+use Goat\Driver\MySQL\MySQLTransaction;
 use Goat\Driver\PDO\DefaultResultIterator;
 use Goat\Driver\PDO\PDOMySQLEscaper;
 use Goat\Driver\PDO\PDOMySQLFormatter;
 use Goat\Driver\PDO\PDOPgSQLEscaper;
 use Goat\Driver\PDO\PDOPgSQLFormatter;
+use Goat\Driver\PDO\PgSQLTransaction;
 use Goat\Error\DriverError;
 use Goat\Error\GoatError;
 use Goat\Error\NotImplementedError;
 use Goat\Error\QueryError;
 use Goat\Query\Query;
 use Goat\Query\QueryFactoryRunnerTrait;
+use Goat\Query\Writer\EscaperInterface;
 use Goat\Runner\EmptyResultIterator;
 use Goat\Runner\ResultIteratorInterface;
 use Goat\Runner\RunnerInterface;
@@ -32,6 +35,7 @@ class Drupal7Runner implements RunnerInterface
     use QueryFactoryRunnerTrait;
     use RunnerTrait;
 
+    private $debug = false;
     private $connection;
     private $escaper;
     private $formatter;
@@ -73,6 +77,30 @@ class Drupal7Runner implements RunnerInterface
     /**
      * {@inheritdoc}
      */
+    public function setDebug(bool $debug = true)
+    {
+        $this->debug = $debug;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isDebugEnabled() : bool
+    {
+        return $this->debug;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getEscaper() : EscaperInterface
+    {
+        return $this->escaper;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function setConverter(ConverterMap $converter)
     {
         $this->converter = $converter;
@@ -105,7 +133,23 @@ class Drupal7Runner implements RunnerInterface
         // code much more complex to maintain; and Drupal transactions are meant
         // to auto-commit when going out of scope, it does not match *at all*
         // the way we do things ourselves.
-        throw new NotImplementedError();
+        switch ($this->connection->driver()) {
+
+            case 'mysql':
+                $ret = new MySQLTransaction($isolationLevel);
+                break;
+
+            case 'pgsql':
+                $ret = new PgSQLTransaction($isolationLevel);
+                break;
+
+            default:
+                throw new NotImplementedError(sprintf("database '%s' target is not supported", $this->connection->driver()));
+        }
+
+        $ret->setRunner($this);
+
+        return $ret;
     }
 
     /**

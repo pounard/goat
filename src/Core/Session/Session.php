@@ -72,6 +72,25 @@ class Session extends AbstractDriverProxy
     /**
      * {@inheritdoc}
      */
+    public function setDebug(bool $debug = true)
+    {
+        if ($this->readonlyConnection) {
+            $this->readonlyConnection->setDebug($debug);
+        }
+        $this->writeConnection->setDebug($debug);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isDebugEnabled() : bool
+    {
+        return $this->writeConnection->isDebugEnabled();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function close()
     {
         if ($this->readonlyConnection) {

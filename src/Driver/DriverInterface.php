@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace Goat\Driver;
 
-use Goat\Core\DebuggableInterface;
-use Goat\Query\QueryFactoryInterface;
 use Goat\Runner\RunnerInterface;
 
 /**
  * Driver interface
  */
-interface DriverInterface extends DebuggableInterface, RunnerInterface
+interface DriverInterface extends RunnerInterface
 {
     /**
      * Get database server information

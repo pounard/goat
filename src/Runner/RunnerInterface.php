@@ -7,12 +7,34 @@ use Goat\Error\TransactionError;
 use Goat\Hydrator\HydratorMap;
 use Goat\Query\Query;
 use Goat\Query\QueryFactoryInterface;
+use Goat\Query\Writer\EscaperInterface;
 
 /**
  * Stripped down representation of a connection/driver that can run queries.
  */
 interface RunnerInterface extends ConverterAwareInterface, QueryFactoryInterface
 {
+    /**
+     * Toggle debug mode
+     *
+     * @param bool $debug
+     */
+    public function setDebug(bool $debug = true);
+
+    /**
+     * Is debug mode enabled
+     *
+     * @return bool
+     */
+    public function isDebugEnabled() : bool;
+
+    /**
+     * Get escaper
+     *
+     * @return EscaperInterface
+     */
+    public function getEscaper() : EscaperInterface;
+
     /**
      * Does the backend supports RETURNING clauses
      *
