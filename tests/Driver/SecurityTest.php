@@ -115,7 +115,7 @@ class SecurityTest extends DriverTestCase
         // MySQL, sad MySQL, does not uses a case sensitive collation
         // per default, in most environments those tests would fail.
         // In order to fix that, we do have to reduce the test set.
-        if (false !== stripos('mysql', $driver->getDriverName())) {
+        if (false !== stripos($driver->getDriverName(), 'mysql')) {
             $done = [];
             foreach ($stringSet as $index => $veryBadString) {
 
@@ -138,6 +138,8 @@ class SecurityTest extends DriverTestCase
 
                 $done[$lowered] = true;
             }
+
+            $stringSet = array_values($stringSet);
         }
 
         // Massive bulk insert
