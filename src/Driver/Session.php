@@ -2,10 +2,8 @@
 
 declare(strict_types=1);
 
-namespace Goat\Core\Session;
+namespace Goat\Driver;
 
-use Goat\Driver\AbstractDriverProxy;
-use Goat\Driver\DriverInterface;
 use Goat\Error\ConfigurationError;
 use Goat\Query\SelectQuery;
 use Goat\Runner\ResultIteratorInterface;

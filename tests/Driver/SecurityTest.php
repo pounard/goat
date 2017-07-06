@@ -100,7 +100,7 @@ class SecurityTest extends DriverTestCase
      */
     public function testParameterInjection($driverName, $class)
     {
-        $this->markTestSkipped("I AM TO SLOW");
+        // $this->markTestSkipped("I AM TO SLOW");
 
         $driver = $this->createRunner($driverName, $class);
         $stringSet  = $this->getStrings();
@@ -115,7 +115,7 @@ class SecurityTest extends DriverTestCase
         // MySQL, sad MySQL, does not uses a case sensitive collation
         // per default, in most environments those tests would fail.
         // In order to fix that, we do have to reduce the test set.
-        if (false !== stripos('mysql', $driver->getDatabaseName())) {
+        if (false !== stripos('mysql', $driver->getDriverName())) {
             $done = [];
             foreach ($stringSet as $index => $veryBadString) {
 
@@ -204,7 +204,7 @@ class SecurityTest extends DriverTestCase
      */
     public function testCreateTableAndColumn($driverName, $class)
     {
-        $this->markTestSkipped("I AM TO SLOW");
+        // $this->markTestSkipped("I AM TO SLOW");
 
         $driver = $this->createRunner($driverName, $class);
 

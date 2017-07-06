@@ -19,25 +19,18 @@ interface DriverInterface extends RunnerInterface
     public function getDatabaseInfo() : array;
 
     /**
-     * Get database server name
-     *
-     * @return string
-     */
-    public function getDatabaseName() : string;
-
-    /**
-     * Get driver name
-     *
-     * @return string
-     */
-    public function getDriverName() : string;
-
-    /**
      * Get database version if found
      *
      * @return string
      */
     public function getDatabaseVersion() : string;
+
+    /**
+     * Get database server name
+     *
+     * @return string
+     */
+    public function getDatabaseName() : string;
 
     /**
      * Close connection

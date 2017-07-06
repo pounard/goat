@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Goat\Core\Profiling;
+namespace Goat\Driver\Profiling;
 
 /**
  * Basic timer

@@ -36,6 +36,13 @@ interface RunnerInterface extends ConverterAwareInterface, QueryFactoryInterface
     public function getEscaper() : EscaperInterface;
 
     /**
+     * Get driver name
+     *
+     * @return string
+     */
+    public function getDriverName() : string;
+
+    /**
      * Does the backend supports RETURNING clauses
      *
      * @return bool

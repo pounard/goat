@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Goat\Tests;
 
 use Goat\Converter\ConverterMap;
-use Goat\Core\Profiling\ProfilingDriverProxy;
-use Goat\Core\Session\Session;
 use Goat\Driver\DriverInterface;
 use Goat\Driver\Drupal7\Drupal7Runner;
 use Goat\Driver\Dsn;
+use Goat\Driver\Profiling\ProfilingDriverProxy;
+use Goat\Driver\Session;
 use Goat\Hydrator\HydratorMap;
 use Goat\Runner\RunnerInterface;
 

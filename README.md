@@ -100,18 +100,41 @@ This API is composed of several components, that are slightly coupled:
 
 # Todolist
 
- *  [pending] allow named parameters
- *  [pending] mapper: table proxy interface
- *  [postponed] better parameter handling in AbstractDriver
- *  [postponed] DDL ALTER TABLE? - not sure I want this right now
- *  [postponed] DDL CREATE TABLE? - not sure I want this right now
- *  [postponed] ext-pgsql driver
- *  [postponed] INSERT/UPDATE fallback when RETURNING is not supported
- *  [postponed] MERGE queries
- *  [postponed] performance: reduce functions calls for converters
- *  [postponed] SELECT with sub-select at select level
- *  [postponed] UNION queries
- *  [postponed] WITH support
+ *  [ ] (pending) allow named parameters
+ *  [ ] (pending) mapper: table proxy interface
+ *  [ ] (postponed) better parameter handling in AbstractDriver
+ *  [ ] (postponed) DDL ALTER TABLE? - not sure I want this right now
+ *  [ ] (postponed) DDL CREATE TABLE? - not sure I want this right now
+ *  [ ] (postponed) ext-pgsql driver
+ *  [ ] (postponed) INSERT/UPDATE fallback when RETURNING is not supported
+ *  [ ] (postponed) MERGE queries
+ *  [ ] (postponed) performance: reduce functions calls for converters
+ *  [ ] (postponed) SELECT with sub-select at select level
+ *  [ ] (postponed) UNION queries
+ *  [ ] (postponed) WITH support
+ *  [ ] converters: specific instances per driver
+ *  [ ] converters: type map per driver
+ *  [ ] drupal, travis: install Drupal DBTNG without core for testing
+ *  [ ] drupal: implement drupal 8 runner
+ *  [ ] mapper: createSelect()
+ *  [ ] mapper: findAll() sorting order
+ *  [ ] mapper: findFirst() tests
+ *  [ ] mapper: order by
+ *  [ ] mapper: range
+ *  [ ] mapper: various getters tests
+ *  [ ] MySQL default transaction level in configuration
+ *  [ ] Query cloning does not clone relation (object is immutable)
+ *  [ ] session: connection: add logger and notifications
+ *  [ ] session: test with write and read connections
+ *  [ ] session: write-only/read-only connection support, fallback when transaction
+ *  [ ] transaction: document deffer helpers
+ *  [ ] transaction: document immediate per default
+ *  [ ] transaction: document isolation levels
+ *  [ ] transaction: FOR UPDATE / FOR SHARE query dissociation from SELECT
+ *  [ ] travis: basic integration
+ *  [ ] travis: create a test suite per (driver, database version target) couple
+ *  [ ] travis: use docker to test
+ *  [ ] WHERE builder tests: subqueries tests
  *  [x] <strike>performance: improve get column metadata for PDO</strike>: impossible due to native calls
  *  [x] converters: change method names to avoid confusion with hydrator
  *  [x] converters: per default better definition
@@ -120,6 +143,7 @@ This API is composed of several components, that are slightly coupled:
  *  [x] DDL TRUNCATE testing
  *  [x] DELETE queries
  *  [x] DELETE queries testing
+ *  [x] drupal: implement drupal 7 runner
  *  [x] expression vs statement: query builder improvements
  *  [x] ext_pgsql: basic implementation
  *  [x] ext_pgsql: document it is both faster and more secure
@@ -144,24 +168,3 @@ This API is composed of several components, that are slightly coupled:
  *  [x] UPDATE queries
  *  [x] UPDATE query testing
  *  [x] WHERE with SELECT within
- *  converters: specific instances per driver
- *  converters: type map per driver
- *  mapper: createSelect()
- *  mapper: findAll() sorting order
- *  mapper: findFirst() tests
- *  mapper: order by
- *  mapper: range
- *  mapper: various getters tests
- *  MySQL default transaction level in configuration
- *  Query cloning does not clone relation (object is immutable)
- *  session: connection: add logger and notifications
- *  session: test with write and read connections
- *  session: write-only/read-only connection support, fallback when transaction
- *  transaction: document deffer helpers
- *  transaction: document immediate per default
- *  transaction: document isolation levels
- *  transaction: FOR UPDATE / FOR SHARE query dissociation from SELECT
- *  travis: basic integration
- *  travis: create a test suite per (driver, database version target) couple
- *  travis: use docker to test
- *  WHERE builder tests: subqueries tests

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Goat\Core\Profiling;
+namespace Goat\Driver\Profiling;
 
 use Goat\Runner\RunnerInterface;
 use Goat\Runner\Transaction;

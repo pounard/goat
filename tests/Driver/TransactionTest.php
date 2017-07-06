@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Goat\Tests\Driver;
 
-use Goat\Driver\DriverInterface;
 use Goat\Error\GoatError;
 use Goat\Error\TransactionError;
 use Goat\Error\TransactionFailedError;
@@ -313,7 +312,7 @@ class TransactionTest extends DriverTestCase
     /**
      * Internal test for testWeakRefAllowFailOnScopeClose()
      *
-     * @param DriverInterface $driver
+     * @param RunnerInterface $driver
      */
     protected function privateScopeForWeakRef(RunnerInterface $driver)
     {

@@ -93,6 +93,14 @@ class Drupal7Runner implements RunnerInterface
     /**
      * {@inheritdoc}
      */
+    public function getDriverName() : string
+    {
+        return $this->connection->driver();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getEscaper() : EscaperInterface
     {
         return $this->escaper;
