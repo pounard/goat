@@ -26,7 +26,7 @@ final class FormattedQuery
         $this->parameters = $parameters;
 
         array_walk($parameters, function ($value, $key) {
-            if (!is_scalar($value)) {
+            if (null !== $value && !is_scalar($value)) {
                 throw new QueryError(sprintf("parameter '%s' must be a string, '%s' given", $key, gettype($value)));
             }
         });
