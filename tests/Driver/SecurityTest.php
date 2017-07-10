@@ -100,7 +100,9 @@ class SecurityTest extends DriverTestCase
      */
     public function testParameterInjection($driverName, $class)
     {
-        // $this->markTestSkipped("I AM TO SLOW");
+        if (!getenv('ENABLE_SECURITY')) {
+            return $this->markTestSkipped("security testing is disabled");
+        }
 
         $driver = $this->createRunner($driverName, $class);
         $stringSet  = $this->getStrings();
@@ -206,7 +208,9 @@ class SecurityTest extends DriverTestCase
      */
     public function testCreateTableAndColumn($driverName, $class)
     {
-        // $this->markTestSkipped("I AM TO SLOW");
+        if (!getenv('ENABLE_SECURITY')) {
+            return $this->markTestSkipped("security testing is disabled");
+        }
 
         $driver = $this->createRunner($driverName, $class);
 

@@ -68,6 +68,7 @@
         <env name="PDO_PGSQL_DSN" value="pdo_pgsql://192.168.57.102/some_database" />
         <env name="PDO_PGSQL_PASSWORD" value="some_password" />
         <env name="PDO_PGSQL_USERNAME" value="some_user" />
+        <env name="ENABLE_SECURITY" value="0" />
          -->
     </php>
 </phpunit>
