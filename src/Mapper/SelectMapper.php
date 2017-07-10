@@ -7,7 +7,6 @@ namespace Goat\Mapper;
 use Goat\Error\QueryError;
 use Goat\Mapper\Error\EntityNotFoundError;
 use Goat\Query\ExpressionRelation;
-use Goat\Query\Query;
 use Goat\Query\SelectQuery;
 use Goat\Runner\PagerResultIterator;
 use Goat\Runner\ResultIteratorInterface;
@@ -106,6 +105,22 @@ class SelectMapper implements MapperInterface
     public function createSelect() : SelectQuery
     {
         return clone $this->select;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasPrimaryKey() : bool
+    {
+        return isset($this->primaryKey);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPrimaryKeyCount() : int
+    {
+        return isset($this->primaryKey) ? count($this->primaryKey) : 0;
     }
 
     /**

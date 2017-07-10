@@ -52,6 +52,20 @@ interface MapperInterface extends RunnerAwareInterface
     public function createSelect() : SelectQuery;
 
     /**
+     * Does this mapper has a primary key defined
+     *
+     * @return bool
+     */
+    public function hasPrimaryKey() : bool;
+
+    /**
+     * Get primary key column count
+     *
+     * @return int
+     */
+    public function getPrimaryKeyCount() : int;
+
+    /**
      * Find a single object
      *
      * @param int|string|int[]|string[] $id
