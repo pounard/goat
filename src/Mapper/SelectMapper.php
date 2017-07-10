@@ -65,6 +65,10 @@ class SelectMapper implements MapperInterface
      */
     private function expandPrimaryKey($id) : array
     {
+        if (!$this->primaryKey) {
+            throw new QueryError("mapper has no primary key defined");
+        }
+
         if (!is_array($id)) {
             $id = [$id];
         }
