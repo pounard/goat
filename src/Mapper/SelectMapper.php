@@ -205,6 +205,21 @@ class SelectMapper implements MapperInterface
     /**
      * {@inheritdoc}
      */
+    public function countBy($criteria) : int
+    {
+        $select = $this->createSelect();
+
+        return $select
+            ->expression($this->createWhereWith($criteria))
+            ->getCountQuery()
+            ->execute()
+            ->fetchField()
+        ;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function paginate($criteria, int $limit = 0, int $page = 1) : PagerResultIterator
     {
         $select = $this->createSelect();
