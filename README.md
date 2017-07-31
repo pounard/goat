@@ -1,5 +1,7 @@
 # Goat
 
+[![Build Status](https://travis-ci.org/pounard/goat.svg?branch=master)](https://travis-ci.org/pounard/goat)
+
 Database connector, selection immutability, data mapping.
 
 

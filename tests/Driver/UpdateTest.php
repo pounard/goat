@@ -215,7 +215,7 @@ class UpdateTest extends DriverTestCase
         $driver = $this->createRunner($driverName, $class);
 
         if (!$driver->supportsReturning()) {
-            $this->markTestIncomplete("driver does not support RETURNING");
+            $this->markTestSkipped("driver does not support RETURNING");
         }
 
         $result = $driver
