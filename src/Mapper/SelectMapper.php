@@ -199,8 +199,11 @@ class SelectMapper implements MapperInterface
     {
         $select = $this->createSelect();
 
+        if ($criteria) {
+            $select->expression($this->createWhereWith($criteria));
+        }
+
         return $select
-            ->expression($this->createWhereWith($criteria))
             ->range($limit, $offset)
             ->execute([], ['class' => $this->class])
         ;
@@ -213,8 +216,11 @@ class SelectMapper implements MapperInterface
     {
         $select = $this->createSelect();
 
+        if ($criteria) {
+            $select->expression($this->createWhereWith($criteria));
+        }
+
         return $select
-            ->expression($this->createWhereWith($criteria))
             ->getCountQuery()
             ->execute()
             ->fetchField()
@@ -228,12 +234,10 @@ class SelectMapper implements MapperInterface
     {
         $select = $this->createSelect();
 
-        $select
-            ->expression(
-                $this->createWhereWith($criteria)
-            )
-            ->range($limit, ($page - 1) * $limit)
-        ;
+        if ($criteria) {
+            $select->expression($this->createWhereWith($criteria));
+        }
+        $select->range($limit, ($page - 1) * $limit);
 
         $total = $select->getCountQuery()->execute()->fetchField();
         $result = $select->execute([], ['class' => $this->class]);
