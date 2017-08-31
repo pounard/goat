@@ -43,6 +43,8 @@ trait MapperTrait
             foreach ($criteria as $column => $value) {
                 if (is_int($column)) {
                     $where->expression($value);
+                } else if (is_null($value)) {
+                    $where->isNull($column);
                 } else {
                     $where->condition($column, $value);
                 }

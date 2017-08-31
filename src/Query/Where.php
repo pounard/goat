@@ -98,6 +98,11 @@ final class Where implements Statement
         $this->arguments = null;
     }
 
+    private function operatorNeedsValue(string $operator)
+    {
+        return $operator !== self::IS_NULL && $operator !== self::NOT_IS_NULL;
+    }
+
     /**
      * Normalize value
      *
@@ -145,7 +150,12 @@ final class Where implements Statement
     {
         $column = $this->normalizeColumn($column);
 
-        if (is_array($value)) {
+        if (!$this->operatorNeedsValue($operator)) {
+            if ($value) {
+                throw new QueryError(sprintf("operator %s cannot carry a value", $operator));
+            }
+            $value = null;
+        } else if (is_array($value)) {
             $value = array_map([$this, 'normalizeValue'], $value);
         } else {
             $value = $this->normalizeValue($value);
