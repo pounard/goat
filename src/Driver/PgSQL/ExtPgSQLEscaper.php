@@ -60,6 +60,14 @@ class ExtPgSQLEscaper extends EscaperBase
     /**
      * {@inheritdoc}
      */
+    public function escapeLike(string $string) : string
+    {
+        return addcslashes($string, '\%_');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function escapeBlob(string $word) : string
     {
         if ('' === $word) {

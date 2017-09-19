@@ -42,6 +42,14 @@ abstract class AbstractPDOEscaper extends EscaperBase
     /**
      * {@inheritdoc}
      */
+    public function escapeLike(string $string) : string
+    {
+        return addcslashes($string, '\%_');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function escapeBlob(string $word) : string
     {
         return $this->getPdo()->quote($word, \PDO::PARAM_LOB);

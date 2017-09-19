@@ -19,6 +19,7 @@ final class Where implements Statement
     const EXISTS = 'exists';
     const GREATER = '>';
     const GREATER_OR_EQUAL = '>=';
+    const ILIKE = 'ilike';
     const IN = 'in';
     const IS_NULL = 'is null';
     const LESS = '<';
@@ -27,6 +28,7 @@ final class Where implements Statement
     const NOT_BETWEEN = 'not between';
     const NOT_EQUAL = '<>';
     const NOT_EXISTS = 'not exists';
+    const NOT_ILIKE = 'not ilike';
     const NOT_IN = 'not in';
     const NOT_IS_NULL = 'is not null';
     const NOT_LIKE = 'not like';
@@ -290,6 +292,34 @@ final class Where implements Statement
     public function isNotEqual($column, $value)
     {
         return $this->condition($column, $value, Where::NOT_EQUAL);
+    }
+
+    /**
+     * 'like' condition
+     *
+     * @param string|ExpressionColumn $column
+     * @param mixed[] $values
+     * @param bool $caseSensitive
+     *
+     * @return $this
+     */
+    public function isLike($column, $values, bool $caseSensitive = true)
+    {
+        return $this->condition($column, $values, $caseSensitive ? Where::LIKE : Where::ILIKE);
+    }
+
+    /**
+     * 'not like' condition
+     *
+     * @param string|ExpressionColumn $column
+     * @param mixed[] $values
+     * @param bool $caseSensitive
+     *
+     * @return $this
+     */
+    public function isNotLike($column, $values, bool $caseSensitive = true)
+    {
+        return $this->condition($column, $values, $caseSensitive ? Where::NOT_LIKE : Where::NOT_ILIKE);
     }
 
     /**

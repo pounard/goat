@@ -39,6 +39,15 @@ interface EscaperInterface
     public function escapeLiteral(string $string) : string;
 
     /**
+     * Escape like (string)
+     *
+     * @param string $string
+     *
+     * @return $string
+     */
+    public function escapeLike(string $string) : string;
+
+    /**
      * Escape blob
      *
      * @param string $string
