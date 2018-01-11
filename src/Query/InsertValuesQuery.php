@@ -88,6 +88,10 @@ final class InsertValuesQuery extends AbstractQuery
      */
     public function values(array $values)
     {
+        if (!$this->columns) {
+            $this->columns = array_keys($values);
+        }
+
         if (count($values) !== count($this->columns)) {
             throw new QueryError("values count does not match column count");
         }
