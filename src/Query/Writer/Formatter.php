@@ -563,10 +563,6 @@ class Formatter extends FormatterBase
 
     /**
      * Format given insert query
-     *
-     * @param InsertQuery $query
-     *
-     * @return string
      */
     protected function formatQueryInsertValues(InsertValuesQuery $query) : string
     {

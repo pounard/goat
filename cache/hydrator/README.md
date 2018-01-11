@@ -1,1 +1,0 @@
-This contains the generated hydrator classes.

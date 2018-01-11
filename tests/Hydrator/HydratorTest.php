@@ -11,7 +11,7 @@ class HydratorTest extends \PHPUnit_Framework_TestCase
 {
     public function testBasicFeatures()
     {
-        $hydratorMap = new HydratorMap(__DIR__ . '/../../cache/hydrator');
+        $hydratorMap = new HydratorMap(__DIR__ . '/../../cache');
         $hydrator = $hydratorMap->get(HydratedClass::class);
 
         $test1 = new HydratedClass();

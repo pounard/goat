@@ -23,7 +23,7 @@ abstract class DriverTestCase extends \PHPUnit_Framework_TestCase
      *
      * @return array
      */
-    public static function getKnownDrivers() : array
+    private function getKnownDrivers() : array
     {
         return [
             'pdo_mysql' => \Goat\Driver\PDO\PDOMySQLConnection::class,
@@ -43,7 +43,7 @@ abstract class DriverTestCase extends \PHPUnit_Framework_TestCase
      *
      * @return null|\DatabaseConnection
      */
-    private static function bootstrapDrupal7Database($drupalKey, $path, $host, $username, $password)
+    private function bootstrapDrupal7Database($drupalKey, $path, $host, $username, $password)
     {
           // Skip test
           if (empty($path) || empty($host)) {
@@ -109,14 +109,14 @@ abstract class DriverTestCase extends \PHPUnit_Framework_TestCase
      *
      * @return callable[]
      */
-    public static function getKnownRunners() : array
+    private function getKnownRunners() : array
     {
         return [
             'drupal7_mysql' => function () {
-                return self::bootstrapDrupal7Database('goat_drupal7_mysql', getenv('DRUPAL7_MYSQL_PATH'), getenv('DRUPAL7_MYSQL_DSN'), getenv('DRUPAL7_MYSQL_USERNAME'), getenv('DRUPAL7_MYSQL_PASSWORD'));
+                return $this->bootstrapDrupal7Database('goat_drupal7_mysql', getenv('DRUPAL7_MYSQL_PATH'), getenv('DRUPAL7_MYSQL_DSN'), getenv('DRUPAL7_MYSQL_USERNAME'), getenv('DRUPAL7_MYSQL_PASSWORD'));
             },
             'drupal7_pgsql' => function () {
-                return self::bootstrapDrupal7Database('goat_drupal7_pgsql', getenv('DRUPAL7_PGSQL_PATH'), getenv('DRUPAL7_PGSQL_DSN'), getenv('DRUPAL7_PGSQL_USERNAME'), getenv('DRUPAL7_PGSQL_PASSWORD'));
+                return $this->bootstrapDrupal7Database('goat_drupal7_pgsql', getenv('DRUPAL7_PGSQL_PATH'), getenv('DRUPAL7_PGSQL_DSN'), getenv('DRUPAL7_PGSQL_USERNAME'), getenv('DRUPAL7_PGSQL_PASSWORD'));
             },
         ];
     }
@@ -154,11 +154,11 @@ abstract class DriverTestCase extends \PHPUnit_Framework_TestCase
     {
         $ret = [];
 
-        foreach (self::getKnownDrivers() as $driverName => $class) {
+        foreach ($this->getKnownDrivers() as $driverName => $class) {
             $ret[] = [$driverName, $class];
         }
 
-        foreach (array_keys(self::getKnownRunners()) as $runnerName) {
+        foreach (array_keys($this->getKnownRunners()) as $runnerName) {
             $ret[] = [$runnerName, 'this_is_a_runner'];
         }
 
@@ -202,7 +202,7 @@ abstract class DriverTestCase extends \PHPUnit_Framework_TestCase
      */
     final protected function createHydrator() : HydratorMap
     {
-        return new HydratorMap(__DIR__ . '/../cache/hydrator');
+        return new HydratorMap(__DIR__ . '/../cache');
     }
 
     /**
