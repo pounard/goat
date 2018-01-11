@@ -562,6 +562,14 @@ class Formatter extends FormatterBase
     }
 
     /**
+     * When no values are set in an insert query, what should we write ?
+     */
+    protected function formatInsertNoValuesStatement() : string
+    {
+        return "DEFAULT VALUES";
+    }
+
+    /**
      * Format given insert query
      */
     protected function formatQueryInsertValues(InsertValuesQuery $query) : string
@@ -572,34 +580,37 @@ class Formatter extends FormatterBase
         $columns = $query->getAllColumns();
         $valueCount = $query->getValueCount();
 
-        if (!$valueCount) {
-            throw new QueryError("cannot insert no values");
-        }
-
         $output[] = sprintf(
             "insert into %s",
             // From SQL 92 standard, INSERT queries don't have table alias
             $this->escaper->escapeIdentifier($query->getRelation()->getName())
         );
 
-        if ($columns) {
-            $output[] = sprintf(
-                "(%s) values",
-                implode(', ', array_map(function ($column) use ($escaper) {
-                    return $escaper->escapeIdentifier($column);
-                }, $columns))
-            );
-        }
+        if (!$valueCount) {
+            // Assume there is no specific values, for PostgreSQL, we need to set
+            // "DEFAULT VALUES" explicitely, for MySQL "() VALUES ()" will do the
+            // trick
+            $output[] = $this->formatInsertNoValuesStatement();
 
-        $values = [];
-        for ($i = 0; $i < $valueCount; ++$i) {
-            $values[] = sprintf(
-                "(%s)",
-                implode(', ', array_fill(0, count($columns), '$*'))
-            );
-        }
-        $output[] = implode(', ', $values);
+        } else {
+            if ($columns) {
+                $output[] = sprintf(
+                    "(%s) values",
+                    implode(', ', array_map(function ($column) use ($escaper) {
+                        return $escaper->escapeIdentifier($column);
+                    }, $columns))
+                );
+            }
 
+            $values = [];
+            for ($i = 0; $i < $valueCount; ++$i) {
+                $values[] = sprintf(
+                    "(%s)",
+                    implode(', ', array_fill(0, count($columns), '$*'))
+                );
+            }
+            $output[] = implode(', ', $values);
+        }
 
         $return = $query->getAllReturn();
         if ($return) {

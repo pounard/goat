@@ -28,4 +28,12 @@ class PDOPgSQLFormatter extends Formatter
         // uses the datatypes as it handles it. Very stable and robust.
         return sprintf("%s::%s", $placeholder, $type);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function formatInsertNoValuesStatement() : string
+    {
+        return "DEFAULT VALUES";
+    }
 }

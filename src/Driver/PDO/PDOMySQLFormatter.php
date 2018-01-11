@@ -43,6 +43,14 @@ class PDOMySQLFormatter extends Formatter
     /**
      * {@inheritdoc}
      */
+    protected function formatInsertNoValuesStatement() : string
+    {
+        return "() VALUES ()";
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function formatQueryDelete(DeleteQuery $query) : string
     {
         $output = [];

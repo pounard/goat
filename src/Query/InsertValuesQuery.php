@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Goat\Query;
 
 use Goat\Error\QueryError;
-use Goat\Query\ArgumentBag;
 use Goat\Query\Partial\AbstractQuery;
 use Goat\Query\Partial\ReturningClauseTrait;
 
