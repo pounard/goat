@@ -25,45 +25,43 @@ interface MapperInterface extends RunnerAwareInterface
 {
     /**
      * Get runner
-     *
-     * @return RunnerInterface
      */
     public function getRunner() : RunnerInterface;
 
     /**
      * Get entity class name
-     *
-     * @return string
      */
     public function getClassName() : string;
 
     /**
      * Get relation this mapper works on
-     *
-     * @return ExpressionRelation
      */
     public function getRelation() : ExpressionRelation;
 
     /**
      * Create a select query based upon this mapper definition
-     *
-     * @return SelectQuery
      */
     public function createSelect() : SelectQuery;
 
     /**
      * Does this mapper has a primary key defined
-     *
-     * @return bool
      */
     public function hasPrimaryKey() : bool;
 
     /**
      * Get primary key column count
-     *
-     * @return int
      */
     public function getPrimaryKeyCount() : int;
+
+    /**
+     * Get primary key fields
+     *
+     * @throws \Goat\Error\GoatError
+     *   If primary is not defined
+     *
+     * @return string[]
+     */
+    public function getPrimaryKey() : array;
 
     /**
      * Find a single object

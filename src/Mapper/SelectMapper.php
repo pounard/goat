@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Goat\Mapper;
 
+use Goat\Error\GoatError;
 use Goat\Error\QueryError;
 use Goat\Mapper\Error\EntityNotFoundError;
 use Goat\Query\ExpressionRelation;
@@ -125,6 +126,18 @@ class SelectMapper implements MapperInterface
     public function getPrimaryKeyCount() : int
     {
         return isset($this->primaryKey) ? count($this->primaryKey) : 0;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPrimaryKey() : array
+    {
+        if (!isset($this->primaryKey)) {
+            throw new GoatError(sprintf("%s mapper for entity %s has no primary key defined", __CLASS__, $this->class));
+        }
+
+        return $this->primaryKey;
     }
 
     /**
