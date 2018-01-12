@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 namespace Goat\Mapper;
 
-use Goat\Mapper\Error\EntityNotFoundError;
-use Goat\Query\Expression;
 use Goat\Query\ExpressionRelation;
 use Goat\Query\SelectQuery;
-use Goat\Query\Where;
 use Goat\Runner\PagerResultIterator;
 use Goat\Runner\ResultIteratorInterface;
 use Goat\Runner\RunnerAwareInterface;
@@ -71,7 +68,7 @@ interface MapperInterface extends RunnerAwareInterface
      *   here an array of values, if not, you may pass an array with a single
      *   value or the primary key value directly.
      *
-     * @throws EntityNotFoundError
+     * @throws \Goat\Mapper\Error\EntityNotFoundError
      *   If the entity does not exist in database
      *
      * @return mixed
@@ -82,14 +79,12 @@ interface MapperInterface extends RunnerAwareInterface
     /**
      * Is there objects existing with the given criteria
      *
-     * @param array|Expression|Where $criteria
+     * @param array|\Goat\Query\Expression|\Goat\Query\Where $criteria
      *   This value might be either one of:
      *     - a simple key/value array that will be translated into a where
      *       clause using the AND statement
      *     - a Expression instance
      *     - a Where instance
-     *
-     * @return bool
      */
     public function exists($criteria) : bool;
 
@@ -103,7 +98,7 @@ interface MapperInterface extends RunnerAwareInterface
      *   If this is set to true, and objects could not be found in the database
      *   this will raise exceptions
      *
-     * @throws EntityNotFoundError
+     * @throws \Goat\Mapper\Error\EntityNotFoundError
      *   If the $raiseErrorOnMissing is set to true and one or more entities do
      *   not exist in database
      *
@@ -116,7 +111,7 @@ interface MapperInterface extends RunnerAwareInterface
      * Alias of findBy() that returns a single instance
      *
      *
-     * @param array|Expression|Where $criteria
+     * @param array|\Goat\Query\Expression|\Goat\Query\Where $criteria
      *   This value might be either one of:
      *     - a simple key/value array that will be translated into a where
      *       clause using the AND statement
@@ -126,7 +121,7 @@ interface MapperInterface extends RunnerAwareInterface
      *   If this is set to true, and objects could not be found in the database
      *   this will raise exceptions
      *
-     * @throws EntityNotFoundError
+     * @throws \Goat\Mapper\Error\EntityNotFoundError
      *   If the $raiseErrorOnMissing is set to true and one or more entities do
      *   not exist in database
      *
@@ -138,7 +133,7 @@ interface MapperInterface extends RunnerAwareInterface
     /**
      * Find all objects matching the given criteria
      *
-     * @param array|Expression|Where $criteria
+     * @param array|\Goat\Query\Expression|\Goat\Query\Where $criteria
      *   This value might be either one of:
      *     - a simple key/value array that will be translated into a where
      *       clause using the AND statement
@@ -156,7 +151,7 @@ interface MapperInterface extends RunnerAwareInterface
     /**
      * Find all objects matching the given criteria with a pager
      *
-     * @param array|Expression|Where $criteria
+     * @param array|\Goat\Query\Expression|\Goat\Query\Where $criteria
      *   This value might be either one of:
      *     - a simple key/value array that will be translated into a where
      *       clause using the AND statement
