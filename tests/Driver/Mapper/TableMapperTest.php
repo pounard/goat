@@ -6,7 +6,7 @@ namespace Goat\Tests\Driver\Mapper;
 
 use Goat\Mapper\MapperInterface;
 use Goat\Mapper\TableMapper;
-use Goat\Mapper\WritableTableMapper;
+use Goat\Mapper\WritableMapperInterface;
 use Goat\Runner\RunnerInterface;
 
 /**
@@ -45,8 +45,9 @@ class TableMapperTest extends AbstractMapperTest
     /**
      * {@inheritdoc}
      */
-    protected function createWritableMapper(RunnerInterface $driver, string $class, array $primaryKey) : MapperInterface
+    protected function createWritableMapper(RunnerInterface $driver, string $class, array $primaryKey) : WritableMapperInterface
     {
-        return new WritableTableMapper($driver, $class, $primaryKey, $this->getTableMapperDefinition());
+        // return new WritableTableMapper($driver, $class, $primaryKey, $this->getTableMapperDefinition());
+        $this->markTestIncomplete("writable table mapper does not exist anymore");
     }
 }

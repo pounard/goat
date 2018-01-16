@@ -6,6 +6,7 @@ namespace Goat\Tests\Driver\Mapper;
 
 use Goat\Mapper\MapperInterface;
 use Goat\Mapper\SelectMapper;
+use Goat\Mapper\WritableMapperInterface;
 use Goat\Mapper\WritableSelectMapper;
 use Goat\Runner\RunnerInterface;
 
@@ -27,14 +28,14 @@ class SelectMapperTest extends AbstractMapperTest
                 ->select('some_entity', 't')
                 ->column('t.*')
                 ->column('u.name')
-                ->join('users', 'u.id = t.id_user', 'u')
+                ->leftJoin('users', 'u.id = t.id_user', 'u')
         );
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function createWritableMapper(RunnerInterface $driver, string $class, array $primaryKey) : MapperInterface
+    protected function createWritableMapper(RunnerInterface $driver, string $class, array $primaryKey) : WritableMapperInterface
     {
         return new WritableSelectMapper(
             $driver,
@@ -44,7 +45,7 @@ class SelectMapperTest extends AbstractMapperTest
                 ->select('some_entity', 't')
                 ->column('t.*')
                 ->column('u.name')
-                ->join('users', 'u.id = t.id_user', 'u')
+                ->leftJoin('users', 'u.id = t.id_user', 'u')
         );
     }
 }

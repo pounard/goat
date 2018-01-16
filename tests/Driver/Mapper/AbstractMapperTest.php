@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Goat\Tests\Driver\Mapper;
 
 use Goat\Error\QueryError;
-use Goat\Mapper\Error\EntityNotFoundError;
 use Goat\Mapper\MapperInterface;
+use Goat\Mapper\WritableMapperInterface;
+use Goat\Mapper\Error\EntityNotFoundError;
 use Goat\Query\ExpressionRaw;
-use Goat\Query\Query;
 use Goat\Query\Where;
 use Goat\Runner\RunnerInterface;
 use Goat\Tests\DriverTestCase;
@@ -115,7 +115,7 @@ abstract class AbstractMapperTest extends DriverTestCase
      *
      * @return MapperInterface
      */
-    abstract protected function createWritableMapper(RunnerInterface $driver, string $class, array $primaryKey) : MapperInterface;
+    abstract protected function createWritableMapper(RunnerInterface $driver, string $class, array $primaryKey) : WritableMapperInterface;
 
     /**
      * Tests various utility methods
@@ -364,6 +364,88 @@ abstract class AbstractMapperTest extends DriverTestCase
             $mapper->findBy('oh you you you');
             $this->fail();
         } catch (QueryError $e) {
+        }
+    }
+
+    /**
+     * @dataProvider driverDataSource
+     */
+    public function testCreate($driverName, $class)
+    {
+        $driver = $this->createRunner($driverName, $class);
+        $mapper = $this->createWritableMapper($driver, MappedEntity::class, ['id']);
+
+        if (!$driver->supportsReturning()) {
+            $this->markTestIncomplete("driver does not support RETURNING");
+        }
+
+        $entity1 = $mapper->create([
+            'foo' => 113,
+            'bar' => 'Created entity 1',
+            'baz' => new \DateTime(),
+        ]);
+        $this->assertTrue($entity1 instanceof MappedEntity);
+        $this->assertSame(113, $entity1->foo);
+        $this->assertSame("Created entity 1", $entity1->bar);
+
+        $entity2 = $mapper->create([
+            'foo' => 1096,
+            'bar' => 'Created entity 2',
+            'baz' => new \DateTime(),
+        ]);
+        $this->assertTrue($entity2 instanceof MappedEntity);
+        $this->assertSame(1096, $entity2->foo);
+        $this->assertSame("Created entity 2", $entity2->bar);
+
+        $result = $mapper->findAll([$entity1->id, $entity2->id]);
+        $this->assertSame(2, $result->countRows());
+    }
+
+    /**
+     * @dataProvider driverDataSource
+     */
+    public function testCreateFrom($driverName, $class)
+    {
+        // $driver = $this->createRunner($driverName, $class);
+        // $mapper = $this->createWritableMapper($driver, MappedEntity::class, ['id']);
+
+        return $this->markTestSkipped("createFrom is not implemented yet");
+    }
+
+    /**
+     * @dataProvider driverDataSource
+     */
+    public function testUpdate($driverName, $class)
+    {
+        $driver = $this->createRunner($driverName, $class);
+        $mapper = $this->createWritableMapper($driver, MappedEntity::class, ['id']);
+
+        if (!$driver->supportsReturning()) {
+            $this->markTestIncomplete("driver does not support RETURNING");
+        }
+    }
+
+    /**
+     * @dataProvider driverDataSource
+     */
+    public function testUpdateFrom($driverName, $class)
+    {
+        // $driver = $this->createRunner($driverName, $class);
+        // $mapper = $this->createWritableMapper($driver, MappedEntity::class, ['id']);
+
+        return $this->markTestSkipped("createFrom is not implemented yet");
+    }
+
+    /**
+     * @dataProvider driverDataSource
+     */
+    public function testDelete($driverName, $class)
+    {
+        $driver = $this->createRunner($driverName, $class);
+        $mapper = $this->createWritableMapper($driver, MappedEntity::class, ['id']);
+
+        if (!$driver->supportsReturning()) {
+            $this->markTestIncomplete("driver does not support RETURNING");
         }
     }
 }
