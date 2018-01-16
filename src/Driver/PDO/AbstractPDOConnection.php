@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Goat\Driver\PDO;
 
 use Goat\Driver\AbstractDriver;
-use Goat\Driver\Dsn;
 use Goat\Error\ConfigurationError;
 use Goat\Error\DriverError;
 use Goat\Error\GoatError;

@@ -25,6 +25,7 @@ use Goat\Runner\ResultIteratorInterface;
 use Goat\Runner\RunnerInterface;
 use Goat\Runner\RunnerTrait;
 use Goat\Runner\Transaction;
+use Goat\Converter\Impl\MySQLTimestampConverter;
 
 /**
  * Drupal 7 runnable: not a Driver: it doesn't need to handle the connection
@@ -53,7 +54,7 @@ class Drupal7Runner implements RunnerInterface
     {
         $this->connection = $connection;
 
-        switch ($connection->driver()) {
+        switch ($this->getDatabaseType($connection)) {
 
             case 'mysql':
                 $this->escaper = new PDOMySQLEscaper($connection);
@@ -72,6 +73,42 @@ class Drupal7Runner implements RunnerInterface
         }
 
         $this->setConverter(new ConverterMap());
+    }
+
+    private function getDatabaseType(\DatabaseConnection $connection)
+    {
+        $drupalDriver = $connection->driver();
+
+        if (false !== stripos($drupalDriver, 'mysql')) {
+            return 'mysql';
+        } else if (false !== stripos($drupalDriver, 'pg')) {
+            return 'pgsql';
+        } else if (false !== stripos($drupalDriver, 'sqlite')) {
+            return 'sqlite';
+        } else {
+            return $drupalDriver;
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setConverter(ConverterMap $converter)
+    {
+        $this->converter = $converter;
+        $this->formatter->setConverter($converter);
+
+        if ($converter instanceof ConverterMap) {
+            switch ($this->getDatabaseType($this->connection)) {
+
+                case 'mysql':
+                    $timestampConverter = new MySQLTimestampConverter();
+                    $converter->register('timestampz', $timestampConverter, ['timestamp', 'datetime'], true);
+                    $converter->register('date', $timestampConverter, [], true);
+                    $converter->register('timez', $timestampConverter, ['time'], true);
+                    break;
+            }
+        }
     }
 
     /**
@@ -104,15 +141,6 @@ class Drupal7Runner implements RunnerInterface
     public function getEscaper() : EscaperInterface
     {
         return $this->escaper;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setConverter(ConverterMap $converter)
-    {
-        $this->converter = $converter;
-        $this->formatter->setConverter($converter);
     }
 
     /**

@@ -141,7 +141,7 @@ class ConverterMap implements ConverterInterface
      *
      * @return $this
      */
-    public function register(string $type, ConverterInterface $instance, array $aliases = [])
+    public function register(string $type, ConverterInterface $instance, array $aliases = [], $allowOverride = false)
     {
         if (is_array($type)) {
             trigger_error(sprintf("registering type as array is outdate and will be removed, while registering %s", implode(', ', $type)), E_USER_DEPRECATED);
@@ -150,7 +150,7 @@ class ConverterMap implements ConverterInterface
             $type = array_shift($aliases);
         }
 
-        if (isset($this->converters[$type])) {
+        if (!$allowOverride && isset($this->converters[$type])) {
             $message = sprintf("type '%s' is already defined, using '%s' converter class", $type, get_class($this->converters[$type]));
             if ($this->debug) {
                 throw new ConfigurationError($message);
@@ -167,7 +167,7 @@ class ConverterMap implements ConverterInterface
                 $message = null;
                 if (isset($this->converters[$alias])) {
                     $message = sprintf("alias '%s' for type '%s' is already defined as a type, using '%s' converter class", $alias, $type, get_class($this->converters[$type]));
-                } else if (isset($this->aliasMap[$alias])) {
+                } else if (!$allowOverride && isset($this->aliasMap[$alias])) {
                     $message = sprintf("alias '%s' for type '%s' is already defined, for type '%s'", $alias, $type, get_class($this->aliasMap[$type]));
                 }
                 if ($message) {

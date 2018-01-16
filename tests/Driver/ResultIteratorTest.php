@@ -23,7 +23,7 @@ class ResultIteratorTest extends DriverTestCase
                 foo integer,
                 bar varchar(255),
                 baz timestamp,
-                some_ts timestamp,
+                some_ts timestamp default now(),
                 some_time time default null,
                 some_date date default null
             )
