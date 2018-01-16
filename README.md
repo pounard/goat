@@ -135,6 +135,7 @@ This API is composed of several components, that are slightly coupled:
  *  [ ] transaction: FOR UPDATE / FOR SHARE query dissociation from SELECT
  *  [ ] travis: basic integration
  *  [ ] travis: create a test suite per (driver, database version target) couple
+ *  [ ] travis: pgsql/mysql matrix such as https://github.com/MagicStack/asyncpg/commit/fcb3f5429d2570910eee8fe09583063fe7b76597
  *  [ ] travis: use docker to test
  *  [ ] WHERE builder tests: subqueries tests
  *  [x] <strike>performance: improve get column metadata for PDO</strike>: impossible due to native calls
