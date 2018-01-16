@@ -6,14 +6,14 @@ namespace Goat\Query;
 
 use Goat\Error\QueryError;
 use Goat\Query\Partial\AbstractQuery;
-use Goat\Query\Partial\ReturningClauseTrait;
+use Goat\Query\Partial\ReturningQueryTrait;
 
 /**
  * Represents an INSERT VALUES query
  */
-final class InsertValuesQuery extends AbstractQuery
+final class InsertValuesQuery extends AbstractQuery implements ReturningQueryInterface
 {
-    use ReturningClauseTrait;
+    use ReturningQueryTrait;
 
     private $arguments;
     private $columns = [];
@@ -78,7 +78,7 @@ final class InsertValuesQuery extends AbstractQuery
      * @param array $values
      *   Either values are numerically indexed, case in which they must match
      *   the internal columns order, or they can be key-value pairs case in
-     *   which matching will be dynamically be done right now
+     *   which matching will be dynamically be done
      *
      * @todo
      *   - implement it correctly

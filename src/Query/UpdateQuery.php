@@ -5,19 +5,17 @@ declare(strict_types=1);
 namespace Goat\Query;
 
 use Goat\Error\QueryError;
-use Goat\Query\ArgumentBag;
-use Goat\Query\ArgumentHolderInterface;
 use Goat\Query\Partial\AbstractQuery;
 use Goat\Query\Partial\FromClauseTrait;
-use Goat\Query\Partial\ReturningClauseTrait;
+use Goat\Query\Partial\ReturningQueryTrait;
 
 /**
  * Represents an UPDATE query
  */
-final class UpdateQuery extends AbstractQuery
+final class UpdateQuery extends AbstractQuery implements ReturningQueryInterface
 {
     use FromClauseTrait;
-    use ReturningClauseTrait;
+    use ReturningQueryTrait;
 
     private $columns = [];
     private $where;

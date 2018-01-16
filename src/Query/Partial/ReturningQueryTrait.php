@@ -11,18 +11,12 @@ use Goat\Query\ExpressionColumn;
 /**
  * Represents the RETURNING part of any query.
  */
-trait ReturningClauseTrait
+trait ReturningQueryTrait /* implements ReturningQueryInterface */
 {
     private $return = [];
 
     /**
-     * Get select columns array
-     *
-     * @return string[][]
-     *   Values are arrays which contain:
-     *     - first value: the column identifier (may contain the table alias
-     *       or name with dot notation)
-     *     - second value: the alias if any, or null
+     * {@inheritdoc}
      */
     public function getAllReturn() : array
     {
@@ -30,9 +24,7 @@ trait ReturningClauseTrait
     }
 
     /**
-     * Remove everything from the current SELECT clause
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function removeAllReturn() : array
     {
@@ -42,14 +34,7 @@ trait ReturningClauseTrait
     }
 
     /**
-     * Set or replace a column with a content.
-     *
-     * @param string|Expression $expression
-     *   SQL select column
-     * @param string $alias
-     *   If alias to be different from the column
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function returning($expression, string $alias = null)
     {
@@ -84,11 +69,7 @@ trait ReturningClauseTrait
     }
 
     /**
-     * Remove column from projection
-     *
-     * @param string $name
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function removeReturn(string $alias)
     {
@@ -102,11 +83,7 @@ trait ReturningClauseTrait
     }
 
     /**
-     * Does this project have the given column
-     *
-     * @param string $name
-     *
-     * @return bool
+     * {@inheritdoc}
      */
     public function hasReturn(string $alias) : bool
     {
