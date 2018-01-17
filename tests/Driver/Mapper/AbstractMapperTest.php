@@ -351,7 +351,7 @@ abstract class AbstractMapperTest extends DriverTestCase
         $this->assertSame(1, $result->getLastPage());
         $this->assertFalse($result->hasNextPage());
         $this->assertFalse($result->hasPreviousPage());
-            $this->assertCount(2, $result);
+        $this->assertCount(2, $result);
         foreach ($result as $item) {
             $this->assertTrue($item instanceof MappedEntity);
             $this->assertSame($this->idJean, $item->id_user);
@@ -406,10 +406,29 @@ abstract class AbstractMapperTest extends DriverTestCase
      */
     public function testCreateFrom($driverName, $class)
     {
-        // $driver = $this->createRunner($driverName, $class);
-        // $mapper = $this->createWritableMapper($driver, MappedEntity::class, ['id']);
+        $driver = $this->createRunner($driverName, $class);
+        $mapper = $this->createWritableMapper($driver, MappedEntity::class, ['id']);
 
-        return $this->markTestSkipped("createFrom is not implemented yet");
+        if (!$driver->supportsReturning()) {
+            $this->markTestIncomplete("driver does not support RETURNING");
+        }
+
+        $entity = $driver->getHydratorMap()->get(MappedEntity::class)->createAndHydrateInstance([
+            'foo' => 113,
+            'bar' => 'Created entity 1',
+            'baz' => new \DateTime(),
+        ]);
+        $this->assertTrue($entity instanceof MappedEntity);
+        $this->assertSame(113, $entity->foo);
+        $this->assertSame("Created entity 1", $entity->bar);
+        $this->assertEmpty($entity->id);
+
+        $created = $mapper->createFrom($entity);
+        $this->assertNotSame($entity, $created);
+        $this->assertTrue($created instanceof MappedEntity);
+        $this->assertSame(113, $created->foo);
+        $this->assertSame("Created entity 1", $created->bar);
+        $this->assertNotEmpty($created->id);
     }
 
     /**
@@ -423,6 +442,20 @@ abstract class AbstractMapperTest extends DriverTestCase
         if (!$driver->supportsReturning()) {
             $this->markTestIncomplete("driver does not support RETURNING");
         }
+
+        $updated = $mapper->update(9, [
+            'bar' => 'The new bar value',
+            'status' => 112,
+        ]);
+        $this->assertTrue($updated instanceof MappedEntity);
+        $this->assertSame(9, $updated->id);
+        $this->assertSame('The new bar value', $updated->bar);
+        $this->assertSame(112, $updated->status);
+
+        $reloaded = $mapper->findOne(9);
+        $this->assertTrue($reloaded instanceof MappedEntity);
+        $this->assertSame('The new bar value', $reloaded->bar);
+        $this->assertSame(112, $reloaded->status);
     }
 
     /**
@@ -430,10 +463,49 @@ abstract class AbstractMapperTest extends DriverTestCase
      */
     public function testUpdateFrom($driverName, $class)
     {
-        // $driver = $this->createRunner($driverName, $class);
-        // $mapper = $this->createWritableMapper($driver, MappedEntity::class, ['id']);
+        $driver = $this->createRunner($driverName, $class);
+        $mapper = $this->createWritableMapper($driver, MappedEntity::class, ['id']);
 
-        return $this->markTestSkipped("createFrom is not implemented yet");
+        if (!$driver->supportsReturning()) {
+            $this->markTestIncomplete("driver does not support RETURNING");
+        }
+
+        $reference = $mapper->findOne(5);
+        $this->assertTrue($reference instanceof MappedEntity);
+        $this->assertSame(5, $reference->id);
+        $this->assertSame('foo', $reference->bar);
+
+        $toBeUpdated = $mapper->findOne(9);
+        $this->assertSame(9, $toBeUpdated->id);
+        $this->assertSame('baz', $toBeUpdated->bar);
+
+        $updated = $mapper->updateFrom(9, $reference);
+        $this->assertInstanceOf(MappedEntity::class, $updated);
+        $this->assertSame(9, $updated->id);
+        $this->assertSame('foo', $updated->bar);
+
+        $updatedReloaded = $mapper->findOne(9);
+        $this->assertInstanceOf(MappedEntity::class, $updatedReloaded);
+        $this->assertSame(9, $updatedReloaded->id);
+        $this->assertSame('foo', $updatedReloaded->bar);
+
+        // Assert that original has not changed (no side effect)
+        $this->assertInstanceOf(MappedEntity::class, $reference);
+        $this->assertSame(5, $reference->id);
+        $this->assertSame('foo', $reference->bar);
+
+        // and the same by reloading it
+        $reloaded = $mapper->findOne(5);
+        $this->assertInstanceOf(MappedEntity::class, $reloaded);
+        $this->assertSame(5, $reloaded->id);
+        $this->assertSame('foo', $reloaded->bar);
+
+        try {
+            $mapper->delete(666, true);
+            $this->fail("updating from to a non existing row should have raised an exception");
+        } catch (\Exception $e) {
+            $this->assertTrue(true, "updating from to a non existing row raised an exception");
+        }
     }
 
     /**
@@ -446,6 +518,20 @@ abstract class AbstractMapperTest extends DriverTestCase
 
         if (!$driver->supportsReturning()) {
             $this->markTestIncomplete("driver does not support RETURNING");
+        }
+
+        $deleted = $mapper->delete(11, false);
+        $this->assertInstanceOf(MappedEntity::class, $deleted);
+        $this->assertSame(11, $deleted->id);
+
+        $deleted = $mapper->delete(11, false);
+        $this->assertEmpty($deleted);
+
+        try {
+            $mapper->delete(666, true);
+            $this->fail("deleting a non existing row should have raised an exception");
+        } catch (\Exception $e) {
+            $this->assertTrue(true, "deleting a non existing row raised an exception");
         }
     }
 }

@@ -31,4 +31,13 @@ interface HydratorInterface
      * @param object $object
      */
     public function hydrateObject(array $values, $object);
+
+    /**
+     * Extract values from an object
+     *
+     * @param object $object
+     *
+     * @return mixed[]
+     */
+    public function extractValues($object) : array;
 }

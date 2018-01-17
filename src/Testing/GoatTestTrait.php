@@ -22,10 +22,27 @@ use Goat\Runner\RunnerInterface;
  */
 trait GoatTestTrait
 {
+    protected function createTemporaryDirectory() : string
+    {
+        $cacheDir = sys_get_temp_dir().'/'.uniqid('goat-hydrator-');
+
+        if (file_exists($cacheDir)) {
+            if (!is_dir($cacheDir)) {
+                throw new \Exception(sprintf("the '%s' cache directory exists but is not a directory", $cacheDir));
+            } else if (!is_writable($cacheDir)) {
+                throw new \Exception(sprintf("the '%s' cache directory exists but is not writable", $cacheDir));
+            }
+        } else if (!mkdir($cacheDir)) {
+            throw new \Exception(sprintf("could not create the '%s' cache directory", $cacheDir));
+        }
+
+        return $cacheDir;
+    }
+
     /**
      * Create converter
      */
-    private function createConverter() : ConverterMap
+    protected function createConverter() : ConverterMap
     {
         $map = new ConverterMap();
 
@@ -41,22 +58,15 @@ trait GoatTestTrait
     /**
      * Create object hydrator
      */
-    private function createHydrator() : HydratorMap
+    protected function createHydrator() : HydratorMap
     {
-        $cacheDir = sys_get_temp_dir().'/'.uniqid('goat-test-');
-        if (!is_dir($cacheDir)) {
-            if (!mkdir($cacheDir)) {
-                $this->markTestSkipped(sprintf("cannot create temporary folder %s", $cacheDir));
-            }
-        }
-
-        return new HydratorMap($cacheDir);
+        return new HydratorMap($this->createTemporaryDirectory());
     }
 
     /**
      * Get runner
      */
-    final protected function getRunner() : RunnerInterface
+    protected function getRunner() : RunnerInterface
     {
         $connection = new ExtPgSQLConnection(new Dsn(getenv('EXT_PGSQL_DSN'), getenv('EXT_PGSQL_USERNAME'), getenv('EXT_PGSQL_PASSWORD')));
         $connection->setDebug(true);

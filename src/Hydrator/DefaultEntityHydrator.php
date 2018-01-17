@@ -6,6 +6,7 @@ namespace Goat\Hydrator;
 
 use Goat\Error\GoatError;
 use Goat\Mapper\Entity\DefaultEntity;
+use Goat\Mapper\Entity\EntityInterface;
 
 /**
  * Hydrates DefaultEntity instances
@@ -30,5 +31,17 @@ class DefaultEntityHydrator implements HydratorInterface
     public function hydrateObject(array $values, $object)
     {
         throw new GoatError(sprintf("Can't hydrate a %s instance after creation, object is immutable", DefaultEntity::class));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function extractValues($object) : array
+    {
+        if (!$object instanceof EntityInterface) {
+            throw new GoatError(sprintf("Entity must implement %s, type %s given", EntityInterface::class, gettype($object)));
+        }
+
+        return $object->getAll();
     }
 }

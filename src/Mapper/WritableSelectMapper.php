@@ -63,7 +63,7 @@ class WritableSelectMapper extends SelectMapper implements WritableMapperInterfa
      */
     public function createFrom($entity)
     {
-        throw new \Exception("not implemented yet");
+        return $this->create($this->extractValues($entity));
     }
 
     /**
@@ -148,7 +148,7 @@ class WritableSelectMapper extends SelectMapper implements WritableMapperInterfa
      */
     public function updateFrom($id, $entity)
     {
-        throw new \Exception("not implemented yet");
+        return $this->update($id, $this->extractValues($entity));
     }
 
     /**

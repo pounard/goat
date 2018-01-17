@@ -89,4 +89,12 @@ trait RunnerTrait
     {
         $this->hydratorMap = $hydratorMap;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    final public function getHydratorMap() : HydratorMap
+    {
+        return $this->hydratorMap;
+    }
 }

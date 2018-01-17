@@ -44,7 +44,9 @@ class GeneratedHydrator implements HydratorInterface
     {
         if (!$this->reflectionClass) {
             if (!class_exists($this->className)) {
+                // @codeCoverageIgnoreStart
                 throw new \InvalidArgumentException(sprintf("'%s' class does not exists", $this->className));
+                // @codeCoverageIgnoreEnd
             }
 
             $this->reflectionClass = new \ReflectionClass($this->className);
@@ -54,9 +56,7 @@ class GeneratedHydrator implements HydratorInterface
     }
 
     /**
-     * Create object instance then hydrate it
-     *
-     * @param array $values
+     * {@inheritdoc}
      */
     public function createAndHydrateInstance(array $values, int $constructor = HydratorInterface::CONSTRUCTOR_LATE)
     {
@@ -77,17 +77,30 @@ class GeneratedHydrator implements HydratorInterface
     }
 
     /**
-     * Hydrate object instance
-     *
-     * @param array $values
-     * @param object $object
+     * {@inheritdoc}
      */
     public function hydrateObject(array $values, $object)
     {
         if (!$object instanceof $this->className) {
+            // @codeCoverageIgnoreStart
             throw new \InvalidArgumentException(sprintf("given object is not a '%s' instance", $this->className));
+            // @codeCoverageIgnoreEnd
         }
 
         $this->hydrator->hydrate($values, $object);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function extractValues($object) : array
+    {
+        if (!$object instanceof $this->className) {
+            // @codeCoverageIgnoreStart
+            throw new \InvalidArgumentException(sprintf("given object is not a '%s' instance", $this->className));
+            // @codeCoverageIgnoreEnd
+        }
+
+        return $this->hydrator->extract($object);
     }
 }

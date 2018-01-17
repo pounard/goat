@@ -156,8 +156,11 @@ interface RunnerInterface extends ConverterAwareInterface, QueryFactoryInterface
 
     /**
      * Set hydrator map
-     *
-     * @param HydratorMap $hydratorMap
      */
     public function setHydratorMap(HydratorMap $hydratorMap);
+
+    /**
+     * Get hydrator map
+     */
+    public function getHydratorMap() : HydratorMap;
 }

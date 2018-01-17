@@ -219,6 +219,14 @@ abstract class AbstractDriverProxy implements DriverInterface
     /**
      * {@inheritdoc}
      */
+    public function getHydratorMap() : HydratorMap
+    {
+        return $this->getInnerDriver()->getHydratorMap();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function setDebug(bool $debug = true)
     {
         return $this->getInnerDriver()->setDebug($debug);

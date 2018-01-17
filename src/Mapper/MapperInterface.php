@@ -61,6 +61,41 @@ interface MapperInterface extends RunnerAwareInterface
     public function getPrimaryKey() : array;
 
     /**
+     * Create an instance from given values without persisting the entity
+     *
+     * @param mixed[] $values
+     *   The instance values
+     *
+     * @return mixed
+     *   The created instance
+     */
+    public function createInstance(array $values);
+
+    /**
+     * Create an instance from the given other instance's values without persisting it
+     *
+     * @param mixed $entity
+     *   The instance from which to duplicated values
+     *
+     * @return mixed
+     *   The created instance
+     */
+    public function createInstanceFrom($entity);
+
+    /**
+     * Extract values from entity
+     *
+     * @param mixed $entity
+     *   The entity
+     * @param bool $withPrimaryKey
+     *   If set to false, primary key column values will be excluded
+     *
+     * @return mixed[]
+     *   Entity values
+     */
+    public function extractValues($entity, bool $withPrimaryKey = false) : array;
+
+    /**
      * Find a single object
      *
      * @param int|string|int[]|string[] $id

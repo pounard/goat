@@ -6,18 +6,21 @@ namespace Goat\Tests;
 
 use Goat\Converter\ConverterMap;
 use Goat\Driver\DriverInterface;
-use Goat\Driver\Drupal7\Drupal7Runner;
 use Goat\Driver\Dsn;
-use Goat\Driver\Profiling\ProfilingDriverProxy;
 use Goat\Driver\Session;
+use Goat\Driver\Drupal7\Drupal7Runner;
+use Goat\Driver\Profiling\ProfilingDriverProxy;
 use Goat\Hydrator\HydratorMap;
 use Goat\Runner\RunnerInterface;
+use Goat\Testing\GoatTestTrait;
 
 /**
  * Single driver test case
  */
 abstract class DriverTestCase extends \PHPUnit_Framework_TestCase
 {
+    use GoatTestTrait;
+
     /**
      * Get known drivers
      *
@@ -175,34 +178,6 @@ abstract class DriverTestCase extends \PHPUnit_Framework_TestCase
         }
 
         $this->drivers = [];
-    }
-
-    /**
-     * Create converter
-     *
-     * @return ConverterMap
-     */
-    final protected function createConverter() : ConverterMap
-    {
-        $map = new ConverterMap();
-
-        foreach (ConverterMap::getDefautConverterMap() as $type => $data) {
-            list($class, $aliases) = $data;
-
-            $map->register($type, new $class(), $aliases);
-        }
-
-        return $map;
-    }
-
-    /**
-     * Create object hydrator
-     *
-     * @return HydratorMap
-     */
-    final protected function createHydrator() : HydratorMap
-    {
-        return new HydratorMap(__DIR__ . '/../cache');
     }
 
     /**

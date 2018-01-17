@@ -4,14 +4,18 @@ declare(strict_types=1);
 
 namespace Goat\Tests\Hydrator;
 
-use Goat\Hydrator\HydratorMap;
 use Goat\Hydrator\HydratorInterface;
+use Goat\Hydrator\HydratorMap;
+use Goat\Testing\GoatTestTrait;
+use Goat\Tests\DriverTestCase;
 
 class HydratorTest extends \PHPUnit_Framework_TestCase
 {
+    use GoatTestTrait;
+
     public function testBasicFeatures()
     {
-        $hydratorMap = new HydratorMap(__DIR__ . '/../../cache');
+        $hydratorMap = new HydratorMap($this->createTemporaryDirectory());
         $hydrator = $hydratorMap->get(HydratedClass::class);
 
         $test1 = new HydratedClass();
@@ -45,5 +49,11 @@ class HydratorTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(true, $test3->getBaz());
         $this->assertTrue($test3->constructorHasRun);
         $this->assertFalse($test3->constructorHasRunWithData);
+
+        $values = $hydrator->extractValues($test3);
+        $this->assertCount(6, $values);
+        $this->assertSame(218, $values['foo']);
+        $this->assertSame('maroilles', $values['bar']);
+        $this->assertSame(true, $values['baz']);
     }
 }

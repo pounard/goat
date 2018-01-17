@@ -24,20 +24,10 @@ class SelectMapper implements MapperInterface
 {
     use RunnerAwareTrait;
 
-    /**
-     * @var string
-     */
     private $class;
-
-    /**
-     * @var SelectQuery
-     */
-    private $select;
-
-    /**
-     * @var string[]
-     */
+    private $columns;
     private $primaryKey = [];
+    private $select;
 
     /**
      * Default constructor
@@ -48,12 +38,15 @@ class SelectMapper implements MapperInterface
      *   Primary key column names
      * @param SelectQuery $query
      *   Select query that loads entities
+     * @param string[] $columns
+     *   Array of known columns
      */
-    public function __construct(RunnerInterface $runner, string $class, array $primaryKey, SelectQuery $query)
+    public function __construct(RunnerInterface $runner, string $class, array $primaryKey, SelectQuery $query, array $columns = [])
     {
-        $this->runner = $runner;
         $this->class = $class;
+        $this->columns = $columns;
         $this->primaryKey = $primaryKey;
+        $this->runner = $runner;
         $this->select = $query;
     }
 
@@ -216,6 +209,45 @@ class SelectMapper implements MapperInterface
         }
 
         return $this->primaryKey;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createInstance(array $values)
+    {
+        $hydrator = $this->getRunner()->getHydratorMap()->get($this->getClassName());
+
+        return $hydrator->createAndHydrateInstance($values);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createInstanceFrom($entity)
+    {
+        return $this->createInstance($this->extractValues($entity));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function extractValues($entity, bool $withPrimaryKey = false) : array
+    {
+        $hydrator = $this->getRunner()->getHydratorMap()->get($this->getClassName());
+        $values = $hydrator->extractValues($entity);
+
+        if (!$withPrimaryKey) {
+            foreach ($this->getPrimaryKey() as $column) {
+                unset($values[$column]);
+            }
+        }
+
+        if ($this->columns) {
+            $values = array_intersect_key($values, array_flip($this->columns));
+        }
+
+        return $values;
     }
 
     /**

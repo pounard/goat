@@ -28,7 +28,8 @@ class SelectMapperTest extends AbstractMapperTest
                 ->select('some_entity', 't')
                 ->column('t.*')
                 ->column('u.name')
-                ->leftJoin('users', 'u.id = t.id_user', 'u')
+                ->leftJoin('users', 'u.id = t.id_user', 'u'),
+            ['id', 'id_user', 'status', 'foo', 'bar', 'baz']
         );
     }
 
@@ -45,7 +46,8 @@ class SelectMapperTest extends AbstractMapperTest
                 ->select('some_entity', 't')
                 ->column('t.*')
                 ->column('u.name')
-                ->leftJoin('users', 'u.id = t.id_user', 'u')
+                ->leftJoin('users', 'u.id = t.id_user', 'u'),
+            ['id', 'id_user', 'status', 'foo', 'bar', 'baz']
         );
     }
 }
