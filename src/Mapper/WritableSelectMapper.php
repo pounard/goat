@@ -61,9 +61,11 @@ class WritableSelectMapper extends SelectMapper implements WritableMapperInterfa
     /**
      * {@inheritdoc}
      */
-    public function createFrom($entity)
+    public function createFrom($entity, array $values = [])
     {
-        return $this->create($this->extractValues($entity));
+        $values += $this->extractValues($entity);
+
+        return $this->create($values);
     }
 
     /**
@@ -146,9 +148,11 @@ class WritableSelectMapper extends SelectMapper implements WritableMapperInterfa
     /**
      * {@inheritdoc}
      */
-    public function updateFrom($id, $entity)
+    public function updateFrom($id, $entity, array $values = [])
     {
-        return $this->update($id, $this->extractValues($entity));
+        $values += $this->extractValues($entity);
+
+        return $this->update($id, $values);
     }
 
     /**
