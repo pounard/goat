@@ -454,6 +454,27 @@ final class SelectQuery extends AbstractQuery
     }
 
     /**
+     * Set limit/offset using a page number
+     *
+     * @param int $limit
+     *   If empty or null, removes the current limit
+     * @param int $page
+     *   Page number, starts with one
+     *
+     * @return $this
+     */
+    public function page(int $limit = 0, int $page = 1)
+    {
+        if (!is_int($page) || $page < 1) {
+            throw new QueryError(sprintf("page must be a positive integer, starting with 1: '%s' given", $limit));
+        }
+
+        $this->range($limit, ($page - 1) * $limit);
+
+        return $this;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getArguments() : ArgumentBag
