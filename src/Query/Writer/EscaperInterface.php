@@ -31,30 +31,23 @@ interface EscaperInterface
 
     /**
      * Escape literal (string)
-     *
-     * @param string $string
-     *
-     * @return $string
      */
     public function escapeLiteral(string $string) : string;
 
     /**
      * Escape like (string)
-     *
-     * @param string $string
-     *
-     * @return $string
      */
     public function escapeLike(string $string) : string;
 
     /**
      * Escape blob
-     *
-     * @param string $string
-     *
-     * @return $string
      */
     public function escapeBlob(string $word) : string;
+
+    /**
+     * Unescape blob
+     */
+    public function unescapeBlob(string $word) : string;
 
     /**
      * Get backend escape sequences

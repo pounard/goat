@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Goat\Driver\PgSQL;
 
+use Goat\Converter\ConverterMap;
+use Goat\Converter\Impl\BlobConverter;
 use Goat\Driver\AbstractDriver;
-use Goat\Driver\Dsn;
 use Goat\Error\ConfigurationError;
 use Goat\Error\DriverError;
 use Goat\Error\GoatError;
@@ -34,6 +35,18 @@ class ExtPgSQLConnection extends AbstractDriver
      * @var string[]
      */
     private $prepared = [];
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setConverter(ConverterMap $converter)
+    {
+        parent::setConverter($converter);
+
+        $blobConverter = new BlobConverter();
+        $blobConverter->setEscaper($this->createEscaper());
+        $converter->register('bytea', $blobConverter, ['blob'], true);
+    }
 
     /**
      * {@inheritdoc}

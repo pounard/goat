@@ -85,6 +85,23 @@ class ExtPgSQLEscaper extends EscaperBase
     /**
      * {@inheritdoc}
      */
+    public function unescapeBlob(string $word) : string
+    {
+        if ('' === $word) {
+            return '';
+        }
+
+        $unescaped = @pg_unescape_bytea($word);
+        if (false === $unescaped) {
+            $this->driverError($this->resource);
+        }
+
+        return $unescaped;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function escapeIdentifier(string $string) : string
     {
         if ('' === $string) {

@@ -26,6 +26,7 @@ use Goat\Runner\RunnerInterface;
 use Goat\Runner\RunnerTrait;
 use Goat\Runner\Transaction;
 use Goat\Converter\Impl\MySQLTimestampConverter;
+use Goat\Converter\Impl\BlobConverter;
 
 /**
  * Drupal 7 runnable: not a Driver: it doesn't need to handle the connection
@@ -109,6 +110,10 @@ class Drupal7Runner implements RunnerInterface
                     break;
             }
         }
+
+        $blobConverter = new BlobConverter();
+        $blobConverter->setEscaper($this->getEscaper());
+        $converter->register('bytea', $blobConverter, ['blob'], true);
     }
 
     /**

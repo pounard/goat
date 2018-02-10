@@ -118,6 +118,7 @@ This API is composed of several components, that are slightly coupled:
  *  [ ] converters: type map per driver
  *  [ ] drupal, travis: install Drupal DBTNG without core for testing
  *  [ ] drupal: implement drupal 8 runner
+ *  [ ] Large Object Binary stream handling for drivers that supports it
  *  [ ] mapper: createSelect()
  *  [ ] mapper: findAll() sorting order
  *  [ ] mapper: findFirst() tests

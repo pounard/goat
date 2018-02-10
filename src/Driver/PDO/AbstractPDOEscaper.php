@@ -52,6 +52,14 @@ abstract class AbstractPDOEscaper extends EscaperBase
      */
     public function escapeBlob(string $word) : string
     {
-        return $this->getPdo()->quote($word, \PDO::PARAM_LOB);
+        return $this->getPdo()->quote($word /*, \PDO::PARAM_LOB */);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function unescapeBlob(string $blob) : string
+    {
+        return $blob;
     }
 }

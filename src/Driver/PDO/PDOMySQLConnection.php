@@ -10,6 +10,7 @@ use Goat\Driver\MySQL\MySQLTransaction;
 use Goat\Query\Writer\EscaperInterface;
 use Goat\Query\Writer\FormatterInterface;
 use Goat\Runner\Transaction;
+use Goat\Converter\Impl\BlobConverter;
 
 class PDOMySQLConnection extends AbstractPDOConnection
 {
@@ -21,10 +22,15 @@ class PDOMySQLConnection extends AbstractPDOConnection
         parent::setConverter($converter);
 
         if ($converter instanceof ConverterMap) {
+
             $timestampConverter = new MySQLTimestampConverter();
             $converter->register('timestampz', $timestampConverter, ['timestamp', 'datetime'], true);
             $converter->register('date', $timestampConverter, [], true);
             $converter->register('timez', $timestampConverter, ['time'], true);
+
+            $blobConverter = new BlobConverter();
+            $blobConverter->setEscaper($this->createEscaper());
+            $converter->register('bytea', $blobConverter, ['blob'], true);
         }
     }
 
