@@ -207,4 +207,34 @@ EOT;
         $this->assertSameSql($reference, $formatter->format($clonedQuery));
         $this->assertSame($referenceArguments, $clonedQuery->getArguments()->getAll());
     }
+
+    public function testWith()
+    {
+        $formatter = new Formatter(new NullEscaper());
+
+        $reference = <<<EOT
+with "test1" as (
+    select "a" from "sometable"
+), "test2" as (
+    select "foo" from "someothertable"
+)
+select count(*)
+from "test1"
+inner join "test2"
+    on (test1.a = test2.foo)
+EOT;
+
+        // Most basic way
+        $query = (new SelectQuery('test1'))
+            ->columnExpression('count(*)')
+            ->join('test2', 'test1.a = test2.foo')
+        ;
+
+        $firstWith = (new SelectQuery('sometable'))->column('a');
+        $query->with('test1', $firstWith);
+        $secondWith = $query->createWith('test2', 'someothertable');
+        $secondWith->column('foo');
+
+        $this->assertSameSql($reference, $formatter->format($query));
+    }
 }

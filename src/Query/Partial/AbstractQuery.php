@@ -18,6 +18,7 @@ abstract class AbstractQuery implements Query, RunnerAwareInterface
 {
     use RunnerAwareTrait;
     use AliasHolderTrait;
+    use WithClauseTrait;
 
     private $relation;
     private $options = [];

@@ -198,7 +198,7 @@ class Formatter extends FormatterBase
     /**
      * Format the whole order by clause
      *
-     * @param $orders
+     * @param array $orders
      *   Each order is an array that must contain:
      *     - 0: Expression
      *     - 1: Query::ORDER_* constant
@@ -570,6 +570,41 @@ class Formatter extends FormatterBase
     }
 
     /**
+     * Format array of with statements
+     *
+     * @param array $withs
+     *   Each join is an array that must contain:
+     *     - key does not matter
+     *     - 0: string temporary table alias
+     *     - 1: SelectQuery
+     *     - 2: bool is recursive or not
+     *
+     * @return string
+     */
+    protected function formatWith(array $withs) : string
+    {
+        if (!$withs) {
+            return '';
+        }
+
+        $output = [];
+
+        foreach ($withs as $alias => $with) {
+            if (false) {
+
+            }
+
+            $output[] = sprintf(
+                "%s as (%s)",
+                $this->escaper->escapeIdentifier($with[0]),
+                $this->formatQuerySelect($with[1])
+            );
+        }
+
+        return sprintf('with %s', implode(', ', $output));
+    }
+
+    /**
      * Format given insert query
      */
     protected function formatQueryInsertValues(InsertValuesQuery $query) : string
@@ -580,6 +615,7 @@ class Formatter extends FormatterBase
         $columns = $query->getAllColumns();
         $valueCount = $query->getValueCount();
 
+        $output[] = $this->formatWith($query->getAllWith());
         $output[] = sprintf(
             "insert into %s",
             // From SQL 92 standard, INSERT queries don't have table alias
@@ -635,6 +671,7 @@ class Formatter extends FormatterBase
         $columns = $query->getAllColumns();
         $subQuery = $query->getQuery();
 
+        $output[] = $this->formatWith($query->getAllWith());
         $output[] = sprintf(
             "insert into %s",
             // From SQL 92 standard, INSERT queries don't have table alias
@@ -671,6 +708,7 @@ class Formatter extends FormatterBase
     {
         $output = [];
 
+        $output[] = $this->formatWith($query->getAllWith());
         // This is not SQL-92 compatible, we are using USING..JOIN clause to
         // do joins in the DELETE query, which is not accepted by the standard.
         $output[] = sprintf(
@@ -712,6 +750,7 @@ class Formatter extends FormatterBase
             throw new QueryError("cannot run an update query without any columns to update");
         }
 
+        $output[] = $this->formatWith($query->getAllWith());
         // From the SQL 92 standard (which PostgreSQL does support here) the
         // FROM and JOIN must be written AFTER the SET clause. MySQL does not.
         $output[] = sprintf(
@@ -748,6 +787,7 @@ class Formatter extends FormatterBase
     protected function formatQuerySelect(SelectQuery $query) : string
     {
         $output = [];
+        $output[] = $this->formatWith($query->getAllWith());
         $output[] = sprintf(
             "select %s\nfrom %s\n%s",
             $this->formatSelect($query->getAllColumns()),
