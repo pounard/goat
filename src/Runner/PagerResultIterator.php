@@ -84,6 +84,16 @@ final class PagerResultIterator implements ResultIteratorInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function setKeyColumn(string $name)  : ResultIteratorInterface
+    {
+        $this->result->setKeyColumn($name);
+
+        return $this;
+    }
+
+    /**
      * Get the number of results in this page
      *
      * @return int

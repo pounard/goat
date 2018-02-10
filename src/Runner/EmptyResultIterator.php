@@ -31,6 +31,14 @@ final class EmptyResultIterator implements ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
+    public function setKeyColumn(string $name) : ResultIteratorInterface
+    {
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getIterator()
     {
         return new \EmptyIterator();

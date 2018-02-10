@@ -84,9 +84,19 @@ final class DebugResultIterator implements ResultIteratorInterface
      */
     public function getIterator()
     {
-        foreach ($this->result as $row) {
-            yield $this->validateRow($row);
+        foreach ($this->result as $key => $row) {
+            yield $key => $this->validateRow($row);
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setKeyColumn(string $name)  : ResultIteratorInterface
+    {
+        $this->result->setKeyColumn($name);
+
+        return $this;
     }
 
     /**

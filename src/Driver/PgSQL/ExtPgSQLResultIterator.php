@@ -63,7 +63,11 @@ class ExtPgSQLResultIterator extends AbstractResultIterator
     public function getIterator()
     {
         while ($row = pg_fetch_assoc($this->resource)) {
-            yield $this->hydrate($row);
+            if ($this->columnKey) {
+                yield $row[$this->columnKey] => $this->hydrate($row);
+            } else {
+                yield $this->hydrate($row);
+            }
         }
 
         if (false === $row) {
@@ -151,7 +155,37 @@ class ExtPgSQLResultIterator extends AbstractResultIterator
     }
 
     /**
+     * fetchColumn() implementation that returns a keyed array
+     *
+     * @return array
+     */
+    protected function fetchColumnWithKey(string $name, int $index, string $columnKeyName)
+    {
+        $keyIndex = $this->getColumnNumber($columnKeyName);
+
+        $valueColumn = pg_fetch_all_columns($this->resource, $index);
+        if (false === $valueColumn) {
+            throw new InvalidDataAccessError(sprintf("column '%d' is out of scope of the current result", $index));
+        }
+
+        $indexColumn = pg_fetch_all_columns($this->resource, $keyIndex);
+        if (false === $indexColumn) {
+            throw new InvalidDataAccessError(sprintf("column '%d' is out of scope of the current result", $keyIndex));
+        }
+
+        $ret = [];
+
+        foreach ($valueColumn as $index => $value) {
+            $ret[$indexColumn[$index]] = $this->convertValue($name, $value);
+        }
+
+        return $ret;
+    }
+
+    /**
      * {@inheritdoc}
+     *
+     * @todo could this be improved if fetchColumn() returned an iterator instead of an array?
      */
     public function fetchColumn($name = 0)
     {
@@ -160,6 +194,10 @@ class ExtPgSQLResultIterator extends AbstractResultIterator
         } else {
             $index = (int)$name;
             $name = $this->getColumnName($index);
+        }
+
+        if ($this->columnKey) {
+            return $this->fetchColumnWithKey($name, $index, $this->columnKey);
         }
 
         $ret = [];

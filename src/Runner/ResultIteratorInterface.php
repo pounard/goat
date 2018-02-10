@@ -13,6 +13,21 @@ use Goat\Hydrator\HydratorAwareInterface;
 interface ResultIteratorInterface extends \IteratorAggregate, \Countable, ConverterAwareInterface, HydratorAwareInterface
 {
     /**
+     * Set column to use as iterator key
+     *
+     * This will alter results from the iterator, and the fetchColumn() return.
+     *
+     * Please note that as a side effect, when iterating over the result, you
+     * may experience duplicated keys, but because this is an iterator you will
+     * get all the results, but in case you are working with fetchColumn() which
+     * returns an array, some results might be lost if you encounter duplicate
+     * values for keys.
+     *
+     * @return $this
+     */
+    public function setKeyColumn(string $name)  : ResultIteratorInterface;
+
+    /**
      * Get the column count
      *
      * @return int
@@ -72,6 +87,12 @@ interface ResultIteratorInterface extends \IteratorAggregate, \Countable, Conver
 
     /**
      * Fetch column
+     *
+     * The result of this method is altered by setKeyColumn(): if you set a key
+     * column, its value will be used as keys in the return array, in case you
+     * have any duplicated keys, behavior is undetermined and depends upon the
+     * driver implementation: you will, in all cases, loose duplicates and have
+     * an incomplete result.
      *
      * @param int|string $name = null
      *   If none given, just take the first one

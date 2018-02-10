@@ -110,7 +110,11 @@ class DefaultResultIterator extends AbstractResultIterator
     public function getIterator()
     {
         foreach ($this->statement as $row) {
-            yield $this->hydrate($row);
+            if ($this->columnKey) {
+                yield $row[$this->columnKey] => $this->hydrate($row);
+            } else {
+                yield $this->hydrate($row);
+            }
         }
     }
 
@@ -199,7 +203,11 @@ class DefaultResultIterator extends AbstractResultIterator
         $ret = [];
 
         foreach ($this as $row) {
-            $ret[] = $row[$name];
+            if ($this->columnKey) {
+                $ret[$row[$this->columnKey]] = $row[$name];
+            } else {
+                $ret[] = $row[$name];
+            }
         }
 
         return $ret;

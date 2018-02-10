@@ -7,11 +7,14 @@ namespace Goat\Runner;
 use Goat\Converter\ConverterAwareTrait;
 use Goat\Error\InvalidDataAccessError;
 use Goat\Hydrator\HydratorAwareTrait;
+use Goat\Error\QueryError;
 
 abstract class AbstractResultIterator implements ResultIteratorInterface
 {
     use ConverterAwareTrait;
     use HydratorAwareTrait;
+
+    protected $columnKey;
 
     /**
      * Convert a single value
@@ -74,6 +77,20 @@ abstract class AbstractResultIterator implements ResultIteratorInterface
         }
 
         return $converted;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setKeyColumn(string $name) : ResultIteratorInterface
+    {
+        if (!$this->columnExists($name)) {
+            throw new QueryError(sprintf("column '%s' does not exist in result", $name));
+        }
+
+        $this->columnKey = $name;
+
+        return $this;
     }
 
     /**
