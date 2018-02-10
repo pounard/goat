@@ -7,6 +7,7 @@ namespace Goat\Mapper;
 use Goat\Error\GoatError;
 use Goat\Error\QueryError;
 use Goat\Mapper\Error\EntityNotFoundError;
+use Goat\Mapper\Form\EntityDataMapper;
 use Goat\Query\Expression;
 use Goat\Query\ExpressionRelation;
 use Goat\Query\SelectQuery;
@@ -15,6 +16,7 @@ use Goat\Runner\PagerResultIterator;
 use Goat\Runner\ResultIteratorInterface;
 use Goat\Runner\RunnerAwareTrait;
 use Goat\Runner\RunnerInterface;
+use Symfony\Component\Form\DataMapperInterface;
 
 /**
  * Table mapper is a simple model implementation that works on an arbitrary
@@ -219,6 +221,18 @@ class SelectMapper implements MapperInterface
         $hydrator = $this->getRunner()->getHydratorMap()->get($this->getClassName());
 
         return $hydrator->createAndHydrateInstance($values);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createDataMapper() : DataMapperInterface
+    {
+        if (!interface_exists('\\Symfony\\Component\\Form\\DataMapperInterface')) {
+            throw new \RuntimeException(sprintf("Symfony form component is not installed, use 'composer require form' in flex, or 'composer require symfony/form' with any other framework"));
+        }
+
+        return new EntityDataMapper($this->getRunner()->getHydratorMap(), $this->getClassName());
     }
 
     /**

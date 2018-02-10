@@ -10,6 +10,7 @@ use Goat\Runner\PagerResultIterator;
 use Goat\Runner\ResultIteratorInterface;
 use Goat\Runner\RunnerAwareInterface;
 use Goat\Runner\RunnerInterface;
+use Symfony\Component\Form\DataMapperInterface;
 
 /**
  * Maps immutable entities on SQL projections, and provides a set of utilities
@@ -70,6 +71,14 @@ interface MapperInterface extends RunnerAwareInterface
      *   The created instance
      */
     public function createInstance(array $values);
+
+    /**
+     * Create a Symfony form component data mapper
+     *
+     * @throws \RuntimeException
+     *   If Symfony form component is not installed
+     */
+    public function createDataMapper() : DataMapperInterface;
 
     /**
      * Create an instance from the given other instance's values without persisting it
