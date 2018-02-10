@@ -12,10 +12,6 @@ interface EscaperInterface
 {
     /**
      * Escape identifier (ie. table name, variable name, ...)
-     *
-     * @param string $string
-     *
-     * @return $string
      */
     public function escapeIdentifier(string $string) : string;
 
