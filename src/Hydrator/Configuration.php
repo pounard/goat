@@ -126,7 +126,7 @@ final class Configuration
             $refClass = new \ReflectionClass($className);
             /** @var \ReflectionProperty $refProperty */
             foreach ($refClass->getProperties() as $refProperty) {
-                $annotation = $this->annotationReader->getPropertyAnnotation($refProperty, Property::class);
+                $annotation = $this->annotationsReader->getPropertyAnnotation($refProperty, Property::class);
                 if ($annotation instanceof Property) {
                     $ret[$refProperty->getName()] = $annotation->getClassName();
                 }
