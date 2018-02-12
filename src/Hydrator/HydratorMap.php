@@ -43,6 +43,22 @@ final class HydratorMap
      *   Either a class name or a class alias
      *
      * @return HydratorInterface
+     *
+     * @internal
+     *   Do not use this
+     */
+    public function getRealHydrator(string $class) : HydratorInterface
+    {
+        return $this->createHydrator($class);
+    }
+
+    /**
+     * Get hydrator for class or identifier
+     *
+     * @param string $class
+     *   Either a class name or a class alias
+     *
+     * @return HydratorInterface
      */
     public function get(string $class) : HydratorInterface
     {
@@ -55,7 +71,7 @@ final class HydratorMap
         }
 
         if (!isset($this->hydrators[$class])) {
-            return $this->hydrators[$class] = $this->createHydrator($class);
+            return $this->hydrators[$class] = new HierarchicalHydrator($class, $this);
         }
 
         return $this->hydrators[$class];

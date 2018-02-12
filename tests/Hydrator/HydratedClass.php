@@ -39,4 +39,16 @@ final class HydratedClass extends HydratedParentClass
     {
         return $this->baz;
     }
+
+    private $someNestedInstance;
+
+    /**
+     * Only in use in HydratorTest::testNesting()
+     *
+     * @return HydratedParentClass
+     */
+    public function getSomeNestedInstance()
+    {
+        return $this->someNestedInstance;
+    }
 }

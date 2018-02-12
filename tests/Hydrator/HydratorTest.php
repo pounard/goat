@@ -7,12 +7,14 @@ namespace Goat\Tests\Hydrator;
 use Goat\Hydrator\HydratorInterface;
 use Goat\Hydrator\HydratorMap;
 use Goat\Testing\GoatTestTrait;
-use Goat\Tests\DriverTestCase;
 
 class HydratorTest extends \PHPUnit_Framework_TestCase
 {
     use GoatTestTrait;
 
+    /**
+     * Test basics
+     */
     public function testBasicFeatures()
     {
         $hydratorMap = new HydratorMap($this->createTemporaryDirectory());
@@ -51,9 +53,56 @@ class HydratorTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($test3->constructorHasRunWithData);
 
         $values = $hydrator->extractValues($test3);
-        $this->assertCount(6, $values);
+        $this->assertCount(7, $values);
         $this->assertSame(218, $values['foo']);
         $this->assertSame('maroilles', $values['bar']);
         $this->assertSame(true, $values['baz']);
+    }
+
+    /**
+     * Test object nesting hydration
+     */
+    public function testNesting()
+    {
+        $hydratorMap = new HydratorMap($this->createTemporaryDirectory());
+        $hydrator = $hydratorMap->get(HydratedNestingClass::class);
+
+        $values = [
+            'ownProperty1' => 1,
+            'ownProperty2' => 3,
+            'nestedObject1.foo' => 5,
+            'nestedObject1.bar' => 7,
+            'nestedObject1.someNestedInstance.miaw' => 17,
+            'nestedObject2.miaw' => 11,
+        ];
+
+        /** @var \Goat\Tests\Hydrator\HydratedNestingClass $nesting1 */
+        $nesting1 = $hydrator->createAndHydrateInstance($values);
+        print_r($nesting1);
+        $this->assertInstanceOf(HydratedNestingClass::class, $nesting1);
+        $this->assertSame(1, $nesting1->getOwnProperty1());
+        $this->assertSame(3, $nesting1->getOwnProperty2());
+        $this->assertInstanceOf(HydratedClass::class, $nesting1->getNestedObject1());
+        $this->assertFalse($nesting1->getNestedObject1()->constructorHasRun);
+        $this->assertSame(5, $nesting1->getNestedObject1()->getFoo());
+        $this->assertSame(7, $nesting1->getNestedObject1()->getBar());
+        $this->assertInstanceOf(HydratedParentClass::class, $nesting1->getNestedObject2());
+        $this->assertSame(11, $nesting1->getNestedObject2()->getMiaw());
+        $this->assertInstanceOf(HydratedParentClass::class, $nesting1->getNestedObject1()->getSomeNestedInstance());
+        $this->assertSame(17, $nesting1->getNestedObject1()->getSomeNestedInstance()->getMiaw());
+
+        $nesting2 = new HydratedNestingClass();
+        $hydrator->hydrateObject($values, $nesting2);
+        $this->assertInstanceOf(HydratedNestingClass::class, $nesting2);
+        $this->assertSame(1, $nesting2->getOwnProperty1());
+        $this->assertSame(3, $nesting2->getOwnProperty2());
+        $this->assertInstanceOf(HydratedClass::class, $nesting2->getNestedObject1());
+        $this->assertFalse($nesting1->getNestedObject1()->constructorHasRun);
+        $this->assertSame(5, $nesting2->getNestedObject1()->getFoo());
+        $this->assertSame(7, $nesting2->getNestedObject1()->getBar());
+        $this->assertInstanceOf(HydratedParentClass::class, $nesting2->getNestedObject2());
+        $this->assertSame(11, $nesting2->getNestedObject2()->getMiaw());
+        $this->assertInstanceOf(HydratedParentClass::class, $nesting1->getNestedObject1()->getSomeNestedInstance());
+        $this->assertSame(17, $nesting1->getNestedObject1()->getSomeNestedInstance()->getMiaw());
     }
 }

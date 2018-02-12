@@ -15,7 +15,7 @@ use Goat\Mapper\Entity\EntityInterface;
  * classes but still need a minimum of logic upon it. You should probably not
  * use it, actually.
  */
-class DefaultEntityHydrator implements HydratorInterface
+final class DefaultEntityHydrator implements HydratorInterface
 {
     /**
      * {@inheritdoc}
