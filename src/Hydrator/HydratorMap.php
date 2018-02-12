@@ -9,6 +9,7 @@ use Goat\Mapper\Entity\DefaultEntity;
 final class HydratorMap
 {
     private $cacheDir;
+    private $configuration;
     private $hydrators = [];
     private $typeMap = [];
 
@@ -21,6 +22,26 @@ final class HydratorMap
     {
         $this->cacheDir = $cacheDir;
         $this->hydrators[DefaultEntity::class] = new DefaultEntityHydrator();
+    }
+
+    /**
+     * Set configuration
+     */
+    public function setConfiguration(Configuration $configuration)
+    {
+        $this->configuration = $configuration;
+    }
+
+    /**
+     * Get configuration
+     */
+    public function getConfiguration() : Configuration
+    {
+        if (!$this->configuration) {
+            $this->configuration = new Configuration();
+        }
+
+        return $this->configuration;
     }
 
     /**

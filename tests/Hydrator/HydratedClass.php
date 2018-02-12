@@ -51,4 +51,14 @@ final class HydratedClass extends HydratedParentClass
     {
         return $this->someNestedInstance;
     }
+
+    /**
+     * @Goat\Hydrator\Annotation\Property(class=Goat\Tests\Hydrator\HydratedParentClass)
+     */
+    private $annotedNestedInstance;
+
+    public function getAnnotedNestedInstance()
+    {
+        return $this->annotedNestedInstance;
+    }
 }

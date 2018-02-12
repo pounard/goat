@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Goat\Tests\Hydrator;
 
+use Goat\Hydrator\Configuration;
 use Goat\Hydrator\HydratorInterface;
 use Goat\Hydrator\HydratorMap;
 use Goat\Testing\GoatTestTrait;
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\AnnotationRegistry;
 
 class HydratorTest extends \PHPUnit_Framework_TestCase
 {
@@ -53,10 +56,38 @@ class HydratorTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($test3->constructorHasRunWithData);
 
         $values = $hydrator->extractValues($test3);
-        $this->assertCount(7, $values);
+        $this->assertCount(8, $values);
         $this->assertSame(218, $values['foo']);
         $this->assertSame('maroilles', $values['bar']);
         $this->assertSame(true, $values['baz']);
+    }
+
+    /**
+     * Test object nested hydration class name discovery using annotation works
+     */
+    public function testNestedAnnotedDiscovery()
+    {
+        // @todo I am sorry, I need to fix this
+        $this->markTestIncomplete("this needs to be implemented properly");
+
+        $hydratorMap = new HydratorMap($this->createTemporaryDirectory());
+
+        //AnnotationRegistry::registerAutoloadNamespace("MyProject\Annotations", "/path/to/myproject/src");
+        //AnnotationRegistry::registerLoader('class_exists');
+        $annotationReader = new AnnotationReader();
+        $configuration = new Configuration();
+        $configuration->setAnnotationReader($annotationReader);
+
+        $hydrator = $hydratorMap->get(HydratedClass::class);
+
+        $values = [
+            'annotedNestedInstance.miaw' => 42,
+        ];
+
+        /** @var \Goat\Tests\Hydrator\HydratedClass $instance */
+        $instance = $hydrator->createAndHydrateInstance($values);
+        $this->assertInstanceOf(HydratedParentClass::class, $instance->getAnnotedNestedInstance());
+        $this->assertSame(42, $instance->getAnnotedNestedInstance()->getMiaw());
     }
 
     /**
@@ -65,6 +96,16 @@ class HydratorTest extends \PHPUnit_Framework_TestCase
     public function testNesting()
     {
         $hydratorMap = new HydratorMap($this->createTemporaryDirectory());
+        $hydratorMap->setConfiguration(new Configuration([
+            HydratedClass::class => [
+                // Test that manually defined properties do work
+                'constructor' => HydratorInterface::CONSTRUCTOR_SKIP,
+                // Tests correct behavior of the 'constructor' option
+                'properties' => [
+                    'someNestedInstance' => HydratedParentClass::class,
+                ],
+            ],
+        ]));
         $hydrator = $hydratorMap->get(HydratedNestingClass::class);
 
         $values = [
@@ -78,7 +119,6 @@ class HydratorTest extends \PHPUnit_Framework_TestCase
 
         /** @var \Goat\Tests\Hydrator\HydratedNestingClass $nesting1 */
         $nesting1 = $hydrator->createAndHydrateInstance($values);
-        print_r($nesting1);
         $this->assertInstanceOf(HydratedNestingClass::class, $nesting1);
         $this->assertSame(1, $nesting1->getOwnProperty1());
         $this->assertSame(3, $nesting1->getOwnProperty2());

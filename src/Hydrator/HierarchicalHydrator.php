@@ -18,15 +18,11 @@ final class HierarchicalHydrator implements HydratorInterface
     /**
      * Default constructor
      */
-    public function __construct(string $class, HydratorMap $hydratorMap, HierarchicalHydratorConfiguration $configuration = null)
+    public function __construct(string $class, HydratorMap $hydratorMap)
     {
         $this->className = $class;
         $this->hydratorMap = $hydratorMap;
-
-        if (!$configuration) {
-            // Fallback on an empty instance that will attempt runtime lookups
-            $this->configuration = new HierarchicalHydratorConfiguration();
-        }
+        $this->configuration = $hydratorMap->getConfiguration();
     }
 
     /**

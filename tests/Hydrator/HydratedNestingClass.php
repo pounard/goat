@@ -10,7 +10,15 @@ final class HydratedNestingClass
 
     private $ownProperty1;
     private $ownProperty2;
+
+    /**
+     * @var HydratedClass
+     */
     private $nestedObject1;
+
+    /**
+     * @var HydratedParentClass
+     */
     private $nestedObject2;
 
     public function __construct()

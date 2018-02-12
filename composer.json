@@ -34,11 +34,15 @@
     "require-dev" : {
         "phpunit/phpunit" : "5.*",
         "phpbench/phpbench": "^0.13.0",
+        "squizlabs/php_codesniffer": "^2.7",
         "symfony/form" : "^3.2 || ^4",
         "symfony/http-foundation" : "^3.2 || ^4",
-        "squizlabs/php_codesniffer": "^2.7"
+        "symfony/property-info": "^3.3 || ^4"
     },
     "suggest" : {
-        "ext-weakref" : "for a better transaction handling"
+        "doctrine/annotations" : "enables object tree hydration using @Property() annotation, mapper entity validation via annotations",
+        "symfony/property-info" : "enables object tree hydration using @var doc blocks",
+        "symfony/validation" : "enables mapper entity validation",
+        "ext-weakref" : "enables transaction garbage collection checks"
     }
 }
