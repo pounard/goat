@@ -7,16 +7,16 @@ namespace Goat\Converter;
 trait ConverterAwareTrait
 {
     /**
-     * @var ConverterMap
+     * @var ConverterInterface
      */
     protected $converter;
 
     /**
      * Set converter
      *
-     * @param ConverterMap $converter
+     * @param ConverterInterface $converter
      */
-    public function setConverter(ConverterMap $converter)
+    public function setConverter(ConverterInterface $converter)
     {
         $this->converter = $converter;
     }

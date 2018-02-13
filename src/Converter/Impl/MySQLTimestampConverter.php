@@ -17,37 +17,6 @@ class MySQLTimestampConverter implements ConverterInterface
     const TS_FORMAT_TIME = 'H:i:s';
     const TS_FORMAT_TIME_INT = 'H:I:S';
 
-    protected function formatDate($value)
-    {
-        if (!$value instanceof \DateTimeInterface) {
-            throw new TypeConversionError(sprintf("given value '%s' is not instanceof \DateTimeInterface", $value));
-        }
-
-        return $value->format(self::TS_FORMAT_DATE);
-    }
-
-    protected function formatTimestamp($value)
-    {
-        if (!$value instanceof \DateTimeInterface) {
-            throw new TypeConversionError(sprintf("given value '%s' is not instanceof \DateTimeInterface", $value));
-        }
-
-        return $value->format(self::TS_FORMAT);
-    }
-
-    protected function formatTime($value)
-    {
-        if ($value instanceof \DateTimeInterface) {
-            return $value->format(self::TS_FORMAT_TIME);
-        }
-
-        if ($value instanceof \DateInterval) {
-            return $value->format(self::TS_FORMAT_TIME_INT);
-        }
-
-        throw new TypeConversionError(sprintf("given value '%s' is not instanceof \DateTimeInterface not \DateInterval", $value));
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -63,12 +32,12 @@ class MySQLTimestampConverter implements ConverterInterface
         // Just attempt to find if there is a timezone there, if not provide
         // the PHP current one in the \DateTime object.
         if (false !== strpos($value, '.')) {
-            return new \DateTime($data);
+            return new \DateTimeImmutable($data);
         }
 
         $tzId = @date_default_timezone_get() ?? "UTC";
 
-        return new \DateTime($data, new \DateTimeZone($tzId));
+        return new \DateTimeImmutable($data, new \DateTimeZone($tzId));
     }
 
     /**
@@ -82,15 +51,27 @@ class MySQLTimestampConverter implements ConverterInterface
 
         switch ($type) {
 
-            case 'date':
-                return $this->formatDate($value);
-
             case 'timestamp':
             case 'timestampz':
-                return $this->formatTimestamp($value);
+                if (!$value instanceof \DateTimeInterface) {
+                    throw new TypeConversionError(sprintf("given value '%s' is not instanceof \DateTimeInterface", $value));
+                }
+                return $value->format(self::TS_FORMAT);
+
+            case 'date':
+                if (!$value instanceof \DateTimeInterface) {
+                    throw new TypeConversionError(sprintf("given value '%s' is not instanceof \DateTimeInterface", $value));
+                }
+                return $value->format(self::TS_FORMAT_DATE);
 
             case 'time':
-                return $this->formatTime($value);
+                if ($value instanceof \DateTimeInterface) {
+                    return $value->format(self::TS_FORMAT_TIME);
+                }
+                if ($value instanceof \DateInterval) {
+                    return $value->format(self::TS_FORMAT_TIME_INT);
+                }
+                throw new TypeConversionError(sprintf("given value '%s' is not instanceof \DateTimeInterface not \DateInterval", $value));
         }
 
         throw new TypeConversionError(sprintf("cannot process type '%s'", $type));

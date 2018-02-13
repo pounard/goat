@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Goat\Testing;
 
-use Goat\Converter\ConverterMap;
+use Goat\Converter\DefaultConverter;
 use Goat\Driver\Dsn;
 use Goat\Driver\PgSQL\ExtPgSQLConnection;
 use Goat\Hydrator\HydratorMap;
@@ -42,11 +42,11 @@ trait GoatTestTrait
     /**
      * Create converter
      */
-    protected function createConverter() : ConverterMap
+    protected function createConverter() : DefaultConverter
     {
-        $map = new ConverterMap();
+        $map = new DefaultConverter();
 
-        foreach (ConverterMap::getDefautConverterMap() as $type => $data) {
+        foreach (DefaultConverter::getDefautConverterMap() as $type => $data) {
             list($class, $aliases) = $data;
 
             $map->register($type, new $class(), $aliases);

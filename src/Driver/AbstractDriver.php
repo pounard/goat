@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Goat\Driver;
 
 use Goat\Converter\ConverterAwareTrait;
-use Goat\Converter\ConverterMap;
+use Goat\Converter\ConverterInterface;
+use Goat\Converter\DefaultConverter;
 use Goat\Error\QueryError;
 use Goat\Query\QueryFactoryRunnerTrait;
 use Goat\Query\Writer\EscaperAwareTrait;
@@ -55,7 +56,7 @@ abstract class AbstractDriver implements DriverInterface
         $this->formatter = $this->createFormatter();
 
         // Register an empty instance for the converter, in case.
-        $this->setConverter(new ConverterMap());
+        $this->setConverter(new DefaultConverter());
     }
 
     /**
@@ -85,7 +86,7 @@ abstract class AbstractDriver implements DriverInterface
     /**
      * {@inheritdoc}
      */
-    public function setConverter(ConverterMap $converter)
+    public function setConverter(ConverterInterface $converter)
     {
         $this->converter = $converter;
         $this->formatter->setConverter($converter);

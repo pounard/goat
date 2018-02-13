@@ -6,8 +6,8 @@ namespace Goat\Runner;
 
 use Goat\Converter\ConverterAwareTrait;
 use Goat\Error\InvalidDataAccessError;
-use Goat\Hydrator\HydratorAwareTrait;
 use Goat\Error\QueryError;
+use Goat\Hydrator\HydratorAwareTrait;
 
 abstract class AbstractResultIterator implements ResultIteratorInterface
 {
@@ -50,7 +50,7 @@ abstract class AbstractResultIterator implements ResultIteratorInterface
 
         foreach ($row as $name => $value) {
             if (null !== $value) {
-                $ret[$name] = $this->convertValue((string)$name, $value);
+                $ret[$name] = $this->converter->fromSQL($this->getColumnType($name), $value);
             } else {
                 $ret[$name] = null;
             }

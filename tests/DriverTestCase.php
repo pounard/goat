@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Goat\Tests;
 
-use Goat\Converter\ConverterMap;
 use Goat\Driver\DriverInterface;
 use Goat\Driver\Dsn;
 use Goat\Driver\Session;

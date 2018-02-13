@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Goat\Driver;
 
-use Goat\Converter\ConverterMap;
+use Goat\Converter\ConverterInterface;
 use Goat\Hydrator\HydratorMap;
 use Goat\Query\DeleteQuery;
 use Goat\Query\InsertQueryQuery;
@@ -203,7 +203,7 @@ abstract class AbstractDriverProxy implements DriverInterface
     /**
      * {@inheritdoc}
      */
-    public function setConverter(ConverterMap $converter)
+    public function setConverter(ConverterInterface $converter)
     {
         return $this->getInnerDriver()->setConverter($converter);
     }

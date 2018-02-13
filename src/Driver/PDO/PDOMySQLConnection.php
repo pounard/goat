@@ -4,24 +4,25 @@ declare(strict_types=1);
 
 namespace Goat\Driver\PDO;
 
-use Goat\Converter\ConverterMap;
+use Goat\Converter\ConverterInterface;
+use Goat\Converter\DefaultConverter;
 use Goat\Converter\Impl\MySQLTimestampConverter;
+use Goat\Converter\Impl\BlobConverter;
 use Goat\Driver\MySQL\MySQLTransaction;
 use Goat\Query\Writer\EscaperInterface;
 use Goat\Query\Writer\FormatterInterface;
 use Goat\Runner\Transaction;
-use Goat\Converter\Impl\BlobConverter;
 
 class PDOMySQLConnection extends AbstractPDOConnection
 {
     /**
      * {@inheritdoc}
      */
-    public function setConverter(ConverterMap $converter)
+    public function setConverter(ConverterInterface $converter)
     {
         parent::setConverter($converter);
 
-        if ($converter instanceof ConverterMap) {
+        if ($converter instanceof DefaultConverter) {
 
             $timestampConverter = new MySQLTimestampConverter();
             $converter->register('timestampz', $timestampConverter, ['timestamp', 'datetime'], true);

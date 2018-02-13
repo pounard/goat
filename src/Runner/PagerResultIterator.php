@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Goat\Runner;
 
-use Goat\Converter\ConverterMap;
+use Goat\Converter\ConverterInterface;
 use Goat\Error\GoatError;
 use Goat\Hydrator\HydratorInterface;
 
@@ -44,7 +44,7 @@ final class PagerResultIterator implements ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function setConverter(ConverterMap $converter)
+    public function setConverter(ConverterInterface $converter)
     {
         return $this->result->setConverter($converter);
     }

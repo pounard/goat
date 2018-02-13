@@ -63,13 +63,13 @@ class ResultIteratorTest extends DriverTestCase
         foreach ($results as $result) {
             $this->assertTrue(is_int($result['foo']));
             $this->assertTrue(is_string($result['bar']));
-            $this->assertInstanceOf('\DateTime', $result['baz']);
+            $this->assertInstanceOf('\DateTimeImmutable', $result['baz']);
             $this->assertSame('1983-03-22 08:25:00', $result['baz']->format('Y-m-d H:i:s'));
-            $this->assertInstanceOf('\DateTime', $result['some_ts']);
+            $this->assertInstanceOf('\DateTimeImmutable', $result['some_ts']);
             $this->assertSame('1993-03-22 09:25:00', $result['some_ts']->format('Y-m-d H:i:s'));
-            $this->assertInstanceOf('\DateTime', $result['some_time']);
+            $this->assertInstanceOf('\DateTimeImmutable', $result['some_time']);
             $this->assertSame('10:25:00', $result['some_time']->format('H:i:s'));
-            $this->assertInstanceOf('\DateTime', $result['some_date']);
+            $this->assertInstanceOf('\DateTimeImmutable', $result['some_date']);
             $this->assertSame('2013-03-22', $result['some_date']->format('Y-m-d'));
         }
 

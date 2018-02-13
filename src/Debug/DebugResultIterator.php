@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Goat\Debug;
 
-use Goat\Converter\ConverterMap;
+use Goat\Converter\ConverterInterface;
 use Goat\Hydrator\HydratorInterface;
 use Goat\Runner\ResultIteratorInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -58,7 +58,7 @@ final class DebugResultIterator implements ResultIteratorInterface
     /**
      * {@inheritdoc}
      */
-    public function setConverter(ConverterMap $converter)
+    public function setConverter(ConverterInterface $converter)
     {
         return $this->result->setConverter($converter);
     }

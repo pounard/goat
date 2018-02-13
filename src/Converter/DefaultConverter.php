@@ -15,8 +15,11 @@ use Goat\Error\ConfigurationError;
 /**
  * Converter map contains references to all existing converters and is the
  * central point of all native to SQL or SQL to native type conversion.
+ *
+ * For speed, this implementation will proceed to primitive, SQL common and
+ * a few engine specific types convertion.
  */
-class ConverterMap implements ConverterInterface
+class DefaultConverter implements ConverterInterface
 {
     /**
      * Get default converter map
@@ -78,11 +81,9 @@ class ConverterMap implements ConverterInterface
 
         return [
             'timestampz' => [TimestampConverter::class, ['timestamp', 'datetime']],
-            'interval' => [IntervalConverter::class, []],
-            'date' => [TimestampConverter::class, []],
             'timez' => [TimestampConverter::class, ['time']],
             'varchar' => [StringConverter::class, ['character', 'char', 'text']],
-            'bytea' => [StringConverter::class, ['blob']],
+            'date' => [TimestampConverter::class, []],
             'boolean' => [BooleanConverter::class, ['bool']],
             'bigint' => [IntegerConverter::class, ['int8']],
             'bigserial' => [IntegerConverter::class, ['serial8']],
@@ -92,6 +93,8 @@ class ConverterMap implements ConverterInterface
             'double' => [DecimalConverter::class, ['float8']],
             'numeric' => [DecimalConverter::class, ['decimal']],
             'real' => [DecimalConverter::class, ['float4']],
+            'interval' => [IntervalConverter::class, []],
+            'bytea' => [StringConverter::class, ['blob']],
         ];
     }
 
@@ -209,11 +212,57 @@ class ConverterMap implements ConverterInterface
         return $this->converters[$type];
     }
 
+
+
     /**
      * {@inheritdoc}
      */
     public function fromSQL(string $type, $value)
     {
+        switch ($type) {
+
+            // Serial (integers)
+            case 'bigserial':
+            case 'serial':
+            case 'serial2':
+            case 'serial4':
+            case 'serial8':
+            case 'smallserial':
+            // Integers
+            case 'bigint':
+            case 'int':
+            case 'int2':
+            case 'int4':
+            case 'int8':
+            case 'integer':
+            case 'smallint':
+                return (int)$value;
+
+            // Strings
+            case 'char':
+            case 'character':
+            case 'text':
+            case 'varchar':
+                return $value;
+
+            // Flaoting point numbers and decimals
+            case 'decimal':
+            case 'double':
+            case 'float4':
+            case 'float8':
+            case 'numeric':
+            case 'real':
+                return (float)$value;
+
+            // Booleans
+            case 'bool':
+            case 'boolean':
+                if (!$value || 'f' === $value || 'F' === $value || 'FALSE' === strtolower($value)) {
+                    return false;
+                }
+                return (bool)$value;
+        }
+
         return $this->get($type)->fromSQL($type, $value);
     }
 
@@ -222,6 +271,47 @@ class ConverterMap implements ConverterInterface
      */
     public function toSQL(string $type, $value) : string
     {
+        switch ($type) {
+
+            // Serial (integers)
+            case 'bigserial':
+            case 'serial':
+            case 'serial2':
+            case 'serial4':
+            case 'serial8':
+            case 'smallserial':
+            // Integers
+            case 'bigint':
+            case 'int':
+            case 'int2':
+            case 'int4':
+            case 'int8':
+            case 'integer':
+            case 'smallint':
+                return (string)(int)$value;
+
+            // Strings
+            case 'char':
+            case 'character':
+            case 'text':
+            case 'varchar':
+                return (string)$value;
+
+            // Flaoting point numbers and decimals
+            case 'decimal':
+            case 'double':
+            case 'float4':
+            case 'float8':
+            case 'numeric':
+            case 'real':
+                return (string)(float)$value;
+
+            // Booleans
+            case 'bool':
+            case 'boolean':
+                return $value ? 't' : 'f';
+        }
+
         return $this->get($type)->toSQL($type, $value);
     }
 
@@ -230,6 +320,47 @@ class ConverterMap implements ConverterInterface
      */
     public function needsCast(string $type) : bool
     {
+        switch ($type) {
+
+            // Serial (integers)
+            case 'bigserial':
+            case 'serial':
+            case 'serial2':
+            case 'serial4':
+            case 'serial8':
+            case 'smallserial':
+            // Integers
+            case 'bigint':
+            case 'int':
+            case 'int2':
+            case 'int4':
+            case 'int8':
+            case 'integer':
+            case 'smallint':
+                return false;
+
+            // Strings
+            case 'char':
+            case 'character':
+            case 'text':
+            case 'varchar':
+                return false;
+
+            // Flaoting point numbers and decimals
+            case 'decimal':
+            case 'double':
+            case 'float4':
+            case 'float8':
+            case 'numeric':
+            case 'real':
+                return true;
+
+            // Booleans
+            case 'bool':
+            case 'boolean':
+                return true;
+        }
+
         return $this->get($type)->needsCast($type);
     }
 
@@ -238,6 +369,47 @@ class ConverterMap implements ConverterInterface
      */
     public function cast(string $type)
     {
+        switch ($type) {
+
+            // Serial (integers)
+            case 'bigserial':
+            case 'serial':
+            case 'serial2':
+            case 'serial4':
+            case 'serial8':
+            case 'smallserial':
+            // Integers
+            case 'bigint':
+            case 'int':
+            case 'int2':
+            case 'int4':
+            case 'int8':
+            case 'integer':
+            case 'smallint':
+                return;
+
+            // Strings
+            case 'char':
+            case 'character':
+            case 'text':
+            case 'varchar':
+                return false;
+
+            // Flaoting point numbers and decimals
+            case 'decimal':
+            case 'double':
+            case 'float4':
+            case 'float8':
+            case 'numeric':
+            case 'real':
+                return;
+
+            // Booleans
+            case 'bool':
+            case 'boolean':
+                return;
+        }
+
         return $this->get($type)->cast($type);
     }
 
@@ -296,6 +468,22 @@ class ConverterMap implements ConverterInterface
     {
         if (null === $value) {
             return null;
+        }
+
+        if (is_int($value) || is_string($value)) {
+            return (string)$value;
+        }
+        if (is_string($value)) {
+            return $value;
+        }
+        if (is_bool($value)) {
+            return $value ? 't' : 'f';
+        }
+        if (is_float($value) || is_numeric($value)) {
+            return (string)(float)$value;
+        }
+        if ($value instanceof \DateTimeInterface) {
+            return $this->get('timestampz')->toSQL('timestampz', $value);
         }
 
         foreach ($this->converters as $type => $converter) {

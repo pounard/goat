@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Goat\Driver\Drupal7;
 
 use Goat\Converter\ConverterAwareTrait;
-use Goat\Converter\ConverterMap;
+use Goat\Converter\ConverterInterface;
+use Goat\Converter\DefaultConverter;
+use Goat\Converter\Impl\BlobConverter;
+use Goat\Converter\Impl\MySQLTimestampConverter;
 use Goat\Driver\MySQL\MySQLTransaction;
 use Goat\Driver\PDO\DefaultResultIterator;
 use Goat\Driver\PDO\PDOMySQLEscaper;
@@ -25,8 +28,6 @@ use Goat\Runner\ResultIteratorInterface;
 use Goat\Runner\RunnerInterface;
 use Goat\Runner\RunnerTrait;
 use Goat\Runner\Transaction;
-use Goat\Converter\Impl\MySQLTimestampConverter;
-use Goat\Converter\Impl\BlobConverter;
 
 /**
  * Drupal 7 runnable: not a Driver: it doesn't need to handle the connection
@@ -73,7 +74,7 @@ class Drupal7Runner implements RunnerInterface
                 throw new NotImplementedError(sprintf("database '%s' target is not supported", $connection->driver()));
         }
 
-        $this->setConverter(new ConverterMap());
+        $this->setConverter(new DefaultConverter());
     }
 
     private function getDatabaseType(\DatabaseConnection $connection)
@@ -94,12 +95,12 @@ class Drupal7Runner implements RunnerInterface
     /**
      * {@inheritdoc}
      */
-    public function setConverter(ConverterMap $converter)
+    public function setConverter(ConverterInterface $converter)
     {
         $this->converter = $converter;
         $this->formatter->setConverter($converter);
 
-        if ($converter instanceof ConverterMap) {
+        if ($converter instanceof DefaultConverter) {
             switch ($this->getDatabaseType($this->connection)) {
 
                 case 'mysql':
