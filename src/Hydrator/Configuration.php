@@ -71,10 +71,10 @@ final class Configuration
             // Same goes, of course, for properties
             if (isset($value['properties'])) {
                 foreach ($value['properties'] as $property => $nestedClassName) {
-                  if ('\\' === $nestedClassName[0]) {
-                      $value['properties'][$property] = ltrim($nestedClassName, '\\');
-                      $modified = true;
-                  }
+                    if ('\\' === $nestedClassName[0]) {
+                        $value['properties'][$property] = ltrim($nestedClassName, '\\');
+                        $modified = true;
+                    }
                 }
             }
 
