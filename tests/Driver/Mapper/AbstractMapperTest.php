@@ -90,6 +90,11 @@ abstract class AbstractMapperTest extends DriverTestCase
     }
 
     /**
+     * Does this mapper supports join
+     */
+    abstract protected function supportsJoin() : bool;
+
+    /**
      * Create the mapper to test
      *
      * @param RunnerInterface $driver
@@ -244,6 +249,7 @@ abstract class AbstractMapperTest extends DriverTestCase
      */
     public function testFindByCriteria($driverName, $class)
     {
+        $supportsJoin = $this->supportsJoin();
         $driver = $this->createRunner($driverName, $class);
         $mapper = $this->createMapper($driver, MappedEntity::class, ['id']);
 
@@ -253,7 +259,9 @@ abstract class AbstractMapperTest extends DriverTestCase
         foreach ($result as $item) {
             $this->assertTrue($item instanceof MappedEntity);
             $this->assertSame($this->idAdmin, $item->id_user);
-            $this->assertSame("admin", $item->name);
+            if ($supportsJoin) {
+                $this->assertSame("admin", $item->name);
+            }
         }
 
         // Using a single expression
@@ -262,7 +270,9 @@ abstract class AbstractMapperTest extends DriverTestCase
         foreach ($result as $item) {
             $this->assertTrue($item instanceof MappedEntity);
             $this->assertSame($this->idAdmin, $item->id_user);
-            $this->assertSame("admin", $item->name);
+            if ($supportsJoin) {
+                $this->assertSame("admin", $item->name);
+            }
         }
 
         // Using a Where instance
@@ -271,7 +281,9 @@ abstract class AbstractMapperTest extends DriverTestCase
         foreach ($result as $item) {
             $this->assertTrue($item instanceof MappedEntity);
             $this->assertSame($this->idAdmin, $item->id_user);
-            $this->assertSame("admin", $item->name);
+            if ($supportsJoin) {
+                $this->assertSame("admin", $item->name);
+            }
         }
 
         // More than one condition
@@ -285,7 +297,9 @@ abstract class AbstractMapperTest extends DriverTestCase
         foreach ($result as $item) {
             $this->assertTrue($item instanceof MappedEntity);
             $this->assertSame($this->idJean, $item->id_user);
-            $this->assertSame("jean", $item->name);
+            if ($supportsJoin) {
+                $this->assertSame("jean", $item->name);
+            }
             $this->assertLessThan(new \DateTime("now -1 second"), $item->baz);
         }
 
@@ -304,6 +318,7 @@ abstract class AbstractMapperTest extends DriverTestCase
      */
     public function testPaginate($driverName, $class)
     {
+        $supportsJoin = $this->supportsJoin();
         $driver = $this->createRunner($driverName, $class);
         $mapper = $this->createMapper($driver, MappedEntity::class, ['id']);
 
@@ -315,7 +330,9 @@ abstract class AbstractMapperTest extends DriverTestCase
         foreach ($result as $item) {
             $this->assertTrue($item instanceof MappedEntity);
             $this->assertSame($this->idAdmin, $item->id_user);
-            $this->assertSame("admin", $item->name);
+            if ($supportsJoin) {
+                $this->assertSame("admin", $item->name);
+            }
         }
 
         // Using a single expression
@@ -324,7 +341,9 @@ abstract class AbstractMapperTest extends DriverTestCase
         foreach ($result as $item) {
             $this->assertTrue($item instanceof MappedEntity);
             $this->assertSame($this->idAdmin, $item->id_user);
-            $this->assertSame("admin", $item->name);
+            if ($supportsJoin) {
+                $this->assertSame("admin", $item->name);
+            }
         }
 
         // Using a Where instance
@@ -337,7 +356,9 @@ abstract class AbstractMapperTest extends DriverTestCase
         foreach ($result as $item) {
             $this->assertTrue($item instanceof MappedEntity);
             $this->assertSame($this->idAdmin, $item->id_user);
-            $this->assertSame("admin", $item->name);
+            if ($supportsJoin) {
+                $this->assertSame("admin", $item->name);
+            }
         }
 
         // More than one condition
@@ -355,7 +376,9 @@ abstract class AbstractMapperTest extends DriverTestCase
         foreach ($result as $item) {
             $this->assertTrue($item instanceof MappedEntity);
             $this->assertSame($this->idJean, $item->id_user);
-            $this->assertSame("jean", $item->name);
+            if ($supportsJoin) {
+                $this->assertSame("jean", $item->name);
+            }
             $this->assertLessThan(new \DateTime("now -1 second"), $item->baz);
         }
 

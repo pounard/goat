@@ -42,6 +42,19 @@ interface MapperInterface extends RunnerAwareInterface
     public function createSelect() : SelectQuery;
 
     /**
+     * Does this mapper has columns
+     */
+    public function hasColumns() : bool;
+
+    /**
+     * Get selected relation columns
+     *
+     * @return string[]
+     *   Column names
+     */
+    public function getColumns() : array;
+
+    /**
      * Does this mapper has a primary key defined
      */
     public function hasPrimaryKey() : bool;

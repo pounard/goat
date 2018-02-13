@@ -18,6 +18,14 @@ class SelectMapperTest extends AbstractMapperTest
     /**
      * {@inheritdoc}
      */
+    protected function supportsJoin() : bool
+    {
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function createMapper(RunnerInterface $driver, string $class, array $primaryKey) : MapperInterface
     {
         return new SelectMapper(
