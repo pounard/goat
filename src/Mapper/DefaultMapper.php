@@ -9,6 +9,7 @@ use Goat\Error\QueryError;
 use Goat\Mapper\Error\EntityNotFoundError;
 use Goat\Mapper\Form\EntityDataMapper;
 use Goat\Query\Expression;
+use Goat\Query\ExpressionColumn;
 use Goat\Query\ExpressionRelation;
 use Goat\Query\SelectQuery;
 use Goat\Query\Where;
@@ -17,7 +18,6 @@ use Goat\Runner\ResultIteratorInterface;
 use Goat\Runner\RunnerAwareTrait;
 use Goat\Runner\RunnerInterface;
 use Symfony\Component\Form\DataMapperInterface;
-use Goat\Query\ExpressionColumn;
 
 /**
  * Table mapper is a simple model implementation that works on an arbitrary
