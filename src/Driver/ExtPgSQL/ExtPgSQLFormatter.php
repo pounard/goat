@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Goat\Driver\PgSQL;
+namespace Goat\Driver\ExtPgSQL;
 
 use Goat\Query\Writer\Formatter;
 

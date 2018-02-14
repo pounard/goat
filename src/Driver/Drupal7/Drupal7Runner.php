@@ -10,11 +10,11 @@ use Goat\Converter\DefaultConverter;
 use Goat\Converter\Impl\BlobConverter;
 use Goat\Converter\Impl\MySQLTimestampConverter;
 use Goat\Driver\MySQL\MySQLTransaction;
-use Goat\Driver\PDO\DefaultResultIterator;
 use Goat\Driver\PDO\PDOMySQLEscaper;
 use Goat\Driver\PDO\PDOMySQLFormatter;
 use Goat\Driver\PDO\PDOPgSQLEscaper;
 use Goat\Driver\PDO\PDOPgSQLFormatter;
+use Goat\Driver\PDO\PDOResultIterator;
 use Goat\Driver\PDO\PgSQLTransaction;
 use Goat\Error\DriverError;
 use Goat\Error\GoatError;
@@ -206,7 +206,7 @@ class Drupal7Runner implements RunnerInterface
      */
     final private function createResultIterator($options = null, ...$constructorArgs) : ResultIteratorInterface
     {
-        $result = new DefaultResultIterator(...$constructorArgs);
+        $result = new PDOResultIterator(...$constructorArgs);
         $result->setConverter($this->converter);
 
         if ($options) {

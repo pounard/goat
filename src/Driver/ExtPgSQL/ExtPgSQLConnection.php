@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Goat\Driver\PgSQL;
+namespace Goat\Driver\ExtPgSQL;
 
 use Goat\Converter\ConverterInterface;
 use Goat\Converter\DefaultConverter;
 use Goat\Converter\Impl\BlobConverter;
 use Goat\Driver\AbstractDriver;
+use Goat\Driver\PgSQL\PgSQLTransaction;
 use Goat\Error\ConfigurationError;
 use Goat\Error\DriverError;
 use Goat\Error\GoatError;

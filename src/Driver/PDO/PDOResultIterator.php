@@ -7,7 +7,7 @@ namespace Goat\Driver\PDO;
 use Goat\Error\InvalidDataAccessError;
 use Goat\Runner\AbstractResultIterator;
 
-class DefaultResultIterator extends AbstractResultIterator
+class PDOResultIterator extends AbstractResultIterator
 {
     protected $statement;
     protected $columnCount = 0;

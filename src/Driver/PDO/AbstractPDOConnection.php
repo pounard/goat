@@ -90,7 +90,7 @@ abstract class AbstractPDOConnection extends AbstractDriver
      */
     protected function doCreateResultIterator(...$constructorArgs) : ResultIteratorInterface
     {
-        return new DefaultResultIterator(...$constructorArgs);
+        return new PDOResultIterator(...$constructorArgs);
     }
 
     /**

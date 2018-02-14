@@ -30,7 +30,7 @@ abstract class DriverTestCase extends \PHPUnit_Framework_TestCase
         return [
             'pdo_mysql' => \Goat\Driver\PDO\PDOMySQLConnection::class,
             'pdo_pgsql' => \Goat\Driver\PDO\PDOPgSQLConnection::class,
-            'ext_pgsql' => \Goat\Driver\PgSQL\ExtPgSQLConnection::class
+            'ext_pgsql' => \Goat\Driver\ExtPgSQL\ExtPgSQLConnection::class
         ];
     }
 

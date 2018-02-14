@@ -6,7 +6,7 @@ namespace Goat\Testing;
 
 use Goat\Converter\DefaultConverter;
 use Goat\Driver\Dsn;
-use Goat\Driver\PgSQL\ExtPgSQLConnection;
+use Goat\Driver\ExtPgSQL\ExtPgSQLConnection;
 use Goat\Hydrator\HydratorMap;
 use Goat\Runner\RunnerInterface;
 
