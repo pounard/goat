@@ -43,7 +43,7 @@ interface EscaperInterface
     /**
      * Unescape blob
      */
-    public function unescapeBlob(string $word) : string;
+    public function unescapeBlob($resource) : ?string;
 
     /**
      * Get backend escape sequences

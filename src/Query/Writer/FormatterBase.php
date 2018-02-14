@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Goat\Query\Writer;
 
+use Goat\Converter\ConverterAwareTrait;
+use Goat\Converter\ConverterInterface;
 use Goat\Error\QueryError;
 use Goat\Query\ArgumentBag;
 use Goat\Query\Query;
 use Goat\Query\Statement;
-use Goat\Converter\ConverterAwareTrait;
 
 /**
  * Basics for for the SQL foramtter.
@@ -234,11 +235,10 @@ abstract class FormatterBase implements FormatterInterface
             foreach (array_diff_key($parameters, $done) as $index => $value) {
                 $type = $arguments->getTypeAt($index);
                 if ($this->converter) {
-                    if ($type) {
-                        $parameters[$index] = $this->converter->toSQL($type, $value);
-                    } else {
-                        $parameters[$index] = $this->converter->guess($value);
+                    if (!$type) {
+                        $type = ConverterInterface::TYPE_UNKNOWN;
                     }
+                    $parameters[$index] = $this->converter->toSQL($type, $value);
                 } else {
                     $parameters[$index] = $value;
                 }

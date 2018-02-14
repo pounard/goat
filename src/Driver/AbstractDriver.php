@@ -88,6 +88,8 @@ abstract class AbstractDriver implements DriverInterface
      */
     public function setConverter(ConverterInterface $converter)
     {
+        $converter = new DriverConverter($converter, $this->getEscaper());
+
         $this->converter = $converter;
         $this->formatter->setConverter($converter);
     }

@@ -7,8 +7,7 @@ namespace Goat\Driver\Drupal7;
 use Goat\Converter\ConverterAwareTrait;
 use Goat\Converter\ConverterInterface;
 use Goat\Converter\DefaultConverter;
-use Goat\Converter\Impl\BlobConverter;
-use Goat\Converter\Impl\MySQLTimestampConverter;
+use Goat\Driver\DriverConverter;
 use Goat\Driver\MySQL\MySQLTransaction;
 use Goat\Driver\PDO\PDOMySQLEscaper;
 use Goat\Driver\PDO\PDOMySQLFormatter;
@@ -28,6 +27,7 @@ use Goat\Runner\ResultIteratorInterface;
 use Goat\Runner\RunnerInterface;
 use Goat\Runner\RunnerTrait;
 use Goat\Runner\Transaction;
+use Goat\Driver\PgSQL\PgSQLConverter;
 
 /**
  * Drupal 7 runnable: not a Driver: it doesn't need to handle the connection
@@ -97,24 +97,17 @@ class Drupal7Runner implements RunnerInterface
      */
     public function setConverter(ConverterInterface $converter)
     {
-        $this->converter = $converter;
-        $this->formatter->setConverter($converter);
+        $converter = new DriverConverter($converter, $this->getEscaper());
 
-        if ($converter instanceof DefaultConverter) {
-            switch ($this->getDatabaseType($this->connection)) {
+        switch ($this->getDatabaseType($this->connection)) {
 
-                case 'mysql':
-                    $timestampConverter = new MySQLTimestampConverter();
-                    $converter->register('timestampz', $timestampConverter, ['timestamp', 'datetime'], true);
-                    $converter->register('date', $timestampConverter, [], true);
-                    $converter->register('timez', $timestampConverter, ['time'], true);
-                    break;
-            }
+            case 'pgsql':
+                $converter = new PgSQLConverter($converter);
+                break;
         }
 
-        $blobConverter = new BlobConverter();
-        $blobConverter->setEscaper($this->getEscaper());
-        $converter->register('bytea', $blobConverter, ['blob'], true);
+        $this->converter = $converter;
+        $this->formatter->setConverter($converter);
     }
 
     /**

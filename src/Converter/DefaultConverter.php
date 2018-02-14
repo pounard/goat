@@ -4,13 +4,9 @@ declare(strict_types=1);
 
 namespace Goat\Converter;
 
-use Goat\Converter\Impl\BooleanConverter;
-use Goat\Converter\Impl\DecimalConverter;
-use Goat\Converter\Impl\IntegerConverter;
-use Goat\Converter\Impl\IntervalConverter;
-use Goat\Converter\Impl\StringConverter;
-use Goat\Converter\Impl\TimestampConverter;
+use Goat\Converter\Impl\IntervalValueConverter;
 use Goat\Error\ConfigurationError;
+use Goat\Error\TypeConversionError;
 
 /**
  * Converter map contains references to all existing converters and is the
@@ -19,8 +15,13 @@ use Goat\Error\ConfigurationError;
  * For speed, this implementation will proceed to primitive, SQL common and
  * a few engine specific types convertion.
  */
-class DefaultConverter implements ConverterInterface
+final class DefaultConverter implements ConverterInterface
 {
+    const TIMESTAMP_FORMAT = 'Y-m-d H:i:s';
+    const TIMESTAMP_FORMAT_DATE = 'Y-m-d';
+    const TIMESTAMP_FORMAT_TIME = 'H:i:s';
+    const TIMESTAMP_FORMAT_TIME_INT = 'H:I:S';
+
     /**
      * Get default converter map
      *
@@ -79,37 +80,16 @@ class DefaultConverter implements ConverterInterface
         ## xml 	  	XML data
          */
 
+        // Kept interval in here for the sake of example.
+        // @todo move it out when there will be a proper documentation
         return [
-            'timestampz' => [TimestampConverter::class, ['timestamp', 'datetime']],
-            'timez' => [TimestampConverter::class, ['time']],
-            // 'varchar' => [StringConverter::class, ['character', 'char', 'text']],
-            'date' => [TimestampConverter::class, []],
-            // 'boolean' => [BooleanConverter::class, ['bool']],
-            // 'bigint' => [IntegerConverter::class, ['int8']],
-            // 'bigserial' => [IntegerConverter::class, ['serial8']],
-            // 'integer' => [IntegerConverter::class, ['int', 'int4']],
-            // 'serial' => [IntegerConverter::class, ['serial4']],
-            // 'smallint' => [IntegerConverter::class, ['int2', 'smallserial', 'serial2']],
-            // 'double' => [DecimalConverter::class, ['float8']],
-            // 'numeric' => [DecimalConverter::class, ['decimal']],
-            // 'real' => [DecimalConverter::class, ['float4']],
-            'interval' => [IntervalConverter::class, []],
-            'bytea' => [StringConverter::class, ['blob']],
+            'interval' => [IntervalValueConverter::class, []],
         ];
     }
 
     private $aliasMap = [];
     private $converters = [];
     private $debug = false;
-    private $fallback;
-
-    /**
-     * Default constructor
-     */
-    public function __construct()
-    {
-        $this->setFallback(new StringConverter());
-    }
 
     /**
      * Toggle debug mode
@@ -122,29 +102,15 @@ class DefaultConverter implements ConverterInterface
     }
 
     /**
-     * Set fallback converter
-     *
-     * @param string $fallback
-     *
-     * @return $this
-     */
-    public function setFallback(ConverterInterface $converter)
-    {
-        $this->fallback = $converter;
-
-        return $this;
-    }
-
-    /**
      * Register a converter
      *
      * @param string $type
-     * @param ConverterInterface $instance
+     * @param ValueConverterInterface $instance
      * @param string[] $aliases
      *
      * @return $this
      */
-    public function register(string $type, ConverterInterface $instance, array $aliases = [], $allowOverride = false)
+    public function register(string $type, ValueConverterInterface $instance, array $aliases = [], $allowOverride = false)
     {
         if (is_array($type)) {
             trigger_error(sprintf("registering type as array is outdate and will be removed, while registering %s", implode(', ', $type)), E_USER_DEPRECATED);
@@ -189,30 +155,47 @@ class DefaultConverter implements ConverterInterface
     }
 
     /**
-     * Get converter for type
+     * Is there a type registered with this name
+     *
+     * @param string $type
+     * @param bool $allowAliases
+     *
+     * @return bool
+     */
+    public function typeExists(string $type, bool $allowAliases = true) : bool
+    {
+        return isset($this->converters[$type]) || ($allowAliases && isset($this->aliasMap[$type]));
+    }
+
+    /**
+     * Is the given type an alias
      *
      * @param string $type
      *
-     * @return ConverterInterface
+     * @return bool
      */
-    final protected function get($type)
+    public function isTypeAlias(string $type) : bool
+    {
+        return isset($this->aliasMap[$type]);
+    }
+
+    /**
+     * Get converter for type
+     */
+    private function get(string $type) : ?ValueConverterInterface
     {
         if (isset($this->aliasMap[$type])) {
             $type = $this->aliasMap[$type];
         }
 
-        if (!isset($this->converters[$type])) {
-            if ($this->debug || !$this->fallback) {
-                throw new ConfigurationError(sprintf("no converter registered for type '%s'", $type));
-            }
-
-            return $this->fallback;
+        if (isset($this->converters[$type])) {
+            return $this->converters[$type];
         }
 
-        return $this->converters[$type];
+        if ($this->debug) {
+            throw new ConfigurationError(sprintf("no converter registered for type '%s'", $type));
+        }
     }
-
-
 
     /**
      * {@inheritdoc}
@@ -261,6 +244,32 @@ class DefaultConverter implements ConverterInterface
                     return false;
                 }
                 return (bool)$value;
+
+            // Timestamp, Date without time and time without date
+            case 'datetime':
+            case 'timestamp':
+            case 'timestampz':
+            case 'date':
+            case 'time':
+            case 'timez':
+                // @todo This needs a serious rewrite...
+                if (!$data = trim($value)) {
+                    return null;
+                }
+                // Time is supposed to be standard: just attempt to find if there
+                // is a timezone there, if not provide the PHP current one in the
+                // \DateTime object.
+                if (false !== strpos($value, '.')) {
+                    return new \DateTimeImmutable($data);
+                }
+                $tzId = @date_default_timezone_get() ?? "UTC";
+                return new \DateTimeImmutable($data, new \DateTimeZone($tzId));
+
+            // Binary objects
+            // @todo handle object stream
+            case 'blob':
+            case 'bytea':
+                return $value;
         }
 
         return $this->get($type)->fromSQL($type, $value);
@@ -269,9 +278,45 @@ class DefaultConverter implements ConverterInterface
     /**
      * {@inheritdoc}
      */
-    public function toSQL(string $type, $value) : string
+    public function guessType($value) : string
     {
+        if (null === $value) {
+            return ConverterInterface::TYPE_NULL;
+        }
+        if (is_int($value) || is_string($value)) {
+            return 'varchar';
+        }
+        if (is_bool($value)) {
+            return 'bool';
+        }
+        if (is_float($value) || is_numeric($value)) {
+            return 'numeric';
+        }
+        if ($value instanceof \DateTimeInterface) {
+            return 'timestamp';
+        }
+
+        foreach ($this->converters as $type => $converter) {
+            if ($converter->canProcess($value)) {
+                return $type;
+            }
+        }
+
+        return 'varchar';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function toSQL(string $type, $value) : ?string
+    {
+        if (ConverterInterface::TYPE_UNKNOWN === $type) {
+            $type = $this->guessType($value);
+        }
+
         switch ($type) {
+            case ConverterInterface::TYPE_NULL:
+                return null;
 
             // Serial (integers)
             case 'bigserial':
@@ -293,6 +338,7 @@ class DefaultConverter implements ConverterInterface
             // Strings
             case 'char':
             case 'character':
+            case 'clog':
             case 'text':
             case 'varchar':
                 return (string)$value;
@@ -310,6 +356,45 @@ class DefaultConverter implements ConverterInterface
             case 'bool':
             case 'boolean':
                 return $value ? 't' : 'f';
+
+            // Timestamp
+            //
+            // Default implementation don't care about timezone, most RDBMS
+            // won't store timezones for you, or proceed to automatic convertions
+            // depending on the server locale/timezone (for example MySQL) more
+            // specific timezeone handling will be implemened within each driver
+            // that supports it.
+            case 'datetime':
+            case 'timestamp':
+            case 'timestampz':
+                if (!$value instanceof \DateTimeInterface) {
+                    throw new TypeConversionError(sprintf("given value '%s' is not instanceof \DateTimeInterface", $value));
+                }
+                return $value->format(self::TIMESTAMP_FORMAT);
+
+            // Date without time
+            case 'date':
+                if (!$value instanceof \DateTimeInterface) {
+                    throw new TypeConversionError(sprintf("given value '%s' is not instanceof \DateTimeInterface", $value));
+                }
+                return $value->format(self::TIMESTAMP_FORMAT_DATE);
+
+            // Time without date
+            case 'time':
+            case 'timez':
+                if ($value instanceof \DateTimeInterface) {
+                    return $value->format(self::TIMESTAMP_FORMAT_TIME);
+                }
+                if ($value instanceof \DateInterval) {
+                    return $value->format(self::TIMESTAMP_FORMAT_TIME_INT);
+                }
+                throw new TypeConversionError(sprintf("given value '%s' is not instanceof \DateTimeInterface not \DateInterval", $value));
+
+            // Binary objects
+            // @todo handle object stream
+            case 'blob':
+            case 'bytea':
+                return (string)$value;
         }
 
         return $this->get($type)->toSQL($type, $value);
@@ -322,6 +407,10 @@ class DefaultConverter implements ConverterInterface
     {
         switch ($type) {
 
+            case ConverterInterface::TYPE_NULL:
+            case ConverterInterface::TYPE_UNKNOWN:
+                return 'false';
+
             // Serial (integers)
             case 'bigserial':
             case 'serial':
@@ -342,6 +431,7 @@ class DefaultConverter implements ConverterInterface
             // Strings
             case 'char':
             case 'character':
+            case 'clog':
             case 'text':
             case 'varchar':
                 return false;
@@ -359,6 +449,27 @@ class DefaultConverter implements ConverterInterface
             case 'bool':
             case 'boolean':
                 return true;
+
+            // Timestamp
+            case 'datetime':
+            case 'timestamp':
+            case 'timestampz':
+                return true;
+
+            // Date without time
+            case 'date':
+                return true;
+
+            // Time without date
+            case 'time':
+            case 'timez':
+                return true;
+
+            // Binary objects
+            // @todo handle object stream
+            case 'blob':
+            case 'bytea':
+                return false;
         }
 
         return $this->get($type)->needsCast($type);
@@ -367,9 +478,12 @@ class DefaultConverter implements ConverterInterface
     /**
      * {@inheritdoc}
      */
-    public function cast(string $type)
+    public function cast(string $type) : ?string
     {
         switch ($type) {
+            case ConverterInterface::TYPE_NULL:
+            case ConverterInterface::TYPE_UNKNOWN:
+                return null;
 
             // Serial (integers)
             case 'bigserial':
@@ -386,11 +500,12 @@ class DefaultConverter implements ConverterInterface
             case 'int8':
             case 'integer':
             case 'smallint':
-                return;
+                return null;
 
             // Strings
             case 'char':
             case 'character':
+            case 'clog':
             case 'text':
             case 'varchar':
                 return false;
@@ -402,12 +517,33 @@ class DefaultConverter implements ConverterInterface
             case 'float8':
             case 'numeric':
             case 'real':
-                return;
+                return null;
 
             // Booleans
             case 'bool':
             case 'boolean':
-                return;
+                return null;
+
+            // Timestamp
+            case 'datetime':
+            case 'timestamp':
+            case 'timestampz':
+                return 'timestamp';
+
+            // Date without time
+            case 'date':
+                return 'date';
+
+            // Time without date
+            case 'time':
+            case 'timez':
+                return 'time';
+
+            // Binary objects
+            // @todo handle object stream
+            case 'blob':
+            case 'bytea':
+                return null;
         }
 
         return $this->get($type)->cast($type);
@@ -429,69 +565,5 @@ class DefaultConverter implements ConverterInterface
         }
 
         return false;
-    }
-
-    /**
-     * Is there a type registered with this name
-     *
-     * @param string $type
-     * @param bool $allowAliases
-     *
-     * @return bool
-     */
-    public function typeExists(string $type, bool $allowAliases = true) : bool
-    {
-        return isset($this->converters[$type]) || ($allowAliases && isset($this->aliasMap[$type]));
-    }
-
-    /**
-     * Is the given type an alias
-     *
-     * @param string $type
-     *
-     * @return bool
-     */
-    public function isTypeAlias(string $type) : bool
-    {
-        return isset($this->aliasMap[$type]);
-    }
-
-    /**
-     * Proceed to optimistic conversion using the first converter that accepts
-     * the given value
-     *
-     * @param mixed $value
-     *
-     * @return mixed
-     */
-    public function guess($value)
-    {
-        if (null === $value) {
-            return null;
-        }
-
-        if (is_int($value) || is_string($value)) {
-            return (string)$value;
-        }
-        if (is_string($value)) {
-            return $value;
-        }
-        if (is_bool($value)) {
-            return $value ? 't' : 'f';
-        }
-        if (is_float($value) || is_numeric($value)) {
-            return (string)(float)$value;
-        }
-        if ($value instanceof \DateTimeInterface) {
-            return $this->get('timestampz')->toSQL('timestampz', $value);
-        }
-
-        foreach ($this->converters as $type => $converter) {
-            if ($converter->canProcess($value)) {
-                return $converter->toSQL($type, $value);
-            }
-        }
-
-        return $value;
     }
 }

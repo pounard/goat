@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Goat\Converter\Impl;
 
-use Goat\Converter\ConverterInterface;
+use Goat\Converter\ValueConverterInterface;
 use Goat\Error\TypeConversionError;
 
-class IntervalConverter implements ConverterInterface
+class IntervalValueConverter implements ValueConverterInterface
 {
     /**
      * Format interval as an ISO8601 string
@@ -85,7 +85,7 @@ class IntervalConverter implements ConverterInterface
     /**
      * {@inheritdoc}
      */
-    public function toSQL(string $type, $value) : string
+    public function toSQL(string $type, $value) : ?string
     {
         if (!$value instanceof \DateInterval) {
             throw new TypeConversionError(sprintf("cannot process type value of type '%s'", gettype($value)));
@@ -105,7 +105,7 @@ class IntervalConverter implements ConverterInterface
     /**
      * {@inheritdoc}
      */
-    public function cast(string $type)
+    public function cast(string $type) : ?string
     {
         return 'interval';
     }

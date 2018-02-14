@@ -92,8 +92,13 @@ abstract class AbstractPDOEscaper extends EscaperBase
     /**
      * {@inheritdoc}
      */
-    public function unescapeBlob(string $blob) : string
+    public function unescapeBlob($resource) : ?string
     {
-        return $blob;
+        // I have no idea why, but all of the sudden, PDO pgsql driver started
+        // to send resources instead of data...
+        if (is_resource($resource)) {
+            return stream_get_contents($resource);
+        }
+        return $resource;
     }
 }

@@ -26,8 +26,6 @@ class PDOPgSQLEscaper extends AbstractPDOEscaper
      */
     public function escapeIdentifier(string $string) : string
     {
-        $this->checkIdentifier($string);
-
         return '"' . str_replace('"', '""', $string) . '"';
     }
 }

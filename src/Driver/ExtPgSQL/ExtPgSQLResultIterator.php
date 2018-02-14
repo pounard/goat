@@ -28,8 +28,6 @@ class ExtPgSQLResultIterator extends AbstractResultIterator
         $this->collectMetaData();
     }
 
-
-
     /**
      * Collect data types and column information
      */

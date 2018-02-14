@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Goat\Tests\Converter;
 
-use Goat\Converter\Impl\IntervalConverter;
+use Goat\Converter\Impl\IntervalValueConverter;
 use Goat\Error\TypeConversionError;
 
 class IntervalTest extends \PHPUnit_Framework_TestCase
 {
     public function testFromSQL()
     {
-        $converter = new IntervalConverter();
+        $converter = new IntervalValueConverter();
 
         $valid = [
             '1 year 2 days 00:01:00'    => 'P1Y2DT1M',
@@ -24,13 +24,13 @@ class IntervalTest extends \PHPUnit_Framework_TestCase
         foreach ($valid as $value => $expected) {
             $extracted = $converter->fromSQL('interval', $value);
             $this->assertInstanceOf(\DateInterval::class, $extracted);
-            $this->assertSame($expected, IntervalConverter::formatIntervalAsISO8601($extracted));
+            $this->assertSame($expected, IntervalValueConverter::formatIntervalAsISO8601($extracted));
         }
     }
 
     public function testToSQL()
     {
-        $converter = new IntervalConverter();
+        $converter = new IntervalValueConverter();
 
         // Converter only supports PHP \DateInterval structures as input
         $valid = [

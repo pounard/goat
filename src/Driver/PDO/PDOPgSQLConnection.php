@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Goat\Driver\PDO;
 
+use Goat\Converter\ConverterInterface;
+use Goat\Driver\PgSQL\PgSQLConverter;
 use Goat\Error\QueryError;
 use Goat\Query\Writer\EscaperInterface;
 use Goat\Query\Writer\FormatterInterface;
@@ -11,6 +13,14 @@ use Goat\Runner\Transaction;
 
 class PDOPgSQLConnection extends AbstractPDOConnection
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function setConverter(ConverterInterface $converter)
+    {
+        parent::setConverter(new PgSQLConverter($converter));
+    }
+
     /**
      * {@inheritdoc}
      */

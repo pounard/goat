@@ -9,6 +9,9 @@ namespace Goat\Converter;
  */
 interface ConverterInterface
 {
+    const TYPE_NULL = 'null';
+    const TYPE_UNKNOWN = '_';
+
     /**
      * From the given raw SQL string, get the PHP value
      *
@@ -29,7 +32,7 @@ interface ConverterInterface
      *
      * @return string
      */
-    public function toSQL(string $type, $value) : string;
+    public function toSQL(string $type, $value) : ?string;
 
     /**
      * Should this converter needs to cast the value to the server
@@ -49,14 +52,14 @@ interface ConverterInterface
      *   You may return null if you consider that the given type is valid
      *   for cast, and let the server handle it as-is
      */
-    public function cast(string $type);
+    public function cast(string $type) : ?string;
 
     /**
-     * Can this value be processed
+     * Guess type for the given value
      *
      * @param mixed $value
      *
-     * @return bool
+     * @return string
      */
-    public function canProcess($value) : bool;
+    public function guessType($value) : string;
 }

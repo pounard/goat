@@ -62,9 +62,9 @@ class NullEscaper implements EscaperInterface
     /**
      * {@inheritdoc}
      */
-    public function unescapeBlob(string $word) : string
+    public function unescapeBlob($resource) : ?string
     {
-        return substr(substr($word, -1), 1);
+        return substr(substr($resource, -1), 1);
     }
 
     /**
