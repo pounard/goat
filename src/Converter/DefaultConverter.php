@@ -198,6 +198,8 @@ final class DefaultConverter implements ConverterInterface
         if ($this->debug) {
             throw new ConfigurationError(sprintf("no converter registered for type '%s'", $type));
         }
+
+        return null;
     }
 
     /**
@@ -275,7 +277,11 @@ final class DefaultConverter implements ConverterInterface
                 return $value;
         }
 
-        return $this->get($type)->fromSQL($type, $value);
+        if ($converter = $this->get($type)) {
+            return $converter->fromSQL($type, $value);
+        }
+
+        return (string)$value;
     }
 
     /**
@@ -400,7 +406,11 @@ final class DefaultConverter implements ConverterInterface
                 return (string)$value;
         }
 
-        return $this->get($type)->toSQL($type, $value);
+        if ($converter = $this->get($type)) {
+            return $converter->toSQL($type, $value);
+        }
+
+        return (string)$value;
     }
 
     /**
@@ -475,7 +485,11 @@ final class DefaultConverter implements ConverterInterface
                 return false;
         }
 
-        return $this->get($type)->needsCast($type);
+        if ($converter = $this->get($type)) {
+            return $converter->needsCast($type);
+        }
+
+        return false;
     }
 
     /**
@@ -549,6 +563,10 @@ final class DefaultConverter implements ConverterInterface
                 return null;
         }
 
-        return $this->get($type)->cast($type);
+        if ($converter = $this->get($type)) {
+            return $converter->cast($type);
+        }
+
+        return null;
     }
 }
