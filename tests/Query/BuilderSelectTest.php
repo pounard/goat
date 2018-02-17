@@ -237,4 +237,30 @@ EOT;
 
         $this->assertSameSql($reference, $formatter->format($query));
     }
+
+    public function testWhereInSelect()
+    {
+        $formatter = new Formatter(new NullEscaper());
+
+        $reference = <<<EOT
+select "foo"
+from "test1"
+where
+  "a" in (
+    select "b"
+    from "test2"
+  )
+EOT;
+
+        // Most basic way
+        $query = (new SelectQuery('test1'))
+            ->column('foo')
+            ->condition('a',
+                (new SelectQuery('test2'))
+                  ->column('b')
+            )
+        ;
+
+        $this->assertSameSql($reference, $formatter->format($query));
+    }
 }
