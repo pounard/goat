@@ -20,6 +20,13 @@ final class HydratorMap
      */
     public function __construct(string $cacheDir = null)
     {
+        if (!$cacheDir) {
+            $cacheDir = sys_get_temp_dir().'/goat-hydrator';
+            if (!is_dir($cacheDir) && !@mkdir($cacheDir)) { // Attempt directory creation
+                throw new \InvalidArgumentException(sprintf("'%s': could not create directory", $cacheDir));
+            }
+        }
+
         $this->cacheDir = $cacheDir;
         $this->hydrators[DefaultEntity::class] = new DefaultEntityHydrator();
     }
