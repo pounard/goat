@@ -35,6 +35,10 @@ class WritableSelectMapper extends WritableDefaultMapper
             $relationString = $relation->getName();
         }
 
+        // @todo
+        //   remove columns parameter, and introspect the select query to find them
+        //   all using getAllColumns() instead
+
         parent::__construct($runner, $class, $primaryKey, $relationString, $relation->getAlias(), $columns);
 
         $this->select = $select;
