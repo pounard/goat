@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Goat\Mapper;
 
-interface MapperRegistryInterface
+interface MapperRegistry
 {
     /**
      * Default/none namespace
