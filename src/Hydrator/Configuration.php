@@ -134,13 +134,15 @@ final class Configuration
         }
 
         // Use Symfony's property info extractor if available
-        if ($properties = $this->propertyInfoExtractor->getProperties($className)) {
-            foreach ($properties as $property) {
-                if ($types = $this->propertyInfoExtractor->getTypes($className, $property)) {
-                    foreach ($types as $type) {
-                        if ($propertyClassName = $type->getClassName()) {
-                            $ret[$property] = $propertyClassName;
-                            break; // Proceed with next property
+        if ($this->propertyInfoExtractor) {
+            if ($properties = $this->propertyInfoExtractor->getProperties($className)) {
+                foreach ($properties as $property) {
+                    if ($types = $this->propertyInfoExtractor->getTypes($className, $property)) {
+                        foreach ($types as $type) {
+                            if ($propertyClassName = $type->getClassName()) {
+                                $ret[$property] = $propertyClassName;
+                                break; // Proceed with next property
+                            }
                         }
                     }
                 }
