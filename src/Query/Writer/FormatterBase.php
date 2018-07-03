@@ -17,7 +17,6 @@ use Goat\Query\Statement;
 abstract class FormatterBase implements FormatterInterface
 {
     use ConverterAwareTrait;
-    use EscaperAwareTrait;
 
     /**
      * Escape sequence matching magical regex
@@ -36,13 +35,16 @@ abstract class FormatterBase implements FormatterInterface
     private $matchParametersRegex;
 
     /**
+     * @var EscaperInterface
+     */
+    protected $escaper;
+
+    /**
      * Default constructor
-     *
-     * @param EscaperInterface $escaper
      */
     public function __construct(EscaperInterface $escaper)
     {
-        $this->setEscaper($escaper);
+        $this->escaper = $escaper;
         $this->buildParameterRegex();
     }
 

@@ -9,7 +9,6 @@ use Goat\Converter\ConverterInterface;
 use Goat\Converter\DefaultConverter;
 use Goat\Error\QueryError;
 use Goat\Query\QueryFactoryRunnerTrait;
-use Goat\Query\Writer\EscaperAwareTrait;
 use Goat\Query\Writer\EscaperInterface;
 use Goat\Query\Writer\FormatterInterface;
 use Goat\Runner\ResultIteratorInterface;
@@ -31,7 +30,6 @@ use Goat\Runner\RunnerTrait;
 abstract class AbstractDriver implements DriverInterface
 {
     use ConverterAwareTrait;
-    use EscaperAwareTrait;
     use QueryFactoryRunnerTrait;
     use RunnerTrait;
 
@@ -40,6 +38,7 @@ abstract class AbstractDriver implements DriverInterface
     protected $configuration = [];
     protected $converter;
     protected $dsn;
+    protected $escaper;
     protected $formatter;
 
     /**

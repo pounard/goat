@@ -9,7 +9,6 @@ use Goat\Driver\Dsn;
 use Goat\Driver\Session;
 use Goat\Driver\Drupal7\Drupal7Runner;
 use Goat\Driver\Profiling\ProfilingDriverProxy;
-use Goat\Hydrator\HydratorMap;
 use Goat\Runner\RunnerInterface;
 use Goat\Testing\GoatTestTrait;
 

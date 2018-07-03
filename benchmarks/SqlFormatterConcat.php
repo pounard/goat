@@ -5,6 +5,7 @@ namespace Goat\Benchmark;
 use Goat\Error\NotImplementedError;
 use Goat\Error\QueryError;
 use Goat\Query\DeleteQuery;
+use Goat\Query\Expression;
 use Goat\Query\ExpressionColumn;
 use Goat\Query\ExpressionRaw;
 use Goat\Query\ExpressionRelation;
@@ -16,8 +17,6 @@ use Goat\Query\SelectQuery;
 use Goat\Query\Statement;
 use Goat\Query\UpdateQuery;
 use Goat\Query\Where;
-use Goat\Query\Writer\EscaperAwareInterface;
-use Goat\Query\Writer\EscaperAwareTrait;
 use Goat\Query\Writer\EscaperInterface;
 use Goat\Query\Writer\FormatterInterface;
 
@@ -25,9 +24,9 @@ use Goat\Query\Writer\FormatterInterface;
  * Rewrite of the SQL standard formatter that uses string contact instead
  * of implode() and sprintf() for benchmarking purpose.
  */
-class FormatterConcat implements FormatterInterface, EscaperAwareInterface
+class FormatterConcat implements FormatterInterface
 {
-    use EscaperAwareTrait;
+    private $escaper;
 
     /**
      * Default constructor
@@ -36,7 +35,7 @@ class FormatterConcat implements FormatterInterface, EscaperAwareInterface
      */
     public function __construct(EscaperInterface $escaper)
     {
-        $this->setEscaper($escaper);
+        $this->escaper = $escaper;
     }
 
     /**
