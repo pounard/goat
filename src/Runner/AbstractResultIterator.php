@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace Goat\Runner;
 
+use Goat\Converter\ConverterInterface;
 use Goat\Error\InvalidDataAccessError;
 use Goat\Error\QueryError;
-use Goat\Hydrator\HydratorAwareTrait;
-use Goat\Converter\ConverterInterface;
+use Goat\Hydrator\HydratorInterface;
 
 abstract class AbstractResultIterator implements ResultIteratorInterface
 {
-    use HydratorAwareTrait;
-
     protected $columnKey;
     protected $converter;
+    protected $hydrator;
 
     /**
      * {@inheritdoc}
@@ -22,6 +21,14 @@ abstract class AbstractResultIterator implements ResultIteratorInterface
     public function setConverter(ConverterInterface $converter)
     {
         $this->converter = $converter;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setHydrator(HydratorInterface $hydrator)
+    {
+        $this->hydrator = $hydrator;
     }
 
     /**

@@ -6,15 +6,13 @@ namespace Goat\Runner;
 
 use Goat\Converter\ConverterInterface;
 use Goat\Error\InvalidDataAccessError;
-use Goat\Hydrator\HydratorAwareTrait;
+use Goat\Hydrator\HydratorInterface;
 
 /**
  * Empty iterator for some edge cases results
  */
 final class EmptyResultIterator implements ResultIteratorInterface
 {
-    use HydratorAwareTrait;
-
     private $affectedRowCount = 0;
 
     /**
@@ -31,6 +29,13 @@ final class EmptyResultIterator implements ResultIteratorInterface
      * {@inheritdoc}
      */
     public function setConverter(ConverterInterface $converter)
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setHydrator(HydratorInterface $hydrator)
     {
     }
 

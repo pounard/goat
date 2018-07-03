@@ -5,17 +5,22 @@ declare(strict_types=1);
 namespace Goat\Runner;
 
 use Goat\Converter\ConverterInterface;
-use Goat\Hydrator\HydratorAwareInterface;
+use Goat\Hydrator\HydratorInterface;
 
 /**
  * When in use using the iterator, default behavior is to return associative arrays
  */
-interface ResultIteratorInterface extends \IteratorAggregate, \Countable, HydratorAwareInterface
+interface ResultIteratorInterface extends \IteratorAggregate, \Countable
 {
     /**
      * Set converter
      */
     public function setConverter(ConverterInterface $converter);
+
+    /**
+     * Set hydrator
+     */
+    public function setHydrator(HydratorInterface $hydrator);
 
     /**
      * Set column to use as iterator key
