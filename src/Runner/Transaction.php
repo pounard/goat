@@ -22,7 +22,7 @@ interface Transaction extends RunnerAwareInterface
      * @param int $isolationLevel
      *   One of the Transaction::* constants
      *
-     * @return Transaction
+     * @return $this
      */
     public function level(int $isolationLevel) : Transaction;
 
@@ -36,7 +36,7 @@ interface Transaction extends RunnerAwareInterface
     /**
      * Start the transaction
      *
-     * @return Transaction
+     * @return $this
      */
     public function start() : Transaction;
 
@@ -48,7 +48,7 @@ interface Transaction extends RunnerAwareInterface
      *   If a string or a string array, only the given constraint
      *   names are set as immediate
      *
-     * @return Transaction
+     * @return $this
      */
     public function immediate($constraint = null) : Transaction;
 
@@ -60,7 +60,7 @@ interface Transaction extends RunnerAwareInterface
      *   If a string or a string array, only the given constraint
      *   names are set as immediate
      *
-     * @return Transaction
+     * @return $this
      */
     public function deferred($constraint = null) : Transaction;
 
@@ -82,14 +82,14 @@ interface Transaction extends RunnerAwareInterface
     /**
      * Explicit transaction commit
      *
-     * @return Transaction
+     * @return $this
      */
     public function commit() : Transaction;
 
     /**
      * Explicit transaction rollback
      *
-     * @return Transaction
+     * @return $this
      */
     public function rollback() : Transaction;
 
@@ -99,7 +99,7 @@ interface Transaction extends RunnerAwareInterface
      * @param string $name
      *   Savepoint name
      *
-     * @return Transaction
+     * @return $this
      */
     public function rollbackToSavepoint(string $name) : Transaction;
 }

@@ -252,7 +252,7 @@ abstract class AbstractTransaction implements Transaction
         }
 
         if (!$name) {
-            $name = self::SAVEPOINT_PREFIX . (++$this->savepoint);
+            $name = self::SAVEPOINT_PREFIX.(++$this->savepoint);
         }
 
         if (isset($this->savepoints[$name])) {
