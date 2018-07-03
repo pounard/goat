@@ -15,14 +15,14 @@ class BinaryObjectTest extends DriverTestCase
     protected function createTestSchema(RunnerInterface $driver)
     {
         if (false !== stripos($driver->getDriverName(), 'pgsql')) {
-            $driver->query("
+            $driver->execute("
                 create temporary table storage (
                     id serial primary key,
                     foo bytea
                 )
             ");
         } else {
-            $driver->query("
+            $driver->execute("
                 create temporary table storage (
                     id serial primary key,
                     foo blob

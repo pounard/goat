@@ -15,7 +15,6 @@ use Goat\Query\SelectQuery;
 use Goat\Query\Where;
 use Goat\Runner\PagerResultIterator;
 use Goat\Runner\ResultIteratorInterface;
-use Goat\Runner\RunnerAwareTrait;
 use Goat\Runner\RunnerInterface;
 use Symfony\Component\Form\DataMapperInterface;
 
@@ -25,13 +24,12 @@ use Symfony\Component\Form\DataMapperInterface;
  */
 class DefaultMapper implements MapperInterface
 {
-    use RunnerAwareTrait;
-
     private $class;
     private $columns = [];
     private $primaryKey = [];
     private $relation;
     private $relationAlias;
+    protected $runner;
 
     /**
      * Default constructor

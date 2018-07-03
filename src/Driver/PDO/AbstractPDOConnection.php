@@ -96,7 +96,7 @@ abstract class AbstractPDOConnection extends AbstractDriver
     /**
      * {@inheritdoc}
      */
-    public function query($query, array $parameters = null, $options = null) : ResultIteratorInterface
+    public function execute($query, array $parameters = null, $options = null) : ResultIteratorInterface
     {
         if ($query instanceof Query) {
             if (!$query->willReturnRows()) {
@@ -190,7 +190,7 @@ abstract class AbstractPDOConnection extends AbstractDriver
             throw new QueryError(sprintf("'%s': query was not prepared", $identifier));
         }
 
-        return $this->query($this->prepared[$identifier], $parameters, $options);
+        return $this->execute($this->prepared[$identifier], $parameters, $options);
     }
 
     /**

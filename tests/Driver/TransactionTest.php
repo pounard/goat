@@ -18,7 +18,7 @@ class TransactionTest extends DriverTestCase
      */
     protected function createTestSchema(RunnerInterface $driver)
     {
-        $driver->query("
+        $driver->execute("
             create temporary table transaction_test (
                 id serial primary key,
                 foo integer not null,
@@ -28,25 +28,25 @@ class TransactionTest extends DriverTestCase
 
 
         if ($driver->supportsDeferingConstraints()) {
-            $driver->query("
+            $driver->execute("
                 alter table transaction_test
                     add constraint transaction_test_foo
                     unique (foo)
                     deferrable
             ");
-            $driver->query("
+            $driver->execute("
                 alter table transaction_test
                     add constraint transaction_test_bar
                     unique (bar)
                     deferrable
             ");
         } else {
-            $driver->query("
+            $driver->execute("
                 alter table transaction_test
                     add constraint transaction_test_foo
                     unique (foo)
             ");
-            $driver->query("
+            $driver->execute("
                 alter table transaction_test
                     add constraint transaction_test_bar
                     unique (bar)

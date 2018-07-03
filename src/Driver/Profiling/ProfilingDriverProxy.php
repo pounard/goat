@@ -105,7 +105,7 @@ class ProfilingDriverProxy extends AbstractDriverProxy
     /**
      * {@inheritdoc}
      */
-    public function query($query, array $parameters = null, $options = null) : ResultIteratorInterface
+    public function execute($query, array $parameters = null, $options = null) : ResultIteratorInterface
     {
         $timer = new Timer();
         $this->data['query_count']++;
@@ -122,7 +122,7 @@ class ProfilingDriverProxy extends AbstractDriverProxy
             }
             $this->data['queries'][] = ['sql' => $rawSQL, 'params' => $parameters];
 
-            $ret = $driver->query($query, $parameters ?? [], $options);
+            $ret = $driver->execute($query, $parameters ?? [], $options);
 
         } catch (\Exception $e) {
             $this->data['exception']++;
@@ -218,9 +218,8 @@ class ProfilingDriverProxy extends AbstractDriverProxy
         $this->data['transaction_count']++;
 
         $transaction = $this->getInnerDriver()->startTransaction($isolationLevel, $allowPending);
-        $ret = new ProfilingTransaction($this, $transaction, new Timer());
 
-        return $ret;
+        return new ProfilingTransaction($this, $transaction, new Timer());
     }
 
     /**

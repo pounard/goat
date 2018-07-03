@@ -171,20 +171,14 @@ class Drupal7Runner implements RunnerInterface
         switch ($this->connection->driver()) {
 
             case 'mysql':
-                $ret = new MySQLTransaction($isolationLevel);
-                break;
+                return new MySQLTransaction($this, $isolationLevel);
 
             case 'pgsql':
-                $ret = new PgSQLTransaction($isolationLevel);
-                break;
+                return new PgSQLTransaction($this, $isolationLevel);
 
             default:
                 throw new NotImplementedError(sprintf("database '%s' target is not supported", $this->connection->driver()));
         }
-
-        $ret->setRunner($this);
-
-        return $ret;
     }
 
     /**
@@ -222,7 +216,7 @@ class Drupal7Runner implements RunnerInterface
     /**
      * {@inheritdoc}
      */
-    public function query($query, array $parameters = null, $options = null) : ResultIteratorInterface
+    public function execute($query, array $parameters = null, $options = null) : ResultIteratorInterface
     {
         if ($query instanceof Query) {
             if (!$query->willReturnRows()) {
@@ -312,6 +306,6 @@ class Drupal7Runner implements RunnerInterface
             throw new QueryError(sprintf("'%s': query was not prepared", $identifier));
         }
 
-        return $this->query($this->prepared[$identifier], $parameters, $options);
+        return $this->execute($this->prepared[$identifier], $parameters, $options);
     }
 }

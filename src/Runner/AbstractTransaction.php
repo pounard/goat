@@ -11,8 +11,6 @@ use Goat\Error\TransactionError;
  */
 abstract class AbstractTransaction implements Transaction
 {
-    use RunnerAwareTrait;
-
     /**
      * Default savepoint name prefix
      */
@@ -50,6 +48,7 @@ abstract class AbstractTransaction implements Transaction
     private $savepoint = 0;
     private $savepoints = [];
     private $started = false;
+    protected $runner;
 
     /**
      * Default constructor
@@ -57,8 +56,9 @@ abstract class AbstractTransaction implements Transaction
      * @param int $isolationLevel
      *   One of the Transaction::* constants
      */
-    final public function __construct(int $isolationLevel = self::REPEATABLE_READ)
+    final public function __construct(RunnerInterface $runner, int $isolationLevel = self::REPEATABLE_READ)
     {
+        $this->runner = $runner;
         $this->level($isolationLevel);
     }
 

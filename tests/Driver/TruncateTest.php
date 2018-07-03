@@ -15,7 +15,7 @@ class TruncateTest extends DriverTestCase
      */
     protected function createTestSchema(RunnerInterface $driver)
     {
-        $driver->query("
+        $driver->execute("
             create temporary table some_table (
                 id serial primary key,
                 foo integer not null,
@@ -24,13 +24,13 @@ class TruncateTest extends DriverTestCase
                 id_user integer
             )
         ");
-        $driver->query("
+        $driver->execute("
             create temporary table users (
                 id serial primary key,
                 name varchar(255)
             )
         ");
-        $driver->query("
+        $driver->execute("
             create temporary table users_status (
                 id_user integer,
                 status integer
@@ -92,14 +92,14 @@ class TruncateTest extends DriverTestCase
     {
         $driver = $this->createDriver($driverName, $class);
 
-        $this->assertSame(5, $driver->query("select count(*) from some_table")->fetchField());
-        $this->assertSame(2, $driver->query("select count(*) from users")->fetchField());
-        $this->assertSame(3, $driver->query("select count(*) from users_status")->fetchField());
+        $this->assertSame(5, $driver->execute("select count(*) from some_table")->fetchField());
+        $this->assertSame(2, $driver->execute("select count(*) from users")->fetchField());
+        $this->assertSame(3, $driver->execute("select count(*) from users_status")->fetchField());
 
         $driver->truncateTables('some_table');
-        $this->assertSame(0, $driver->query("select count(*) from some_table")->fetchField());
-        $this->assertSame(2, $driver->query("select count(*) from users")->fetchField());
-        $this->assertSame(3, $driver->query("select count(*) from users_status")->fetchField());
+        $this->assertSame(0, $driver->execute("select count(*) from some_table")->fetchField());
+        $this->assertSame(2, $driver->execute("select count(*) from users")->fetchField());
+        $this->assertSame(3, $driver->execute("select count(*) from users_status")->fetchField());
     }
 
     /**
@@ -111,13 +111,13 @@ class TruncateTest extends DriverTestCase
     {
         $driver = $this->createDriver($driverName, $class);
 
-        $this->assertSame(5, $driver->query("select count(*) from some_table")->fetchField());
-        $this->assertSame(2, $driver->query("select count(*) from users")->fetchField());
-        $this->assertSame(3, $driver->query("select count(*) from users_status")->fetchField());
+        $this->assertSame(5, $driver->execute("select count(*) from some_table")->fetchField());
+        $this->assertSame(2, $driver->execute("select count(*) from users")->fetchField());
+        $this->assertSame(3, $driver->execute("select count(*) from users_status")->fetchField());
 
         $driver->truncateTables(['some_table', 'users']);
-        $this->assertSame(0, $driver->query("select count(*) from some_table")->fetchField());
-        $this->assertSame(0, $driver->query("select count(*) from users")->fetchField());
-        $this->assertSame(3, $driver->query("select count(*) from users_status")->fetchField());
+        $this->assertSame(0, $driver->execute("select count(*) from some_table")->fetchField());
+        $this->assertSame(0, $driver->execute("select count(*) from users")->fetchField());
+        $this->assertSame(3, $driver->execute("select count(*) from users_status")->fetchField());
     }
 }

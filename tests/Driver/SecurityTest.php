@@ -47,12 +47,12 @@ class SecurityTest extends DriverTestCase
      */
     protected function createTestSchema(RunnerInterface $driver)
     {
-        $driver->query("
+        $driver->execute("
             create temporary table users (
                 id serial primary key
             )
         ");
-        $driver->query("
+        $driver->execute("
             create temporary table some_table (
                 id serial primary key,
                 foo integer not null,
@@ -257,7 +257,7 @@ class SecurityTest extends DriverTestCase
                     $driver->getEscaper()->escapeIdentifier($veryBadString)
                 );
 
-                $driver->query($sql);
+                $driver->execute($sql);
 
                 // We are going to test with whatever passed.
                 $result = $driver

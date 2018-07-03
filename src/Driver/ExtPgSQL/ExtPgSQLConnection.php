@@ -157,10 +157,7 @@ class ExtPgSQLConnection extends AbstractDriver
      */
     protected function doStartTransaction(int $isolationLevel = Transaction::REPEATABLE_READ) : Transaction
     {
-        $ret = new PgSQLTransaction($isolationLevel);
-        $ret->setRunner($this);
-
-        return $ret;
+        return new PgSQLTransaction($this, $isolationLevel);
     }
 
     /**
@@ -174,7 +171,7 @@ class ExtPgSQLConnection extends AbstractDriver
     /**
      * {@inheritdoc}
      */
-    public function query($query, array $parameters = null, $options = null) : ResultIteratorInterface
+    public function execute($query, array $parameters = null, $options = null) : ResultIteratorInterface
     {
         if ($query instanceof Query) {
             if (!$query->willReturnRows()) {
@@ -270,7 +267,7 @@ class ExtPgSQLConnection extends AbstractDriver
             throw new QueryError(sprintf("'%s': query was not prepared", $identifier));
         }
 
-        return $this->query($this->prepared[$identifier], $parameters, $options);
+        return $this->execute($this->prepared[$identifier], $parameters, $options);
     }
 
     /**

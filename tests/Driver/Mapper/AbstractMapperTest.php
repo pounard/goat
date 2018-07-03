@@ -26,7 +26,7 @@ abstract class AbstractMapperTest extends DriverTestCase
      */
     protected function createTestSchema(RunnerInterface $driver)
     {
-        $driver->query("
+        $driver->execute("
             create temporary table some_entity (
                 id serial primary key,
                 id_user integer default null,
@@ -36,7 +36,7 @@ abstract class AbstractMapperTest extends DriverTestCase
                 baz timestamp not null
             )
         ");
-        $driver->query("
+        $driver->execute("
             create temporary table users (
                 id serial primary key,
                 name varchar(255)

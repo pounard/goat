@@ -9,7 +9,7 @@ use Goat\Error\TransactionError;
 /**
  * Represents a transaction
  */
-interface Transaction extends RunnerAwareInterface
+interface Transaction
 {
     const READ_UNCOMMITED = 1;
     const READ_COMMITED = 2;

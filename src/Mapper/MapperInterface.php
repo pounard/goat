@@ -8,7 +8,6 @@ use Goat\Query\ExpressionRelation;
 use Goat\Query\SelectQuery;
 use Goat\Runner\PagerResultIterator;
 use Goat\Runner\ResultIteratorInterface;
-use Goat\Runner\RunnerAwareInterface;
 use Goat\Runner\RunnerInterface;
 use Symfony\Component\Form\DataMapperInterface;
 
@@ -19,7 +18,7 @@ use Symfony\Component\Form\DataMapperInterface;
  * Insertion, update and delete should happen at the table level, and will not
  * be handled by the mapper interface.
  */
-interface MapperInterface extends RunnerAwareInterface
+interface MapperInterface
 {
     /**
      * Get runner

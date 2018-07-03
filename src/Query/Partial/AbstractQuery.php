@@ -7,21 +7,20 @@ namespace Goat\Query\Partial;
 use Goat\Error\GoatError;
 use Goat\Query\ExpressionRelation;
 use Goat\Query\Query;
+use Goat\Query\QueryRunnerInterface;
 use Goat\Runner\ResultIteratorInterface;
-use Goat\Runner\RunnerAwareInterface;
-use Goat\Runner\RunnerAwareTrait;
 
 /**
  * Reprensents the basis of an SQL query.
  */
-abstract class AbstractQuery implements Query, RunnerAwareInterface
+abstract class AbstractQuery implements Query
 {
-    use RunnerAwareTrait;
     use AliasHolderTrait;
     use WithClauseTrait;
 
     private $relation;
     private $options = [];
+    private $runner;
 
     /**
      * Build a new query
@@ -34,6 +33,16 @@ abstract class AbstractQuery implements Query, RunnerAwareInterface
     public function __construct($relation, string $alias = null)
     {
         $this->relation = $this->normalizeRelation($relation, $alias);
+    }
+
+    /**
+     * Set runner
+     *
+     * @param QueryRunnerInterface $runner
+     */
+    final public function setRunner(QueryRunnerInterface $runner)
+    {
+        $this->runner = $runner;
     }
 
     /**
@@ -107,7 +116,7 @@ abstract class AbstractQuery implements Query, RunnerAwareInterface
             throw new GoatError("this query has no reference to query runner, therefore cannot execute itself");
         }
 
-        return $this->runner->query($this, $parameters, $this->buildOptions($options));
+        return $this->runner->execute($this, $parameters, $this->buildOptions($options));
     }
 
     /**

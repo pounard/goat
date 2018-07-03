@@ -100,13 +100,13 @@ class Session extends AbstractDriverProxy
     /**
      * {@inheritdoc}
      */
-    public function query($query, array $parameters = null, $options = null) : ResultIteratorInterface
+    public function execute($query, array $parameters = null, $options = null) : ResultIteratorInterface
     {
         if ($this->readonlyConnection && !$this->isTransactionPending()) {
-            return $this->readonlyConnection->query($query, $parameters, $options);
+            return $this->readonlyConnection->execute($query, $parameters, $options);
         }
 
-        return $this->writeConnection->query($query, $parameters, $options);
+        return $this->writeConnection->execute($query, $parameters, $options);
     }
 
     /**

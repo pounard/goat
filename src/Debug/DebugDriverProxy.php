@@ -39,9 +39,9 @@ class DebugDriverProxy extends AbstractDriverProxy
     /**
      * {@inheritdoc}
      */
-    public function query($query, array $parameters = null, $options = null) : ResultIteratorInterface
+    public function execute($query, array $parameters = null, $options = null) : ResultIteratorInterface
     {
-        $result = $this->getInnerDriver()->query($query, $parameters, $options);
+        $result = $this->getInnerDriver()->execute($query, $parameters, $options);
 
         if ($this->validator) {
             return new DebugResultIterator($result, $this->validator);

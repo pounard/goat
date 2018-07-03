@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace Goat\Query;
 
-use Goat\Runner\RunnerInterface;
-
 /**
  * Base implement for objects that also are RunnerInterface implementations.
  */
-trait QueryFactoryRunnerTrait
+trait QueryFactoryRunnerTrait /* implements QueryRunnerInterface */
 {
     /**
      * {@inheritdoc}

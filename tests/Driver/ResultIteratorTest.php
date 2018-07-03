@@ -18,7 +18,7 @@ class ResultIteratorTest extends DriverTestCase
      */
     protected function createTestSchema(RunnerInterface $driver)
     {
-        $driver->query("
+        $driver->execute("
             create temporary table type_test (
                 foo integer,
                 bar varchar(255),
@@ -36,7 +36,7 @@ class ResultIteratorTest extends DriverTestCase
     protected function createTestData(RunnerInterface $driver)
     {
         // ensure table data has the right types
-        $driver->query("
+        $driver->execute("
             insert into type_test (foo, bar, baz, some_ts, some_time, some_date) values ($*::int4, $*::varchar, $*::timestamp, $*::timestamp, $*::time, $*::date);
         ", [
             42,
@@ -57,7 +57,7 @@ class ResultIteratorTest extends DriverTestCase
     {
         $driver = $this->createRunner($driverName, $class);
 
-        $results = $driver->query("select * from type_test");
+        $results = $driver->execute("select * from type_test");
         $this->assertCount(1, $results);
 
         foreach ($results as $result) {

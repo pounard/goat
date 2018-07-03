@@ -16,7 +16,7 @@ class InsertTest extends DriverTestCase
      */
     protected function createTestSchema(RunnerInterface $driver)
     {
-        $driver->query("
+        $driver->execute("
             create temporary table some_table (
                 id serial primary key,
                 foo integer not null,
@@ -24,7 +24,7 @@ class InsertTest extends DriverTestCase
                 baz timestamp default now()
             )
         ");
-        $driver->query("
+        $driver->execute("
             create temporary table users (
                 id serial primary key,
                 name varchar(255)

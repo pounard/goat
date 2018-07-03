@@ -6,7 +6,6 @@ namespace Goat\Tests\Driver;
 
 use Goat\Query\ExpressionColumn;
 use Goat\Query\ExpressionRaw;
-use Goat\Query\Query;
 use Goat\Query\Where;
 use Goat\Runner\RunnerInterface;
 use Goat\Tests\DriverTestCase;
@@ -21,7 +20,7 @@ class UpdateTest extends DriverTestCase
      */
     protected function createTestSchema(RunnerInterface $driver)
     {
-        $driver->query("
+        $driver->execute("
             create temporary table some_table (
                 id serial primary key,
                 foo integer not null,
@@ -30,7 +29,7 @@ class UpdateTest extends DriverTestCase
                 id_user integer
             )
         ");
-        $driver->query("
+        $driver->execute("
             create temporary table users (
                 id serial primary key,
                 name varchar(255)

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Goat\Driver\Profiling;
 
-use Goat\Runner\RunnerInterface;
 use Goat\Runner\Transaction;
 
 /**
@@ -46,14 +45,6 @@ class ProfilingTransaction implements Transaction
         // the first time, since per documentation, connections are supposed to
         // start it directly on this call
         $this->timer = $timer;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setRunner(RunnerInterface $runner)
-    {
-        // This is a noop.
     }
 
     /**

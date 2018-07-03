@@ -107,9 +107,9 @@ abstract class AbstractDriverProxy implements DriverInterface
     /**
      * {@inheritdoc}
      */
-    public function query($query, array $parameters = null, $options = null) : ResultIteratorInterface
+    public function execute($query, array $parameters = null, $options = null) : ResultIteratorInterface
     {
-        return $this->getInnerDriver()->query($query, $parameters, $options);
+        return $this->getInnerDriver()->execute($query, $parameters, $options);
     }
 
     /**
