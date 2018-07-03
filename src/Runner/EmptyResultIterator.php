@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Goat\Runner;
 
-use Goat\Converter\ConverterAwareTrait;
+use Goat\Converter\ConverterInterface;
 use Goat\Error\InvalidDataAccessError;
 use Goat\Hydrator\HydratorAwareTrait;
 
@@ -13,7 +13,6 @@ use Goat\Hydrator\HydratorAwareTrait;
  */
 final class EmptyResultIterator implements ResultIteratorInterface
 {
-    use ConverterAwareTrait;
     use HydratorAwareTrait;
 
     private $affectedRowCount = 0;
@@ -26,6 +25,13 @@ final class EmptyResultIterator implements ResultIteratorInterface
     public function __construct(int $affectedRowCount = 0)
     {
         $this->affectedRowCount = $affectedRowCount;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setConverter(ConverterInterface $converter)
+    {
     }
 
     /**

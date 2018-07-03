@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Goat\Query\Writer;
 
-use Goat\Converter\ConverterAwareTrait;
 use Goat\Converter\ConverterInterface;
 use Goat\Error\QueryError;
 use Goat\Query\ArgumentBag;
@@ -16,8 +15,6 @@ use Goat\Query\Statement;
  */
 abstract class FormatterBase implements FormatterInterface
 {
-    use ConverterAwareTrait;
-
     /**
      * Escape sequence matching magical regex
      */
@@ -34,10 +31,8 @@ abstract class FormatterBase implements FormatterInterface
      */
     private $matchParametersRegex;
 
-    /**
-     * @var EscaperInterface
-     */
     protected $escaper;
+    protected $converter;
 
     /**
      * Default constructor
@@ -46,6 +41,14 @@ abstract class FormatterBase implements FormatterInterface
     {
         $this->escaper = $escaper;
         $this->buildParameterRegex();
+    }
+
+    /**
+     * Set converter
+     */
+    public function setConverter(ConverterInterface $converter)
+    {
+        $this->converter = $converter;
     }
 
     /**

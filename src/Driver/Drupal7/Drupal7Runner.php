@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Goat\Driver\Drupal7;
 
-use Goat\Converter\ConverterAwareTrait;
 use Goat\Converter\ConverterInterface;
 use Goat\Converter\DefaultConverter;
 use Goat\Driver\DriverConverter;
@@ -34,12 +33,12 @@ use Goat\Runner\Transaction;
  */
 class Drupal7Runner implements RunnerInterface
 {
-    use ConverterAwareTrait;
     use QueryFactoryRunnerTrait;
     use RunnerTrait;
 
     private $debug = false;
     private $connection;
+    private $converter;
     private $escaper;
     private $formatter;
     private $prepared = [];

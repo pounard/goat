@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Goat\Driver;
 
-use Goat\Converter\ConverterAwareTrait;
 use Goat\Converter\ConverterInterface;
 use Goat\Converter\DefaultConverter;
 use Goat\Error\QueryError;
@@ -29,7 +28,6 @@ use Goat\Runner\RunnerTrait;
  */
 abstract class AbstractDriver implements DriverInterface
 {
-    use ConverterAwareTrait;
     use QueryFactoryRunnerTrait;
     use RunnerTrait;
 

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Goat\Query\Writer;
 
-use Goat\Converter\ConverterAwareInterface;
 use Goat\Query\Statement;
+use Goat\Converter\ConverterInterface;
 
 /**
  * SQL formatter
  */
-interface FormatterInterface extends ConverterAwareInterface
+interface FormatterInterface
 {
     /**
      * Format the query
@@ -33,4 +33,9 @@ interface FormatterInterface extends ConverterAwareInterface
      * @return FormattedQuery
      */
     public function prepare($query, array $parameters = null) : FormattedQuery;
+
+    /**
+     * Set converter
+     */
+    public function setConverter(ConverterInterface $converter);
 }

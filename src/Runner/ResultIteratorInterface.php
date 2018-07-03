@@ -4,14 +4,19 @@ declare(strict_types=1);
 
 namespace Goat\Runner;
 
-use Goat\Converter\ConverterAwareInterface;
+use Goat\Converter\ConverterInterface;
 use Goat\Hydrator\HydratorAwareInterface;
 
 /**
  * When in use using the iterator, default behavior is to return associative arrays
  */
-interface ResultIteratorInterface extends \IteratorAggregate, \Countable, ConverterAwareInterface, HydratorAwareInterface
+interface ResultIteratorInterface extends \IteratorAggregate, \Countable, HydratorAwareInterface
 {
+    /**
+     * Set converter
+     */
+    public function setConverter(ConverterInterface $converter);
+
     /**
      * Set column to use as iterator key
      *

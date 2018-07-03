@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Goat\Runner;
 
-use Goat\Converter\ConverterAwareInterface;
+use Goat\Converter\ConverterInterface;
 use Goat\Hydrator\HydratorMap;
 use Goat\Query\QueryFactoryInterface;
 use Goat\Query\QueryRunnerInterface;
@@ -13,7 +13,7 @@ use Goat\Query\Writer\EscaperInterface;
 /**
  * Stripped down representation of a connection/driver that can run queries.
  */
-interface RunnerInterface extends ConverterAwareInterface, QueryFactoryInterface, QueryRunnerInterface
+interface RunnerInterface extends QueryFactoryInterface, QueryRunnerInterface
 {
     /**
      * Toggle debug mode
@@ -116,6 +116,11 @@ interface RunnerInterface extends ConverterAwareInterface, QueryFactoryInterface
      * @return ResultIteratorInterface
      */
     public function executePreparedQuery(string $identifier, array $parameters = null, $options = null) : ResultIteratorInterface;
+
+    /**
+     * Set converter map
+     */
+    public function setConverter(ConverterInterface $converter);
 
     /**
      * Set hydrator map

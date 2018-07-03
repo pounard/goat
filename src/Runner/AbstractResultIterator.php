@@ -4,17 +4,25 @@ declare(strict_types=1);
 
 namespace Goat\Runner;
 
-use Goat\Converter\ConverterAwareTrait;
 use Goat\Error\InvalidDataAccessError;
 use Goat\Error\QueryError;
 use Goat\Hydrator\HydratorAwareTrait;
+use Goat\Converter\ConverterInterface;
 
 abstract class AbstractResultIterator implements ResultIteratorInterface
 {
-    use ConverterAwareTrait;
     use HydratorAwareTrait;
 
     protected $columnKey;
+    protected $converter;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setConverter(ConverterInterface $converter)
+    {
+        $this->converter = $converter;
+    }
 
     /**
      * Convert a single value
@@ -26,7 +34,13 @@ abstract class AbstractResultIterator implements ResultIteratorInterface
      */
     protected function convertValue(string $name, $value)
     {
-        return $this->converter->fromSQL($this->getColumnType($name), $value);
+        if ($this->converter) {
+            return $this->converter->fromSQL($this->getColumnType($name), $value);
+        }
+
+        trigger_error("result iterator has no converter set", E_USER_WARNING);
+
+        return $value;
     }
 
     /**
