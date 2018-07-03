@@ -37,12 +37,13 @@
         "squizlabs/php_codesniffer": "^2.7",
         "symfony/form" : "^3.2 || ^4",
         "symfony/http-foundation" : "^3.2 || ^4",
-        "symfony/property-info": "^3.3 || ^4"
+        "symfony/property-info": "^3.3 || ^4",
+        "symfony/validator": "^3.3 || ^4"
     },
     "suggest" : {
         "doctrine/annotations" : "enables object tree hydration using @Property() annotation, mapper entity validation via annotations",
         "symfony/property-info" : "enables object tree hydration using @var doc blocks",
-        "symfony/validation" : "enables mapper entity validation",
+        "symfony/validator" : "enables mapper entity validation",
         "ext-weakref" : "enables transaction garbage collection checks"
     }
 }
