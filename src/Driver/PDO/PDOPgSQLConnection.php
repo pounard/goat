@@ -7,6 +7,7 @@ namespace Goat\Driver\PDO;
 use Goat\Converter\ConverterInterface;
 use Goat\Driver\PgSQL\PgSQLConverter;
 use Goat\Error\QueryError;
+use Goat\Query\Driver\PDOPgSQLFormatter;
 use Goat\Query\Writer\EscaperInterface;
 use Goat\Query\Writer\FormatterInterface;
 use Goat\Runner\Transaction;

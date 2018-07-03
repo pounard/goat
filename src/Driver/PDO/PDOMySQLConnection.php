@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Goat\Driver\PDO;
 
-use Goat\Converter\ConverterInterface;
 use Goat\Driver\MySQL\MySQLTransaction;
+use Goat\Query\Driver\PDOMySQL5Formatter;
 use Goat\Query\Writer\EscaperInterface;
 use Goat\Query\Writer\FormatterInterface;
 use Goat\Runner\Transaction;
@@ -17,7 +17,7 @@ class PDOMySQLConnection extends AbstractPDOConnection
      */
     protected function createFormatter() : FormatterInterface
     {
-        return new PDOMySQLFormatter($this->getEscaper());
+        return new PDOMySQL5Formatter($this->getEscaper());
     }
 
     /**

@@ -35,7 +35,7 @@ use Goat\Query\Where;
  * It will work gracefully with PostgreSQL, but also, from the various
  * documentation I could read, probably with MSSQL too.
  */
-class Formatter extends FormatterBase
+class DefaultFormatter extends FormatterBase
 {
     /**
      * Format a single set clause (update queries)
@@ -589,7 +589,7 @@ class Formatter extends FormatterBase
 
         $output = [];
 
-        foreach ($withs as $alias => $with) {
+        foreach ($withs as /* $alias => */ $with) {
             if (false) {
 
             }

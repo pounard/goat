@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Goat\Driver\PDO;
+namespace Goat\Query\Driver;
 
 use Goat\Error\QueryError;
 use Goat\Query\DeleteQuery;
-use Goat\Query\Writer\Formatter;
+use Goat\Query\Writer\DefaultFormatter;
 use Goat\Query\UpdateQuery;
 
 /**
- * PDO MySQL formatter
+ * MySQL < 8
  */
-class PDOMySQLFormatter extends Formatter
+class MySQL5Formatter extends DefaultFormatter
 {
     /**
      * {@inheritdoc}
@@ -30,14 +30,6 @@ class PDOMySQLFormatter extends Formatter
         }
 
         return $type;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function writePlaceholder(int $index) : string
-    {
-        return '?';
     }
 
     /**

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Goat\Driver\ExtPgSQL;
+namespace Goat\Query\Driver;
 
-use Goat\Query\Writer\Formatter;
+use Goat\Query\Writer\DefaultFormatter;
 
 /**
- * MySQL SQL query formatter
+ * PDO/PostgreSQL >= 8.4 (untested before, althought it might work)
  */
-class ExtPgSQLFormatter extends Formatter
+class ExtPgSQLFormatter extends DefaultFormatter
 {
     /**
      * {@inheritdoc}

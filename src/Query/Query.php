@@ -14,7 +14,6 @@ interface Query extends Statement
     const JOIN_RIGHT = 5;
     const JOIN_RIGHT_OUTER = 6;
     const JOIN_NATURAL = 1;
-
     const NULL_FIRST = 2;
     const NULL_IGNORE = 0;
     const NULL_LAST = 1;

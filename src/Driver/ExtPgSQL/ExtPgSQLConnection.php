@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Goat\Driver\ExtPgSQL;
 
 use Goat\Converter\ConverterInterface;
-use Goat\Converter\DefaultConverter;
 use Goat\Driver\AbstractDriver;
 use Goat\Driver\PgSQL\PgSQLConverter;
 use Goat\Driver\PgSQL\PgSQLTransaction;
@@ -15,6 +14,7 @@ use Goat\Error\GoatError;
 use Goat\Error\NotImplementedError;
 use Goat\Error\QueryError;
 use Goat\Query\Query;
+use Goat\Query\Driver\ExtPgSQLFormatter;
 use Goat\Query\Writer\EscaperInterface;
 use Goat\Query\Writer\FormatterInterface;
 use Goat\Runner\EmptyResultIterator;

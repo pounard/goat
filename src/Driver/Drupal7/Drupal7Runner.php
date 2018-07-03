@@ -10,24 +10,24 @@ use Goat\Converter\DefaultConverter;
 use Goat\Driver\DriverConverter;
 use Goat\Driver\MySQL\MySQLTransaction;
 use Goat\Driver\PDO\PDOMySQLEscaper;
-use Goat\Driver\PDO\PDOMySQLFormatter;
 use Goat\Driver\PDO\PDOPgSQLEscaper;
-use Goat\Driver\PDO\PDOPgSQLFormatter;
 use Goat\Driver\PDO\PDOResultIterator;
 use Goat\Driver\PDO\PgSQLTransaction;
+use Goat\Driver\PgSQL\PgSQLConverter;
 use Goat\Error\DriverError;
 use Goat\Error\GoatError;
 use Goat\Error\NotImplementedError;
 use Goat\Error\QueryError;
 use Goat\Query\Query;
 use Goat\Query\QueryFactoryRunnerTrait;
+use Goat\Query\Driver\PDOMySQL5Formatter;
+use Goat\Query\Driver\PDOPgSQLFormatter;
 use Goat\Query\Writer\EscaperInterface;
 use Goat\Runner\EmptyResultIterator;
 use Goat\Runner\ResultIteratorInterface;
 use Goat\Runner\RunnerInterface;
 use Goat\Runner\RunnerTrait;
 use Goat\Runner\Transaction;
-use Goat\Driver\PgSQL\PgSQLConverter;
 
 /**
  * Drupal 7 runnable: not a Driver: it doesn't need to handle the connection
@@ -60,7 +60,7 @@ class Drupal7Runner implements RunnerInterface
 
             case 'mysql':
                 $this->escaper = new PDOMySQLEscaper($connection);
-                $this->formatter = new PDOMySQLFormatter($this->escaper);
+                $this->formatter = new PDOMySQL5Formatter($this->escaper);
                 break;
 
             case 'pgsql':

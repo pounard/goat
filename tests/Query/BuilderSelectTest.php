@@ -8,7 +8,7 @@ use Goat\Query\ExpressionColumn;
 use Goat\Query\ExpressionRaw;
 use Goat\Query\Query;
 use Goat\Query\SelectQuery;
-use Goat\Query\Writer\Formatter;
+use Goat\Query\Writer\DefaultFormatter;
 
 class BuilderSelectTest extends \PHPUnit_Framework_TestCase
 {
@@ -16,7 +16,7 @@ class BuilderSelectTest extends \PHPUnit_Framework_TestCase
 
     public function testSimpleQuery()
     {
-        $formatter = new Formatter(new NullEscaper());
+        $formatter = new DefaultFormatter(new NullEscaper());
 
         $referenceArguments = [12, 3];
         $reference = <<<EOT
@@ -210,7 +210,7 @@ EOT;
 
     public function testWith()
     {
-        $formatter = new Formatter(new NullEscaper());
+        $formatter = new DefaultFormatter(new NullEscaper());
 
         $reference = <<<EOT
 with "test1" as (
@@ -240,7 +240,7 @@ EOT;
 
     public function testWhereInSelect()
     {
-        $formatter = new Formatter(new NullEscaper());
+        $formatter = new DefaultFormatter(new NullEscaper());
 
         $reference = <<<EOT
 select "foo"
