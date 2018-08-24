@@ -7,7 +7,7 @@ namespace Goat\Query;
 /**
  * Base implement for objects that also are RunnerInterface implementations.
  */
-trait QueryFactoryRunnerTrait /* implements QueryRunnerInterface */
+trait QueryFactoryTrait /* implements QueryFactoryInterface */
 {
     /**
      * {@inheritdoc}

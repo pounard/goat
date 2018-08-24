@@ -1,8 +1,8 @@
 <?php
 
-namespace Goat\Tests\Mapper;
+namespace Goat\Tests\Hydrator;
 
-use Goat\Mapper\Entity\DefaultEntity;
+use Goat\Hydrator\DefaultEntity;
 
 /**
  * Tests default entity behaviour

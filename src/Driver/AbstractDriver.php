@@ -7,7 +7,7 @@ namespace Goat\Driver;
 use Goat\Converter\ConverterInterface;
 use Goat\Converter\DefaultConverter;
 use Goat\Error\QueryError;
-use Goat\Query\QueryFactoryRunnerTrait;
+use Goat\Query\QueryFactoryTrait;
 use Goat\Query\Writer\EscaperInterface;
 use Goat\Query\Writer\FormatterInterface;
 use Goat\Runner\ResultIteratorInterface;
@@ -28,7 +28,7 @@ use Goat\Runner\RunnerTrait;
  */
 abstract class AbstractDriver implements DriverInterface
 {
-    use QueryFactoryRunnerTrait;
+    use QueryFactoryTrait;
     use RunnerTrait;
 
     private $debug = false;

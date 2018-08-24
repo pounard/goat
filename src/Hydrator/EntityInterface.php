@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Goat\Mapper\Entity;
+namespace Goat\Hydrator;
 
 /**
  * Default entity interface for people that do not wish to use custom class

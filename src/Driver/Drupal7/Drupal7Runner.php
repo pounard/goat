@@ -18,7 +18,7 @@ use Goat\Error\GoatError;
 use Goat\Error\NotImplementedError;
 use Goat\Error\QueryError;
 use Goat\Query\Query;
-use Goat\Query\QueryFactoryRunnerTrait;
+use Goat\Query\QueryFactoryTrait;
 use Goat\Query\Driver\PDOMySQL5Formatter;
 use Goat\Query\Driver\PDOPgSQLFormatter;
 use Goat\Query\Writer\EscaperInterface;
@@ -33,7 +33,7 @@ use Goat\Runner\Transaction;
  */
 class Drupal7Runner implements RunnerInterface
 {
-    use QueryFactoryRunnerTrait;
+    use QueryFactoryTrait;
     use RunnerTrait;
 
     private $debug = false;
