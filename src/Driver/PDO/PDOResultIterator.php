@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Goat\Driver\PDO;
 
+use Goat\Converter\ConverterInterface;
 use Goat\Error\InvalidDataAccessError;
 use Goat\Runner\AbstractResultIterator;
 
@@ -23,6 +24,14 @@ class PDOResultIterator extends AbstractResultIterator
     {
         $this->statement = $statement;
         $this->statement->setFetchMode(\PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setConverter(ConverterInterface $converter)
+    {
+        parent::setConverter($converter);
 
         $this->collectMetaData();
     }
@@ -62,6 +71,16 @@ class PDOResultIterator extends AbstractResultIterator
             case 'short':
                 return 'int4';
 
+            case 'bool':
+                return 'bool';
+
+            case 'json':
+            case 'jsonb':
+                return 'json';
+
+            case 'uuid':
+                return 'uuid';
+
             case 'datetime':
             case 'timestamp':
                 return 'timestamp';
@@ -80,12 +99,8 @@ class PDOResultIterator extends AbstractResultIterator
                 return 'float8';
 
             default:
-                if ($this->converter->typeExists($nativeType)) {
-                    return $nativeType;
-                }
-
                 trigger_error(sprintf("'%s': unknown type", $nativeType));
-                return 'string';
+                return $nativeType;
         }
     }
 

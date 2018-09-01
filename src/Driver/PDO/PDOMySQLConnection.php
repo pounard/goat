@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Goat\Driver\PDO;
 
+use Goat\Converter\ConverterInterface;
+use Goat\Driver\MySQL\MySQLConverter;
 use Goat\Driver\MySQL\MySQLTransaction;
 use Goat\Query\Driver\PDOMySQL5Formatter;
 use Goat\Query\Writer\EscaperInterface;
@@ -12,6 +14,14 @@ use Goat\Runner\Transaction;
 
 class PDOMySQLConnection extends AbstractPDOConnection
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function setConverter(ConverterInterface $converter)
+    {
+        parent::setConverter(new MySQLConverter($converter));
+    }
+
     /**
      * {@inheritdoc}
      */

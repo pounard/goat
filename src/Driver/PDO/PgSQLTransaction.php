@@ -8,7 +8,6 @@ use Goat\Error\DriverError;
 use Goat\Error\TransactionError;
 use Goat\Error\TransactionFailedError;
 use Goat\Runner\AbstractTransaction;
-use Goat\Runner\Transaction;
 
 class PgSQLTransaction extends AbstractTransaction
 {

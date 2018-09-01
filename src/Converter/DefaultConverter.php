@@ -55,8 +55,8 @@ final class DefaultConverter implements ConverterInterface
             inet 	  	IPv4 or IPv6 host address
             # integer 	int, int4 	signed four-byte integer
             # interval [ fields ] [ (p) ] 	  	time span
-            json 	  	textual JSON data
-            jsonb 	  	binary JSON data, decomposed
+            # json 	  	textual JSON data
+            # jsonb 	  	binary JSON data, decomposed
             line 	  	infinite line on a plane
             lseg 	  	line segment on a plane
             macaddr 	  	MAC (Media Access Control) address
@@ -79,7 +79,7 @@ final class DefaultConverter implements ConverterInterface
             tsquery 	  	text search query
             tsvector 	  	text search document
             txid_snapshot 	  	user-level transaction ID snapshot
-            uuid 	  	universally unique identifier
+            # uuid 	  	universally unique identifier
             xml 	  	XML data
          */
 
@@ -155,19 +155,6 @@ final class DefaultConverter implements ConverterInterface
         }
 
         return $this;
-    }
-
-    /**
-     * Is there a type registered with this name
-     *
-     * @param string $type
-     * @param bool $allowAliases
-     *
-     * @return bool
-     */
-    public function typeExists(string $type, bool $allowAliases = true) : bool
-    {
-        return isset($this->converters[$type]) || ($allowAliases && isset($this->aliasMap[$type]));
     }
 
     /**
@@ -249,6 +236,15 @@ final class DefaultConverter implements ConverterInterface
                     return false;
                 }
                 return (bool)$value;
+
+            // JSON
+            case 'json':
+            case 'jsonb':
+                return \json_decode($value, true);
+
+            // UUID
+            case 'uuid':
+                return (string)$value;
 
             // Timestamp, Date without time and time without date
             case 'datetime':
@@ -366,6 +362,15 @@ final class DefaultConverter implements ConverterInterface
             case 'boolean':
                 return $value ? 't' : 'f';
 
+            // JSON
+            case 'json':
+            case 'jsonb':
+                return \json_encode($value, true);
+
+            // UUID
+            case 'uuid':
+                return (string)$value;
+
             // Timestamp
             //
             // Default implementation don't care about timezone, most RDBMS
@@ -463,6 +468,15 @@ final class DefaultConverter implements ConverterInterface
             case 'boolean':
                 return true;
 
+            // JSON
+            case 'json':
+            case 'jsonb':
+                return false;
+
+            // UUID
+            case 'uuid':
+                return false;
+
             // Timestamp
             case 'datetime':
             case 'timestamp':
@@ -539,6 +553,15 @@ final class DefaultConverter implements ConverterInterface
             // Booleans
             case 'bool':
             case 'boolean':
+                return null;
+
+            // JSON
+            case 'json':
+            case 'jsonb':
+                return null;
+
+            // UUID
+            case 'uuid':
                 return null;
 
             // Timestamp

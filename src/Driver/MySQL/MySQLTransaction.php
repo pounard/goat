@@ -37,6 +37,8 @@ class MySQLTransaction extends AbstractTransaction
                     trigger_error("transaction is nested into another, MySQL can't change the isolation level", E_USER_NOTICE);
                 }
             } else {
+                // MySQL >= 8 has a different syntax for transaction level which
+                // is not based upon the standard SQL transaction levels.
                 throw new TransactionError("transaction start failed", null, $e);
             }
         }
