@@ -30,24 +30,24 @@ class RowValidationError extends \RuntimeException
     {
         $messages = [];
 
-        if ('object' === ($objectType = gettype($row))) {
-            $objectType = get_class($row);
+        if ('object' === ($objectType = \gettype($row))) {
+            $objectType = \get_class($row);
         }
 
         /** @var \Symfony\Component\Validator\ConstraintViolationInterface $violation */
         foreach ($violations as $violation) {
-            $messages[] = sprintf(
+            $messages[] = \sprintf(
                 "'%s': %s",
                 $violation->getPropertyPath(),
                 $violation->getMessage()
             );
         }
 
-        return sprintf(
+        return \sprintf(
             "There was %d violation(s) while hydrating with '%s' class: please ensure the SQL query result column types matches the hydrated object constraints: %s",
             $violations->count(),
             $objectType,
-            implode(", ", $messages)
+            \implode(", ", $messages)
         );
     }
 }

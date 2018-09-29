@@ -50,11 +50,11 @@ trait FromClauseTrait
 
         if (null === $condition) {
             $condition = new Where();
-        } else if (is_string($condition) || $condition instanceof ExpressionRaw) {
+        } else if (\is_string($condition) || $condition instanceof ExpressionRaw) {
             $condition = (new Where())->expression($condition);
         } else {
             if (!$condition instanceof Where) {
-                throw new QueryError(sprintf("condition must be either a string or an instance of %s", Where::class));
+                throw new QueryError(\sprintf("condition must be either a string or an instance of %s", Where::class));
             }
         }
 

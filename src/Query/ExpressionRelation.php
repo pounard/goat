@@ -4,54 +4,65 @@ declare(strict_types=1);
 
 namespace Goat\Query;
 
-use Goat\Query\ArgumentBag;
-
 /**
  * Represents a raw value
  */
 final class ExpressionRelation implements Expression
 {
-    /**
-     * Creates an instance without automatic split using '.' notation
-     *
-     * @param string $relationName
-     * @param string $alias
-     * @param string $schema
-     *
-     * @return ExpressionRelation
-     */
-    public static function escape(string $relationName, string $alias = null, string $schema = null) : ExpressionRelation
-    {
-        $instance = new ExpressionRelation('');
-        $instance->relationName = $relationName;
-        $instance->alias = $alias;
-        $instance->schema = $schema;
-
-        return $instance;
-    }
-
     private $alias;
     private $relationName;
     private $schema;
 
     /**
      * Default constructor
-     *
-     * @param string $relationName
-     * @param string $alias
-     * @param string $schema
      */
-    public function __construct(string $relationName, string $alias = null, string $schema = null)
+    private function __construct()
     {
+    }
+
+    /**
+     * Creates an instance without automatic split using '.' notation
+     */
+    public static function escape(string $relationName, string $alias = null, string $schema = null) : self
+    {
+        $ret = new self;
+        $ret->relationName = $relationName;
+        $ret->alias = $alias;
+        $ret->schema = $schema;
+
+        return $ret;
+    }
+
+    /**
+     * Create instance from arbitrary input value
+     */
+    public static function from($relation): self
+    {
+        if (!$relation instanceof ExpressionRelation) {
+            $relation = self::create($relation);
+        }
+
+        return $relation;
+    }
+
+    /**
+     * Create instance from name and alias
+     */
+    public static function create(string $relationName, string $alias = null, string $schema = null): self
+    {
+        $ret = new self;
+
         if (null === $schema) {
-            if (false !== strpos($relationName, '.')) {
-                list($schema, $relationName) = explode('.', $relationName, 2);
+            if (false !== \strpos($relationName, '.')) {
+                list($schema, $relationName) = \explode('.', $relationName, 2);
             }
         }
 
-        $this->relationName = $relationName;
-        $this->alias = $alias;
-        $this->schema = $schema;
+        $ret->relationName = $relationName;
+        $ret->alias = $alias;
+        $ret->schema = $schema;
+
+        return $ret;
     }
 
     /**

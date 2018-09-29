@@ -96,10 +96,10 @@ abstract class AbstractQuery implements Query
     final private function buildOptions($options)
     {
         if ($options) {
-            if (!is_array($options)) {
+            if (!\is_array($options)) {
                 $options = ['class' => $options];
             }
-            $options = array_merge($this->options, $options);
+            $options = \array_merge($this->options, $options);
         } else {
             $options = $this->options;
         }

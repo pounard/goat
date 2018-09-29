@@ -29,7 +29,7 @@ trait AliasHolderTrait
     {
         if ($relation instanceof ExpressionRelation) {
             if ($relation->getAlias() && $alias) {
-                throw new QueryError(sprintf(
+                throw new QueryError(\sprintf(
                     "relation %s is already prefixed by %s, conflicts with %s",
                     $relation->getName(),
                     $relation->getAlias(),
@@ -41,11 +41,11 @@ trait AliasHolderTrait
                 $alias = $this->getAliasFor($relation);
             } else {
                 if ($this->aliasExists($alias)) {
-                    throw new QueryError(sprintf("%s alias is already registered for relation %s", $alias, $this->relations[$alias]));
+                    throw new QueryError(\sprintf("%s alias is already registered for relation %s", $alias, $this->relations[$alias]));
                 }
             }
 
-            $relation = new ExpressionRelation($relation, $alias);
+            $relation = ExpressionRelation::create($relation, $alias);
         }
 
         return $relation;
@@ -68,7 +68,7 @@ trait AliasHolderTrait
         if ($userAlias) {
             if (isset($this->relationIndex[$userAlias])) {
                 throw new QueryError(
-                    sprintf(
+                    \sprintf(
                         "cannot use alias %s for relation %s, already in use for table %s",
                         $userAlias,
                         $relationName,
@@ -82,7 +82,7 @@ trait AliasHolderTrait
             }
         }
 
-        $index = array_search($relationName, $this->relationIndex);
+        $index = \array_search($relationName, $this->relationIndex);
 
         if (false !== $index) {
             $alias = 'goat_' . ++$this->aliasIndex;

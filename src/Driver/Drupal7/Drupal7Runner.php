@@ -70,7 +70,7 @@ class Drupal7Runner implements RunnerInterface
                 break;
 
             default:
-                throw new NotImplementedError(sprintf("database '%s' target is not supported", $connection->driver()));
+                throw new NotImplementedError(\sprintf("database '%s' target is not supported", $connection->driver()));
         }
 
         $this->setConverter(new DefaultConverter());
@@ -80,11 +80,11 @@ class Drupal7Runner implements RunnerInterface
     {
         $drupalDriver = $connection->driver();
 
-        if (false !== stripos($drupalDriver, 'mysql')) {
+        if (false !== \stripos($drupalDriver, 'mysql')) {
             return 'mysql';
-        } else if (false !== stripos($drupalDriver, 'pg')) {
+        } else if (false !== \stripos($drupalDriver, 'pg')) {
             return 'pgsql';
-        } else if (false !== stripos($drupalDriver, 'sqlite')) {
+        } else if (false !== \stripos($drupalDriver, 'sqlite')) {
             return 'sqlite';
         } else {
             return $drupalDriver;
@@ -176,7 +176,7 @@ class Drupal7Runner implements RunnerInterface
                 return new PgSQLTransaction($this, $isolationLevel);
 
             default:
-                throw new NotImplementedError(sprintf("database '%s' target is not supported", $this->connection->driver()));
+                throw new NotImplementedError(\sprintf("database '%s' target is not supported", $this->connection->driver()));
         }
     }
 
@@ -196,9 +196,9 @@ class Drupal7Runner implements RunnerInterface
         $result->setConverter($this->converter);
 
         if ($options) {
-            if (is_string($options)) {
+            if (\is_string($options)) {
                 $options = ['class' => $options];
-            } else if (!is_array($options)) {
+            } else if (!\is_array($options)) {
                 throw new QueryError("options must be a valid class name or an array of options");
             }
         }
@@ -285,7 +285,7 @@ class Drupal7Runner implements RunnerInterface
         $rawSQL   = $prepared->getQuery();
 
         if (null === $identifier) {
-            $identifier = md5($rawSQL);
+            $identifier = \md5($rawSQL);
         }
 
         // Default behaviour, because databases such as MySQL don't really
@@ -302,7 +302,7 @@ class Drupal7Runner implements RunnerInterface
     public function executePreparedQuery(string $identifier, array $parameters = null, $options = null) : ResultIteratorInterface
     {
         if (!isset($this->prepared[$identifier])) {
-            throw new QueryError(sprintf("'%s': query was not prepared", $identifier));
+            throw new QueryError(\sprintf("'%s': query was not prepared", $identifier));
         }
 
         return $this->execute($this->prepared[$identifier], $parameters, $options);

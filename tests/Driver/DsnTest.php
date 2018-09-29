@@ -130,7 +130,7 @@ class DsnTest extends \PHPUnit_Framework_TestCase
         foreach ($invalid as $string) {
             try {
                 new Dsn($string);
-                $this->fail(sprintf("%s is not supposed to be valid", $string));
+                $this->fail(\sprintf("%s is not supposed to be valid", $string));
             } catch (ConfigurationError $e) {
                 $this->assertTrue(true); // Just increment the assertion counter.
             }

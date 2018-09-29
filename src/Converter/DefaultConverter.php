@@ -115,19 +115,19 @@ final class DefaultConverter implements ConverterInterface
      */
     public function register(string $type, ValueConverterInterface $instance, array $aliases = [], $allowOverride = false)
     {
-        if (is_array($type)) {
-            trigger_error(sprintf("registering type as array is outdate and will be removed, while registering %s", implode(', ', $type)), E_USER_DEPRECATED);
+        if (\is_array($type)) {
+            \trigger_error(\sprintf("registering type as array is outdate and will be removed, while registering %s", \implode(', ', $type)), E_USER_DEPRECATED);
 
             $aliases = $type;
-            $type = array_shift($aliases);
+            $type = \array_shift($aliases);
         }
 
         if (!$allowOverride && isset($this->converters[$type])) {
-            $message = sprintf("type '%s' is already defined, using '%s' converter class", $type, get_class($this->converters[$type]));
+            $message = \sprintf("type '%s' is already defined, using '%s' converter class", $type, \get_class($this->converters[$type]));
             if ($this->debug) {
                 throw new ConfigurationError($message);
             } else {
-                trigger_error($message, E_USER_WARNING);
+                \trigger_error($message, E_USER_WARNING);
             }
         }
 
@@ -138,15 +138,15 @@ final class DefaultConverter implements ConverterInterface
 
                 $message = null;
                 if (isset($this->converters[$alias])) {
-                    $message = sprintf("alias '%s' for type '%s' is already defined as a type, using '%s' converter class", $alias, $type, get_class($this->converters[$type]));
+                    $message = \sprintf("alias '%s' for type '%s' is already defined as a type, using '%s' converter class", $alias, $type, \get_class($this->converters[$type]));
                 } else if (!$allowOverride && isset($this->aliasMap[$alias])) {
-                    $message = sprintf("alias '%s' for type '%s' is already defined, for type '%s'", $alias, $type, get_class($this->aliasMap[$type]));
+                    $message = \sprintf("alias '%s' for type '%s' is already defined, for type '%s'", $alias, $type, \get_class($this->aliasMap[$type]));
                 }
                 if ($message) {
                     if ($this->debug) {
                         throw new ConfigurationError($message);
                     } else {
-                        trigger_error($message, E_USER_WARNING);
+                        \trigger_error($message, E_USER_WARNING);
                     }
                 }
 
@@ -183,7 +183,7 @@ final class DefaultConverter implements ConverterInterface
         }
 
         if ($this->debug) {
-            throw new ConfigurationError(sprintf("no converter registered for type '%s'", $type));
+            throw new ConfigurationError(\sprintf("no converter registered for type '%s'", $type));
         }
 
         return null;
@@ -232,7 +232,7 @@ final class DefaultConverter implements ConverterInterface
             // Booleans
             case 'bool':
             case 'boolean':
-                if (!$value || 'f' === $value || 'F' === $value || 'FALSE' === strtolower($value)) {
+                if (!$value || 'f' === $value || 'F' === $value || 'FALSE' === \strtolower($value)) {
                     return false;
                 }
                 return (bool)$value;
@@ -254,16 +254,16 @@ final class DefaultConverter implements ConverterInterface
             case 'time':
             case 'timez':
                 // @todo This needs a serious rewrite...
-                if (!$data = trim($value)) {
+                if (!$data = \trim($value)) {
                     return null;
                 }
                 // Time is supposed to be standard: just attempt to find if there
                 // is a timezone there, if not provide the PHP current one in the
                 // \DateTime object.
-                if (false !== strpos($value, '.')) {
+                if (false !== \strpos($value, '.')) {
                     return new \DateTimeImmutable($data);
                 }
-                $tzId = @date_default_timezone_get() ?? "UTC";
+                $tzId = @\date_default_timezone_get() ?? "UTC";
                 return new \DateTimeImmutable($data, new \DateTimeZone($tzId));
 
             // Binary objects
@@ -288,13 +288,13 @@ final class DefaultConverter implements ConverterInterface
         if (null === $value) {
             return ConverterInterface::TYPE_NULL;
         }
-        if (is_int($value) || is_string($value)) {
+        if (\is_int($value) || \is_string($value)) {
             return 'varchar';
         }
-        if (is_bool($value)) {
+        if (\is_bool($value)) {
             return 'bool';
         }
-        if (is_float($value) || is_numeric($value)) {
+        if (\is_float($value) || \is_numeric($value)) {
             return 'numeric';
         }
         if ($value instanceof \DateTimeInterface) {
@@ -382,14 +382,14 @@ final class DefaultConverter implements ConverterInterface
             case 'timestamp':
             case 'timestampz':
                 if (!$value instanceof \DateTimeInterface) {
-                    throw new TypeConversionError(sprintf("given value '%s' is not instanceof \DateTimeInterface", $value));
+                    throw new TypeConversionError(\sprintf("given value '%s' is not instanceof \DateTimeInterface", $value));
                 }
                 return $value->format(self::TIMESTAMP_FORMAT);
 
             // Date without time
             case 'date':
                 if (!$value instanceof \DateTimeInterface) {
-                    throw new TypeConversionError(sprintf("given value '%s' is not instanceof \DateTimeInterface", $value));
+                    throw new TypeConversionError(\sprintf("given value '%s' is not instanceof \DateTimeInterface", $value));
                 }
                 return $value->format(self::TIMESTAMP_FORMAT_DATE);
 
@@ -402,7 +402,7 @@ final class DefaultConverter implements ConverterInterface
                 if ($value instanceof \DateInterval) {
                     return $value->format(self::TIMESTAMP_FORMAT_TIME_INT);
                 }
-                throw new TypeConversionError(sprintf("given value '%s' is not instanceof \DateTimeInterface not \DateInterval", $value));
+                throw new TypeConversionError(\sprintf("given value '%s' is not instanceof \DateTimeInterface not \DateInterval", $value));
 
             // Binary objects
             // @todo handle object stream

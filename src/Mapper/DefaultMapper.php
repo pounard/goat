@@ -41,7 +41,7 @@ class DefaultMapper implements MapperInterface
         $this->primaryKey = $primaryKey;
         $this->runner = $runner;
         // Handles gracefully schema if specified using 'SCHEMA.RELATION' form
-        $this->relation = new ExpressionRelation($relation, $relationAlias);
+        $this->relation = ExpressionRelation::create($relation, $relationAlias);
         // Alias is needed for column selection, fallback on relation name without schema
         $this->relationAlias = $this->relation->getAlias() ?? $this->relation->getName();
     }
@@ -60,23 +60,23 @@ class DefaultMapper implements MapperInterface
             throw new QueryError("mapper has no primary key defined");
         }
 
-        if (!is_array($id)) {
+        if (!\is_array($id)) {
             $id = [$id];
         }
-        if (count($id) !== count($this->primaryKey)) {
-            throw new QueryError(sprintf("column count mismatch between primary key and user input, awaiting columns (in that order): '%s'", implode("', '", $this->primaryKey)));
+        if (\count($id) !== \count($this->primaryKey)) {
+            throw new QueryError(\sprintf("column count mismatch between primary key and user input, awaiting columns (in that order): '%s'", \implode("', '", $this->primaryKey)));
         }
 
         $ret = [];
 
         $relationAlias = $this->getRelation()->getAlias();
-        foreach (array_combine($this->primaryKey, $id) as $column => $value) {
+        foreach (\array_combine($this->primaryKey, $id) as $column => $value) {
             // Mapper can choose to actually already have prefixed the column
             // primary key using the alias, let's cover this use case too: this
             // might happen if either the original select query do need
             // deambiguation from the start, or if the API user was extra
             // precautionous.
-            if (false === strpos($column, '.')) {
+            if (false === \strpos($column, '.')) {
                 $ret[$relationAlias.'.'.$column] = $value;
             } else {
                 $ret[$column] = $value;
@@ -113,11 +113,11 @@ class DefaultMapper implements MapperInterface
             return (new Where())->expression($criteria);
         }
 
-        if (is_array($criteria)) {
+        if (\is_array($criteria)) {
             $where = new Where();
 
             foreach ($criteria as $column => $value) {
-                if (is_int($column)) {
+                if (\is_int($column)) {
                     $where->expression($value);
                 } else {
                     // Because mappers might attempt to join with other tables
@@ -133,7 +133,7 @@ class DefaultMapper implements MapperInterface
                     //   - in the end, if ok with those questions, implement
                     //     it and document it.
 
-                    if (is_null($value)) {
+                    if (\is_null($value)) {
                         $where->isNull($column);
                     } else {
                         $where->condition($column, $value);
@@ -208,7 +208,7 @@ class DefaultMapper implements MapperInterface
     public function getColumns() : array
     {
         if (empty($this->columns)) {
-            throw new GoatError(sprintf("%s mapper for entity %s has no columns defined", __CLASS__, $this->class));
+            throw new GoatError(\sprintf("%s mapper for entity %s has no columns defined", __CLASS__, $this->class));
         }
 
         return $this->columns;
@@ -227,7 +227,7 @@ class DefaultMapper implements MapperInterface
      */
     public function getPrimaryKeyCount() : int
     {
-        return empty($this->primaryKey) ? 0 : count($this->primaryKey);
+        return empty($this->primaryKey) ? 0 : \count($this->primaryKey);
     }
 
     /**
@@ -236,7 +236,7 @@ class DefaultMapper implements MapperInterface
     public function getPrimaryKey() : array
     {
         if (empty($this->primaryKey)) {
-            throw new GoatError(sprintf("%s mapper for entity %s has no primary key defined", __CLASS__, $this->class));
+            throw new GoatError(\sprintf("%s mapper for entity %s has no primary key defined", __CLASS__, $this->class));
         }
 
         return $this->primaryKey;
@@ -258,7 +258,7 @@ class DefaultMapper implements MapperInterface
     public function createDataMapper() : DataMapperInterface
     {
         if (!interface_exists('\\Symfony\\Component\\Form\\DataMapperInterface')) {
-            throw new \RuntimeException(sprintf("Symfony form component is not installed, use 'composer require form' in flex, or 'composer require symfony/form' with any other framework"));
+            throw new \RuntimeException(\sprintf("Symfony form component is not installed, use 'composer require form' in flex, or 'composer require symfony/form' with any other framework"));
         }
 
         return new EntityDataMapper($this->getRunner()->getHydratorMap(), $this->getClassName());
@@ -287,7 +287,7 @@ class DefaultMapper implements MapperInterface
         }
 
         if ($this->columns) {
-            $values = array_intersect_key($values, array_flip($this->columns));
+            $values = \array_intersect_key($values, \array_flip($this->columns));
         }
 
         return $values;

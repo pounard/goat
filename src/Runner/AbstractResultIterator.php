@@ -45,7 +45,7 @@ abstract class AbstractResultIterator implements ResultIteratorInterface
             return $this->converter->fromSQL($this->getColumnType($name), $value);
         }
 
-        trigger_error("result iterator has no converter set", E_USER_WARNING);
+        \trigger_error("result iterator has no converter set", E_USER_WARNING);
 
         return $value;
     }
@@ -62,7 +62,7 @@ abstract class AbstractResultIterator implements ResultIteratorInterface
     protected function convertValues(array $row) : array
     {
         if (!$this->converter) {
-            trigger_error("result iterator has no converter set", E_USER_WARNING);
+            \trigger_error("result iterator has no converter set", E_USER_WARNING);
 
             return $row;
         }
@@ -106,7 +106,7 @@ abstract class AbstractResultIterator implements ResultIteratorInterface
     public function setKeyColumn(string $name) : ResultIteratorInterface
     {
         if (!$this->columnExists($name)) {
-            throw new QueryError(sprintf("column '%s' does not exist in result", $name));
+            throw new QueryError(\sprintf("column '%s' does not exist in result", $name));
         }
 
         $this->columnKey = $name;
@@ -121,12 +121,12 @@ abstract class AbstractResultIterator implements ResultIteratorInterface
     {
         foreach ($this as $row) {
             if ($name) {
-                if (!array_key_exists($name, $row)) {
+                if (!\array_key_exists($name, $row)) {
                     throw new InvalidDataAccessError("invalid column '%s'", $name);
                 }
                 return $row[$name];
             }
-            return reset($row);
+            return \reset($row);
         }
     }
 

@@ -61,8 +61,8 @@ class ResultIteratorTest extends DriverTestCase
         $this->assertCount(1, $results);
 
         foreach ($results as $result) {
-            $this->assertTrue(is_int($result['foo']));
-            $this->assertTrue(is_string($result['bar']));
+            $this->assertTrue(\is_int($result['foo']));
+            $this->assertTrue(\is_string($result['bar']));
             $this->assertInstanceOf('\DateTimeImmutable', $result['baz']);
             $this->assertSame('1983-03-22 08:25:00', $result['baz']->format('Y-m-d H:i:s'));
             $this->assertInstanceOf('\DateTimeImmutable', $result['some_ts']);

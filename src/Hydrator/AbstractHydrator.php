@@ -40,7 +40,7 @@ abstract class AbstractHydrator implements HydratorInterface
         if (!$this->reflectionClass) {
             if (!class_exists($this->className)) {
                 // @codeCoverageIgnoreStart
-                throw new \InvalidArgumentException(sprintf("'%s' class does not exists", $this->className));
+                throw new \InvalidArgumentException(\sprintf("'%s' class does not exists", $this->className));
                 // @codeCoverageIgnoreEnd
             }
 
@@ -78,7 +78,7 @@ abstract class AbstractHydrator implements HydratorInterface
     {
         if (!$object instanceof $this->className) {
             // @codeCoverageIgnoreStart
-            throw new \InvalidArgumentException(sprintf("given object is not a '%s' instance", $this->className));
+            throw new \InvalidArgumentException(\sprintf("given object is not a '%s' instance", $this->className));
             // @codeCoverageIgnoreEnd
         }
 
@@ -92,7 +92,7 @@ abstract class AbstractHydrator implements HydratorInterface
     {
         if (!$object instanceof $this->className) {
             // @codeCoverageIgnoreStart
-            throw new \InvalidArgumentException(sprintf("given object is not a '%s' instance", $this->className));
+            throw new \InvalidArgumentException(\sprintf("given object is not a '%s' instance", $this->className));
             // @codeCoverageIgnoreEnd
         }
 

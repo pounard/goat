@@ -97,7 +97,7 @@ class PDOMySQLConnection extends AbstractPDOConnection
         $this
             ->getPdo()
             ->query(
-                sprintf(
+                \sprintf(
                     "SET character_set_client = %s",
                     $this->getEscaper()->escapeLiteral($encoding)
                 )
@@ -113,7 +113,7 @@ class PDOMySQLConnection extends AbstractPDOConnection
         $pdo = $this->getPdo();
 
         foreach ($configuration as $key => $value) {
-            $pdo->query(sprintf(
+            $pdo->query(\sprintf(
                 "SET %s = %s",
                 $this->getEscaper()->escapeIdentifier($key),
                 $this->getEscaper()->escapeLiteral($value)

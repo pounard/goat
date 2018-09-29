@@ -25,8 +25,8 @@ class DefaultEntity implements EntityInterface
         $this->values = $values;
         $this->types = $types;
 
-        if (count($this->types) !== count($this->values)) {
-            foreach (array_keys($this->values) as $key) {
+        if (\count($this->types) !== \count($this->values)) {
+            foreach (\array_keys($this->values) as $key) {
                 if (!isset($this->types[$key])) {
                     $this->types[$key] = self::DEFAULT_TYPE;
                 }
@@ -55,7 +55,7 @@ class DefaultEntity implements EntityInterface
      */
     public function __isset(string $name) : bool
     {
-        return array_key_exists($name, $this->values);
+        return \array_key_exists($name, $this->values);
     }
 
     /**
@@ -70,8 +70,8 @@ class DefaultEntity implements EntityInterface
      */
     final protected function getFieldName(string $name) : string
     {
-        if (!array_key_exists($name, $this->values)) {
-            throw new \InvalidArgumentException(sprintf("property '%s' is not defined", $name));
+        if (!\array_key_exists($name, $this->values)) {
+            throw new \InvalidArgumentException(\sprintf("property '%s' is not defined", $name));
         }
 
         return $name;
@@ -83,7 +83,7 @@ class DefaultEntity implements EntityInterface
     public function getType(string $name) : string
     {
         if (!isset($this->types[$name])) {
-            throw new \InvalidArgumentException(sprintf("property '%s' is not defined", $name));
+            throw new \InvalidArgumentException(\sprintf("property '%s' is not defined", $name));
         }
 
         return $this->types[$name];
@@ -110,7 +110,7 @@ class DefaultEntity implements EntityInterface
      */
     public function exists(string $name) : bool
     {
-        return array_key_exists($name, $this->values);
+        return \array_key_exists($name, $this->values);
     }
 
     /**

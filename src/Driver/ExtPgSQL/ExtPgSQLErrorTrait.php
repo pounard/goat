@@ -13,10 +13,10 @@ trait ExtPgSQLErrorTrait
      */
     private function resultError($result)
     {
-        $status = pg_result_status($this->resource);
+        $status = \pg_result_status($this->resource);
 
-        if (PGSQL_BAD_RESPONSE === $status ||  PGSQL_FATAL_ERROR === $status) {
-            $errorString = pg_result_error($result);
+        if (PGSQL_BAD_RESPONSE === $status || PGSQL_FATAL_ERROR === $status) {
+            $errorString = \pg_result_error($result);
             if (false === $errorString) {
                 throw new ExtPgSQLDriverError("unknown error: could not fetch status code");
             } else {
@@ -33,7 +33,7 @@ trait ExtPgSQLErrorTrait
      */
     private function driverError($resource = null, string $rawSQL = null)
     {
-        $errorString = pg_last_error($resource);
+        $errorString = \pg_last_error($resource);
         if (false === $errorString) {
             $errorString = "unknown error: could not fetch status code";
             if ($rawSQL) {
@@ -44,7 +44,7 @@ trait ExtPgSQLErrorTrait
             if ($rawSQL) {
                 $errorString .= ', query was: ' .$rawSQL;
             }
-            throw new ExtPgSQLDriverError($errorString, (int)pg_connection_status($resource));
+            throw new ExtPgSQLDriverError($errorString, (int)\pg_connection_status($resource));
         }
     }
 }

@@ -208,9 +208,9 @@ abstract class AbstractDriver implements DriverInterface
         $result->setConverter($this->converter);
 
         if ($options) {
-            if (is_string($options)) {
+            if (\is_string($options)) {
                 $options = ['class' => $options];
-            } else if (!is_array($options)) {
+            } else if (!\is_array($options)) {
                 throw new QueryError("options must be a valid class name or an array of options");
             }
         }
@@ -234,12 +234,12 @@ abstract class AbstractDriver implements DriverInterface
         }
 
         // SQL-92 implementation - only one table at a time
-        if (!is_array($relationNames)) {
+        if (!\is_array($relationNames)) {
             $relationNames = [$relationNames];
         }
 
         foreach ($relationNames as $relation) {
-            $this->perform(sprintf("truncate %s", $this->getEscaper()->escapeIdentifier($relation)));
+            $this->perform(\sprintf("truncate %s", $this->getEscaper()->escapeIdentifier($relation)));
         }
     }
 

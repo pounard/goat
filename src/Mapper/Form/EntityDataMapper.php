@@ -24,7 +24,7 @@ class EntityDataMapper implements DataMapperInterface
 
         /** @var \Symfony\Component\Form\Test\FormInterface $form */
         foreach ($forms as $name => $form) {
-            if (array_key_exists($name, $values)) {
+            if (\array_key_exists($name, $values)) {
                 $form->setData($values[$name]);
             }
         }

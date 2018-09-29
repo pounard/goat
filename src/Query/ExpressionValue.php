@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Goat\Query;
 
-use Goat\Query\ArgumentBag;
-
 /**
  * Represents a raw value
  */
@@ -24,16 +22,16 @@ final class ExpressionValue implements Expression
     public function __construct($value, string $type = null)
     {
         if (null === $type) {
-            if (is_string($value) && $value &&  ':' === $value[0]) {
+            if (\is_string($value) && $value &&  ':' === $value[0]) {
 
                 // Attempt to find type by convention
-                if (false !== strpos($value, '::')) {
-                    list($name, $type) = explode('::', $value, 2);
+                if (false !== \strpos($value, '::')) {
+                    list($name, $type) = \explode('::', $value, 2);
                 } else {
                     $name = $value;
                 }
 
-                $this->name = substr($name, 1);
+                $this->name = \substr($name, 1);
 
                 // Value cannot exist from this point, really, since we just
                 // gave name and type information; query will need to be send

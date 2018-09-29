@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Goat\Query;
 
-use Goat\Query\ArgumentBag;
-
 /**
  * Represents a raw SQL expression, remember that an expression must always
  * return a single value, in opposition to statements.
@@ -26,7 +24,7 @@ final class ExpressionRaw implements Expression
      */
     public function __construct(string $expressionString, $arguments = [])
     {
-        if (!is_array($arguments)) {
+        if (!\is_array($arguments)) {
             $arguments = [$arguments];
         }
 

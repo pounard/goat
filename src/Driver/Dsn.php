@@ -59,7 +59,7 @@ final class Dsn
     {
         $matches = [];
 
-        if (preg_match(self::REGEX_TCP, $string, $matches)) {
+        if (\preg_match(self::REGEX_TCP, $string, $matches)) {
 
             $this->scheme   = self::SCHEME_TCP;
             $this->driver   = $matches[2];
@@ -84,8 +84,8 @@ final class Dsn
                         break;
                 }
             } else {
-                if (!is_int($this->port)) {
-                    throw new ConfigurationError(sprintf("%s: port must be integer, '%s' given", $string, $this->port));
+                if (!\is_int($this->port)) {
+                    throw new ConfigurationError(\sprintf("%s: port must be integer, '%s' given", $string, $this->port));
                 }
             }
 
@@ -93,7 +93,7 @@ final class Dsn
                 $this->host = self::DEFAULT_HOST;
             }
 
-        } else if (preg_match(self::REGEX_UNIX, $string, $matches)) {
+        } else if (\preg_match(self::REGEX_UNIX, $string, $matches)) {
 
             $this->scheme   = self::SCHEME_UNIX;
             $this->driver   = $matches[2];
@@ -101,11 +101,11 @@ final class Dsn
             $this->database = $matches[4];
 
         } else {
-            throw new ConfigurationError(sprintf("%s: invalid dsn", $string));
+            throw new ConfigurationError(\sprintf("%s: invalid dsn", $string));
         }
 
         if (empty($this->database)) {
-            throw new ConfigurationError(sprintf("%s: database name is mandatory", $string));
+            throw new ConfigurationError(\sprintf("%s: database name is mandatory", $string));
         }
 
         $this->username = $username;

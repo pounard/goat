@@ -25,8 +25,8 @@ class Session extends AbstractDriverProxy
     public function __construct(DriverInterface $writeConnection, DriverInterface $readonlyConnection = null)
     {
         if ($readonlyConnection) {
-            if (get_class($readonlyConnection) !== get_class($writeConnection)) {
-                throw new ConfigurationError(sprintf("Readonly and write connections are not using the same driver"));
+            if (\get_class($readonlyConnection) !== \get_class($writeConnection)) {
+                throw new ConfigurationError(\sprintf("Readonly and write connections are not using the same driver"));
             }
 
             $this->readonlyConnection = $readonlyConnection;

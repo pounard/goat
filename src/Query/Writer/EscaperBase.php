@@ -19,10 +19,10 @@ abstract class EscaperBase implements EscaperInterface
         if (!$strings) {
             throw new GoatError("cannot not format an empty identifier list");
         }
-        if (!is_array($strings)) {
+        if (!\is_array($strings)) {
             $strings = [$strings];
         }
 
-        return implode(', ', array_map([$this, 'escapeIdentifier'], $strings));
+        return \implode(', ', \array_map([$this, 'escapeIdentifier'], $strings));
     }
 }

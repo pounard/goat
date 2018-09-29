@@ -25,9 +25,9 @@ final class FormattedQuery
         $this->query = $query;
         $this->parameters = $parameters;
 
-        array_walk($parameters, function ($value, $key) {
-            if (null !== $value && !is_scalar($value)) {
-                throw new QueryError(sprintf("parameter '%s' must be a string, '%s' given", $key, gettype($value)));
+        \array_walk($parameters, function ($value, $key) {
+            if (null !== $value && !\is_scalar($value)) {
+                throw new QueryError(\sprintf("parameter '%s' must be a string, '%s' given", $key, \gettype($value)));
             }
         });
     }

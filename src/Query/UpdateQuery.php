@@ -54,7 +54,7 @@ final class UpdateQuery extends AbstractQuery implements ReturningQueryInterface
      */
     public function set(string $columnName, $expression)
     {
-        if (!is_string($columnName) || false !== strpos($columnName, '.')) {
+        if (!\is_string($columnName) || false !== \strpos($columnName, '.')) {
             throw new QueryError("column names in the set part of an update query can only be a column name, without table prefix");
         }
 
@@ -173,7 +173,7 @@ final class UpdateQuery extends AbstractQuery implements ReturningQueryInterface
         $this->cloneJoins();
 
         foreach ($this->columns as $column => $statement) {
-            if (is_object($statement)) {
+            if (\is_object($statement)) {
                 $this->columns[$column] = clone $statement;
             }
         }

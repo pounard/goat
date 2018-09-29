@@ -40,7 +40,7 @@ abstract class AbstractTransaction implements Transaction
                 return 'SERIALIZABLE';
 
             default:
-                throw new TransactionError(sprintf("%s: unknown transaction level", $isolationLevel));
+                throw new TransactionError(\sprintf("%s: unknown transaction level", $isolationLevel));
         }
     }
 
@@ -73,7 +73,7 @@ abstract class AbstractTransaction implements Transaction
         if ($this->started) {
             $this->rollback();
 
-            throw new TransactionError(sprintf("transactions should never be left opened"));
+            throw new TransactionError(\sprintf("transactions should never be left opened"));
         }
     }
 
@@ -197,7 +197,7 @@ abstract class AbstractTransaction implements Transaction
     public function immediate($constraint = null) : Transaction
     {
         if ($constraint) {
-            if (!is_array($constraint)) {
+            if (!\is_array($constraint)) {
                 $constraint = [$constraint];
             }
             $this->doImmediateConstraints($constraint);
@@ -221,7 +221,7 @@ abstract class AbstractTransaction implements Transaction
     public function deferred($constraint = null) : Transaction
     {
         if ($constraint) {
-            if (!is_array($constraint)) {
+            if (!\is_array($constraint)) {
                 $constraint = [$constraint];
             }
             $this->doDeferConstraints($constraint);
@@ -248,7 +248,7 @@ abstract class AbstractTransaction implements Transaction
     public function savepoint(string $name = null) : string
     {
         if (!$this->started) {
-            throw new TransactionError(sprintf("can not commit a non-running transaction"));
+            throw new TransactionError(\sprintf("can not commit a non-running transaction"));
         }
 
         if (!$name) {
@@ -256,7 +256,7 @@ abstract class AbstractTransaction implements Transaction
         }
 
         if (isset($this->savepoints[$name])) {
-            throw new TransactionError(sprintf("%s: savepoint already exists", $name));
+            throw new TransactionError(\sprintf("%s: savepoint already exists", $name));
         }
 
         $this->doCreateSavepoint($name);
@@ -274,7 +274,7 @@ abstract class AbstractTransaction implements Transaction
     public function commit() : Transaction
     {
         if (!$this->started) {
-            throw new TransactionError(sprintf("can not commit a non-running transaction"));
+            throw new TransactionError(\sprintf("can not commit a non-running transaction"));
         }
 
         $this->doCommit();
@@ -295,7 +295,7 @@ abstract class AbstractTransaction implements Transaction
     public function rollback() : Transaction
     {
         if (!$this->started) {
-            throw new TransactionError(sprintf("can not rollback a non-running transaction"));
+            throw new TransactionError(\sprintf("can not rollback a non-running transaction"));
         }
 
         // Even if the rollback fails and throw exceptions, this transaction
@@ -318,10 +318,10 @@ abstract class AbstractTransaction implements Transaction
     public function rollbackToSavepoint(string $name) : Transaction
     {
         if (!$this->started) {
-            throw new TransactionError(sprintf("can not rollback to savepoint in a non-running transaction"));
+            throw new TransactionError(\sprintf("can not rollback to savepoint in a non-running transaction"));
         }
         if (!isset($this->savepoints[$name])) {
-            throw new TransactionError(sprintf("%s: savepoint does not exists or is not handled by this object", $name));
+            throw new TransactionError(\sprintf("%s: savepoint does not exists or is not handled by this object", $name));
         }
 
         $this->doRollbackToSavepoint($name);

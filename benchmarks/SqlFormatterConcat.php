@@ -86,7 +86,7 @@ class FormatterConcat implements FormatterInterface
      */
     protected function formatSelectItem($expression, $alias = null) : string
     {
-        if (is_string($expression)) {
+        if (\is_string($expression)) {
             $expression = new ExpressionColumn($expression);
         }
 
@@ -95,7 +95,7 @@ class FormatterConcat implements FormatterInterface
         // We cannot alias columns with a numeric identifier;
         // aliasing with the same string as the column name
         // makes no sense either.
-        if ($alias && !is_numeric($alias)) {
+        if ($alias && !\is_numeric($alias)) {
             $alias = $this->escaper->escapeIdentifier($alias);
             if ($alias !== $output) {
                 return $output . ' as ' . $alias;
@@ -254,7 +254,7 @@ class FormatterConcat implements FormatterInterface
             $output[] = $this->format($group);
         }
 
-        return "group by " . implode(", ", $output);
+        return "group by " . \implode(", ", $output);
     }
 
     /**
@@ -350,15 +350,15 @@ class FormatterConcat implements FormatterInterface
 
         $output = [];
 
-        $first = array_shift($joins);
+        $first = \array_shift($joins);
 
         // First join must be an inner join, there is no choice, and first join
         // condition will become a where clause in the global query instead
-        if (!in_array($first[2], [Query::JOIN_INNER, Query::JOIN_NATURAL])) {
+        if (!\in_array($first[2], [Query::JOIN_INNER, Query::JOIN_NATURAL])) {
             throw new QueryError("first join in an update query must be inner or natural, it will serve as the first from table");
         }
 
-        $output[] = sprintf("from %s", $this->formatExpressionRelation($first[0]));
+        $output[] = \sprintf("from %s", $this->formatExpressionRelation($first[0]));
         if ($first[1] && !$first[1]->isEmpty()) {
             $query->getWhere()->expression($first[1]);
         }
@@ -371,7 +371,7 @@ class FormatterConcat implements FormatterInterface
             }
         }
 
-        return implode("\n", $output);
+        return \implode("\n", $output);
     }
 
     /**
@@ -395,15 +395,15 @@ class FormatterConcat implements FormatterInterface
 
         $output = [];
 
-        $first = array_shift($joins);
+        $first = \array_shift($joins);
 
         // First join must be an inner join, there is no choice, and first join
         // condition will become a where clause in the global query instead
-        if (!in_array($first[2], [Query::JOIN_INNER, Query::JOIN_NATURAL])) {
+        if (!\in_array($first[2], [Query::JOIN_INNER, Query::JOIN_NATURAL])) {
             throw new QueryError("first join in an delete query must be inner or natural, it will serve as the first using table");
         }
 
-        $output[] = sprintf("using %s", $this->formatExpressionRelation($first[0]));
+        $output[] = \sprintf("using %s", $this->formatExpressionRelation($first[0]));
         if ($first[1] && !$first[1]->isEmpty()) {
             $query->getWhere()->expression($first[1]);
         }
@@ -416,7 +416,7 @@ class FormatterConcat implements FormatterInterface
             }
         }
 
-        return implode("\n", $output);
+        return \implode("\n", $output);
     }
 
     /**
@@ -432,9 +432,9 @@ class FormatterConcat implements FormatterInterface
     protected function formatRange(int $limit = 0, int $offset = 0) : string
     {
         if ($limit) {
-            return sprintf('limit %d offset %d', $limit, $offset);
+            return \sprintf('limit %d offset %d', $limit, $offset);
         } else if ($offset) {
-            return sprintf('offset %d', $offset);
+            return \sprintf('offset %d', $offset);
         } else {
             return '';
         }
@@ -452,9 +452,9 @@ class FormatterConcat implements FormatterInterface
      */
     protected function formatValueList(array $arguments) : string
     {
-        return implode(
+        return \implode(
             ', ',
-            array_map(
+            \array_map(
                 function ($value) {
                     if ($value instanceof Statement) {
                         return $this->format($value);
@@ -513,9 +513,9 @@ class FormatterConcat implements FormatterInterface
             if ($value instanceof Expression) {
                 $valueString = $this->format($value);
             } else if ($value instanceof Statement) {
-                $valueString = sprintf('(%s)', $this->format($value));
-            } else if (is_array($value)) {
-                $valueString = sprintf("(%s)", $this->formatValueList($value));
+                $valueString = \printf('(%s)', $this->format($value));
+            } else if (\is_array($value)) {
+                $valueString = \sprintf("(%s)", $this->formatValueList($value));
             } else {
                 $valueString = $this->formatPlaceholder($value);
             }
@@ -525,12 +525,12 @@ class FormatterConcat implements FormatterInterface
 
                     case Where::EXISTS:
                     case Where::NOT_EXISTS:
-                        $output[] = sprintf('%s %s', $operator, $valueString);
+                        $output[] = \sprintf('%s %s', $operator, $valueString);
                         break;
 
                     case Where::IS_NULL:
                     case Where::NOT_IS_NULL:
-                        $output[] = sprintf('%s %s', $valueString, $operator);
+                        $output[] = \sprintf('%s %s', $valueString, $operator);
                         break;
 
                     default:
@@ -542,27 +542,27 @@ class FormatterConcat implements FormatterInterface
 
                     case Where::EXISTS:
                     case Where::NOT_EXISTS:
-                        $output[] = sprintf('%s %s', $operator, $valueString);
+                        $output[] = \sprintf('%s %s', $operator, $valueString);
                         break;
 
                     case Where::IS_NULL:
                     case Where::NOT_IS_NULL:
-                        $output[] = sprintf('%s %s', $columnString, $operator);
+                        $output[] = \sprintf('%s %s', $columnString, $operator);
                         break;
 
                     case Where::BETWEEN:
                     case Where::NOT_BETWEEN:
-                        $output[] = sprintf('%s %s $* and $*', $columnString, $operator);
+                        $output[] = \sprintf('%s %s $* and $*', $columnString, $operator);
                         break;
 
                     default:
-                        $output[] = sprintf('%s %s %s', $columnString, $operator, $valueString);
+                        $output[] = \sprintf('%s %s %s', $columnString, $operator, $valueString);
                         break;
                 }
             }
         }
 
-        return implode("\n" . $where->getOperator() . ' ', $output);
+        return \implode("\n" . $where->getOperator() . ' ', $output);
     }
 
     /**
@@ -584,16 +584,16 @@ class FormatterConcat implements FormatterInterface
             throw new QueryError("cannot insert no values");
         }
 
-        $output[] = sprintf(
+        $output[] = \sprintf(
             "insert into %s",
             // From SQL 92 standard, INSERT queries don't have table alias
             $this->escaper->escapeIdentifier($query->getRelation()->getName())
         );
 
         if ($columns) {
-            $output[] = sprintf(
+            $output[] = \sprintf(
                 "(%s) values",
-                implode(', ', array_map(function ($column) use ($escaper) {
+                \implode(', ', \array_map(function ($column) use ($escaper) {
                     return $escaper->escapeIdentifier($column);
                 }, $columns))
             );
@@ -601,20 +601,20 @@ class FormatterConcat implements FormatterInterface
 
         $values = [];
         for ($i = 0; $i < $valueCount; ++$i) {
-            $values[] = sprintf(
+            $values[] = \sprintf(
                 "(%s)",
-                implode(', ', array_fill(0, count($columns), '$*'))
+                \implode(', ', \array_fill(0, \count($columns), '$*'))
             );
         }
-        $output[] = implode(', ', $values);
+        $output[] = \implode(', ', $values);
 
 
         $return = $query->getAllReturn();
         if ($return) {
-            $output[] = sprintf("returning %s", $this->formatReturning($return));
+            $output[] = \sprintf("returning %s", $this->formatReturning($return));
         }
 
-        return implode("\n", $output);
+        return \implode("\n", $output);
     }
 
     /**
@@ -632,16 +632,16 @@ class FormatterConcat implements FormatterInterface
         $columns = $query->getAllColumns();
         $subQuery = $query->getQuery();
 
-        $output[] = sprintf(
+        $output[] = \sprintf(
             "insert into %s",
             // From SQL 92 standard, INSERT queries don't have table alias
             $this->escaper->escapeIdentifier($query->getRelation()->getName())
         );
 
         if ($columns) {
-            $output[] = sprintf(
+            $output[] = \sprintf(
                 "(%s) values",
-                implode(', ', array_map(function ($column) use ($escaper) {
+                \implode(', ', \array_map(function ($column) use ($escaper) {
                     return $escaper->escapeIdentifier($column);
                 }, $columns))
             );
@@ -651,10 +651,10 @@ class FormatterConcat implements FormatterInterface
 
         $return = $query->getAllReturn();
         if ($return) {
-            $output[] = sprintf("returning %s", $this->formatReturning($return));
+            $output[] = \sprintf("returning %s", $this->formatReturning($return));
         }
 
-        return implode("\n", $output);
+        return \implode("\n", $output);
     }
 
     /**
@@ -670,7 +670,7 @@ class FormatterConcat implements FormatterInterface
 
         // This is not SQL-92 compatible, we are using USING..JOIN clause to
         // do joins in the DELETE query, which is not accepted by the standard.
-        $output[] = sprintf(
+        $output[] = \sprintf(
             "delete from %s",
             $this->formatExpressionRelation($query->getRelation())
         );
@@ -682,15 +682,15 @@ class FormatterConcat implements FormatterInterface
 
         $where = $query->getWhere();
         if (!$where->isEmpty()) {
-            $output[] = sprintf('where %s', $this->formatWhere($where));
+            $output[] = \sprintf('where %s', $this->formatWhere($where));
         }
 
         $return = $query->getAllReturn();
         if ($return) {
-            $output[] = sprintf("returning %s", $this->formatReturning($return));
+            $output[] = \sprintf("returning %s", $this->formatReturning($return));
         }
 
-        return implode("\n", array_filter($output));
+        return \implode("\n", \array_filter($output));
     }
 
     /**
@@ -711,7 +711,7 @@ class FormatterConcat implements FormatterInterface
 
         // From the SQL 92 standard (which PostgreSQL does support here) the
         // FROM and JOIN must be written AFTER the SET clause. MySQL does not.
-        $output[] = sprintf(
+        $output[] = \sprintf(
             "update %s\nset\n%s",
             $this->formatExpressionRelation($query->getRelation()),
             $this->formatUpdateSet($columns)
@@ -724,15 +724,15 @@ class FormatterConcat implements FormatterInterface
 
         $where = $query->getWhere();
         if (!$where->isEmpty()) {
-            $output[] = sprintf('where %s', $this->formatWhere($where));
+            $output[] = \sprintf('where %s', $this->formatWhere($where));
         }
 
         $return = $query->getAllReturn();
         if ($return) {
-            $output[] = sprintf("returning %s", $this->formatReturning($return));
+            $output[] = \sprintf("returning %s", $this->formatReturning($return));
         }
 
-        return implode("\n", array_filter($output));
+        return \implode("\n", \array_filter($output));
     }
 
     /**

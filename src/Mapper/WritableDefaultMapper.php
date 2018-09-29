@@ -52,7 +52,7 @@ class WritableDefaultMapper extends DefaultMapper implements WritableMapperInter
         }
 
         if (1 < $result->countRows()) {
-            throw new EntityNotFoundError(sprintf("entity counld not be created"));
+            throw new EntityNotFoundError(\sprintf("entity counld not be created"));
         }
 
         return $result->fetch();
@@ -91,7 +91,7 @@ class WritableDefaultMapper extends DefaultMapper implements WritableMapperInter
         $affected = $result->countRows();
         if ($raiseErrorOnMissing) {
             if (1 < $affected) {
-                throw new EntityNotFoundError(sprintf("updated entity does not exist"));
+                throw new EntityNotFoundError(\sprintf("updated entity does not exist"));
             }
             if (1 > $affected) {
                 // @codeCoverageIgnoreStart
@@ -99,7 +99,7 @@ class WritableDefaultMapper extends DefaultMapper implements WritableMapperInter
                 // select query, or a deficient database (for example MySQL) that
                 // which under circumstances may break ACID properties of your data
                 // and allow duplicate inserts into tables.
-                throw new EntityNotFoundError(sprintf("update affected more than one row"));
+                throw new EntityNotFoundError(\sprintf("update affected more than one row"));
                 // @codeCoverageIgnoreEnd
             }
         }
@@ -130,7 +130,7 @@ class WritableDefaultMapper extends DefaultMapper implements WritableMapperInter
 
         $affected = $result->countRows();
         if (1 < $affected) {
-            throw new EntityNotFoundError(sprintf("updated entity does not exist"));
+            throw new EntityNotFoundError(\sprintf("updated entity does not exist"));
         }
         if (1 > $affected) {
             // @codeCoverageIgnoreStart
@@ -138,7 +138,7 @@ class WritableDefaultMapper extends DefaultMapper implements WritableMapperInter
             // select query, or a deficient database (for example MySQL) that
             // which under circumstances may break ACID properties of your data
             // and allow duplicate inserts into tables.
-            throw new EntityNotFoundError(sprintf("update affected more than one row"));
+            throw new EntityNotFoundError(\sprintf("update affected more than one row"));
             // @codeCoverageIgnoreEnd
         }
 

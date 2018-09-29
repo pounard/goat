@@ -28,7 +28,7 @@ final class DefaultEntityHydrator implements HydratorInterface
      */
     public function hydrateObject(array $values, $object)
     {
-        throw new GoatError(sprintf("Can't hydrate a %s instance after creation, object is immutable", DefaultEntity::class));
+        throw new GoatError(\sprintf("Can't hydrate a %s instance after creation, object is immutable", DefaultEntity::class));
     }
 
     /**
@@ -37,7 +37,7 @@ final class DefaultEntityHydrator implements HydratorInterface
     public function extractValues($object) : array
     {
         if (!$object instanceof EntityInterface) {
-            throw new GoatError(sprintf("Entity must implement %s, type %s given", EntityInterface::class, gettype($object)));
+            throw new GoatError(\sprintf("Entity must implement %s, type %s given", EntityInterface::class, \gettype($object)));
         }
 
         return $object->getAll();

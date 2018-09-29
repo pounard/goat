@@ -23,9 +23,9 @@ class MySQL5Formatter extends DefaultFormatter
         // does not accepts the same datatypes as the one it handles.
         if ('timestamp' === $type) {
             return 'datetime';
-        } else if ('int' === substr($type, 0, 3)) {
+        } else if ('int' === \substr($type, 0, 3)) {
             return 'signed integer';
-        } else if ('float' === substr($type, 0, 5) || 'double' === substr($type, 0, 6)) {
+        } else if ('float' === \substr($type, 0, 5) || 'double' === \substr($type, 0, 6)) {
             return 'decimal';
         }
 
@@ -57,7 +57,7 @@ class MySQL5Formatter extends DefaultFormatter
             $relationAlias = $relation->getName();
         }
 
-        $output[] = sprintf(
+        $output[] = \sprintf(
             "delete %s.* from %s",
             $this->escaper->escapeIdentifier($relationAlias),
             $this->formatExpressionRelation($relation)
@@ -73,7 +73,7 @@ class MySQL5Formatter extends DefaultFormatter
 
         $where = $query->getWhere();
         if (!$where->isEmpty()) {
-            $output[] = sprintf('where %s', $this->formatWhere($where));
+            $output[] = \sprintf('where %s', $this->formatWhere($where));
         }
 
         $return = $query->getAllReturn();
@@ -81,7 +81,7 @@ class MySQL5Formatter extends DefaultFormatter
             throw new QueryError("MySQL does not support RETURNING SQL clause");
         }
 
-        return implode("\n", array_filter($output));
+        return \implode("\n", \array_filter($output));
     }
 
     /**
@@ -98,7 +98,7 @@ class MySQL5Formatter extends DefaultFormatter
 
         // From the SQL 92 standard (which PostgreSQL does support here) the
         // FROM and JOIN must be written AFTER the SET clause. MySQL does not.
-        $output[] = sprintf("update %s", $this->formatExpressionRelation($query->getRelation()));
+        $output[] = \sprintf("update %s", $this->formatExpressionRelation($query->getRelation()));
 
         // MySQL don't do UPDATE t1 SET [...] FROM t2 but uses the SELECT
         // syntax and just append the set after the JOIN clause.
@@ -108,11 +108,11 @@ class MySQL5Formatter extends DefaultFormatter
         }
 
         // SET clause.
-        $output[] = sprintf("set\n%s", $this->formatUpdateSet($columns));
+        $output[] = \sprintf("set\n%s", $this->formatUpdateSet($columns));
 
         $where = $query->getWhere();
         if (!$where->isEmpty()) {
-            $output[] = sprintf('where %s', $this->formatWhere($where));
+            $output[] = \sprintf('where %s', $this->formatWhere($where));
         }
 
         $return = $query->getAllReturn();
@@ -120,6 +120,6 @@ class MySQL5Formatter extends DefaultFormatter
             throw new QueryError("MySQL does not support RETURNING SQL clause");
         }
 
-        return implode("\n", $output);
+        return \implode("\n", $output);
     }
 }

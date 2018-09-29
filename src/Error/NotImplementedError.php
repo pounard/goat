@@ -19,7 +19,7 @@ class NotImplementedError extends GoatError
     public function __construct(string $message = null, int $code = null, \Throwable $previous = null)
     {
         if (!$message) {
-            $message = sprintf("this method is not implemented");
+            $message = \sprintf("this method is not implemented");
         }
 
         parent::__construct($message, $code, $previous);

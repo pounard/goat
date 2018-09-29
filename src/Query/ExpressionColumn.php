@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Goat\Query;
 
-use Goat\Query\ArgumentBag;
-
 /**
  * Represents a raw value
  */
@@ -41,8 +39,8 @@ final class ExpressionColumn implements Expression
     public function __construct(string $columnName, string $relationAlias = null)
     {
         if (null === $relationAlias) {
-            if (false !== strpos($columnName, '.')) {
-                list($relationAlias, $columnName) = explode('.', $columnName, 2);
+            if (false !== \strpos($columnName, '.')) {
+                list($relationAlias, $columnName) = \explode('.', $columnName, 2);
             }
         }
 

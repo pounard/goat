@@ -27,6 +27,6 @@ class PDOMySQLEscaper extends AbstractPDOEscaper
     {
         $this->checkIdentifier($string);
 
-        return '`' . str_replace('`', '``', $string) . '`';
+        return '`' . \str_replace('`', '``', $string) . '`';
     }
 }

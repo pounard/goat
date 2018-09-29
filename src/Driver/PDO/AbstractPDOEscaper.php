@@ -60,7 +60,7 @@ abstract class AbstractPDOEscaper extends EscaperBase
      */
     protected function checkIdentifier(string $string)
     {
-        if (false !== strpos($string, '?')) {
+        if (false !== \strpos($string, '?')) {
             throw new QueryError("PDO can't support '?' sign within identifiers, please read https://stackoverflow.com/q/12092907");
         }
     }
@@ -96,8 +96,8 @@ abstract class AbstractPDOEscaper extends EscaperBase
     {
         // I have no idea why, but all of the sudden, PDO pgsql driver started
         // to send resources instead of data...
-        if (is_resource($resource)) {
-            return stream_get_contents($resource);
+        if (\is_resource($resource)) {
+            return \stream_get_contents($resource);
         }
         return $resource;
     }

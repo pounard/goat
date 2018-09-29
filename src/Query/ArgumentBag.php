@@ -33,7 +33,7 @@ class ArgumentBag
     public function add($value, $name = null, $type = null)
     {
         if ($name && isset($this->nameMap[$name])) {
-            throw new QueryError(sprintf("%s argument name is already in use in this query", $name));
+            throw new QueryError(\sprintf("%s argument name is already in use in this query", $name));
         }
 
         $index = $this->index++;
@@ -71,11 +71,11 @@ class ArgumentBag
         $ret = $this->data;
 
         foreach ($overrides as $name => $value) {
-            if (is_int($name)) {
+            if (\is_int($name)) {
                 $index = $name;
             } else {
                 if (!isset($this->nameMap[$name])) {
-                    throw new QueryError(sprintf("named argument %s does not exist in the current query", $name));
+                    throw new QueryError(\sprintf("named argument %s does not exist in the current query", $name));
                 }
                 $index = $this->nameMap[$name];
             }
@@ -118,7 +118,7 @@ class ArgumentBag
     public function appendArray(array $array)
     {
         foreach ($array as $index => $value) {
-            if (is_int($index)) {
+            if (\is_int($index)) {
                 $this->add($value);
             } else {
                 $this->add($value, $index);

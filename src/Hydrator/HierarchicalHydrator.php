@@ -45,7 +45,7 @@ final class HierarchicalHydrator implements HydratorInterface
         $length = strlen($group);
 
         foreach ($values as $key => $value) {
-            if (substr($key, 0, $length + 1) === $group.'.') {
+            if (\substr($key, 0, $length + 1) === $group.'.') {
                 $ret[substr($key, $length + 1)] = $value;
             }
         }
@@ -60,8 +60,8 @@ final class HierarchicalHydrator implements HydratorInterface
     {
         foreach ($this->configuration->getClassPropertyMap($this->className) as $property => $className) {
 
-            if (array_key_exists($property, $values)) {
-                throw new GoatError(sprintf(
+            if (\array_key_exists($property, $values)) {
+                throw new GoatError(\sprintf(
                     "nested property '%s' with class '%s' already has a value: '%s'",
                     $property, $className, $values[$property]
                 ));

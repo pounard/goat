@@ -68,22 +68,22 @@ class ExtPgSQLConnection extends AbstractDriver
     protected function fetchDatabaseInfo() : array
     {
         $conn = $this->getConn();
-        $resource = @pg_query($conn, "select version();");
+        $resource = @\pg_query($conn, "select version();");
 
         if (false === $resource) {
             $this->driverError($conn);
         }
 
-        $row = @pg_fetch_array($resource);
+        $row = @\pg_fetch_array($resource);
         if (false === $row) {
             $this->resultError($resource);
         }
 
         // Example string to parse:
         //   PostgreSQL 9.2.9 on x86_64-unknown-linux-gnu, compiled by gcc (GCC) 4.4.7 20120313 (Red Hat 4.4.7-4), 64-bit
-        $string = reset($row);
-        $pieces = explode(', ', $string);
-        $server = explode(' ', $pieces[0]);
+        $string = \reset($row);
+        $pieces = \explode(', ', $string);
+        $server = \explode(' ', $pieces[0]);
 
         return [
             'name'    => $server[0],
@@ -116,7 +116,7 @@ class ExtPgSQLConnection extends AbstractDriver
     public function close()
     {
         if ($this->conn) {
-            @pg_close($this->conn);
+            @\pg_close($this->conn);
         }
     }
 
@@ -127,10 +127,10 @@ class ExtPgSQLConnection extends AbstractDriver
      */
     protected function connect()
     {
-        $this->conn = pg_connect($this->dsn->formatPgSQL(), PGSQL_CONNECT_FORCE_NEW);
+        $this->conn = \pg_connect($this->dsn->formatPgSQL(), PGSQL_CONNECT_FORCE_NEW);
 
         if (false === $this->conn) {
-            throw new ConfigurationError(sprintf("Error connecting to the database with parameters '%s'.", $this->dsn->formatFull()));
+            throw new ConfigurationError(\sprintf("Error connecting to the database with parameters '%s'.", $this->dsn->formatFull()));
         }
 
         if ($this->configuration) {
@@ -188,7 +188,7 @@ class ExtPgSQLConnection extends AbstractDriver
             $prepared = $this->formatter->prepare($query, $parameters);
             $rawSQL   = $prepared->getQuery();
             $args     = $prepared->getParameters();
-            $resource = @pg_query_params($conn, $rawSQL, $args);
+            $resource = @\pg_query_params($conn, $rawSQL, $args);
 
             if (false === $resource) {
                 $this->driverError($conn, $rawSQL);
@@ -218,13 +218,13 @@ class ExtPgSQLConnection extends AbstractDriver
             $prepared = $this->formatter->prepare($query, $parameters);
             $rawSQL   = $prepared->getQuery();
             $args     = $prepared->getParameters();
-            $resource = @pg_query_params($conn, $rawSQL, $args);
+            $resource = @\pg_query_params($conn, $rawSQL, $args);
 
             if (false === $resource) {
                 $this->driverError($conn, $rawSQL);
             }
 
-            $rowCount = pg_affected_rows($resource);
+            $rowCount = \pg_affected_rows($resource);
             if (false === $rowCount) {
                 $this->resultError($resource);
             }
@@ -247,7 +247,7 @@ class ExtPgSQLConnection extends AbstractDriver
         $rawSQL   = $prepared->getQuery();
 
         if (null === $identifier) {
-            $identifier = md5($rawSQL);
+            $identifier = \md5($rawSQL);
         }
 
         // Default behaviour, because databases such as MySQL don't really
@@ -264,7 +264,7 @@ class ExtPgSQLConnection extends AbstractDriver
     public function executePreparedQuery(string $identifier, array $parameters = null, $options = null) : ResultIteratorInterface
     {
         if (!isset($this->prepared[$identifier])) {
-            throw new QueryError(sprintf("'%s': query was not prepared", $identifier));
+            throw new QueryError(\sprintf("'%s': query was not prepared", $identifier));
         }
 
         return $this->execute($this->prepared[$identifier], $parameters, $options);
@@ -292,7 +292,7 @@ class ExtPgSQLConnection extends AbstractDriver
         $this
             ->getConn()
             ->query(
-                sprintf(
+                \sprintf(
                     "SET CLIENT_ENCODING TO %s",
                     $this->getEscaper()->escapeLiteral($encoding)
                 )
@@ -308,7 +308,7 @@ class ExtPgSQLConnection extends AbstractDriver
         $pdo = $this->getConn();
 
         foreach ($configuration as $key => $value) {
-            $pdo->query(sprintf(
+            $pdo->query(\sprintf(
                 "SET %s TO %s",
                 $this->getEscaper()->escapeIdentifier($key),
                 $this->getEscaper()->escapeLiteral($value)
@@ -325,7 +325,7 @@ class ExtPgSQLConnection extends AbstractDriver
     {
         // No surprises there, PostgreSQL is very straight-forward and just
         // uses the datatypes as it handles it. Very stable and robust.
-        return sprintf("%s::%s", $placeholder, $type);
+        return \sprintf("%s::%s", $placeholder, $type);
     }
 
     /**
@@ -345,6 +345,6 @@ class ExtPgSQLConnection extends AbstractDriver
             throw new QueryError("cannot not truncate no tables");
         }
 
-        $this->perform(sprintf("truncate %s", $this->getEscaper()->escapeIdentifierList($relationNames)));
+        $this->perform(\sprintf("truncate %s", $this->getEscaper()->escapeIdentifierList($relationNames)));
     }
 }

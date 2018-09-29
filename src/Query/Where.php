@@ -131,10 +131,10 @@ final class Where implements Statement
         if ($column instanceof ExpressionColumn) {
             return $column;
         }
-        if (is_string($column)) {
+        if (\is_string($column)) {
             return new ExpressionColumn($column);
         }
-        throw new QueryError(sprintf("column reference must be a string or an instance of %s", ExpressionColumn::class));
+        throw new QueryError(\sprintf("column reference must be a string or an instance of %s", ExpressionColumn::class));
     }
 
     /**
@@ -152,25 +152,25 @@ final class Where implements Statement
 
         if (!$this->operatorNeedsValue($operator)) {
             if ($value) {
-                throw new QueryError(sprintf("operator %s cannot carry a value", $operator));
+                throw new QueryError(\sprintf("operator %s cannot carry a value", $operator));
             }
             $value = null;
-        } else if (is_array($value)) {
-            $value = array_map([$this, 'normalizeValue'], $value);
+        } else if (\is_array($value)) {
+            $value = \array_map([$this, 'normalizeValue'], $value);
         } else {
             $value = $this->normalizeValue($value);
         }
 
         if (self::EQUAL === $operator) {
-            if (is_array($value) || $value instanceof SelectQuery) {
+            if (\is_array($value) || $value instanceof SelectQuery) {
                 $operator = self::IN;
             }
         } else if (self::NOT_EQUAL === $operator) {
-            if (is_array($value) || $value instanceof SelectQuery) {
+            if (\is_array($value) || $value instanceof SelectQuery) {
                 $operator = self::NOT_IN;
             }
         } else if (self::BETWEEN === $operator || self::NOT_BETWEEN === $operator) {
-            if (!is_array($value) || 2 !== count($value)) {
+            if (!\is_array($value) || 2 !== \count($value)) {
                 throw new QueryError("between and not between operators needs exactly 2 values");
             }
         }
@@ -195,10 +195,10 @@ final class Where implements Statement
     {
         if ($expression instanceof Where || $expression instanceof Expression) {
             if ($arguments) {
-                throw new QueryError(sprintf("you cannot call %s::expression() and pass arguments if the given expression is not a string", __CLASS__));
+                throw new QueryError(\sprintf("you cannot call %s::expression() and pass arguments if the given expression is not a string", __CLASS__));
             }
         } else {
-            if (!is_array($arguments)) {
+            if (!\is_array($arguments)) {
                 $arguments = [$arguments];
             }
             $expression = new ExpressionRaw($expression, $arguments);
@@ -505,7 +505,7 @@ final class Where implements Statement
 
                     default:
                         // This is ugly as hell, fix me.
-                        if (!is_array($value)) {
+                        if (!\is_array($value)) {
                             $value = [$value];
                         }
                         foreach ($value as $candidate) {
@@ -551,11 +551,11 @@ final class Where implements Statement
         $this->reset();
 
         foreach ($this->conditions as $index => $condition) {
-            if (is_object($condition)) {
+            if (\is_object($condition)) {
                 $this->conditions[$index] = clone $condition;
-            } else if (is_array($condition)) {
+            } else if (\is_array($condition)) {
                 foreach ($condition as $key => $item) {
-                    if (is_object($item)) {
+                    if (\is_object($item)) {
                         $this->conditions[$index][$key] = clone $item;
                     }
                 }

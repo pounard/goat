@@ -55,7 +55,7 @@ abstract class AbstractPDOConnection extends AbstractDriver
 
         } catch (\PDOException $e) {
             // @todo do better
-            throw new ConfigurationError(sprintf("Error connecting to the database with parameters '%s'.", $this->dsn->formatFull()), null, $e);
+            throw new ConfigurationError(\sprintf("Error connecting to the database with parameters '%s'.", $this->dsn->formatFull()), null, $e);
         }
 
         if ($this->configuration) {
@@ -170,7 +170,7 @@ abstract class AbstractPDOConnection extends AbstractDriver
         $rawSQL   = $prepared->getQuery();
 
         if (null === $identifier) {
-            $identifier = md5($rawSQL);
+            $identifier = \md5($rawSQL);
         }
 
         // Default behaviour, because databases such as MySQL don't really
@@ -187,7 +187,7 @@ abstract class AbstractPDOConnection extends AbstractDriver
     public function executePreparedQuery(string $identifier, array $parameters = null, $options = null) : ResultIteratorInterface
     {
         if (!isset($this->prepared[$identifier])) {
-            throw new QueryError(sprintf("'%s': query was not prepared", $identifier));
+            throw new QueryError(\sprintf("'%s': query was not prepared", $identifier));
         }
 
         return $this->execute($this->prepared[$identifier], $parameters, $options);

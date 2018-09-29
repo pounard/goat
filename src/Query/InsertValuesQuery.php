@@ -57,7 +57,7 @@ final class InsertValuesQuery extends AbstractQuery implements ReturningQueryInt
             throw new QueryError("once you added value, you cannot change columns anymore");
         }
 
-        $this->columns = array_unique(array_merge($this->columns, $columns));
+        $this->columns = \array_unique(\array_merge($this->columns, $columns));
 
         return $this;
     }
@@ -89,10 +89,10 @@ final class InsertValuesQuery extends AbstractQuery implements ReturningQueryInt
     public function values(array $values)
     {
         if (!$this->columns) {
-            $this->columns = array_keys($values);
+            $this->columns = \array_keys($values);
         }
 
-        if (count($values) !== count($this->columns)) {
+        if (\count($values) !== \count($this->columns)) {
             throw new QueryError("values count does not match column count");
         }
 

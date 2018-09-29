@@ -33,19 +33,19 @@ class ExtPgSQLResultIterator extends AbstractResultIterator
      */
     protected function collectMetaData()
     {
-        $this->columnCount = pg_num_fields($this->resource);
+        $this->columnCount = \pg_num_fields($this->resource);
         if (false === $this->columnCount) {
             $this->resultError($this->resource);
         }
 
         for ($i = 0; $i < $this->columnCount; ++$i) {
 
-            $type = pg_field_type($this->resource, $i);
+            $type = \pg_field_type($this->resource, $i);
             if (false === $type) {
                 $this->resultError($this->resource);
             }
 
-            $key = pg_field_name($this->resource, $i);
+            $key = \pg_field_name($this->resource, $i);
             if (false === $type) {
                 $this->resultError($this->resource);
             }
@@ -60,7 +60,7 @@ class ExtPgSQLResultIterator extends AbstractResultIterator
      */
     public function getIterator()
     {
-        while ($row = pg_fetch_assoc($this->resource)) {
+        while ($row = \pg_fetch_assoc($this->resource)) {
             if ($this->columnKey) {
                 yield $row[$this->columnKey] => $this->hydrate($row);
             } else {
@@ -86,7 +86,7 @@ class ExtPgSQLResultIterator extends AbstractResultIterator
      */
     public function countRows() : int
     {
-        $ret = pg_num_rows($this->resource);
+        $ret = \pg_num_rows($this->resource);
 
         if (-1 === $ret) {
             $this->resultError($this->resource);
@@ -108,7 +108,7 @@ class ExtPgSQLResultIterator extends AbstractResultIterator
      */
     public function getColumnNames() : array
     {
-        return array_flip($this->columnNameMap);
+        return \array_flip($this->columnNameMap);
     }
 
     /**
@@ -120,7 +120,7 @@ class ExtPgSQLResultIterator extends AbstractResultIterator
             return $this->columnTypeMap[$name];
         }
 
-        throw new InvalidDataAccessError(sprintf("column '%s' does not exist", $name));
+        throw new InvalidDataAccessError(\sprintf("column '%s' does not exist", $name));
     }
 
     /**
@@ -128,16 +128,16 @@ class ExtPgSQLResultIterator extends AbstractResultIterator
      */
     public function getColumnName(int $index) : string
     {
-        if (!is_int($index)) {
-            throw new InvalidDataAccessError(sprintf("'%s' is not an integer.\n", $index));
+        if (!\is_int($index)) {
+            throw new InvalidDataAccessError(\sprintf("'%s' is not an integer.\n", $index));
         }
 
-        $pos = array_search($index, $this->columnNameMap);
+        $pos = \array_search($index, $this->columnNameMap);
         if (false !== $pos) {
             return $pos;
         }
 
-        throw new InvalidDataAccessError(sprintf("column %d is out of bounds", $index));
+        throw new InvalidDataAccessError(\sprintf("column %d is out of bounds", $index));
     }
 
     /**
@@ -149,7 +149,7 @@ class ExtPgSQLResultIterator extends AbstractResultIterator
             return $this->columnNameMap[$name];
         }
 
-        throw new InvalidDataAccessError(sprintf("column '%s' does not exist", $name));
+        throw new InvalidDataAccessError(\sprintf("column '%s' does not exist", $name));
     }
 
     /**
@@ -161,14 +161,14 @@ class ExtPgSQLResultIterator extends AbstractResultIterator
     {
         $keyIndex = $this->getColumnNumber($columnKeyName);
 
-        $valueColumn = pg_fetch_all_columns($this->resource, $index);
+        $valueColumn = \pg_fetch_all_columns($this->resource, $index);
         if (false === $valueColumn) {
-            throw new InvalidDataAccessError(sprintf("column '%d' is out of scope of the current result", $index));
+            throw new InvalidDataAccessError(\sprintf("column '%d' is out of scope of the current result", $index));
         }
 
-        $indexColumn = pg_fetch_all_columns($this->resource, $keyIndex);
+        $indexColumn = \pg_fetch_all_columns($this->resource, $keyIndex);
         if (false === $indexColumn) {
-            throw new InvalidDataAccessError(sprintf("column '%d' is out of scope of the current result", $keyIndex));
+            throw new InvalidDataAccessError(\sprintf("column '%d' is out of scope of the current result", $keyIndex));
         }
 
         $ret = [];
@@ -187,7 +187,7 @@ class ExtPgSQLResultIterator extends AbstractResultIterator
      */
     public function fetchColumn($name = 0)
     {
-        if (is_string($name)) {
+        if (\is_string($name)) {
             $index = $this->getColumnNumber($name);
         } else {
             $index = (int)$name;
@@ -200,9 +200,9 @@ class ExtPgSQLResultIterator extends AbstractResultIterator
 
         $ret = [];
 
-        $columns = pg_fetch_all_columns($this->resource, $index);
+        $columns = \pg_fetch_all_columns($this->resource, $index);
         if (false === $columns) {
-            throw new InvalidDataAccessError(sprintf("column '%d' is out of scope of the current result", $index));
+            throw new InvalidDataAccessError(\sprintf("column '%d' is out of scope of the current result", $index));
         }
 
         foreach ($columns as $value) {
@@ -217,7 +217,7 @@ class ExtPgSQLResultIterator extends AbstractResultIterator
      */
     public function fetch()
     {
-        $row = pg_fetch_assoc($this->resource);
+        $row = \pg_fetch_assoc($this->resource);
 
         if (false === $row) {
             $this->resultError($this->resource);

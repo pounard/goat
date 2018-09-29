@@ -96,7 +96,7 @@ abstract class FormatterBase implements FormatterInterface
     protected function writeCast(string $placeholder, string $type) : string
     {
         // This is supposedly SQL-92 standard compliant, but can be overriden
-        return sprintf("cast(%s as %s)", $placeholder, $type);
+        return \sprintf("cast(%s as %s)", $placeholder, $type);
     }
 
     /**
@@ -110,14 +110,14 @@ abstract class FormatterBase implements FormatterInterface
         $patterns = [];
 
         foreach ($this->escaper->getEscapeSequences() as $sequence) {
-            $sequence = preg_quote($sequence);
-            $patterns[] = sprintf("%s.+%s", $sequence, $sequence);
+            $sequence = \preg_quote($sequence);
+            $patterns[] = \sprintf("%s.+%s", $sequence, $sequence);
         }
 
         if ($patterns) {
-            $this->matchParametersRegex = str_replace('ESCAPE', sprintf("(%s)|", implode("|", $patterns)), self::PARAMETER_MATCH);
+            $this->matchParametersRegex = \str_replace('ESCAPE', \sprintf("(%s)|", \implode("|", $patterns)), self::PARAMETER_MATCH);
         } else {
-            $this->matchParametersRegex = str_replace('ESCAPE', self::PARAMETER_MATCH);
+            $this->matchParametersRegex = \str_replace('ESCAPE', self::PARAMETER_MATCH);
         }
     }
 
@@ -169,7 +169,7 @@ abstract class FormatterBase implements FormatterInterface
         // See https://stackoverflow.com/a/3735908 for the  starting
         // sequence explaination, the rest should be comprehensible.
         // Working version: '/\$+(\*|\d+)(?:::([\w\."]+(?:\[\])?)|)?/'
-        $rawSQL = preg_replace_callback($this->matchParametersRegex, function ($matches) use (&$parameters, &$index, &$done, $arguments) {
+        $rawSQL = \preg_replace_callback($this->matchParametersRegex, function ($matches) use (&$parameters, &$index, &$done, $arguments) {
 
             // Still not implemented the (SKIP*)(F*) variant for the regex
             // so I do need to exclude patterns we DO NOT want to match from
@@ -191,19 +191,19 @@ abstract class FormatterBase implements FormatterInterface
             $prefix = '';
             if ('$' === $matches[0][1]) {
                 // We don't need to check if the second char is not a $ sign
-                $count = substr_count($matches[0], '$');
+                $count = \substr_count($matches[0], '$');
                 if (0 === $count % 2) {
                     // Ignore this string, return complete string.
                     return $matches[0];
                 } else {
-                    $prefix = str_repeat('*', $count - 1);
+                    $prefix = \str_repeat('*', $count - 1);
                 }
             }
 
             $placeholder = $this->writePlaceholder($index);
 
-            if (!array_key_exists($index, $parameters)) {
-                throw new QueryError(sprintf("Invalid parameter number bound"));
+            if (!\array_key_exists($index, $parameters)) {
+                throw new QueryError(\sprintf("Invalid parameter number bound"));
             }
 
             if (isset($matches[3])) { // Do we have a type?
@@ -236,8 +236,8 @@ abstract class FormatterBase implements FormatterInterface
         // understand; for example a non explicitely casted \DateTime object
         // into the query will end up as a \DateTime object and the query
         // will fail.
-        if (count($done) !== count($parameters)) {
-            foreach (array_diff_key($parameters, $done) as $index => $value) {
+        if (\count($done) !== \count($parameters)) {
+            foreach (\array_diff_key($parameters, $done) as $index => $value) {
                 $type = $arguments->getTypeAt($index);
                 if ($this->converter) {
                     if (!$type) {
@@ -269,9 +269,9 @@ abstract class FormatterBase implements FormatterInterface
         $arguments = null;
         $overrides = [];
 
-        if (!is_string($query)) {
+        if (!\is_string($query)) {
             if (!$query instanceof Statement) {
-                throw new QueryError(sprintf("query must be a bare string or an instance of %s", Query::class));
+                throw new QueryError(\sprintf("query must be a bare string or an instance of %s", Query::class));
             }
 
             $arguments = $query->getArguments();
@@ -283,11 +283,11 @@ abstract class FormatterBase implements FormatterInterface
                 $arguments = $parameters;
             } else {
                 $arguments = new ArgumentBag();
-                if (is_array($parameters)) {
+                if (\is_array($parameters)) {
                     $overrides = $parameters;
                 }
             }
-        } else if (is_array($parameters)) {
+        } else if (\is_array($parameters)) {
             $overrides = $parameters;
         }
 

@@ -45,9 +45,9 @@ class PDOResultIterator extends AbstractResultIterator
      */
     protected function parseType($nativeType) : string
     {
-        $nativeType = strtolower($nativeType);
+        $nativeType = \strtolower($nativeType);
 
-        switch (strtolower($nativeType)) {
+        switch (\strtolower($nativeType)) {
 
             case 'string':
             case 'var_string':
@@ -99,7 +99,7 @@ class PDOResultIterator extends AbstractResultIterator
                 return 'float8';
 
             default:
-                trigger_error(sprintf("'%s': unknown type", $nativeType));
+                \trigger_error(\sprintf("'%s': unknown type", $nativeType));
                 return $nativeType;
         }
     }
@@ -162,7 +162,7 @@ class PDOResultIterator extends AbstractResultIterator
      */
     public function getColumnNames() : array
     {
-        return array_flip($this->columnNameMap);
+        return \array_flip($this->columnNameMap);
     }
 
     /**
@@ -174,7 +174,7 @@ class PDOResultIterator extends AbstractResultIterator
             return $this->columnTypeMap[$name];
         }
 
-        throw new InvalidDataAccessError(sprintf("column '%s' does not exist", $name));
+        throw new InvalidDataAccessError(\sprintf("column '%s' does not exist", $name));
     }
 
     /**
@@ -182,16 +182,16 @@ class PDOResultIterator extends AbstractResultIterator
      */
     public function getColumnName(int $index) : string
     {
-        if (!is_int($index)) {
-            throw new InvalidDataAccessError(sprintf("'%s' is not an integer.\n", $index));
+        if (!\is_int($index)) {
+            throw new InvalidDataAccessError(\sprintf("'%s' is not an integer.\n", $index));
         }
 
-        $pos = array_search($index, $this->columnNameMap);
+        $pos = \array_search($index, $this->columnNameMap);
         if (false !== $pos) {
             return $pos;
         }
 
-        throw new InvalidDataAccessError(sprintf("column %d is out of bounds", $index));
+        throw new InvalidDataAccessError(\sprintf("column %d is out of bounds", $index));
     }
 
     /**
@@ -203,7 +203,7 @@ class PDOResultIterator extends AbstractResultIterator
             return $this->columnNameMap[$name];
         }
 
-        throw new InvalidDataAccessError(sprintf("column '%s' does not exist", $name));
+        throw new InvalidDataAccessError(\sprintf("column '%s' does not exist", $name));
     }
 
     /**
@@ -211,7 +211,7 @@ class PDOResultIterator extends AbstractResultIterator
      */
     public function fetchColumn($name = 0)
     {
-        if (is_int($name)) {
+        if (\is_int($name)) {
             $name = $this->getColumnName($name);
         }
 

@@ -46,7 +46,7 @@ class PDOPgSQLConnection extends AbstractPDOConnection
         $pdo = $this->getPdo();
 
         foreach ($configuration as $key => $value) {
-            $pdo->query(sprintf(
+            $pdo->query(\sprintf(
                 "SET %s TO %s",
                 $this->getEscaper()->escapeIdentifier($key),
                 $this->getEscaper()->escapeLiteral($value)
@@ -65,9 +65,9 @@ class PDOPgSQLConnection extends AbstractPDOConnection
 
         // Example string to parse:
         //   PostgreSQL 9.2.9 on x86_64-unknown-linux-gnu, compiled by gcc (GCC) 4.4.7 20120313 (Red Hat 4.4.7-4), 64-bit
-        $string = reset($row);
-        $pieces = explode(', ', $string);
-        $server = explode(' ', $pieces[0]);
+        $string = \reset($row);
+        $pieces = \explode(', ', $string);
+        $server = \explode(' ', $pieces[0]);
 
         return [
             'name'    => $server[0],
@@ -111,7 +111,7 @@ class PDOPgSQLConnection extends AbstractPDOConnection
             throw new QueryError("cannot not truncate no tables");
         }
 
-        $this->perform(sprintf("truncate %s", $this->getEscaper()->escapeIdentifierList($relationNames)));
+        $this->perform(\sprintf("truncate %s", $this->getEscaper()->escapeIdentifierList($relationNames)));
     }
 
     /**
@@ -119,7 +119,7 @@ class PDOPgSQLConnection extends AbstractPDOConnection
      */
     public function escapeIdentifier(string $string) : string
     {
-        return '"' . str_replace('"', '""', $string) . '"';
+        return '"' . \str_replace('"', '""', $string) . '"';
     }
 
     /**
@@ -132,7 +132,7 @@ class PDOPgSQLConnection extends AbstractPDOConnection
         $this
             ->getPdo()
             ->query(
-                sprintf(
+                \sprintf(
                     "SET CLIENT_ENCODING TO %s",
                     $this->getEscaper()->escapeLiteral($encoding)
                 )

@@ -154,10 +154,10 @@ final class SelectQuery extends AbstractQuery
     {
         if ($expression instanceof Expression) {
             if ($arguments) {
-                throw new QueryError(sprintf("you cannot call %s::columnExpression() and pass arguments if the given expression is not a string", __CLASS__));
+                throw new QueryError(\sprintf("you cannot call %s::columnExpression() and pass arguments if the given expression is not a string", __CLASS__));
             }
         } else {
-            if (!is_array($arguments)) {
+            if (!\is_array($arguments)) {
                 $arguments = [$arguments];
             }
             $expression = new ExpressionRaw($expression, $arguments);
@@ -181,7 +181,7 @@ final class SelectQuery extends AbstractQuery
     public function columns(array $columns)
     {
         foreach ($columns as $alias => $statement) {
-            if (is_int($alias)) {
+            if (\is_int($alias)) {
                 $this->column($statement);
             } else {
                 $this->column($statement, $alias);
@@ -413,11 +413,11 @@ final class SelectQuery extends AbstractQuery
      */
     public function groupBy($column)
     {
-        if (!is_string($column) && !$column instanceof ExpressionColumn) {
+        if (!\is_string($column) && !$column instanceof ExpressionColumn) {
             throw new QueryError("grouping by something else than a column name is not supported");
         }
 
-        if (is_string($column)) {
+        if (\is_string($column)) {
             $column = new ExpressionColumn($column);
         }
 
@@ -438,11 +438,11 @@ final class SelectQuery extends AbstractQuery
      */
     public function range(int $limit = 0, int $offset = 0)
     {
-        if (!is_int($limit) || $limit < 0) {
-            throw new QueryError(sprintf("limit must be a positive integer: '%s' given", $limit));
+        if (!\is_int($limit) || $limit < 0) {
+            throw new QueryError(\sprintf("limit must be a positive integer: '%s' given", $limit));
         }
-        if (!is_int($offset) || $offset < 0) {
-            throw new QueryError(sprintf("offset must be a positive integer: '%s' given", $offset));
+        if (!\is_int($offset) || $offset < 0) {
+            throw new QueryError(\sprintf("offset must be a positive integer: '%s' given", $offset));
         }
 
         $this->limit = $limit;
@@ -463,8 +463,8 @@ final class SelectQuery extends AbstractQuery
      */
     public function page(int $limit = 0, int $page = 1)
     {
-        if (!is_int($page) || $page < 1) {
-            throw new QueryError(sprintf("page must be a positive integer, starting with 1: '%s' given", $limit));
+        if (!\is_int($page) || $page < 1) {
+            throw new QueryError(\sprintf("page must be a positive integer, starting with 1: '%s' given", $limit));
         }
 
         $this->range($limit, ($page - 1) * $limit);

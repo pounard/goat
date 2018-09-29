@@ -49,7 +49,7 @@ class ExtPgSQLEscaper extends EscaperBase
             return '';
         }
 
-        $escaped = @pg_escape_literal($this->resource, $string);
+        $escaped = @\pg_escape_literal($this->resource, $string);
         if (false === $escaped) {
             $this->driverError($this->resource);
         }
@@ -74,7 +74,7 @@ class ExtPgSQLEscaper extends EscaperBase
             return '';
         }
 
-        $escaped = @pg_escape_bytea($this->resource, $word);
+        $escaped = @\pg_escape_bytea($this->resource, $word);
         if (false === $escaped) {
             $this->driverError($this->resource);
         }
@@ -91,7 +91,7 @@ class ExtPgSQLEscaper extends EscaperBase
             return $resource;
         }
 
-        $unescaped = @pg_unescape_bytea($resource);
+        $unescaped = @\pg_unescape_bytea($resource);
         if (false === $unescaped) {
             $this->driverError($this->resource);
         }
@@ -108,7 +108,7 @@ class ExtPgSQLEscaper extends EscaperBase
             return '';
         }
 
-        $escaped = @pg_escape_identifier($this->resource, $string);
+        $escaped = @\pg_escape_identifier($this->resource, $string);
         if (false === $escaped) {
             $this->driverError($this->resource);
         }

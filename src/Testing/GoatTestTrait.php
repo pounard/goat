@@ -24,16 +24,16 @@ trait GoatTestTrait
 {
     protected function createTemporaryDirectory() : string
     {
-        $cacheDir = sys_get_temp_dir().'/'.uniqid('goat-hydrator-');
+        $cacheDir = \sys_get_temp_dir().'/'.uniqid('goat-hydrator-');
 
         if (file_exists($cacheDir)) {
-            if (!is_dir($cacheDir)) {
-                throw new \Exception(sprintf("the '%s' cache directory exists but is not a directory", $cacheDir));
-            } else if (!is_writable($cacheDir)) {
-                throw new \Exception(sprintf("the '%s' cache directory exists but is not writable", $cacheDir));
+            if (!\is_dir($cacheDir)) {
+                throw new \Exception(\sprintf("the '%s' cache directory exists but is not a directory", $cacheDir));
+            } else if (!\is_writable($cacheDir)) {
+                throw new \Exception(\sprintf("the '%s' cache directory exists but is not writable", $cacheDir));
             }
-        } else if (!mkdir($cacheDir)) {
-            throw new \Exception(sprintf("could not create the '%s' cache directory", $cacheDir));
+        } else if (!\mkdir($cacheDir)) {
+            throw new \Exception(\sprintf("could not create the '%s' cache directory", $cacheDir));
         }
 
         return $cacheDir;

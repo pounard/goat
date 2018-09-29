@@ -32,7 +32,7 @@ final class PagerResultIterator implements ResultIteratorInterface
     public function __construct(ResultIteratorInterface $result, int $count, int $limit, int $page)
     {
         if ($page < 1) {
-            throw new GoatError(sprintf("page numbering starts with 1, %d given", $page));
+            throw new GoatError(\sprintf("page numbering starts with 1, %d given", $page));
         }
 
         $this->result = $result;
@@ -136,7 +136,7 @@ final class PagerResultIterator implements ResultIteratorInterface
      */
     public function getLastPage() : int
     {
-        return (int)max(1, ceil($this->count / $this->limit));
+        return (int)\max(1, \ceil($this->count / $this->limit));
     }
 
     /**

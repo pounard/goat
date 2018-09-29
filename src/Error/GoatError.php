@@ -29,7 +29,7 @@ class GoatError extends \RuntimeException
                 // instances will give a string instead of an int as the
                 // error code, so we have to cast.
                 $code = $previous->getCode();
-                if (!is_int($code)) {
+                if (!\is_int($code)) {
                     $code = 0;
                 }
             }

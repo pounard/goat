@@ -22,9 +22,9 @@ class PgSQLTransaction extends AbstractTransaction
     {
         $driver = $this->runner;
 
-        return implode(
+        return \implode(
             ', ',
-            array_map(
+            \array_map(
                 function ($name) use ($driver) {
                     return $driver->getEscaper()->escapeIdentifier($name);
                 },
@@ -42,7 +42,7 @@ class PgSQLTransaction extends AbstractTransaction
             // Set immediate constraint fail per default to be ISO with
             // backends that don't support deferable constraints
             $this->runner->perform(
-                sprintf(
+                \sprintf(
                     "START TRANSACTION ISOLATION LEVEL %s READ WRITE",
                     self::getIsolationLevelString($isolationLevel)
                 )
@@ -62,7 +62,7 @@ class PgSQLTransaction extends AbstractTransaction
             // Set immediate constraint fail per default to be ISO with
             // backends that don't support deferable constraints
             $this->runner->perform(
-                sprintf(
+                \sprintf(
                     "SET TRANSACTION ISOLATION LEVEL %s",
                     self::getIsolationLevelString($isolationLevel)
                 )
@@ -80,13 +80,13 @@ class PgSQLTransaction extends AbstractTransaction
     {
         try {
             $this->runner->perform(
-                sprintf(
+                \sprintf(
                     "SAVEPOINT %s",
                     $this->runner->getEscaper()->escapeIdentifier($name)
                 )
             );
         } catch (DriverError $e) {
-            throw new TransactionError(sprintf("%s: create savepoint failed", $name), null, $e);
+            throw new TransactionError(\sprintf("%s: create savepoint failed", $name), null, $e);
         }
     }
 
@@ -97,13 +97,13 @@ class PgSQLTransaction extends AbstractTransaction
     {
         try {
             $this->runner->perform(
-                sprintf(
+                \sprintf(
                     "ROLLBACK TO SAVEPOINT %s",
                     $this->runner->getEscaper()->escapeIdentifier($name)
                 )
             );
         } catch (DriverError $e) {
-            throw new TransactionError(sprintf("%s: rollback to savepoint failed", $name), null, $e);
+            throw new TransactionError(\sprintf("%s: rollback to savepoint failed", $name), null, $e);
         }
     }
 
@@ -140,7 +140,7 @@ class PgSQLTransaction extends AbstractTransaction
             $this
                 ->runner
                 ->perform(
-                    sprintf(
+                    \sprintf(
                         "SET CONSTRAINTS %s DEFERRED",
                         $this->escapeNameList($constraints)
                     )
@@ -173,7 +173,7 @@ class PgSQLTransaction extends AbstractTransaction
             $this
                 ->runner
                 ->perform(
-                    sprintf(
+                    \sprintf(
                         "SET CONSTRAINTS %s IMMEDIATE",
                         $this->escapeNameList($constraints)
                     )

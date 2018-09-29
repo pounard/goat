@@ -55,14 +55,14 @@ class PgSQLConverter implements ConverterInterface
             case 'timestamp':
             case 'timestampz':
                 if (!$value instanceof \DateTimeInterface) {
-                    throw new TypeConversionError(sprintf("given value '%s' is not instanceof \DateTimeInterface", $value));
+                    throw new TypeConversionError(\sprintf("given value '%s' is not instanceof \DateTimeInterface", $value));
                 }
                 return $value->format(self::TIMESTAMP_FORMAT);
 
             // Date without time
             case 'date':
                 if (!$value instanceof \DateTimeInterface) {
-                    throw new TypeConversionError(sprintf("given value '%s' is not instanceof \DateTimeInterface", $value));
+                    throw new TypeConversionError(\sprintf("given value '%s' is not instanceof \DateTimeInterface", $value));
                 }
                 return $value->format(self::TIMESTAMP_FORMAT_DATE);
 
@@ -75,7 +75,7 @@ class PgSQLConverter implements ConverterInterface
                 if ($value instanceof \DateInterval) {
                     return $value->format(self::TIMESTAMP_FORMAT_TIME_INT);
                 }
-                throw new TypeConversionError(sprintf("given value '%s' is not instanceof \DateTimeInterface not \DateInterval", $value));
+                throw new TypeConversionError(\sprintf("given value '%s' is not instanceof \DateTimeInterface not \DateInterval", $value));
         }
 
         return $this->default->toSQL($type, $value);

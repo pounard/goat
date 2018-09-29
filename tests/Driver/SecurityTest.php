@@ -36,7 +36,7 @@ class SecurityTest extends DriverTestCase
     private function getStrings()
     {
         if (null === $this->strings) {
-            $this->strings = json_decode(file_get_contents(__DIR__ . '/security-strings.json'), true);
+            $this->strings = \json_decode(file_get_contents(__DIR__ . '/security-strings.json'), true);
         }
 
         return $this->strings;
@@ -80,7 +80,7 @@ class SecurityTest extends DriverTestCase
         if ($allowedErrors) {
             do {
                 foreach ($allowedErrors as $partialMessage) {
-                    if (false !== stripos($previous->getMessage(), $partialMessage)) {
+                    if (false !== \stripos($previous->getMessage(), $partialMessage)) {
                         $isValid = true;
                         break 2;
                     }
@@ -89,7 +89,7 @@ class SecurityTest extends DriverTestCase
         }
 
         if (!$isValid) {
-            throw new GoatError(sprintf("error with string %d: %s", $index, escapeshellcmd($veryBadString)), $e->getCode(), $e);
+            throw new GoatError(\sprintf("error with string %d: %s", $index, escapeshellcmd($veryBadString)), $e->getCode(), $e);
         }
     }
 
@@ -117,7 +117,7 @@ class SecurityTest extends DriverTestCase
         // MySQL, sad MySQL, does not uses a case sensitive collation
         // per default, in most environments those tests would fail.
         // In order to fix that, we do have to reduce the test set.
-        if (false !== stripos($driver->getDriverName(), 'mysql')) {
+        if (false !== \stripos($driver->getDriverName(), 'mysql')) {
             $done = [];
             foreach ($stringSet as $index => $veryBadString) {
 
@@ -141,7 +141,7 @@ class SecurityTest extends DriverTestCase
                 $done[$lowered] = true;
             }
 
-            $stringSet = array_values($stringSet);
+            $stringSet = \array_values($stringSet);
         }
 
         // Massive bulk insert
@@ -251,7 +251,7 @@ class SecurityTest extends DriverTestCase
             $veryBadString = $veryBadString;
 
             try {
-                $sql = sprintf(
+                $sql = \sprintf(
                     "create temporary table %s (%s varchar(1024))",
                     $driver->getEscaper()->escapeIdentifier($veryBadString),
                     $driver->getEscaper()->escapeIdentifier($veryBadString)
@@ -278,7 +278,7 @@ class SecurityTest extends DriverTestCase
                 $this->assertSame(1, $result->count());
                 $this->assertSame(1, $result->countColumns());
                 foreach ($result as $row) {
-                    $this->assertSame('some_text', reset($row));
+                    $this->assertSame('some_text', \reset($row));
                 }
 
             } catch (\Exception $e) {

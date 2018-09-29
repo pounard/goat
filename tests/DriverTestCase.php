@@ -54,13 +54,13 @@ abstract class DriverTestCase extends \PHPUnit_Framework_TestCase
           $normalized = new Dsn($host, $username, $password);
           $target = $path . '/includes/database/database.inc';
 
-          if (!file_exists($target) || !is_readable($target)) {
-              throw new \Exception(sprintf("Drupal path does not exists or is not readable: '%s'", $target));
+          if (!file_exists($target) || !\is_readable($target)) {
+              throw new \Exception(\sprintf("Drupal path does not exists or is not readable: '%s'", $target));
           }
 
           require_once $target;
           if (!class_exists('\Database')) {
-              throw new \Exception(sprintf("Target file did not load the Drupal \\Database class: '%s'", $target));
+              throw new \Exception(\sprintf("Target file did not load the Drupal \\Database class: '%s'", $target));
           }
 
           if (!defined('DRUPAL_ROOT')) {
@@ -159,7 +159,7 @@ abstract class DriverTestCase extends \PHPUnit_Framework_TestCase
             $ret[] = [$driverName, $class];
         }
 
-        foreach (array_keys($this->getKnownRunners()) as $runnerName) {
+        foreach (\array_keys($this->getKnownRunners()) as $runnerName) {
             $ret[] = [$runnerName, 'this_is_a_runner'];
         }
 
@@ -190,23 +190,23 @@ abstract class DriverTestCase extends \PHPUnit_Framework_TestCase
     {
         if ('this_is_a_runner' === $class) {
             // We got ourselves a runner, just skip the test
-            $this->markTestSkipped(sprintf("%s is a runner, not a driver", $driver));
+            $this->markTestSkipped(\sprintf("%s is a runner, not a driver", $driver));
         }
 
-        $variable = strtoupper($driver) . '_DSN';
+        $variable = \strtoupper($driver) . '_DSN';
         $hostname = getenv($variable);
-        $username = getenv(strtoupper($driver) . '_USERNAME');
-        $password = getenv(strtoupper($driver) . '_PASSWORD');
+        $username = getenv(\strtoupper($driver) . '_USERNAME');
+        $password = getenv(\strtoupper($driver) . '_PASSWORD');
 
         if (!$hostname) {
-            throw new \InvalidArgumentException(sprintf("Parameter '%s' for driver '%s' is not configured", $variable, $driver));
+            throw new \InvalidArgumentException(\sprintf("Parameter '%s' for driver '%s' is not configured", $variable, $driver));
         }
 
         if (!class_exists($class)) {
-            throw new \InvalidArgumentException(sprintf("Class '%s' for driver '%s' does not exists", $class, $driver));
+            throw new \InvalidArgumentException(\sprintf("Class '%s' for driver '%s' does not exists", $class, $driver));
         }
-        if (!is_subclass_of($class, DriverInterface::class)) {
-            throw new \InvalidArgumentException(sprintf("Class '%s' for driver '%s' does not implement '%s'", $class, $driver, DriverInterface::class));
+        if (!\is_subclass_of($class, DriverInterface::class)) {
+            throw new \InvalidArgumentException(\sprintf("Class '%s' for driver '%s' does not implement '%s'", $class, $driver, DriverInterface::class));
         }
 
         $dsn = new Dsn($hostname, $username, $password);
@@ -240,12 +240,12 @@ abstract class DriverTestCase extends \PHPUnit_Framework_TestCase
         $runners = $this->getKnownRunners();
 
         if (!isset($runners[$runner])) {
-            throw new \InvalidArgumentException(sprintf("Runner '%s' does not exist", $runner));
+            throw new \InvalidArgumentException(\sprintf("Runner '%s' does not exist", $runner));
         }
 
-        $instance = call_user_func($runners[$runner]);
+        $instance = \call_user_func($runners[$runner]);
         if (!$instance instanceof RunnerInterface) {
-            $this->markTestSkipped(sprintf("Runner configuration for '%s' is missing, please see default phpunit.xml.dist file for additional environment variables", $runner));
+            $this->markTestSkipped(\sprintf("Runner configuration for '%s' is missing, please see default phpunit.xml.dist file for additional environment variables", $runner));
         }
 
         $instance->setConverter($this->createConverter());

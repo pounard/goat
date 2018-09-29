@@ -20,7 +20,7 @@ class MySQLTransaction extends AbstractTransaction
             // Transaction level cannot be changed while in the transaction,
             // so it must set before starting the transaction
             $this->runner->perform(
-                sprintf(
+                \sprintf(
                     "SET TRANSACTION ISOLATION LEVEL %s",
                     self::getIsolationLevelString($isolationLevel)
                 )
@@ -34,7 +34,7 @@ class MySQLTransaction extends AbstractTransaction
             // that's the downside of using MySQL.
             if (1568 == $e->getCode()) {
                 if ($this->runner->isDebugEnabled()) {
-                    trigger_error("transaction is nested into another, MySQL can't change the isolation level", E_USER_NOTICE);
+                    \trigger_error("transaction is nested into another, MySQL can't change the isolation level", E_USER_NOTICE);
                 }
             } else {
                 // MySQL >= 8 has a different syntax for transaction level which
@@ -56,7 +56,7 @@ class MySQLTransaction extends AbstractTransaction
     protected function doChangeLevel(int $isolationLevel)
     {
         if ($this->runner->isDebugEnabled()) {
-            trigger_error("MySQL does not support transaction level change during transaction", E_USER_NOTICE);
+            \trigger_error("MySQL does not support transaction level change during transaction", E_USER_NOTICE);
         }
     }
 
@@ -66,12 +66,12 @@ class MySQLTransaction extends AbstractTransaction
     protected function doCreateSavepoint(string $name)
     {
         try {
-            $this->runner->perform(sprintf(
+            $this->runner->perform(\sprintf(
                 "SAVEPOINT %s",
                 $this->runner->getEscaper()->escapeIdentifier($name)
             ));
         } catch (DriverError $e) {
-            throw new TransactionError(sprintf("%s: create savepoint failed", $name), null, $e);
+            throw new TransactionError(\sprintf("%s: create savepoint failed", $name), null, $e);
         }
     }
 
@@ -81,12 +81,12 @@ class MySQLTransaction extends AbstractTransaction
     protected function doRollbackToSavepoint(string $name)
     {
         try {
-            $this->runner->perform(sprintf(
+            $this->runner->perform(\sprintf(
                 "ROLLBACK TO SAVEPOINT %s",
                 $this->runner->getEscaper()->escapeIdentifier($name)
             ));
         } catch (DriverError $e) {
-            throw new TransactionError(sprintf("%s: rollback to savepoint failed", $name), null, $e);
+            throw new TransactionError(\sprintf("%s: rollback to savepoint failed", $name), null, $e);
         }
     }
 
@@ -120,7 +120,7 @@ class MySQLTransaction extends AbstractTransaction
     protected function doDeferConstraints(array $constraints)
     {
         if ($this->runner->isDebugEnabled()) {
-            trigger_error("MySQL does not support deferred constraints", E_USER_NOTICE);
+            \trigger_error("MySQL does not support deferred constraints", E_USER_NOTICE);
         }
     }
 
@@ -130,7 +130,7 @@ class MySQLTransaction extends AbstractTransaction
     protected function doDeferAll()
     {
         if ($this->runner->isDebugEnabled()) {
-            trigger_error("MySQL does not support deferred constraints", E_USER_NOTICE);
+            \trigger_error("MySQL does not support deferred constraints", E_USER_NOTICE);
         }
     }
 

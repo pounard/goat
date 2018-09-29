@@ -50,11 +50,11 @@ class DefaultFormatter extends FormatterBase
         $columnString = $this->escaper->escapeIdentifier($columnName);
 
         if ($expression instanceof Expression) {
-            return sprintf("%s = %s", $columnString, $this->format($expression));
+            return \sprintf("%s = %s", $columnString, $this->format($expression));
         } else if ($expression instanceof Statement) {
-            return sprintf("%s = (%s)", $columnString, $this->format($expression));
+            return \sprintf("%s = (%s)", $columnString, $this->format($expression));
         } else {
-            return sprintf("%s = %s", $columnString, $this->escaper->escapeLiteral($expression));
+            return \sprintf("%s = %s", $columnString, $this->escaper->escapeLiteral($expression));
         }
     }
 
@@ -72,7 +72,7 @@ class DefaultFormatter extends FormatterBase
             $output[] = $this->formatUpdateSetItem($column, $statement);
         }
 
-        return implode(",\n", $output);
+        return \implode(",\n", $output);
     }
 
     /**
@@ -85,7 +85,7 @@ class DefaultFormatter extends FormatterBase
      */
     protected function formatSelectItem($expression, $alias = null) : string
     {
-        if (is_string($expression)) {
+        if (\is_string($expression)) {
             $expression = new ExpressionColumn($expression);
         }
 
@@ -94,7 +94,7 @@ class DefaultFormatter extends FormatterBase
         // We cannot alias columns with a numeric identifier;
         // aliasing with the same string as the column name
         // makes no sense either.
-        if ($alias && !is_numeric($alias)) {
+        if ($alias && !\is_numeric($alias)) {
             $alias = $this->escaper->escapeIdentifier($alias);
             if ($alias !== $output) {
                 return $output . ' as ' . $alias;
@@ -126,7 +126,7 @@ class DefaultFormatter extends FormatterBase
             $output[] = $this->formatSelectItem(...$column);
         }
 
-        return implode(",\n", $output);
+        return \implode(",\n", $output);
     }
 
     /**
@@ -192,7 +192,7 @@ class DefaultFormatter extends FormatterBase
                 break;
         }
 
-        return sprintf('%s %s%s', $column, $orderStr, $nullStr);
+        return \sprintf('%s %s%s', $column, $orderStr, $nullStr);
     }
 
     /**
@@ -219,7 +219,7 @@ class DefaultFormatter extends FormatterBase
             $output[] = $this->formatOrderByItem($column, $order, $null);
         }
 
-        return "order by " . implode(", ", $output);
+        return "order by " . \implode(", ", $output);
     }
 
     /**
@@ -241,7 +241,7 @@ class DefaultFormatter extends FormatterBase
             $output[] = $this->format($group);
         }
 
-        return "group by " . implode(", ", $output);
+        return "group by " . \implode(", ", $output);
     }
 
     /**
@@ -283,13 +283,13 @@ class DefaultFormatter extends FormatterBase
         }
 
         if ($condition->isEmpty()) {
-            return sprintf(
+            return \sprintf(
                 "%s %s",
                 $prefix,
                 $this->formatExpressionRelation($relation)
             );
         } else {
-            return sprintf(
+            return \sprintf(
                 "%s %s on (%s)",
                 $prefix,
                 $this->formatExpressionRelation($relation),
@@ -322,7 +322,7 @@ class DefaultFormatter extends FormatterBase
             $output[] = $this->formatJoinItem(...$join);
         }
 
-        return implode("\n", $output);
+        return \implode("\n", $output);
     }
 
     /**
@@ -346,15 +346,15 @@ class DefaultFormatter extends FormatterBase
 
         $output = [];
 
-        $first = array_shift($joins);
+        $first = \array_shift($joins);
 
         // First join must be an inner join, there is no choice, and first join
         // condition will become a where clause in the global query instead
-        if (!in_array($first[2], [Query::JOIN_INNER, Query::JOIN_NATURAL])) {
+        if (!\in_array($first[2], [Query::JOIN_INNER, Query::JOIN_NATURAL])) {
             throw new QueryError("first join in an update query must be inner or natural, it will serve as the first from table");
         }
 
-        $output[] = sprintf("from %s", $this->formatExpressionRelation($first[0]));
+        $output[] = \sprintf("from %s", $this->formatExpressionRelation($first[0]));
         if ($first[1] && !$first[1]->isEmpty()) {
             $query->getWhere()->expression($first[1]);
         }
@@ -367,7 +367,7 @@ class DefaultFormatter extends FormatterBase
             }
         }
 
-        return implode("\n", $output);
+        return \implode("\n", $output);
     }
 
     /**
@@ -391,15 +391,15 @@ class DefaultFormatter extends FormatterBase
 
         $output = [];
 
-        $first = array_shift($joins);
+        $first = \array_shift($joins);
 
         // First join must be an inner join, there is no choice, and first join
         // condition will become a where clause in the global query instead
-        if (!in_array($first[2], [Query::JOIN_INNER, Query::JOIN_NATURAL])) {
+        if (!\in_array($first[2], [Query::JOIN_INNER, Query::JOIN_NATURAL])) {
             throw new QueryError("first join in an delete query must be inner or natural, it will serve as the first using table");
         }
 
-        $output[] = sprintf("using %s", $this->formatExpressionRelation($first[0]));
+        $output[] = \sprintf("using %s", $this->formatExpressionRelation($first[0]));
         if ($first[1] && !$first[1]->isEmpty()) {
             $query->getWhere()->expression($first[1]);
         }
@@ -412,7 +412,7 @@ class DefaultFormatter extends FormatterBase
             }
         }
 
-        return implode("\n", $output);
+        return \implode("\n", $output);
     }
 
     /**
@@ -428,9 +428,9 @@ class DefaultFormatter extends FormatterBase
     protected function formatRange(int $limit = 0, int $offset = 0) : string
     {
         if ($limit) {
-            return sprintf('limit %d offset %d', $limit, $offset);
+            return \sprintf('limit %d offset %d', $limit, $offset);
         } else if ($offset) {
-            return sprintf('offset %d', $offset);
+            return \sprintf('offset %d', $offset);
         } else {
             return '';
         }
@@ -448,9 +448,9 @@ class DefaultFormatter extends FormatterBase
      */
     protected function formatValueList(array $arguments) : string
     {
-        return implode(
+        return \implode(
             ', ',
-            array_map(
+            \array_map(
                 function ($value) {
                     if ($value instanceof Statement) {
                         return $this->format($value);
@@ -509,9 +509,9 @@ class DefaultFormatter extends FormatterBase
             if ($value instanceof Expression) {
                 $valueString = $this->format($value);
             } else if ($value instanceof Statement) {
-                $valueString = sprintf('(%s)', $this->format($value));
-            } else if (is_array($value)) {
-                $valueString = sprintf("(%s)", $this->formatValueList($value));
+                $valueString = \sprintf('(%s)', $this->format($value));
+            } else if (\is_array($value)) {
+                $valueString = \sprintf("(%s)", $this->formatValueList($value));
             } else {
                 $valueString = $this->formatPlaceholder($value);
             }
@@ -521,12 +521,12 @@ class DefaultFormatter extends FormatterBase
 
                     case Where::EXISTS:
                     case Where::NOT_EXISTS:
-                        $output[] = sprintf('%s %s', $operator, $valueString);
+                        $output[] = \sprintf('%s %s', $operator, $valueString);
                         break;
 
                     case Where::IS_NULL:
                     case Where::NOT_IS_NULL:
-                        $output[] = sprintf('%s %s', $valueString, $operator);
+                        $output[] = \sprintf('%s %s', $valueString, $operator);
                         break;
 
                     default:
@@ -538,27 +538,27 @@ class DefaultFormatter extends FormatterBase
 
                     case Where::EXISTS:
                     case Where::NOT_EXISTS:
-                        $output[] = sprintf('%s %s', $operator, $valueString);
+                        $output[] = \sprintf('%s %s', $operator, $valueString);
                         break;
 
                     case Where::IS_NULL:
                     case Where::NOT_IS_NULL:
-                        $output[] = sprintf('%s %s', $columnString, $operator);
+                        $output[] = \sprintf('%s %s', $columnString, $operator);
                         break;
 
                     case Where::BETWEEN:
                     case Where::NOT_BETWEEN:
-                        $output[] = sprintf('%s %s $* and $*', $columnString, $operator);
+                        $output[] = \sprintf('%s %s $* and $*', $columnString, $operator);
                         break;
 
                     default:
-                        $output[] = sprintf('%s %s %s', $columnString, $operator, $valueString);
+                        $output[] = \sprintf('%s %s %s', $columnString, $operator, $valueString);
                         break;
                 }
             }
         }
 
-        return implode("\n" . $where->getOperator() . ' ', $output);
+        return \implode("\n" . $where->getOperator() . ' ', $output);
     }
 
     /**
@@ -594,14 +594,14 @@ class DefaultFormatter extends FormatterBase
 
             }
 
-            $output[] = sprintf(
+            $output[] = \sprintf(
                 "%s as (%s)",
                 $this->escaper->escapeIdentifier($with[0]),
                 $this->formatQuerySelect($with[1])
             );
         }
 
-        return sprintf('with %s', implode(', ', $output));
+        return \sprintf('with %s', \implode(', ', $output));
     }
 
     /**
@@ -616,7 +616,7 @@ class DefaultFormatter extends FormatterBase
         $valueCount = $query->getValueCount();
 
         $output[] = $this->formatWith($query->getAllWith());
-        $output[] = sprintf(
+        $output[] = \sprintf(
             "insert into %s",
             // From SQL 92 standard, INSERT queries don't have table alias
             $this->escaper->escapeIdentifier($query->getRelation()->getName())
@@ -630,9 +630,9 @@ class DefaultFormatter extends FormatterBase
 
         } else {
             if ($columns) {
-                $output[] = sprintf(
+                $output[] = \sprintf(
                     "(%s) values",
-                    implode(', ', array_map(function ($column) use ($escaper) {
+                    \implode(', ', \array_map(function ($column) use ($escaper) {
                         return $escaper->escapeIdentifier($column);
                     }, $columns))
                 );
@@ -640,20 +640,20 @@ class DefaultFormatter extends FormatterBase
 
             $values = [];
             for ($i = 0; $i < $valueCount; ++$i) {
-                $values[] = sprintf(
+                $values[] = \sprintf(
                     "(%s)",
-                    implode(', ', array_fill(0, count($columns), '$*'))
+                    \implode(', ', \array_fill(0, \count($columns), '$*'))
                 );
             }
-            $output[] = implode(', ', $values);
+            $output[] = \implode(', ', $values);
         }
 
         $return = $query->getAllReturn();
         if ($return) {
-            $output[] = sprintf("returning %s", $this->formatReturning($return));
+            $output[] = \sprintf("returning %s", $this->formatReturning($return));
         }
 
-        return implode("\n", $output);
+        return \implode("\n", $output);
     }
 
     /**
@@ -672,16 +672,16 @@ class DefaultFormatter extends FormatterBase
         $subQuery = $query->getQuery();
 
         $output[] = $this->formatWith($query->getAllWith());
-        $output[] = sprintf(
+        $output[] = \sprintf(
             "insert into %s",
             // From SQL 92 standard, INSERT queries don't have table alias
             $this->escaper->escapeIdentifier($query->getRelation()->getName())
         );
 
         if ($columns) {
-            $output[] = sprintf(
+            $output[] = \sprintf(
                 "(%s) values",
-                implode(', ', array_map(function ($column) use ($escaper) {
+                \implode(', ', \array_map(function ($column) use ($escaper) {
                     return $escaper->escapeIdentifier($column);
                 }, $columns))
             );
@@ -691,10 +691,10 @@ class DefaultFormatter extends FormatterBase
 
         $return = $query->getAllReturn();
         if ($return) {
-            $output[] = sprintf("returning %s", $this->formatReturning($return));
+            $output[] = \sprintf("returning %s", $this->formatReturning($return));
         }
 
-        return implode("\n", $output);
+        return \implode("\n", $output);
     }
 
     /**
@@ -711,7 +711,7 @@ class DefaultFormatter extends FormatterBase
         $output[] = $this->formatWith($query->getAllWith());
         // This is not SQL-92 compatible, we are using USING..JOIN clause to
         // do joins in the DELETE query, which is not accepted by the standard.
-        $output[] = sprintf(
+        $output[] = \sprintf(
             "delete from %s",
             $this->formatExpressionRelation($query->getRelation())
         );
@@ -723,15 +723,15 @@ class DefaultFormatter extends FormatterBase
 
         $where = $query->getWhere();
         if (!$where->isEmpty()) {
-            $output[] = sprintf('where %s', $this->formatWhere($where));
+            $output[] = \sprintf('where %s', $this->formatWhere($where));
         }
 
         $return = $query->getAllReturn();
         if ($return) {
-            $output[] = sprintf("returning %s", $this->formatReturning($return));
+            $output[] = \sprintf("returning %s", $this->formatReturning($return));
         }
 
-        return implode("\n", array_filter($output));
+        return \implode("\n", \array_filter($output));
     }
 
     /**
@@ -753,7 +753,7 @@ class DefaultFormatter extends FormatterBase
         $output[] = $this->formatWith($query->getAllWith());
         // From the SQL 92 standard (which PostgreSQL does support here) the
         // FROM and JOIN must be written AFTER the SET clause. MySQL does not.
-        $output[] = sprintf(
+        $output[] = \sprintf(
             "update %s\nset\n%s",
             $this->formatExpressionRelation($query->getRelation()),
             $this->formatUpdateSet($columns)
@@ -766,15 +766,15 @@ class DefaultFormatter extends FormatterBase
 
         $where = $query->getWhere();
         if (!$where->isEmpty()) {
-            $output[] = sprintf('where %s', $this->formatWhere($where));
+            $output[] = \sprintf('where %s', $this->formatWhere($where));
         }
 
         $return = $query->getAllReturn();
         if ($return) {
-            $output[] = sprintf("returning %s", $this->formatReturning($return));
+            $output[] = \sprintf("returning %s", $this->formatReturning($return));
         }
 
-        return implode("\n", array_filter($output));
+        return \implode("\n", \array_filter($output));
     }
 
     /**
@@ -788,7 +788,7 @@ class DefaultFormatter extends FormatterBase
     {
         $output = [];
         $output[] = $this->formatWith($query->getAllWith());
-        $output[] = sprintf(
+        $output[] = \sprintf(
             "select %s\nfrom %s\n%s",
             $this->formatSelect($query->getAllColumns()),
             $this->formatExpressionRelation($query->getRelation()),
@@ -797,7 +797,7 @@ class DefaultFormatter extends FormatterBase
 
         $where = $query->getWhere();
         if (!$where->isEmpty()) {
-            $output[] = sprintf('where %s', $this->formatWhere($where));
+            $output[] = \sprintf('where %s', $this->formatWhere($where));
         }
 
         $output[] = $this->formatGroupBy($query->getAllGroupBy());
@@ -806,10 +806,10 @@ class DefaultFormatter extends FormatterBase
 
         $having = $query->getHaving();
         if (!$having->isEmpty()) {
-            $output[] = sprintf('having %s', $this->formatWhere($having));
+            $output[] = \sprintf('having %s', $this->formatWhere($having));
         }
 
-        return implode("\n", array_filter($output));
+        return \implode("\n", \array_filter($output));
     }
 
     /**
@@ -842,7 +842,7 @@ class DefaultFormatter extends FormatterBase
         }
 
         if ($relation) {
-            return sprintf(
+            return \sprintf(
                 "%s.%s",
                 $this->escaper->escapeIdentifier($relation),
                 $target
@@ -870,26 +870,26 @@ class DefaultFormatter extends FormatterBase
         }
 
         if ($schema && $alias) {
-            return sprintf(
+            return \sprintf(
                 "%s.%s as %s",
                 $this->escaper->escapeIdentifier($schema),
                 $this->escaper->escapeIdentifier($table),
                 $this->escaper->escapeIdentifier($alias)
             );
         } else if ($schema) {
-            return sprintf(
+            return \sprintf(
                 "%s.%s",
                 $this->escaper->escapeIdentifier($schema),
                 $this->escaper->escapeIdentifier($table)
             );
         } else if ($alias) {
-            return sprintf(
+            return \sprintf(
                 "%s as %s",
                 $this->escaper->escapeIdentifier($table),
                 $this->escaper->escapeIdentifier($alias)
             );
         } else {
-            return sprintf(
+            return \sprintf(
                 "%s",
                 $this->escaper->escapeIdentifier($table)
             );

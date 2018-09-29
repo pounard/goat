@@ -54,7 +54,7 @@ final class InsertQueryQuery extends AbstractQuery implements ReturningQueryInte
             throw new QueryError("once you added your query, you cannot change columns anymore");
         }
 
-        $this->columns = array_unique(array_merge($this->columns, $columns));
+        $this->columns = \array_unique(\array_merge($this->columns, $columns));
 
         return $this;
     }

@@ -19,9 +19,9 @@ final class HydratorMap
     public function __construct(string $cacheDir = null)
     {
         if (!$cacheDir) {
-            $cacheDir = sys_get_temp_dir().'/goat-hydrator';
-            if (!is_dir($cacheDir) && !@mkdir($cacheDir)) { // Attempt directory creation
-                throw new \InvalidArgumentException(sprintf("'%s': could not create directory", $cacheDir));
+            $cacheDir = \sys_get_temp_dir().'/goat-hydrator';
+            if (!\is_dir($cacheDir) && !@\mkdir($cacheDir)) { // Attempt directory creation
+                throw new \InvalidArgumentException(\sprintf("'%s': could not create directory", $cacheDir));
             }
         }
 
@@ -93,7 +93,7 @@ final class HydratorMap
         }
 
         if (!class_exists($class)) {
-            throw new \InvalidArgumentException(sprintf("'%s' class does not exists", $class));
+            throw new \InvalidArgumentException(\sprintf("'%s' class does not exists", $class));
         }
 
         if (!isset($this->hydrators[$class])) {

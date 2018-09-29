@@ -39,10 +39,10 @@ trait ReturningQueryTrait /* implements ReturningQueryInterface */
     public function returning($expression, string $alias = null)
     {
         if (!$alias) {
-            if (!is_string($expression) && !$expression instanceof Expression) {
+            if (!\is_string($expression) && !$expression instanceof Expression) {
                 throw new QueryError("RETURNING values can only be column names or expressions using them from the previous statement");
             }
-            if (is_string($expression)) {
+            if (\is_string($expression)) {
                 $expression = new ExpressionColumn($expression);
             }
         }
