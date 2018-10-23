@@ -9,9 +9,11 @@ namespace Goat\Query;
  */
 final class ExpressionRelation implements Expression
 {
+    /**
+     * @var Relation
+     */
+    private $relation;
     private $alias;
-    private $relationName;
-    private $schema;
 
     /**
      * Default constructor
@@ -26,9 +28,8 @@ final class ExpressionRelation implements Expression
     public static function escape(string $relationName, string $alias = null, string $schema = null) : self
     {
         $ret = new self;
-        $ret->relationName = $relationName;
+        $ret->relation = Relation::escape($relationName, $schema);
         $ret->alias = $alias;
-        $ret->schema = $schema;
 
         return $ret;
     }
@@ -51,16 +52,8 @@ final class ExpressionRelation implements Expression
     public static function create(string $relationName, string $alias = null, string $schema = null): self
     {
         $ret = new self;
-
-        if (null === $schema) {
-            if (false !== \strpos($relationName, '.')) {
-                list($schema, $relationName) = \explode('.', $relationName, 2);
-            }
-        }
-
-        $ret->relationName = $relationName;
+        $ret->relation = Relation::create($relationName, $schema);
         $ret->alias = $alias;
-        $ret->schema = $schema;
 
         return $ret;
     }
@@ -72,7 +65,7 @@ final class ExpressionRelation implements Expression
      */
     public function getName() : string
     {
-        return $this->relationName;
+        return $this->relation->getName();
     }
 
     /**
@@ -92,7 +85,7 @@ final class ExpressionRelation implements Expression
      */
     public function getSchema()
     {
-        return $this->schema;
+        return $this->relation->getSchema();
     }
 
     /**

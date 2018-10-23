@@ -14,9 +14,6 @@
     "minimum-stability" : "dev",
     "prefer-stable" : true,
     "autoload" : {
-        "psr-0": {
-            "WeakRef" : "compat/"
-        },
         "psr-4" : {
             "Goat\\" : "src/"
         }
@@ -43,7 +40,6 @@
     "suggest" : {
         "doctrine/annotations" : "enables object tree hydration using @Property() annotation, mapper entity validation via annotations",
         "symfony/property-info" : "enables object tree hydration using @var doc blocks",
-        "symfony/validator" : "enables mapper entity validation",
-        "ext-weakref" : "enables transaction garbage collection checks"
+        "symfony/validator" : "enables mapper entity validation"
     }
 }

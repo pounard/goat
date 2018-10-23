@@ -46,14 +46,6 @@ final class Dsn
 
     /**
      * Default constructor
-     *
-     * @param string $string
-     * @param string $username
-     * @param string $password
-     * @param string $charset
-     *
-     * @throws \InvalidArgumentException
-     *   On invalid dsn given
      */
     public function __construct(string $string, string $username = null, string $password = null, string $charset = self::DEFAULT_CHARSET)
     {

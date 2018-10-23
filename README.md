@@ -107,18 +107,12 @@ This API is composed of several components, that are slightly coupled:
  *  [ ] (postponed) better parameter handling in AbstractDriver
  *  [ ] (postponed) DDL ALTER TABLE? - not sure I want this right now
  *  [ ] (postponed) DDL CREATE TABLE? - not sure I want this right now
- *  [ ] (postponed) ext-pgsql driver
  *  [ ] (postponed) INSERT/UPDATE fallback when RETURNING is not supported
  *  [ ] (postponed) MERGE queries
- *  [ ] (postponed) performance: reduce functions calls for converters
  *  [ ] (postponed) SELECT with sub-select at select level
  *  [ ] (postponed) UNION queries
- *  [ ] (postponed) WITH support
- *  [ ] converters: specific instances per driver
- *  [ ] converters: type map per driver
  *  [ ] drupal, travis: install Drupal DBTNG without core for testing
  *  [ ] drupal: implement drupal 8 runner
- *  [ ] Large Object Binary stream handling for drivers that supports it
  *  [ ] mapper: createSelect()
  *  [ ] mapper: findAll() sorting order
  *  [ ] mapper: findFirst() tests
@@ -143,22 +137,27 @@ This API is composed of several components, that are slightly coupled:
  *  [x] converters: change method names to avoid confusion with hydrator
  *  [x] converters: per default better definition
  *  [x] converters: should carry a type and aliases (better auto detection)
+ *  [x] converters: specific instances per driver
+ *  [x] converters: type map per driver
  *  [x] DDL TRUNCATE
  *  [x] DDL TRUNCATE testing
  *  [x] DELETE queries
  *  [x] DELETE queries testing
  *  [x] drupal: implement drupal 7 runner
  *  [x] expression vs statement: query builder improvements
+ *  [x] ext-pgsql driver
  *  [x] ext_pgsql: basic implementation
  *  [x] ext_pgsql: document it is both faster and more secure
  *  [x] ext_pgsql: improve error handling
  *  [x] generic way to dissociate raw SQL string from raw values
  *  [x] improve WHERE builder tests: raw statement / sub where
+ *  [x] Large Object Binary stream handling for drivers that supports it
  *  [x] mapper: basic object mapping (using hydrator)
  *  [x] mapper: object hydration mechanism
  *  [x] mapper: object mapping
  *  [x] move source to src/ folder
  *  [x] parametric testing for backends
+ *  [x] performance: reduce functions calls for converters
  *  [x] RIGHT and FULL JOIN types
  *  [x] security: identifier testing https://github.com/minimaxir/big-list-of-naughty-strings
  *  [x] security: parameter injcetion testing using https://github.com/minimaxir/big-list-of-naughty-strings
@@ -172,3 +171,4 @@ This API is composed of several components, that are slightly coupled:
  *  [x] UPDATE queries
  *  [x] UPDATE query testing
  *  [x] WHERE with SELECT within
+ *  [x] WITH support

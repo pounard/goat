@@ -182,7 +182,7 @@ class SecurityTest extends DriverTestCase
 
                 $row = $driver
                     ->select('some_table')
-                    ->condition('bar', new ExpressionValue($veryBadString))
+                    ->condition('bar', ExpressionValue::create($veryBadString))
                     ->execute()
                     ->fetch()
                 ;

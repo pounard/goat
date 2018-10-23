@@ -113,7 +113,7 @@ final class Where implements Statement
     private function normalizeValue($value) : Statement
     {
         if (!$value instanceof Statement) {
-            return new ExpressionValue($value);
+            return ExpressionValue::create($value);
         }
 
         return $value;

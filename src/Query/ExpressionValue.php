@@ -14,14 +14,19 @@ final class ExpressionValue implements Expression
     private $value;
 
     /**
-     * Default constructor
-     *
-     * @param mixed $value
-     * @param string $type
+     * Use static methods instead.
      */
-    public function __construct($value, string $type = null)
+    private function __construct() {}
+
+    /**
+     * Build from value
+     */
+    public static function create($value, ?string $type = null): self
     {
-        if (null === $type) {
+        $ret = new self;
+
+        // Empty values such as '' are considered as null
+        if (!$type) {
             if (\is_string($value) && $value &&  ':' === $value[0]) {
 
                 // Attempt to find type by convention
@@ -31,7 +36,7 @@ final class ExpressionValue implements Expression
                     $name = $value;
                 }
 
-                $this->name = \substr($name, 1);
+                $ret->name = \substr($name, 1);
 
                 // Value cannot exist from this point, really, since we just
                 // gave name and type information; query will need to be send
@@ -40,14 +45,12 @@ final class ExpressionValue implements Expression
             }
         }
 
-        $this->value = $value;
-        $this->type = $type;
+        $ret->value = $value;
+        $ret->type = $type;
     }
 
     /**
      * Get value
-     *
-     * @return mixed
      */
     public function getValue()
     {
@@ -56,20 +59,16 @@ final class ExpressionValue implements Expression
 
     /**
      * Get value type
-     *
-     * @return null|string
      */
-    public function getType()
+    public function getType(): ?string
     {
         return $this->type;
     }
 
     /**
      * Get value name, if any
-     *
-     * @return null|string
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -77,7 +76,7 @@ final class ExpressionValue implements Expression
     /**
      * {@inheritdoc}
      */
-    public function getArguments() : ArgumentBag
+    public function getArguments(): ArgumentBag
     {
         $ret = new ArgumentBag();
         $ret->add($this->value, $this->name, $this->type);

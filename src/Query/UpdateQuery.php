@@ -59,7 +59,7 @@ final class UpdateQuery extends AbstractQuery implements ReturningQueryInterface
         }
 
         if (!$expression instanceof Expression && !$expression instanceof SelectQuery) {
-            $expression = new ExpressionValue($expression);
+            $expression = ExpressionValue::create($expression);
         }
 
         $this->columns[$columnName] = $expression;
