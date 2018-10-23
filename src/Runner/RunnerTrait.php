@@ -31,18 +31,16 @@ trait RunnerTrait
     final public function startTransaction(int $isolationLevel = Transaction::REPEATABLE_READ, bool $allowPending = false) : Transaction
     {
         // Fetch transaction from the WeakRef if possible
-        if ($this->currentTransaction && $this->currentTransaction->valid()) {
-            $pending = $this->currentTransaction->get();
-
+        if ($this->currentTransaction) {
             // We need to proceed to additional checks to ensure the pending
             // transaction still exists and si started, using WeakRef the
             // object could already have been garbage collected
-            if ($pending instanceof Transaction && $pending->isStarted()) {
+            if ($this->currentTransaction->isStarted()) {
                 if (!$allowPending) {
                     throw new TransactionError("a transaction already been started, you cannot nest transactions");
                 }
 
-                return $pending;
+                return $this->currentTransaction;
 
             } else {
                 unset($this->currentTransaction);
@@ -58,7 +56,7 @@ trait RunnerTrait
         // pending transaction it will not cause data consistency bugs, it will
         // just make it harder to debug.
         $transaction = $this->doStartTransaction($isolationLevel);
-        $this->currentTransaction = new \WeakRef($transaction);
+        $this->currentTransaction = $transaction;
 
         return $transaction;
     }
@@ -68,20 +66,7 @@ trait RunnerTrait
      */
     final public function isTransactionPending() : bool
     {
-        if ($this->currentTransaction) {
-            if (!$this->currentTransaction->valid()) {
-                $this->currentTransaction = null;
-            } else {
-                $pending = $this->currentTransaction->get();
-                if (!$pending instanceof Transaction || !$pending->isStarted()) {
-                    $this->currentTransaction = null;
-                } else {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        return $this->currentTransaction && $this->currentTransaction->isStarted();
     }
 
     /**

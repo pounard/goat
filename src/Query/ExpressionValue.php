@@ -47,6 +47,8 @@ final class ExpressionValue implements Expression
 
         $ret->value = $value;
         $ret->type = $type;
+
+        return $ret;
     }
 
     /**
